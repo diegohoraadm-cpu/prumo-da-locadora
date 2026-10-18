@@ -105,6 +105,19 @@ Painel
   dgclaw senha [trocar]                  troca a senha do painel (a nova senha vem pelo STDIN)
       Exemplo:  printf '%s\n' "minha senha nova" | dgclaw senha trocar
 
+Protecao e versao
+  dgclaw nivel [mostrar]                 mostra o nivel de protecao e o valor de cada protecao
+  dgclaw nivel definir <pessoal|escritorio|empresa|regulado>
+  dgclaw nivel ajustar <chave> <valor>   sobe (nunca abaixo da trava do nivel) uma protecao
+      Exemplo:  dgclaw nivel ajustar sessao_horas 24
+  dgclaw nivel org <uuid>                fixa a organizacao do Claude (forceLoginOrgUUID)
+  dgclaw protecoes aplicar               leva as protecoes do nivel aos agentes que ja existem
+  dgclaw versao                          mostra a versao instalada
+  dgclaw atualizar [--ref <tag-ou-branch>] [--origem <pasta-ou-url-git>] [--sem-rollback]
+      Guarda uma copia, baixa a versao nova, roda o instalador dela e confere a saude; se algo falhar,
+      volta a copia (a menos que use --sem-rollback). Preserva senha, chaves e cofres.
+      Exemplo:  sudo dgclaw atualizar --ref v1.1.0
+
 Geral
   dgclaw status                          confere se tudo esta de pe (sai com erro se algo essencial caiu)
 FIM

@@ -1,5 +1,5 @@
 'use strict';
-/* conversa.js: a tela de conversa do DG Claw Web.
+/* conversa.js: a tela de conversa do Prumo da Locadora.
 
    O que o servidor entrega por rota (nada mais é chamado daqui):
    GET /api/v1/agents, /messages, /stream (SSE), /wait, POST /send, /upload,
@@ -228,7 +228,7 @@ function pintaAvatar(el, a) {
   el.style.background = a.cor || '#2f9e5e';
 }
 document.documentElement.style.setProperty('--accent', AGENTE.cor || '#2f9e5e');
-document.title = AGENTE.nome + ' - DG Claw';
+document.title = AGENTE.nome + ' - Prumo da Locadora';
 $('nomeAgente').textContent = AGENTE.nome;
 pintaAvatar(avEl, AGENTE);
 entrada.placeholder = 'Escrever para ' + AGENTE.nome;
@@ -3648,7 +3648,7 @@ function passosTutorial() {
   }
   if (!$('mlConfig').hidden) {
     passos.push({ alvo: '#mlConfig', antes: abreM, titulo: 'Configurações',
-      oque: 'Hoje tem um item: Instalar o app, que coloca o DG Claw como aplicativo na tela inicial do aparelho.',
+      oque: 'Hoje tem um item: Instalar o app, que coloca o Prumo da Locadora como aplicativo na tela inicial do aparelho.',
       como: 'No Android e no computador, com Chrome ou Edge, o toque abre o pedido de instalação do navegador. No iPhone e no iPad, o item mostra o caminho: Compartilhar e depois Adicionar à Tela de Início. O item some sozinho quando o app já está instalado.',
       porque: 'O app instalado abre sem a barra do navegador e fica a um toque, como qualquer outro aplicativo.' });
   }

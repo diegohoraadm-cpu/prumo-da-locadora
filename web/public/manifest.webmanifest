@@ -1,7 +1,7 @@
 {
-  "name": "DG Claw",
-  "short_name": "DG Claw",
-  "description": "Converse com os seus agentes do DG Claw.",
+  "name": "Prumo da Locadora",
+  "short_name": "Prumo",
+  "description": "Converse com os seus agentes do Prumo da Locadora.",
   "lang": "pt-BR",
   "start_url": "/",
   "scope": "/",

@@ -15,7 +15,7 @@ const path = require('path');
 // aqui só ficam os escalares e o esqueleto.
 function defaults() {
   return {
-    agentName: 'DG Claw',
+    agentName: 'Prumo da Locadora',
     agentSlug: 'agente',
     agentDir: process.cwd(),
     creatorId: null,

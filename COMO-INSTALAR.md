@@ -1,4 +1,4 @@
-# Como instalar o DG Claw
+# Como instalar o Prumo da Locadora
 
 ## Instalação no servidor e primeiro agente pelo painel
 
@@ -6,12 +6,12 @@ Em uma VPS Ubuntu 24.04 ou 22.04 (o 26.04 também instala, com um aviso), com ac
 prepare Claude Code ou Codex e entre na sua assinatura. O Admin reutiliza esse login no root; a assinatura
 é necessária para o Admin conversar.
 
-O repositório é público. Execute estes três comandos no terminal da própria VPS onde o DG Claw vai
+O repositório é público. Execute estes três comandos no terminal da própria VPS onde o Prumo da Locadora vai
 rodar:
 
 ```sh
-git clone https://github.com/DGatoM/DG-Claw
-cd DG-Claw
+git clone https://github.com/diegohoraadm-cpu/prumo-da-locadora
+cd prumo-da-locadora
 sudo ./install.sh --usuario admin --com-imagem
 ```
 
@@ -20,7 +20,7 @@ O instalador não pede senha. Espere o final: ele mostra o **link do painel**, o
 
 Abra o **link de primeiro acesso** no navegador. Ele vale por 30 minutos e funciona uma única vez. Nele
 você cadastra a sua senha (pelo menos 12 caracteres) e já entra no chat do **Admin**. Essa senha serve
-para entrar no DG Claw, não é a senha da sua conta Claude. Se o link expirar, gere outro com
+para entrar no Prumo da Locadora, não é a senha da sua conta Claude. Se o link expirar, gere outro com
 `sudo dgclaw primeiro-acesso`.
 
 Se estiver instalando pelo Claude Code ou pelo Codex, ele roda `sudo ./install.sh --usuario admin --com-imagem`

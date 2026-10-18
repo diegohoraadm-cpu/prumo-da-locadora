@@ -1,5 +1,5 @@
 'use strict';
-/* sw.js: service worker simples do DG Claw.
+/* sw.js: service worker simples do Prumo da Locadora.
 
    Guarda só os arquivos estáticos da tela (CSS, JS, ícones, manifesto), para ela
    abrir rápido e para o app instalado ter o que mostrar. NUNCA mexe em /api/,
@@ -68,7 +68,7 @@ self.addEventListener('push', ev => {
     try { cru = ev.data.text(); } catch (e) { console.warn('sw: não consegui ler o texto do aviso:', e.message); }
     try { d = JSON.parse(cru); } catch (e) { console.warn('sw: o aviso não veio em JSON, mostro o texto cru:', e.message); }
   }
-  if (!d || typeof d !== 'object') d = { titulo: 'DG Claw', corpo: cru || 'Você tem um aviso novo.' };
+  if (!d || typeof d !== 'object') d = { titulo: 'Prumo da Locadora', corpo: cru || 'Você tem um aviso novo.' };
   const acoes = Array.isArray(d.acoes) ? d.acoes.filter(a => a && a.acao && a.titulo).slice(0, 2) : [];
   const opcoes = {
     body: d.corpo || '',
@@ -81,10 +81,10 @@ self.addEventListener('push', ev => {
   };
   if (d.tag) opcoes.tag = d.tag;
   if (d.imagem) opcoes.image = d.imagem;
-  ev.waitUntil(self.registration.showNotification(d.titulo || 'DG Claw', opcoes));
+  ev.waitUntil(self.registration.showNotification(d.titulo || 'Prumo da Locadora', opcoes));
 });
 
-/* Foca uma janela já aberta do DG Claw e leva para a url; sem janela, abre uma. */
+/* Foca uma janela já aberta do Prumo da Locadora e leva para a url; sem janela, abre uma. */
 function abrirDestino(url) {
   const alvo = new URL(url, self.location.origin).href;
   return self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(janelas => {

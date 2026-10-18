@@ -1,4 +1,4 @@
-# Como contribuir com o DG Claw
+# Como contribuir com o Prumo da Locadora
 
 Obrigado por querer ajudar. Este guia diz como rodar os testes, que convenções seguir, como abrir
 uma issue ou um pull request e o que todo painel precisa entregar junto com o código.
@@ -6,8 +6,8 @@ uma issue ou um pull request e o que todo painel precisa entregar junto com o c�
 ## Baixar o projeto
 
 ```
-git clone https://github.com/DGatoM/DG-Claw
-cd DG-Claw
+git clone https://github.com/diegohoraadm-cpu/prumo-da-locadora
+cd prumo-da-locadora
 ```
 
 ## Rodar os testes
@@ -24,7 +24,7 @@ Ele roda tudo. Se você quer rodar uma parte, estes são os comandos individuais
 | --- | --- |
 | CLI (`bin/dgclaw`) | `bash tests/cli/rodar.sh` |
 | `dgclaw-agente` | `bash bin/test/dgclaw-agente.test.sh` |
-| DG Claw Web | `node --test web/test/` |
+| Prumo da Locadora | `node --test web/test/` |
 | Painel | `cd panel && npm install`, depois `node test-<nome>.mjs` para cada arquivo `panel/test-*.mjs` |
 | Runner | `cd runner && npm ci && npx tsc --noEmit` |
 | Scripts em Python | `cd scripts/_lib && python3 test_<nome>.py` para cada `test_*.py` |
@@ -70,7 +70,7 @@ O histórico do projeto segue um padrão simples:
 
 Antes de abrir, procure se já existe uma igual. Na issue, inclua:
 
-- a versão do DG Claw e o sistema do servidor (por exemplo, Ubuntu 24.04);
+- a versão do Prumo da Locadora e o sistema do servidor (por exemplo, Ubuntu 24.04);
 - o que você fez, passo a passo;
 - o que você esperava que acontecesse e o que aconteceu de fato;
 - a saída de `dgclaw status`.

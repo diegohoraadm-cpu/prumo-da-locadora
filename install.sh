@@ -59,7 +59,7 @@ uso() {
     cat <<'FIM'
 Uso: sudo ./install.sh --usuario <nome> [opcoes]
 
-Instala o DG Claw neste servidor: painel com HTTPS, Admin e a base para criar agentes.
+Instala o Prumo da Locadora neste servidor: painel com HTTPS, Admin e a base para criar agentes.
 
   --usuario <nome>      usuario para entrar no painel (obrigatorio)
   --dominio <dominio>   endereco proprio (padrao: um endereco gratuito, escolhido sozinho)
@@ -284,7 +284,7 @@ checar_versao_so() {
         "ubuntu 22.04"|"ubuntu 24.04") ok "sistema: $so" ;;
         "ubuntu 26.04")
             ok "sistema: $so"
-            aviso "O DG Claw foi feito e testado no Ubuntu 24.04. O 26.04 tem funcionado, mas pode apresentar alguma instabilidade. Vou instalar mesmo assim." ;;
+            aviso "O Prumo da Locadora foi feito e testado no Ubuntu 24.04. O 26.04 tem funcionado, mas pode apresentar alguma instabilidade. Vou instalar mesmo assim." ;;
         *) falha "este sistema e '$so' e o DG Claw v1 so instala em Ubuntu 22.04, 24.04 ou 26.04." \
                "crie um servidor com Ubuntu 24.04 e rode o instalador nele." ;;
     esac
@@ -496,7 +496,7 @@ detectar_provedor() {
 
 # --- 4. codigo ------------------------------------------------------------------
 instalar_codigo() {
-    passo "Copiando o DG Claw para ${DG_APP#"$R"}"
+    passo "Copiando o Prumo da Locadora para ${DG_APP#"$R"}"
     VERSAO="v1"
     if fonte_tem .claude-plugin/plugin.json; then
         if tem_jq; then
@@ -510,7 +510,7 @@ instalar_codigo() {
         local revisao
         revisao="$(git -C "$SCRIPT_DIR" rev-parse --short=12 HEAD 2>/dev/null)" || revisao=""
         VERSAO="v1${revisao:+-$revisao}"
-        info "distribuicao DG Claw $VERSAO"
+        info "distribuicao Prumo da Locadora $VERSAO"
     fi
     [[ "$VERSAO" =~ ^[0-9A-Za-z._+-]+$ ]] || falha "a versao '$VERSAO' do plugin.json tem caracteres estranhos." "corrija o campo version em .claude-plugin/plugin.json."
 
@@ -638,13 +638,13 @@ gerar_hash() {
         hash="$(printf '%s' "$SENHA" | "$cmd")" || falha "o gerador de hash de teste ($cmd) recusou a senha." "confira o script de teste."
     else
         [ -f "$DG_APP/panel/bin/senha-hash.js" ] || falha "nao achei panel/bin/senha-hash.js em ${DG_APP#"$R"}, que gera o hash da senha." \
-            "esta copia do DG Claw esta incompleta; atualize o repositorio (git pull) e rode ./install.sh de novo. A senha nao foi gravada."
+            "esta copia do Prumo da Locadora esta incompleta; atualize o repositorio (git pull) e rode ./install.sh de novo. A senha nao foi gravada."
         hash="$(printf '%s' "$SENHA" | node "$DG_APP/panel/bin/senha-hash.js")" || falha "o panel/bin/senha-hash.js recusou a senha (codigo $?)." \
             "use uma senha de pelo menos 12 caracteres."
     fi
     local re='^scrypt[$][A-Za-z0-9$+/=._:-]+$'
     [[ "$hash" =~ $re ]] || falha "o gerador de hash devolveu algo que nao parece um hash scrypt." \
-        "isso e um erro do DG Claw; a senha nao foi gravada. Abra uma issue sem colar a senha."
+        "isso e um erro do Prumo da Locadora; a senha nao foi gravada. Abra uma issue sem colar a senha."
     printf '%s' "$hash"
 }
 
@@ -700,9 +700,9 @@ configurar_senha() {
 
 # --- 8. web ---------------------------------------------------------------------
 configurar_web() {
-    passo "Ligando o DG Claw Web"
+    passo "Ligando o Prumo da Locadora"
     if ! fonte_tem web/server.js; then
-        aviso "web/server.js ainda nao existe neste repositorio; o DG Claw Web nao foi ligado. Rode ./install.sh de novo quando ele chegar."
+        aviso "web/server.js ainda nao existe neste repositorio; o Prumo da Locadora nao foi ligado. Rode ./install.sh de novo quando ele chegar."
         return 0
     fi
     criar_pasta 700 "$DG_LIB/web"
@@ -973,7 +973,7 @@ testar_fim() {
         esperar_http 30 http://127.0.0.1:8300/ \
             || falha "o DG Claw Web nao respondeu em http://127.0.0.1:8300/." \
                      "veja o motivo com: journalctl -u dgclaw-web -n 30"
-        ok "DG Claw Web respondendo"
+        ok "Prumo da Locadora respondendo"
     fi
 
     esperar_http 60 -f http://127.0.0.1:4300/api/saude \
@@ -985,7 +985,7 @@ testar_fim() {
 }
 
 mensagem_final() {
-    printf '\n%sSeu DG Claw está instalado e configurado em https://%s.%s\n' "$_C_OK" "$DOMINIO" "$_C_0"
+    printf '\n%sSeu Prumo da Locadora está instalado e configurado em https://%s.%s\n' "$_C_OK" "$DOMINIO" "$_C_0"
     printf '   Painel:   https://%s/\n' "$DOMINIO"
     printf '   Usuario:  %s\n' "$USUARIO"
     if [ -n "$PRIMEIRO_ACESSO_TOKEN" ]; then

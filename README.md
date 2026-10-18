@@ -1,13 +1,13 @@
-# DG Claw
+# Prumo da Locadora
 
 Agentes de IA que trabalham para você 24 horas por dia, num servidor que é seu. Cada agente vive na
 sua própria caixa separada, tem painel no navegador e conversa com você por um chat.
 
 ## O que é
 
-O DG Claw instala, num servidor Linux seu, três coisas:
+O Prumo da Locadora instala, num servidor Linux seu, três coisas:
 
-- o **DG Claw Web**, um painel no navegador com login e chat;
+- o **Prumo da Locadora**, um painel no navegador com login e chat;
 - o **Admin**, um agente de sistema que cuida da máquina e cria os outros agentes por conversa;
 - a infraestrutura para os **agentes de trabalho**, cada um em um container separado, sem acesso aos
   arquivos dos outros nem ao servidor.
@@ -18,7 +18,7 @@ você quer o agente, que nome e que jeito ele terá, e entrega o agente funciona
 ## Para quem é
 
 Para quem quer ter agentes de IA próprios sem montar a infraestrutura na mão, mesmo sem saber
-programar. O DG Claw usa a sua assinatura do Claude ou do Codex.
+programar. O Prumo da Locadora usa a sua assinatura do Claude ou do Codex.
 
 ## Requisitos
 
@@ -51,7 +51,7 @@ O instalador mostra cada etapa em português e pode ser executado de novo sem es
 
 O procedimento de instalação está em [INSTALAR.md](INSTALAR.md). No Claude Code da VPS, você pode escrever:
 
-> Baixa, analisa e instala o DG Claw: https://github.com/DGatoM/DG-Claw
+> Baixa, analisa e instala o Prumo da Locadora: https://github.com/diegohoraadm-cpu/prumo-da-locadora
 
 Se a pasta do projeto já estiver aberta, basta pedir **“instala”**. Você escolhe o usuário
 do painel e acompanha as etapas da instalação.
@@ -59,8 +59,8 @@ do painel e acompanha as etapas da instalação.
 Para instalar manualmente, são três comandos:
 
 ```sh
-git clone https://github.com/DGatoM/DG-Claw
-cd DG-Claw
+git clone https://github.com/diegohoraadm-cpu/prumo-da-locadora
+cd prumo-da-locadora
 sudo ./install.sh --usuario admin --com-imagem
 ```
 
@@ -86,7 +86,7 @@ O botão **Tutorial** explica cada parte. A apresentação também funciona no c
 
 ## Como desfazer
 
-Nada do DG Claw fica fora das pastas e dos serviços listados acima. Para tirar tudo, no servidor:
+Nada do Prumo da Locadora fica fora das pastas e dos serviços listados acima. Para tirar tudo, no servidor:
 
 1. Pare e desligue os serviços:
    `sudo systemctl disable --now dgclaw-web dgclaw-admin dgclaw-imagem dgclaw-firewall`
@@ -110,7 +110,7 @@ Nada do DG Claw fica fora das pastas e dos serviços listados acima. Para tirar 
 
 ## Modo antigo
 
-A versão anterior do DG Claw (plugin do Claude Code com o assistente `/dgclaw:setup`, em modo local ou
+A versão anterior do Prumo da Locadora (plugin do Claude Code com o assistente `/dgclaw:setup`, em modo local ou
 servidor) foi substituída por esta instalação. O caminho atual está em [INSTALAR.md](INSTALAR.md).
 
 ## Licença

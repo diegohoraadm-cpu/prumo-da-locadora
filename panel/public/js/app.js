@@ -141,7 +141,7 @@ function mdToHtml(md) {
 
 // Config carregada do backend no boot (/api/config). Default seguro até chegar.
 let APP_CONFIG = {
-  agentName: 'DG Claw', creatorName: 'Dono', avatar: BASE + '/assets/sprites/avatar.jpg',
+  agentName: 'Prumo da Locadora', creatorName: 'Dono', avatar: BASE + '/assets/sprites/avatar.jpg',
   level: null, logs: [{ id: 'heartbeat', label: 'HEARTBEAT' }], moodSprites: null,
   tabPowers: { posts: 'instagram', followers: 'instagram', reunioes: 'meetings' },
 };
@@ -200,7 +200,7 @@ function achatarEventos(lista) {
   return fora;
 }
 
-// Extensões instaladas no agente (vem do /api/config). Vazio = DG Claw puro, sem emoções.
+// Extensões instaladas no agente (vem do /api/config). Vazio = Prumo da Locadora puro, sem emoções.
 let EXTENSIONS = [];
 
 // Mapa de poderes (id→enabled). Default: só core; resto travado.
@@ -1381,7 +1381,7 @@ function renderDestaqueCusto(o) {
  * "Suas rotinas": quantas rotinas o DONO pediu, e como foi a última.
  *
  * Era "Rotinas de hoje", que contava as execuções do dia pelo leitor de sessões
- * antigo (formato de outro produto, que no DG Claw não existe): ele dizia "nada
+ * antigo (formato de outro produto, que no Prumo da Locadora não existe): ele dizia "nada
  * rodou" com o batimento rodando dezenas de vezes. E as rotinas do sistema não
  * são do dono: elas foram para a aba Operações. Aqui fica o que é dele.
  */
@@ -2321,7 +2321,7 @@ async function initConfig() {
  *
  * MUDOU EM 01/10/2026 (Danilo): sem a extensão, o bloco SOME inteiro. Antes ele
  * aparecia apagado com um bilhete "isso aqui só aparece com o DG Alive", e o dono de
- * um DG Claw puro via a tela cheia de anúncio de uma coisa que ele não tem e não
+ * um Prumo da Locadora puro via a tela cheia de anúncio de uma coisa que ele não tem e não
  * pediu. Com a extensão instalada, tudo volta a aparecer, no mesmo lugar. Quem
  * esconde é o CSS (`[data-ext].ext-off`), e os layouts em volta (faixa, mosaico) são
  * de grade automática, então o sumiço não deixa buraco.

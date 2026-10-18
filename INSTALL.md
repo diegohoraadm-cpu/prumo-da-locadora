@@ -1,4 +1,4 @@
-# Instalação do DG Claw
+# Instalação do Prumo da Locadora
 
 O passo a passo em português está em [INSTALAR.md](INSTALAR.md): requisitos, etapas numeradas,
 acesso ao painel e criação do primeiro agente com o Admin.

@@ -1,4 +1,4 @@
-# Instalar o DG Claw
+# Instalar o Prumo da Locadora
 
 O resultado é um painel com endereço HTTPS e usuário, aberto na conversa com o Admin. A senha você cadastra
 no navegador, pelo link de primeiro acesso que o instalador mostra no fim.
@@ -15,7 +15,7 @@ depois Codex) e só então o programa instalado. O Admin reutiliza o acesso do m
 
 No terminal do Claude Code, você pode pedir:
 
-> Baixa, analisa e instala o DG Claw: https://github.com/DGatoM/DG-Claw
+> Baixa, analisa e instala o Prumo da Locadora: https://github.com/diegohoraadm-cpu/prumo-da-locadora
 
 Com o projeto já aberto, o pedido pode ser apenas **“instala”**. Este documento contém o procedimento
 completo. O Claude roda `sudo ./install.sh --usuario <nome> --com-imagem` sem senha nenhuma, e a pessoa cadastra a
@@ -28,8 +28,8 @@ o andamento em português, com explicações e mensagens de conclusão.
 
 1. **Analisar as dependências.** Conferência do Ubuntu, memória, disco, portas e login do motor escolhido.
    Se algo faltar, a mensagem explica como resolver antes de continuar.
-2. **Baixar o programa.** Na primeira instalação: `git clone https://github.com/DGatoM/DG-Claw`
-   e `cd DG-Claw`. Quem recebeu o pacote compactado pode abrir a pasta extraída.
+2. **Baixar o programa.** Na primeira instalação: `git clone https://github.com/diegohoraadm-cpu/prumo-da-locadora`
+   e `cd prumo-da-locadora`. Quem recebeu o pacote compactado pode abrir a pasta extraída.
 3. **Definir o acesso.** Escolha um usuário para o painel. O comando é
    `sudo ./install.sh --usuario <seu-usuario> --com-imagem`, sem senha. O instalador gera um link de primeiro
    acesso, de uso único e válido por 30 minutos, onde você cadastra a senha no navegador (pelo menos
@@ -61,7 +61,7 @@ primeiro agente, e a espera acontece nessa hora.
 
 ## Abrir o painel
 
-O final mostra **“Seu DG Claw está instalado e configurado em … Clique aqui para acessar”**,
+O final mostra **“Seu Prumo da Locadora está instalado e configurado em … Clique aqui para acessar”**,
 seguido do usuário e do link de primeiro acesso. Abra esse link no navegador, cadastre a senha e você já
 entra no chat do Admin. O link vale 30 minutos e só funciona uma vez; se expirar, gere outro com
 `sudo dgclaw primeiro-acesso`. Para trocar a senha depois, use `sudo dgclaw senha`.

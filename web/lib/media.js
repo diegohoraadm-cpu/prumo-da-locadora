@@ -127,12 +127,18 @@ function criarMidia({ dataDir, log, registro, publicDir }) {
     // um "</style" ou "</script" dentro da base fecharia a tag antes da hora
     const css = lerBase('dgvis.css').replace(/<\/(style)/gi, '<\\/$1');
     const js = lerBase('dgvis.js').replace(/<\/(script)/gi, '<\\/$1');
+    // sem-zoom: o visual também não amplia com pinça nem toque duplo (mesma regra do app)
+    const semZoomCss = lerBase('sem-zoom.css').replace(/<\/(style)/gi, '<\\/$1');
+    const semZoomJs = lerBase('sem-zoom.js').replace(/<\/(script)/gi, '<\\/$1');
     // linhas que vêm antes do arquivo da agente, pro dgvis.js dizer a linha DO ARQUIVO dela
-    const linhas = 2 + (css.match(/\n/g) || []).length + (js.match(/\n/g) || []).length;
+    const linhas = 2 + (css.match(/\n/g) || []).length + (js.match(/\n/g) || []).length +
+      (semZoomCss.match(/\n/g) || []).length + (semZoomJs.match(/\n/g) || []).length;
     return '<!doctype html>\n' +
       `<html lang="pt-BR" data-tema="${tema}" data-dgvis="1" data-linhas-base="${linhas}"><head>` +
       '<meta charset="utf-8">' +
-      '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">' +
+      `<style id="sem-zoom-css">${semZoomCss}</style>` +
+      `<script id="sem-zoom-js">${semZoomJs}</script>` +
       `<style id="dgvis-css">${css}</style>` +
       `<script id="dgvis-js">${js}</script>\n${corpo}`;
   }
@@ -150,7 +156,7 @@ function criarMidia({ dataDir, log, registro, publicDir }) {
     const corpo = '<div class="dv-cartao dv-alerta" style="margin:12px">' +
       '<strong>Não deu para mostrar o visual.</strong>' +
       `<p>${escapaHtml(msg)}</p></div>` +
-      `<script>try{parent.postMessage(${aviso},"*")}catch(e){}</script>`;
+      `<script>try{parent.postMessage(${aviso},"*")}catch(e){/* sem janela pai: o erro já está escrito na página */}</script>`;
     enviaPagina(req, res, status, paginaVisual(corpo, tema));
   }
 

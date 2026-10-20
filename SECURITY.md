@@ -3,7 +3,7 @@
 ## Como relatar uma vulnerabilidade
 
 Use o botão **Report a vulnerability**, na aba **Security** deste repositório no GitHub
-(https://github.com/DGatoM/DG-Claw/security/advisories/new). O relato chega em privado só para quem
+(https://github.com/diegohoraadm-cpu/prumo-da-locadora/security/advisories/new). O relato chega em privado só para quem
 mantém o projeto.
 
 **Não abra issue pública** para falhas de segurança. Uma issue pública avisa todo mundo antes de

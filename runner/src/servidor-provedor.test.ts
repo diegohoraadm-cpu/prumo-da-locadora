@@ -73,7 +73,7 @@ test("a pasta de estado recebe tudo e o descritor continua sozinho na pasta dele
 test("GET /api/provedor: formato, conferência sem e-mail nem orgId, login e canais", async () => {
   const r = await req("GET", "/api/provedor");
   assert.equal(r.status, 200);
-  assert.deepEqual(Object.keys(r.corpo).sort(), ["auth", "canais", "conferido", "login", "modelo", "origem", "provedor", "rotulo", "sessao"]);
+  assert.deepEqual(Object.keys(r.corpo).sort(), ["auth", "canais", "conferido", "disponiveis", "login", "modelo", "origem", "provedor", "rotulo", "sessao"]);
   assert.equal(r.corpo.sessao, ID);
   assert.equal(r.corpo.provedor, "claude");
   assert.equal(r.corpo.auth, "assinatura");
@@ -83,6 +83,8 @@ test("GET /api/provedor: formato, conferência sem e-mail nem orgId, login e can
   assert.equal(r.corpo.conferido.metodo, "assinatura");
   assert.equal(r.corpo.conferido.detalhe, "Conta do Claude conectada (plano max).");
   assert.deepEqual(r.corpo.login, { estado: "nenhum" });
+  // os CLIs falsos do teste (claude e codex) estão no PATH, então os dois provedores liberados do catálogo aparecem
+  assert.deepEqual(r.corpo.disponiveis, ["claude", "codex"]);
   assert.deepEqual(r.corpo.canais, { telegram: "desligado" });
   const texto = JSON.stringify(r.corpo);
   for (const p of ["fulano", "example.com", "org-0123", "Organizacao"]) assert.equal(texto.includes(p), false, p);
@@ -227,6 +229,45 @@ test("login assistido pelas rotas: link, código, concluído, e a sessão presa 
   const conf = await req("GET", "/api/provedor");
   assert.equal(conf.corpo.conferido.ok, true, "o cache da conferência foi invalidado pelo login");
   assert.equal(lerTexto(amb.logDoRunner).includes("abc123-xyz"), false);
+});
+
+test("login expirado: o turno é recusado com 409 LOGIN_EXPIRADO, a tecla passa, e o login assistido retoma a MESMA sessão", async () => {
+  logarClaude(amb);
+  await req("POST", `/api/agents/${ID}/reiniciar`);
+  await esperarAte(() => principal.estado.status === "idle", 8_000, "idle com a conta conectada");
+  const sessionId = principal.estado.sessionId!;
+  (principal as unknown as { marcarLoginExpirado(o: string, q: number | null, d: string | null): void }).marcarLoginExpirado("teste", null, null);
+
+  const g = await req("GET", `/api/agents/${ID}`);
+  assert.equal(g.corpo.data.status, "errored");
+  assert.equal(g.corpo.data.statusReason, "runner:login-expirado");
+  assert.match(g.corpo.data.loginExpiradoEm, /^\d{4}-\d\d-\d\dT/);
+  const recusado = await req("POST", `/api/agents/${ID}/input`, { text: "oi" });
+  assert.equal(recusado.status, 409);
+  assert.equal(recusado.corpo.code, "LOGIN_EXPIRADO");
+  assert.match(recusado.corpo.error, /expirou/);
+  assert.match(recusado.corpo.howToFix, /reconectar a conta/);
+  assert.equal((await req("POST", `/api/agents/${ID}/input`, { text: "x", injectWhenIdle: true })).corpo.code, "LOGIN_EXPIRADO");
+  assert.equal((await req("POST", `/api/agents/${ID}/input`, { text: "\u001b", submit: false })).status, 200, "tecla crua continua passando");
+
+  const antes = ptys().length;
+  await req("POST", "/api/provedor/login", {});
+  await esperarAte(async () => (await req("GET", "/api/provedor/login")).corpo.estado === "aguardando_codigo", 6_000, "o link");
+  await req("POST", "/api/provedor/login/codigo", { codigo: "abc123-xyz" });
+  // O log dos CLIs falsos é escrito enquanto o teste lê: uma linha pela metade não é erro, é "ainda não".
+  const comoEsta = () => {
+    try {
+      return ptys();
+    } catch {
+      return [];
+    }
+  };
+  await esperarAte(() => comoEsta().length > antes, 8_000, "o runner reiniciar depois do login");
+  await dormir(200);
+  const reinicio = ptys().at(-1)!;
+  assert.equal(reinicio.argv[reinicio.argv.indexOf("--resume") + 1], sessionId, "retomou a conversa, não abriu outra");
+  await esperarAte(() => principal.estado.status === "idle", 8_000);
+  assert.equal(principal.estado.sessionId, sessionId);
 });
 
 test("login só existe na assinatura: na API responde 409 com o caminho certo", async () => {
@@ -424,4 +465,21 @@ test("POST /api/agents/:id/permissao: decisão inválida é 400 e agente que nã
   assert.equal(fora.status, 409);
   assert.equal(fora.corpo.code, "NAO_ESPERA_PERMISSAO");
   assert.match(fora.corpo.howToFix, /atualizar a tela/);
+});
+
+test("provedoresDisponiveis: precisa estar liberado no catálogo E ter o programa no PATH", async () => {
+  const { provedoresDisponiveis } = await import("./provedores/rotas.js");
+  const { carregar } = await import("./provedores/catalogo.js");
+  const cat = carregar();
+  const pasta = fs.mkdtempSync(path.join(amb.raiz, "bins-"));
+  fs.writeFileSync(path.join(pasta, "claude"), "#!/bin/sh\n", { mode: 0o755 });
+  fs.writeFileSync(path.join(pasta, "codex"), "#!/bin/sh\n", { mode: 0o644 }); // sem permissão de executar: não conta
+  assert.deepEqual(provedoresDisponiveis(cat, pasta), ["claude"]);
+  fs.chmodSync(path.join(pasta, "codex"), 0o755);
+  assert.deepEqual(provedoresDisponiveis(cat, pasta), ["claude", "codex"]);
+  assert.deepEqual(provedoresDisponiveis(cat, ""), [], "PATH vazio: nenhum");
+  assert.deepEqual(provedoresDisponiveis(cat, undefined), []);
+  // gemini está no catálogo como indisponível: nunca entra, mesmo com o programa instalado
+  fs.writeFileSync(path.join(pasta, "gemini"), "#!/bin/sh\n", { mode: 0o755 });
+  assert.equal(provedoresDisponiveis(cat, pasta).includes("gemini"), false);
 });

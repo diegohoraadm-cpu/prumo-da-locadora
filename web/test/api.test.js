@@ -52,6 +52,16 @@ test('GET /api/v1/agents: Admin primeiro, formato esperado e voz/microfone falso
   } finally { await s.fechar(); }
 });
 
+test('GET /api/v1/agents: ultima_ts em epoch ms da última mensagem; null (nunca 0) sem conversa', async () => {
+  const s = await cenario();
+  try {
+    const ag = (await s.t.c.get('/api/v1/agents')).json.agentes;
+    const ana = ag.find((x) => x.id === 'ana'), admin = ag.find((x) => x.id === 'admin');
+    assert.ok(Number.isFinite(ana.ultima_ts) && ana.ultima_ts > 1.7e12, `ultima_ts da Ana: ${ana.ultima_ts}`);
+    assert.equal(admin.ultima_ts, null);
+  } finally { await s.fechar(); }
+});
+
 test('rotulo_provedor: usa a rota do runner, guarda 60 s em cache', async () => {
   const s = await cenario({ ana: { provedor: { sessao: 's', provedor: 'claude', rotulo: 'Claude Opus 5.5, na assinatura' } } });
   try {
@@ -508,7 +518,12 @@ test('registro: relido quando o mtime muda; sinônimo tokenArquivo; arquivo ause
 test('páginas: / vai para o Admin, /a/<slug> serve a conversa e slug inexistente leva 404 com motivo', async () => {
   const s = await cenario();
   try {
-    assert.equal((await s.t.c.get('/')).headers.location, '/a/admin');
+    // sem cookie, "/" abre o primeiro agente que não é o Admin; com o cookie do último usado, abre esse; cookie de agente que sumiu não quebra
+    assert.equal((await s.t.c.get('/')).headers.location, '/a/ana');
+    assert.equal((await s.t.c.get('/', { headers: { Cookie: 'dgclaw_agente=admin' } })).headers.location, '/a/admin');
+    assert.equal((await s.t.c.get('/', { headers: { Cookie: 'dgclaw_agente=ana' } })).headers.location, '/a/ana');
+    assert.equal((await s.t.c.get('/', { headers: { Cookie: 'dgclaw_agente=fantasma' } })).headers.location, '/a/ana');
+    assert.equal((await s.t.c.get('/', { headers: { Cookie: 'dgclaw_agente=%E0%A4%A' } })).headers.location, '/a/ana');
     const ok = await s.t.c.get('/a/ana');
     assert.equal(ok.status, 200); assert.match(ok.texto, /conversa de teste/);
     const nao = await s.t.c.get('/a/fantasma');

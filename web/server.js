@@ -34,6 +34,8 @@ const { criarPush } = require('./lib/push');
 const { criarLembretes } = require('./lib/lembretes');
 const { criarMesa } = require('./lib/mesa');
 const { criarAvisos } = require('./lib/avisos');
+const { criarAtualizacao } = require('./lib/atualizacao');
+const { criarNaoLidas } = require('./lib/nao-lidas');
 
 const METODOS_QUE_ESCREVEM = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 const TIPOS_ESTATICOS = {
@@ -45,7 +47,7 @@ const TIPOS_ESTATICOS = {
 };
 const RX_SLUG_ROTA = /^[a-z0-9][a-z0-9-]{0,31}$/;
 
-const LOGIN_RESERVA = '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Entrar</title>' +
+const LOGIN_RESERVA = '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Entrar</title>' +
   '<style>body{font-family:system-ui,sans-serif;max-width:22rem;margin:14vh auto;padding:0 1rem}input,button{display:block;width:100%;margin:.5rem 0;padding:.6rem;font-size:1rem}</style></head><body>' +
   '<h1>DG Claw</h1><p id="e" style="color:#b00"></p><form method="post" action="/login"><input name="usuario" placeholder="Usuário" autocomplete="username" required>' +
   '<input name="senha" type="password" placeholder="Senha" autocomplete="current-password" required><input type="hidden" name="next" value=""><button>Entrar</button></form>' +
@@ -99,8 +101,11 @@ function criarServidor(opcoes) {
   const mesa = criarMesa({ arquivo: path.join(config.dataDir, 'mesa', 'tarefas.json'), registro, runner, log, agora: opcoes.agora, tz: config.tz, avisarDono: (aviso) => push.enviar(aviso) });
   // O agente fala com a Mesa pelo dgclaw-mesa, que passa pela caixa: a rota precisa estar liberada.
   caixa.permitir('/api/v1/tarefas');
+  const naoLidas = criarNaoLidas({ arquivo: path.join(config.dataDir, 'nao-lidas.json'), conversa, registro, log, relogio: opcoes.agora, lerThread: conversa.threadCompartilhada });
   const avisos = criarAvisos({ config, registro, runner, caixa, log, agora: opcoes.agora });
   caixa.permitir('/api/v1/avisos');
+  // Aviso de versão nova: só o dono, pelo painel. De propósito NÃO entra em caixa.permitir (agente em container não usa).
+  const atualizacao = criarAtualizacao({ dataDir: config.dataDir, log });
 
   let versaoJsCache = { ts: 0, valor: '0' };
   /** Versão da tela: mtime de conversa.js. A tela compara com a que carregou e se recarrega sozinha. */
@@ -158,6 +163,18 @@ function criarServidor(opcoes) {
   function semSessaoPagina(req, res, url) {
     res.writeHead(302, { Location: `/login?next=${encodeURIComponent(url.pathname + url.search)}`, 'Cache-Control': 'no-store' });
     res.end();
+  }
+
+  /* A rota "/" abre o último agente usado (cookie dgclaw_agente, gravado pela casca), se ele ainda existe no registro;
+     senão o primeiro que não é o Admin (é com ele que a pessoa trabalha); senão o Admin. */
+  function agenteInicial(req) {
+    const agentes = registro.estado().agentes;
+    let guardado = H.parseCookies(req.headers.cookie).dgclaw_agente;
+    try { guardado = guardado && decodeURIComponent(guardado); } catch (_) { guardado = null; /* cookie ilegível: cai no primeiro agente */ }
+    const doCookie = guardado && agentes.find((a) => a.slug === guardado);
+    if (doCookie) return doCookie.slug;
+    const trabalho = agentes.find((a) => a.tipo !== 'admin');
+    return (trabalho || agentes[0]).slug;
   }
 
   function falhaDoRegistro(req, res, api) {
@@ -282,6 +299,8 @@ function criarServidor(opcoes) {
 
     if ((p === '/api/v1/lembretes' || p.startsWith('/api/v1/lembretes/')) && await lembretes.rotas(req, res, url, sessao)) return undefined;
 
+    if ((p === '/api/v1/atualizacao' || p.startsWith('/api/v1/atualizacao/')) && await atualizacao.rotas(req, res, url, sessao)) return undefined;
+
     if (p === '/api/v1/onboarding') {
       if (falhaDoRegistro(req, res, true)) return;
       try {
@@ -316,8 +335,16 @@ function criarServidor(opcoes) {
 
     if (p === '/api/v1/agents' && m === 'GET') {
       if (falhaDoRegistro(req, res, true)) return undefined;
-      const lista = await Promise.all(registro.estado().agentes.map(agentePublico));
+      const lista = await Promise.all(registro.estado().agentes.map(async (a) => Object.assign(await agentePublico(a), { ultima_ts: await conversa.ultimaMensagemTs(a) })));
       return H.enviaJson(res, 200, { ok: true, agentes: lista, voz: lista.some((a) => a.voz), microfone: voz.microfone, limite_upload_bytes: config.maxUploadBytes, usuario: sessao.usuario });
+    }
+
+    if (p === '/api/v1/nao-lidas') {
+      if (falhaDoRegistro(req, res, true)) return undefined;
+      if (m !== 'GET') return H.erroJson(res, 405, 'Use GET para ver quantas mensagens não lidas cada agente tem.');
+      try { return H.enviaJson(res, 200, { ok: true, agentes: await naoLidas.contar(sessao.usuario) }); } catch (e) {
+        return H.erroJson(res, e.status || 500, e.status ? e.message : `Não consegui contar as mensagens não lidas (${e.message}).`);
+      }
     }
 
     if (p === '/api/v1/compartilhados/docs.md' && m === 'GET') {
@@ -436,10 +463,25 @@ function criarServidor(opcoes) {
         const r = await conversa.permissao(agente, corpo.decisao);
         return H.enviaJson(res, r.status, r.corpo);
       }
+      if (acao === 'reiniciar' && m === 'POST') {
+        const r = await conversa.reiniciar(agente);
+        return H.enviaJson(res, r.status, r.corpo);
+      }
+      if (acao === 'lido' && m === 'POST') {
+        let corpo;
+        try { corpo = await H.lerJson(req, 1024); } catch (e) { return H.erroJson(res, e.status || 400, e.message); }
+        const ep = corpo && typeof corpo.ep === 'number' ? corpo.ep : NaN;
+        if (!Number.isFinite(ep) || ep < 0) {
+          return H.erroJson(res, 400, `O campo "ep" precisa ser um número maior ou igual a zero (o ep da última mensagem que apareceu na tela). Recebi: ${JSON.stringify(corpo && corpo.ep === undefined ? null : corpo && corpo.ep).slice(0, 40)}.`);
+        }
+        try { return H.enviaJson(res, 200, { ok: true, visto_ep: naoLidas.marcar(sessao.usuario, agente.slug, ep) }); } catch (e) {
+          return H.erroJson(res, e.status || 500, e.status ? e.message : `Não consegui guardar que a conversa foi lida (${e.message}).`);
+        }
+      }
       if (acao === 'upload' && m === 'POST') return upload(req, res, agente);
       if (acao === 'comandos' && m === 'GET') return H.enviaJson(res, 200, Object.assign({ ok: true, agente: agente.slug }, await comandos.catalogo(agente)));
       if (acao === 'comando' && m === 'POST') return comandoPost(req, res, agente);
-      return H.erroJson(res, ['messages', 'stream', 'wait', 'send', 'upload', 'permissao', 'comandos', 'comando', ''].includes(acao) ? 405 : 404, `Não existe ${m} ${p}.`);
+      return H.erroJson(res, ['messages', 'stream', 'wait', 'send', 'upload', 'permissao', 'reiniciar', 'lido', 'comandos', 'comando', ''].includes(acao) ? 405 : 404, `Não existe ${m} ${p}.`);
     }
 
     mm = /^\/api\/v1\/media\/([0-9a-f]{16})\/visual$/.exec(p);
@@ -705,7 +747,7 @@ function criarServidor(opcoes) {
     if (p === '/' && (m === 'GET' || m === 'HEAD')) {
       if (!sessao) return semSessaoPagina(req, res, url);
       if (falhaDoRegistro(req, res, false)) return undefined;
-      res.writeHead(302, { Location: `/a/${registro.estado().agentes[0].slug}`, 'Cache-Control': 'no-store' });
+      res.writeHead(302, { Location: `/a/${agenteInicial(req)}`, 'Cache-Control': 'no-store' });
       return res.end();
     }
 

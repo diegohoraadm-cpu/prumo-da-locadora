@@ -45,6 +45,7 @@ function criarConversa({ config, runner, leitor, leitorRollout, midia, log, agor
   const ultimoArquivo = new Map();  // slug -> caminho (para quando o runner some)
   const atividadeAnterior = new Map(); // slug -> { chave, desde }
   const rotulos = new Map();        // slug -> { ts, valor }
+  const ultimas = new Map();        // slug -> { ts, valor } (epoch ms da última mensagem, ou null)
   const envios = new Map();         // chave -> { promessa, ts }
   const logUmaVez = new Map();      // chave -> último motivo
 
@@ -187,7 +188,8 @@ function criarConversa({ config, runner, leitor, leitorRollout, midia, log, agor
       avisos.push(`O runner não respondeu (${r.erro}). Mostro a última conversa conhecida.`);
     }
     if (!arquivo) arquivo = ultimoArquivo.get(agente.slug) || (r.ok && !r.estado.sessionId ? maisRecente(agente) : null) || (!r.ok ? maisRecente(agente) : null);
-    if (!arquivo) return { msgs: [], versao: 0, avisos, arquivo: null };
+    // incompleta: não deu para ler a conversa (há aviso e nada veio). Sem aviso, vazio é agente que nunca conversou.
+    if (!arquivo) return { msgs: [], versao: 0, avisos, arquivo: null, incompleta: avisos.length > 0 };
     // Última guarda: o arquivo final, com realpath, precisa ficar dentro da raiz (atalho para fora é recusado).
     const eRollout = ehRollout(arquivo);
     {
@@ -197,7 +199,7 @@ function criarConversa({ config, runner, leitor, leitorRollout, midia, log, agor
         avisos.push(c.erro);
         avisaUmaVez(`conf|${agente.slug}`, 'aviso', `Thread de ${agente.nome}: ${c.erro}`);
         ultimoArquivo.delete(agente.slug);
-        return { msgs: [], versao: 0, avisos, arquivo: null };
+        return { msgs: [], versao: 0, avisos, arquivo: null, incompleta: true };
       }
       arquivo = c.real;
     }
@@ -277,6 +279,13 @@ function criarConversa({ config, runner, leitor, leitorRollout, midia, log, agor
                 ultimo_sinal: ultimo, alerta: 'permissao', motivo: null, permissao: pend };
       } else if (e.status === 'idle') {
         est = { estado: 'ocioso', acao: null, detalhe: null, ultimo_sinal: ultimo, alerta: null, motivo: null };
+      } else if (e.status === 'errored' && e.statusReason === 'runner:login-expirado') {
+        // A conta ESTAVA conectada e a credencial morreu: a sessão tem conversa e volta por retomada.
+        // Alerta próprio (não 'sem_login') para a tela dizer o que aconteceu e desde quando.
+        est = { estado: 'sem_sinal', acao: null, detalhe: null, ultimo_sinal: ultimo, alerta: 'login_expirado',
+                motivo: e.error ? String(e.error) : `O login da conta de ${agente.nome} expirou.`,
+                expirou_em: typeof e.loginExpiradoEm === 'string' ? e.loginExpiradoEm : null,
+                provedor: /codex/i.test(String(agente.provedor || '')) ? 'codex' : 'claude' };
       } else if (e.status === 'errored' && e.statusReason === 'runner:sem-login') {
         // O motor não tem conta conectada: a tela oferece o cartão de login.
         est = { estado: 'sem_sinal', acao: null, detalhe: null, ultimo_sinal: ultimo, alerta: 'sem_login', motivo: e.error ? String(e.error) : `${agente.nome} não está logado no Claude/Codex.` };
@@ -317,6 +326,52 @@ function criarConversa({ config, runner, leitor, leitorRollout, midia, log, agor
     }
     rotulos.set(agente.slug, { ts: relogio(), valor });
     return valor;
+  }
+
+  // ── thread compartilhada: quem pede enquanto outra leitura roda recebe a mesma promessa ─
+  // thread() faz parse síncrono; sem isto, chamadas simultâneas (ou repetidas depois de uma espera
+  // que estourou) refazem a leitura inteira à toa.
+  const threadsEmAndamento = new Map(); // slug -> promessa de thread(agente)
+  function threadCompartilhada(agente) {
+    const em = threadsEmAndamento.get(agente.slug);
+    if (em) return em;
+    const promessa = Promise.resolve().then(() => thread(agente));
+    const limpa = () => { if (threadsEmAndamento.get(agente.slug) === promessa) threadsEmAndamento.delete(agente.slug); };
+    promessa.then(limpa, limpa);
+    threadsEmAndamento.set(agente.slug, promessa);
+    return promessa;
+  }
+
+  // ── hora da última mensagem (menu "trocar de agente"; cache de 60 s, 1,5 s de espera) ─
+  // null quer dizer "não sei" (sem conversa ainda, ou a thread não respondeu a tempo): nunca vira 0.
+  // Quem chama espera no máximo 1,5 s; a leitura continua e, ao terminar, alimenta o cache.
+  const ultimasEmAndamento = new Map(); // slug -> promessa que resolve com o valor (e grava o cache)
+  function leUltimaMensagem(agente) {
+    const em = ultimasEmAndamento.get(agente.slug);
+    if (em) return em;
+    const promessa = threadCompartilhada(agente).then((t) => {
+      esquece(`ultima|${agente.slug}`);
+      const ult = t.msgs.length ? t.msgs[t.msgs.length - 1] : null;
+      const valor = ult && Number.isFinite(ult.ep) && ult.ep > 0 ? Math.round(ult.ep * 1000) : null;
+      ultimas.set(agente.slug, { ts: relogio(), valor });
+      return { ok: true, valor };
+    }, (e) => {
+      avisaUmaVez(`ultima|${agente.slug}`, 'aviso', `Hora da última mensagem de ${agente.nome}: não consegui ler a thread (${e.message}). A lista do menu segue sem a hora.`);
+      return { ok: false, valor: null };
+    });
+    const limpa = () => { if (ultimasEmAndamento.get(agente.slug) === promessa) ultimasEmAndamento.delete(agente.slug); };
+    promessa.then(limpa, limpa);
+    ultimasEmAndamento.set(agente.slug, promessa);
+    return promessa;
+  }
+  async function ultimaMensagemTs(agente) {
+    const c = ultimas.get(agente.slug);
+    if (c && relogio() - c.ts < TTL_ROTULO_MS) return c.valor;
+    let espera;
+    const limite = new Promise((resolve) => { espera = setTimeout(() => resolve(null), 1500); espera.unref(); });
+    const r = await Promise.race([leUltimaMensagem(agente), limite]);
+    clearTimeout(espera);
+    return r ? r.valor : null;
   }
 
   // ── idempotência por cliente_id (em memória, com validade) ───────────────
@@ -374,7 +429,8 @@ function criarConversa({ config, runner, leitor, leitorRollout, midia, log, agor
     const r = await runner.input(agente, { text: payload, submit: true, injectWhenIdle: true });
     if (!r.ok) {
       log('erro', `Envio para ${agente.slug} não entregue (${cru ? 'comando cru' : `${textoFinal.length} caracteres`}): ${r.erro}`);
-      return erro(r.status === 409 ? 409 : 502, `Não consegui entregar a mensagem a ${agente.nome}: ${r.erro}`);
+      // O código do runner (LOGIN_EXPIRADO) segue até a tela, que abre o pop-up de reconectar em vez de só dar erro.
+      return erro(r.status === 409 ? 409 : 502, `Não consegui entregar a mensagem a ${agente.nome}: ${r.erro}`, r.code ? { codigo: r.code } : undefined);
     }
     log('info', `Mensagem entregue a ${agente.slug} (${cru ? 'comando cru' : `${textoFinal.length} caracteres`}).`);
     const corpo = { ok: true, ep_enviado: epEnviado, agente: agente.slug };
@@ -415,6 +471,35 @@ function criarConversa({ config, runner, leitor, leitorRollout, midia, log, agor
     }
     log('info', `Permissão de ${agente.slug}: ${decisao === 'aprovar' ? 'aprovada' : 'negada'} pela tela.`);
     return { status: 200, corpo: { ok: true, decisao, agente: agente.slug } };
+  }
+
+  /**
+   * Reinicia a sessão do agente no runner: a MESMA conversa continua, só o processo é refeito.
+   * Devolve { status, corpo } com motivo e o que fazer em toda falha.
+   */
+  async function reiniciar(agente) {
+    const r = await runner.pedir(agente, 'POST', `/api/agents/${encodeURIComponent(agente.agente_id)}/reiniciar`, null, 30000);
+    if (r.erro) {
+      log('erro', `Reinício de ${agente.slug}: ${r.erro}`);
+      if (!r.antesDoEnvio) {
+        // Timeout ou conexão derrubada depois do envio: o runner pode ter recebido e estar reiniciando.
+        return erro(504, `Não sei se o reinício chegou ao runner de ${agente.nome} (${r.erro}). Espere uns 30 s e olhe se ele voltou a responder antes de tentar de novo.`);
+      }
+      return erro(503, `${r.erro} O reinício não foi pedido. Se o agente está parado, peça ao Admin para conferir o serviço dele.`);
+    }
+    if (r.status === 404) {
+      const msg = `O runner de ${agente.nome} é de uma versão antiga e não tem a rota de reinício (POST /api/agents/${agente.agente_id}/reiniciar). Atualize o agente pelo Admin.`;
+      log('erro', `Reinício de ${agente.slug}: ${msg}`);
+      return erro(501, msg);
+    }
+    if (!r.ok) {
+      const motivo = motivoDoRunner(agente, r);
+      log('erro', `Reinício de ${agente.slug} recusado pelo runner (HTTP ${r.status}): ${motivo}`);
+      return erro(r.status === 409 || r.status === 429 ? r.status : 502, `O runner de ${agente.nome} não reiniciou a sessão: ${motivo}`);
+    }
+    const dados = r.corpo || {};
+    log('info', `Reinício de ${agente.slug}: pedido pela tela (sessão ${dados.sessao || '?'}, modo ${dados.modo || '?'}).`);
+    return { status: 202, corpo: { ok: true, agente: agente.slug, sessao: dados.sessao || null, modo: dados.modo || null } };
   }
 
   async function enviar(agente, req) {
@@ -501,7 +586,7 @@ function criarConversa({ config, runner, leitor, leitorRollout, midia, log, agor
   }
 
   return {
-    montarEnvelope, estado, thread, atividade, rotuloProvedor, umaVez, enviar, comando, comandos, entregar, permissao,
+    montarEnvelope, estado, thread, threadCompartilhada, atividade, rotuloProvedor, ultimaMensagemTs, umaVez, enviar, comando, comandos, entregar, permissao, reiniciar,
     RX_CLIENTE_ID,
   };
 }

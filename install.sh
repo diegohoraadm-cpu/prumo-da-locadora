@@ -494,11 +494,258 @@ detectar_provedor() {
     fi
 }
 
+# --- 4a. proteger o que o Admin mexeu no programa ---------------------------------
+# O rsync --delete de instalar_codigo deixa /opt/dgclaw/app igual ao clone: qualquer arquivo que o
+# Admin editou direto la some. Antes dele, guardar_app_alterado compara o app com o commit que foi
+# instalado e, se achar diferenca (ou nao tiver como comparar), guarda uma copia em
+# $DG_ADMIN/personalizacoes-migracao/<data>/ e deixa o marcador PENDENTE para o Admin levantar o que
+# era personalizacao (dgclaw personalizacoes levantar). Se nao conseguir gravar a copia, PARA antes
+# do rsync: nada e sobrescrito.
+
+# _migracao_base: imprime o commit instalado antes (existente no clone), ou nada.
+_migracao_base() {
+    local c h
+    c="$(env_valor DGCLAW_COMMIT)"
+    if [[ "$c" =~ ^[0-9a-f]{40}$ ]] && git_do_clone "$SCRIPT_DIR" cat-file -e "$c^{commit}" 2>/dev/null; then
+        printf '%s' "$c"; return 0
+    fi
+    c="$(env_valor DGCLAW_VERSAO)"
+    if [[ "$c" =~ ^v[0-9]+-([0-9a-f]{7,40})$ ]]; then
+        h="$(git_do_clone "$SCRIPT_DIR" rev-parse --verify -q "${BASH_REMATCH[1]}^{commit}" 2>/dev/null)" || h=""
+        if [ -n "$h" ]; then printf '%s' "$h"; fi
+    fi
+    return 0
+}
+
+# O que a compilacao ou o Python recriam sozinhos: nunca e personalizacao e nao entra na lista nem
+# na comparacao. Todo o resto (.env, *.db, chaves, arquivos soltos) entra na lista e na copia.
+_MIGRACAO_EXCLUI=(--exclude=.git --exclude=node_modules --exclude=tests --exclude=qa --exclude=/VERSAO
+    --exclude=/runner/dist/ --exclude=__pycache__/ '--exclude=*.pyc')
+
+# _migracao_diferencas <base_extraida>: linhas "<letra><TAB>caminho" do app em relacao a base.
+# Compara do jeito que o rsync real vai sobrescrever (rsync -rlpcni --delete: sem tempo, dono e
+# grupo; so conteudo, links e permissoes) e classifica pelo itemize:
+#   A  arquivo que so existe no app (acrescentado)     D  arquivo da base que sumiu do app
+#   M  conteudo diferente                              P  so a permissao mudou (chmod +x e afins)
+#   L  link simbolico criado, trocado ou sumido        X  outro tipo (dispositivo, socket, fifo)
+# Em P so conta o bit de execucao: o resto da permissao depende do umask de quem clonou.
+# Se o rsync falhar, nao imprime lista: imprime o motivo e sai com 1 (quem chama NAO pode seguir
+# como se nao houvesse diferenca).
+_migracao_diferencas() {
+    local tmp="$1" saida erro rc=0 linha p x y t lista="" ma mb
+    saida="$(mktemp)"; erro="$(mktemp)"
+    rsync -rlpcni --delete "${_MIGRACAO_EXCLUI[@]}" "$tmp/" "$DG_APP/" >"$saida" 2>"$erro" || rc=$?
+    if [ "$rc" -ne 0 ]; then
+        printf 'o rsync de comparacao saiu com codigo %s: %s' "$rc" "$(head -n 2 "$erro" | tr '\n' ' ')"
+        rm -f "$saida" "$erro"
+        return 1
+    fi
+    while IFS= read -r linha; do
+        case "$linha" in
+            '*deleting '*)
+                p="${linha#\*deleting }"; p="${p#"${p%%[![:space:]]*}"}"
+                case "$p" in */) continue ;; esac
+                if [ -L "$DG_APP/$p" ]; then lista+="L"$'\t'"$p"$'\n'
+                elif [ -f "$DG_APP/$p" ]; then lista+="A"$'\t'"$p"$'\n'
+                else lista+="X"$'\t'"$p"$'\n'; fi ;;
+            ???????????' '*)
+                x="${linha%% *}"; p="${linha#* }"; y="${x:0:1}"; t="${x:1:1}"
+                case "$t" in
+                    f)
+                        if [ "$y" = ">" ]; then
+                            case "$x" in *++++++++*) lista+="D"$'\t'"$p"$'\n' ;; *) lista+="M"$'\t'"$p"$'\n' ;; esac
+                        elif [ "$y" = "." ] && [ "${x:5:1}" = "p" ]; then
+                            ma="$(stat -c %a "$tmp/$p" 2>/dev/null || printf 777)"; mb="$(stat -c %a "$DG_APP/$p" 2>/dev/null || printf 0)"
+                            if [ $((8#$ma & 8#111)) -ne $((8#$mb & 8#111)) ]; then lista+="P"$'\t'"$p"$'\n'; fi
+                        fi ;;
+                    L) if [ "$y" != "." ]; then lista+="L"$'\t'"${p%% -> *}"$'\n'; fi ;;
+                    D|S) if [ "$y" != "." ]; then lista+="X"$'\t'"$p"$'\n'; fi ;;
+                esac ;;
+        esac
+    done <"$saida"
+    rm -f "$saida" "$erro"
+    printf '%s' "$lista"
+}
+
+# _migracao_impressao: sha256 de uma lista ordenada com o sha256 de cada arquivo (sem node_modules e sem
+# os regeneraveis), o destino de cada link e o modo de cada arquivo. Dois apps iguais dao a mesma impressao.
+_migracao_impressao() {
+    (
+        cd "$DG_APP" || exit 1
+        find . -name node_modules -prune -o -name __pycache__ -prune -o -path ./runner/dist -prune -o \
+            \( -type f -o -type l \) ! -name '*.pyc' -print0 | LC_ALL=C sort -z \
+            | while IFS= read -r -d '' f; do
+                if [ -L "$f" ]; then printf 'L %s -> %s\n' "$f" "$(readlink "$f")"
+                else printf '%s %s %s\n' "$(stat -c %a "$f")" "$(sha256sum <"$f" | cut -d' ' -f1)" "$f"; fi
+            done | sha256sum | cut -d' ' -f1
+    )
+}
+
+# _migracao_ultima_impressao <pasta de migracao>: a IMPRESSAO da pasta "sem base" mais recente, ou nada.
+_migracao_ultima_impressao() {
+    local f
+    f="$(find "$1" -mindepth 2 -maxdepth 2 -name IMPRESSAO 2>/dev/null | sort | tail -n 1)"
+    if [ -n "$f" ]; then cat "$f"; fi
+}
+
+# _so_regular <caminho>: sai com 0 se nao existe ou e arquivo regular (nao link, nao especial).
+_so_regular() { [ ! -L "$1" ] && { [ ! -e "$1" ] || [ -f "$1" ]; }; }
+
+# _migracao_gravar <pasta> <comparou 1|0> <base_extraida> <texto do LISTA.txt> <impressao ou vazio>:
+# grava a copia. Primeiro o tar (o que mais importa), depois a lista e o patch. Se algo falhar, diz
+# em "PASSO: ..." (stderr) qual passo foi e sai com erro.
+_migracao_gravar() {
+    local pasta="$1" comparou="$2" tmp="$3" lista="$4" impressao="$5" x p rc
+    umask 077
+    tar -C "$DG_APP" --exclude=node_modules -czf "$pasta/app-antes.tar.gz" . \
+        || { printf 'PASSO: gravar app-antes.tar.gz\n' >&2; return 1; }
+    tar -tzf "$pasta/app-antes.tar.gz" >/dev/null \
+        || { printf 'PASSO: conferir que app-antes.tar.gz abre\n' >&2; return 1; }
+    printf '%s' "$lista" >"$pasta/LISTA.txt" || { printf 'PASSO: gravar LISTA.txt\n' >&2; return 1; }
+    if [ -n "$impressao" ]; then printf '%s\n' "$impressao" >"$pasta/IMPRESSAO" || { printf 'PASSO: gravar IMPRESSAO\n' >&2; return 1; }; fi
+    if [ "$comparou" = 1 ]; then
+        : >"$pasta/diff.patch" || { printf 'PASSO: gravar diff.patch\n' >&2; return 1; }
+        while IFS=$'\t' read -r x p; do
+            [ -n "$p" ] || continue
+            case "$x" in M|A|D) ;; *) continue ;; esac
+            # Patch so de arquivo regular nos dois lados; link e arquivo especial ficam so na LISTA.txt.
+            if ! _so_regular "$tmp/$p" || ! _so_regular "$DG_APP/$p"; then continue; fi
+            rc=0
+            diff -uN --label "a/$p" --label "b/$p" "$tmp/$p" "$DG_APP/$p" >>"$pasta/diff.patch" || rc=$?
+            [ "$rc" -le 1 ] || { printf 'PASSO: gravar o diff de %s no diff.patch (diff saiu com %s)\n' "$p" "$rc" >&2; return 1; }
+        done <<<"$lista"
+    fi
+    cat >"$pasta/LEIA.txt" <<LEIA || { printf 'PASSO: gravar LEIA.txt\n' >&2; return 1; }
+Esta pasta foi criada pelo instalador do DG Claw em $(date '+%d/%m/%Y %H:%M:%S').
+
+Antes de atualizar o programa em ${DG_APP#"$R"}, o instalador viu que ele
+pode ter sido alterado a mao (ou nao teve como comparar com a versao oficial). Como a atualizacao
+troca o programa inteiro, ele guardou aqui o que havia:
+
+  app-antes.tar.gz  o programa inteiro como estava antes da atualizacao (sem node_modules)
+  LISTA.txt         um arquivo por linha, "letra, tab, caminho", em relacao ao oficial:
+                      M  conteudo alterado          A  arquivo acrescentado
+                      D  arquivo apagado            P  so a permissao mudou (chmod +x)
+                      L  link simbolico criado, trocado ou apagado
+                      X  outro tipo de arquivo (dispositivo, socket)
+  diff.patch        as diferencas linha a linha dos arquivos comuns M, A e D (nao existe quando
+                    nao havia como comparar; links e arquivos especiais ficam so na LISTA.txt)
+  IMPRESSAO         so quando nao havia como comparar: uma impressao digital do programa, para o
+                    instalador nao guardar a mesma copia de novo se nada mudou
+
+Nada disto foi reaplicado sozinho. O Admin levanta o que era personalizacao e, com o seu sim, refaz
+por cima da versao nova: dgclaw personalizacoes levantar
+LEIA
+}
+
+guardar_app_alterado() {
+    [ -d "$DG_APP" ] || return 0
+    [ -n "$(find "$DG_APP" -mindepth 1 -maxdepth 1 -not -name node_modules 2>/dev/null | head -n 1)" ] || return 0
+    local base tmp="" lista="" motivo="" antigo="" pasta="" stamp n=1 n_lista=0 dir_mig="$DG_ADMIN/personalizacoes-migracao"
+    local comparou=0 texto_lista="" impressao="" anterior="" erro_cmp="" erro_grav="" passo_erro
+    base="$(_migracao_base)"
+    if [ -n "$base" ]; then
+        tmp="$(mktemp -d)"
+        if ! { git_do_clone "$SCRIPT_DIR" archive "$base" | tar -x -p -C "$tmp"; } 2>/dev/null; then
+            rm -rf "$tmp"
+            falha "nao consegui extrair o commit instalado antes (${base:0:12}) do clone $SCRIPT_DIR para comparar com ${DG_APP#"$R"}." \
+                  "confira o clone (git -C $SCRIPT_DIR status) e rode ./install.sh de novo. Nada foi mudado em ${DG_APP#"$R"}."
+        fi
+        if lista="$(_migracao_diferencas "$tmp")"; then
+            comparou=1; texto_lista="$lista"
+            if [ -n "$lista" ]; then
+                lista+=$'\n'; texto_lista="$lista"; n_lista="$(printf '%s' "$lista" | grep -c .)"
+                motivo="o app instalado difere do commit instalado antes (${base:0:12}) em $n_lista arquivo(s)"
+            fi
+        else
+            erro_cmp="$lista"; lista=""
+            texto_lista="nao deu para comparar: $erro_cmp"$'\n'
+            motivo="nao deu para comparar o app com o commit instalado antes (${base:0:12}): $erro_cmp. Copia do app inteiro"
+        fi
+    else
+        texto_lista=$'sem base de comparacao\n'
+        motivo="sem base de comparacao (nao ha git ou commit anotado no dgclaw.env): copia do app inteiro"
+    fi
+    if [ "$comparou" = 0 ] && [ -n "$motivo" ]; then
+        # Sem como comparar nao da para saber o que mudou, entao sempre guarda; mas reinstalar o mesmo app
+        # nao acumula copias identicas: a impressao digital da ultima copia "sem base" decide.
+        impressao="$(_migracao_impressao)" || impressao=""
+        anterior="$(_migracao_ultima_impressao "$dir_mig")"
+        if [ -n "$impressao" ] && [ "$impressao" = "$anterior" ]; then
+            info "o programa instalado em ${DG_APP#"$R"} e identico ao da ultima copia 'sem base' guardada em ${dir_mig#"$R"}; nao guardo outra."
+            motivo=""
+        fi
+    fi
+    if [ ! -f "$DG_APP/docs/PERSONALIZAR.md" ] && [ ! -f "$DG_ADMIN/PERSONALIZACOES.md" ]; then
+        antigo="instalacao anterior ao registro de personalizacoes: levantar o que ja foi personalizado"
+    fi
+    if [ -z "$motivo" ] && [ -z "$antigo" ]; then
+        if [ -n "$tmp" ]; then rm -rf "$tmp"; fi
+        return 0
+    fi
+
+    if [ "$ENSAIO" = 1 ]; then
+        if [ -n "$tmp" ]; then rm -rf "$tmp"; fi
+        if [ -n "$motivo" ]; then printf '   [ensaio] guardaria uma copia em %s/<data>/: %s\n' "${dir_mig#"$R"}" "$motivo"; fi
+        if [ -n "$antigo" ]; then printf '   [ensaio] deixaria o levantamento de personalizacoes PENDENTE: %s\n' "$antigo"; fi
+        return 0
+    fi
+
+    if [ -n "$motivo" ]; then
+        stamp="$(date +%Y%m%d-%H%M%S)"
+        pasta="$dir_mig/$stamp"
+        if ! ( umask 077; install -d -m 700 "$DG_ADMIN" "$dir_mig" ); then
+            if [ -n "$tmp" ]; then rm -rf "$tmp"; fi
+            falha "nao consegui criar ${dir_mig#"$R"} para guardar a copia de seguranca do programa." \
+                  "corrija a permissao ou o espaco (df -h; ls -ld ${DG_ADMIN#"$R"}) e rode ./install.sh de novo. Nada foi sobrescrito."
+        fi
+        # mkdir sem -p reserva a pasta de forma atomica: dois instaladores no mesmo segundo nao dividem pasta.
+        while ! ( umask 077; mkdir "$pasta" ) 2>/dev/null; do
+            if [ ! -e "$pasta" ]; then
+                if [ -n "$tmp" ]; then rm -rf "$tmp"; fi
+                falha "nao consegui criar a pasta ${pasta#"$R"} para a copia de seguranca do programa (disco cheio ou sem permissao)." \
+                      "libere espaco ou corrija a permissao de ${dir_mig#"$R"} (df -h; ls -ld ${dir_mig#"$R"}) e rode ./install.sh de novo. Nada foi sobrescrito."
+            fi
+            n=$((n + 1)); pasta="$dir_mig/$stamp-$n"
+        done
+        if ! erro_grav="$( ( _migracao_gravar "$pasta" "$comparou" "$tmp" "$texto_lista" "$impressao" ) 2>&1 >/dev/null )"; then
+            if [ -n "$tmp" ]; then rm -rf "$tmp"; fi
+            passo_erro="$(printf '%s\n' "$erro_grav" | sed -n 's/^PASSO: //p' | head -n 1)"
+            falha "nao consegui gravar a copia de seguranca do programa em ${pasta#"$R"} (passo que falhou: ${passo_erro:-desconhecido}; disco cheio ou sem permissao), e o programa instalado difere do oficial ou nao deu para comparar." \
+                  "libere espaco ou corrija a permissao de ${dir_mig#"$R"} (df -h; ls -ld ${dir_mig#"$R"}) e rode ./install.sh de novo. Nada foi sobrescrito: parei antes de copiar o programa novo."
+        fi
+        aviso "o programa instalado em ${DG_APP#"$R"} nao era igual ao oficial ($motivo). Guardei uma copia em ${pasta#"$R"} antes de atualizar; o Admin deve levantar o que era personalizacao: dgclaw personalizacoes levantar"
+    fi
+    if [ -n "$tmp" ]; then rm -rf "$tmp"; fi
+    (
+        umask 077
+        install -d -m 700 "$DG_ADMIN" "$dir_mig"
+        if [ -n "$motivo" ]; then printf '%s\t%s\t%s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$motivo" "${pasta#"$R"}" >>"$dir_mig/PENDENTE"; fi
+        if [ -n "$antigo" ]; then printf '%s\t%s\t%s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$antigo" "${pasta:+${pasta#"$R"}}" >>"$dir_mig/PENDENTE"; fi
+    ) || falha "nao consegui gravar o marcador ${dir_mig#"$R"}/PENDENTE." \
+               "confira a permissao e o espaco de ${dir_mig#"$R"} e rode ./install.sh de novo (a copia, se houve, ja esta guardada)."
+}
+
+# instalar_registro_personalizacoes: o caderno das personalizacoes nasce de um modelo e nunca e sobrescrito.
+instalar_registro_personalizacoes() {
+    local alvo="$DG_ADMIN/PERSONALIZACOES.md"
+    if [ -f "$alvo" ]; then return 0; fi
+    if fonte_tem templates/admin/PERSONALIZACOES.md; then
+        escrever_arquivo "$alvo" 600 <"$SCRIPT_DIR/templates/admin/PERSONALIZACOES.md"
+    else
+        aviso "templates/admin/PERSONALIZACOES.md nao existe neste repositorio; o Admin fica sem o caderno de personalizacoes ate ele chegar. Rode ./install.sh de novo."
+    fi
+}
+
 # --- 4. codigo ------------------------------------------------------------------
 instalar_codigo() {
     passo "Copiando o Prumo da Locadora para ${DG_APP#"$R"}"
     VERSAO="v1"
-    if fonte_tem .claude-plugin/plugin.json; then
+    if fonte_tem VERSION; then
+        # Fonte unica da versao. Sem sufixo de commit: ela vira tag de imagem do podman, e "+" e invalido em tag.
+        VERSAO="$(tr -d '[:space:]' <"$SCRIPT_DIR/VERSION")"
+        [ -n "$VERSAO" ] || falha "o arquivo VERSION do clone ($SCRIPT_DIR/VERSION) esta vazio." "ponha nele a versao, por exemplo 1.0.0, ou baixe o clone de novo."
+    elif fonte_tem .claude-plugin/plugin.json; then
         if tem_jq; then
             VERSAO="$(jq -r '.version // "0"' "$SCRIPT_DIR/.claude-plugin/plugin.json")"
         else
@@ -512,19 +759,35 @@ instalar_codigo() {
         VERSAO="v1${revisao:+-$revisao}"
         info "distribuicao Prumo da Locadora $VERSAO"
     fi
-    [[ "$VERSAO" =~ ^[0-9A-Za-z._+-]+$ ]] || falha "a versao '$VERSAO' do plugin.json tem caracteres estranhos." "corrija o campo version em .claude-plugin/plugin.json."
+    [[ "$VERSAO" =~ ^[0-9A-Za-z._+-]+$ ]] || falha "a versao '$VERSAO' (arquivo VERSION ou plugin.json) tem caracteres estranhos." "corrija o arquivo VERSION (ou o campo version em .claude-plugin/plugin.json)."
 
     criar_pasta 755 "$DG_ETC"
     criar_pasta 755 "$DG_OPT"
     criar_pasta 755 "$DG_APP"
+    guardar_app_alterado
     # node_modules fica de fora nos dois sentidos: o rsync nao copia e, por estar excluido, tambem nao apaga o
     # que o npm instalou la dentro numa rodada anterior.
     executar rsync -a --delete --exclude=.git --exclude=node_modules --exclude=tests --exclude=qa "$SCRIPT_DIR/" "$DG_APP/"
+
+    # O rsync --delete acima apaga qualquer VERSAO velha, entao ela e gravada depois. A imagem dos agentes
+    # copia o app inteiro, entao cada container le a versao da imagem em que esta: o aviso de novidades
+    # (scripts/novidades-hook.mjs) so dispara quando a imagem nova chega, que e quando as novidades chegam.
+    printf '%s\n' "$VERSAO" | escrever_arquivo "$DG_APP/VERSAO" 644
 
     if fonte_tem bin/dgclaw; then
         criar_pasta 755 "$DG_BIN"
         executar ln -sfn "$DG_APP/bin/dgclaw" "$DG_BIN/dgclaw"
         ok "comando dgclaw em ${DG_BIN#"$R"}/dgclaw"
+        # O Admin abre cards e liga o monitor pelo nome, como os agentes fazem dentro da caixa
+        # (templates/ambiente/admin.md). Sem o link ele teria de decorar o caminho completo.
+        local cmd
+        for cmd in dgclaw-card dgclaw-monitor; do
+            if fonte_tem "bin/$cmd"; then
+                executar ln -sfn "$DG_APP/bin/$cmd" "$DG_BIN/$cmd"
+            else
+                aviso "bin/$cmd nao existe neste repositorio; o Admin vai ficar sem esse comando no PATH. Rode ./install.sh de novo quando ele chegar."
+            fi
+        done
     else
         aviso "bin/dgclaw ainda nao existe neste repositorio, entao o comando 'dgclaw' nao foi instalado. Rode ./install.sh de novo quando ele chegar."
     fi
@@ -533,13 +796,38 @@ instalar_codigo() {
     imagem="$(env_valor DGCLAW_IMAGEM)"
     imagem="${imagem:-$DG_IMAGEM_PADRAO}"
     detectar_provedor
-    {
-        printf 'DGCLAW_DOMINIO=%s\n' "$DOMINIO"
-        printf 'DGCLAW_VERSAO=%s\n' "$VERSAO"
-        printf 'DGCLAW_IMAGEM=%s\n' "$imagem"
-        printf 'DGCLAW_PROVEDOR_ADMIN=%s\n' "$PROVEDOR"
-        printf 'DGCLAW_USUARIO=%s\n' "$USUARIO"
-    } | escrever_arquivo "$DG_ETC/dgclaw.env" 644
+    # Linha a linha, nunca o arquivo inteiro: o que a pessoa (ou o Admin) acrescentou ao dgclaw.env
+    # sobrevive a cada atualizacao. Cria o arquivo se ele ainda nao existe.
+    gravar_dgclaw_env DGCLAW_DOMINIO "$DOMINIO"
+    gravar_dgclaw_env DGCLAW_VERSAO "$VERSAO"
+    gravar_dgclaw_env DGCLAW_IMAGEM "$imagem"
+    gravar_dgclaw_env DGCLAW_PROVEDOR_ADMIN "$PROVEDOR"
+    gravar_dgclaw_env DGCLAW_USUARIO "$USUARIO"
+    registrar_clone
+}
+
+# gravar_dgclaw_env <CHAVE> <valor>: uma linha do dgclaw.env (no ensaio, so anuncia).
+gravar_dgclaw_env() {
+    if [ "$ENSAIO" = 1 ]; then
+        printf '   [ensaio] poria %s=%s em %s\n' "$1" "$2" "${DG_ETC#"$R"}/dgclaw.env"
+        return 0
+    fi
+    definir_linha_env "$DG_ETC/dgclaw.env" "$1" "$2" 644
+}
+
+# registrar_clone: guarda onde esta o clone do repositorio (DGCLAW_REPO) e qual commit foi
+# instalado (DGCLAW_COMMIT). E assim que `dgclaw atualizar` acha o clone sem perguntar nada.
+# Caminho com espaco ou caractere estranho nao e gravado: o dgclaw.env e lido com `source`.
+registrar_clone() {
+    local commit=""
+    if [[ "$SCRIPT_DIR" =~ ^[A-Za-z0-9._/+-]+$ ]]; then
+        gravar_dgclaw_env DGCLAW_REPO "$SCRIPT_DIR"
+    else
+        aviso "o clone esta em '$SCRIPT_DIR', que tem espaco ou caractere especial no nome, e eu nao gravo esse caminho. Para atualizar depois, use: dgclaw atualizar --repo '$SCRIPT_DIR'"
+    fi
+    # Sem git (instalou de um zip) o commit simplesmente nao existe; nao e erro.
+    commit="$(git_do_clone "$SCRIPT_DIR" rev-parse HEAD 2>/dev/null)" || commit=""
+    if [[ "$commit" =~ ^[0-9a-f]{40}$ ]]; then gravar_dgclaw_env DGCLAW_COMMIT "$commit"; fi
 }
 
 # --- 5. caddy -------------------------------------------------------------------
@@ -746,6 +1034,33 @@ FIM
 }
 
 # --- 9. admin -------------------------------------------------------------------
+
+# instalar_modelo_admin <CLAUDE.md|AGENTS.md>: poe o modelo do Admin em /opt/dgclaw/admin SEM
+# passar por cima de um arquivo que a pessoa (ou o proprio Admin) personalizou:
+#   - nao existe, ou e igual ao modelo novo: grava / nao mexe;
+#   - e exatamente uma versao antiga do modelo (nunca foi editado): troca pelo novo;
+#   - qualquer outra coisa (personalizado): nao toca; grava o modelo novo ao lado, como
+#     <arquivo>.novo, e avisa. Quem junta os dois e o Admin, seguindo docs/ATUALIZAR.md.
+instalar_modelo_admin() {
+    local arq="$1" origem="$SCRIPT_DIR/templates/admin/$1" alvo="$DG_ADMIN/$1" sha
+    if [ ! -e "$alvo" ]; then
+        executar install -m 644 "$origem" "$alvo"
+    elif cmp -s "$origem" "$alvo"; then
+        ok "$arq do Admin ja esta na versao atual"
+        executar rm -f "$alvo.novo"
+    else
+        sha="$(sha256sum <"$alvo" | cut -d' ' -f1)"
+        if modelo_admin_sha_de_fabrica "$sha" "$arq" "$SCRIPT_DIR"; then
+            executar install -m 644 "$origem" "$alvo"
+            executar rm -f "$alvo.novo"
+            ok "$arq do Admin atualizado (estava como veio de fabrica)"
+        else
+            executar install -m 644 "$origem" "$alvo.novo"
+            aviso "o $arq do Admin foi personalizado, entao NAO o troquei. A versao nova ficou ao lado, em ${alvo#"$R"}.novo. Junte as novidades ao seu arquivo (docs/ATUALIZAR.md explica como) e depois apague o .novo."
+        fi
+    fi
+}
+
 configurar_admin() {
     passo "Ligando o Admin (agente de sistema)"
     local p_admin="${DG_ADMIN#"$R"}" p_etc="${DG_ETC#"$R"}" p_app="${DG_APP#"$R"}"
@@ -767,11 +1082,20 @@ configurar_admin() {
     local arq
     for arq in CLAUDE.md AGENTS.md; do
         if fonte_tem "templates/admin/$arq"; then
-            executar install -m 644 "$SCRIPT_DIR/templates/admin/$arq" "$DG_ADMIN/$arq"
+            instalar_modelo_admin "$arq"
         else
             aviso "templates/admin/$arq ainda nao existe neste repositorio; o Admin vai subir sem esse arquivo de identidade. Rode ./install.sh de novo quando ele chegar."
         fi
     done
+    instalar_registro_personalizacoes
+    # A secao "Onde voce esta e o que voce consegue fazer" do Admin vai num arquivo proprio, que o
+    # runner injeta como system prompt (identidadeArquivo; Claude e Codex). Fica fora do CLAUDE.md
+    # e do AGENTS.md de proposito: esses o dono pode personalizar, e este e regravado sempre.
+    if fonte_tem templates/ambiente/admin.md; then
+        executar install -m 644 "$SCRIPT_DIR/templates/ambiente/admin.md" "$DG_ADMIN/.plataforma/ambiente.md"
+    else
+        aviso "templates/ambiente/admin.md nao existe neste repositorio; o Admin vai subir sem a secao 'Onde voce esta'. Rode ./install.sh de novo quando ele chegar."
+    fi
     local skill
     for skill in criar-agente trocar-dominio; do
         if fonte_tem "skills/$skill"; then
@@ -798,21 +1122,35 @@ configurar_admin() {
             falha "o jq nao esta instalado, e ele e necessario para escrever os arquivos do Admin." "rode: apt-get install -y jq; depois ./install.sh de novo."
         fi
     else
-        jq -n --arg prov "$provider_runner" --arg admin "$p_admin" '
+        # Admin que ainda nao tinha runner.json e instalacao nova: nasce sabendo as novidades. Admin antigo
+        # (arquivo ja existe, sem "visto") recebe o aviso uma vez na primeira conversa depois da atualizacao.
+        local admin_novo=0
+        [ -e "$DG_ADMIN/.plataforma/runner.json" ] || admin_novo=1
+        jq -n --arg prov "$provider_runner" --arg admin "$p_admin" --arg app "$p_app" '
             {id: "admin", slug: "admin",
              config: {name: "Admin", cwd: $admin, provider: $prov, model: "", auth: "assinatura",
                       permissionMode: "bypassPermissions", initialPrompt: "",
                       mcpConfig: ($admin + "/.plataforma/dgchat.mcp.json"),
-                      identidadeArquivo: "",
+                      identidadeArquivo: ($admin + "/.plataforma/ambiente.md"),
                       allowTools: ["mcp__dgchat__reply", "mcp__dgchat__send_file"],
                       envExtra: {DGCHAT_AGENT: "admin",
                                  DGCHAT_OUTBOUND: ($admin + "/.plataforma/dgchat/outbound.jsonl"),
                                  DGCHAT_ENTREGA: "disco",
                                  CODEX_HOME: "/root/.codex",
                                  DGCLAW_WORKSPACE: $admin,
-                                 DGCLAW_CONFIG: ($admin + "/.dgclaw/config.sh")},
+                                 DGCLAW_CONFIG: ($admin + "/.dgclaw/config.sh"),
+                                 DGCLAW_MONITOR_DONO: "admin",
+                                 DGCLAW_MONITOR_ESTADO: ($admin + "/.dgclaw/estado/modo-monitor.json"),
+                                 DGCLAW_MONITOR_LOG: ($admin + "/.dgclaw/logs/modo-monitor.log")},
+                      promptHooks: [("node " + $app + "/scripts/novidades-hook.mjs")],
                       tags: ["dgclaw", "admin"], cofre: []}}' \
             | escrever_arquivo "$DG_ADMIN/.plataforma/runner.json" 444
+        if [ "$admin_novo" = 1 ] && [ "$ENSAIO" != 1 ]; then
+            if command -v node >/dev/null 2>&1 && [ ! -e "$DG_ADMIN/.dgclaw/novidades-visto.json" ]; then
+                DGCLAW_WORKSPACE="$DG_ADMIN" DGCLAW_APP="$DG_APP" node "$DG_APP/scripts/novidades-hook.mjs" --semear \
+                    || aviso "nao consegui marcar as novidades como vistas pelo Admin (veja ${DG_ADMIN#"$R"}/.dgclaw/logs/novidades-hook.log); ele pode avisar de novidades na primeira conversa."
+            fi
+        fi
         # O Admin roda como root em bypassPermissions: sem esta chave o Claude Code abre o aviso
         # "Bypass Permissions mode" e o Enter do runner escolhe "No, exit" (loop, 16/10/2026).
         if [ "$PROVEDOR" != codex ]; then
@@ -863,6 +1201,108 @@ FIM
              home_host: $admin, home_container: $admin}' \
             | agentes_registrar
     fi
+    configurar_monitor_admin
+}
+
+# configurar_monitor_admin: o MODO MONITOR do Admin (docs/MODO-MONITOR.md). Um timer de 5 min que
+# roda `dgclaw-monitor run` como root. Mesmo estado e mesmo log que a sessao do Admin usa nos
+# comandos `add`/`rm` (as tres DGCLAW_MONITOR_* tambem estao no envExtra do runner.json do Admin):
+# sem isso o timer olharia um arquivo e o Admin gravaria em outro.
+configurar_monitor_admin() {
+    local p_admin="${DG_ADMIN#"$R"}" p_etc="${DG_ETC#"$R"}" p_app="${DG_APP#"$R"}"
+    criar_pasta 700 "$DG_ADMIN/.dgclaw"
+    criar_pasta 700 "$DG_ADMIN/.dgclaw/estado"
+    criar_pasta 700 "$DG_ADMIN/.dgclaw/logs"
+    cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-admin-monitor.service" 644
+[Unit]
+Description=DG Claw modo monitor dos cards do Admin
+After=dgclaw-admin.service
+
+[Service]
+Type=oneshot
+User=root
+Environment=HOME=/root
+Environment=RUNNER_PORT=4300
+Environment=RUNNER_TOKEN_FILE=$p_etc/runner/admin.token
+Environment=DGCLAW_MONITOR_DONO=admin
+Environment=DGCLAW_MONITOR_ESTADO=$p_admin/.dgclaw/estado/modo-monitor.json
+Environment=DGCLAW_MONITOR_LOG=$p_admin/.dgclaw/logs/modo-monitor.log
+ExecStart=/usr/bin/python3 $p_app/bin/dgclaw-monitor run
+FIM
+    cat <<'FIM' | escrever_arquivo "$DG_UNITS/dgclaw-admin-monitor.timer" 644
+[Unit]
+Description=DG Claw modo monitor dos cards do Admin (a cada 5 minutos)
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=5min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+FIM
+    ligar_unidade dgclaw-admin-monitor.timer
+}
+
+# --- 9b. aviso de nova versao -----------------------------------------------------
+# configurar_aviso_atualizacao: o AVISO DE NOVA VERSAO (docs/AVISO-DE-ATUALIZACAO.md). Um timer de 6 h roda
+# scripts/checar-atualizacao.mjs, que so le o GitHub publico e guarda o resumo em
+# /var/lib/dgclaw/web/atualizacao/ para o painel mostrar a faixa. Nao baixa nem instala nada.
+# Quem desliga e a linha DGCLAW_AVISO_ATUALIZACAO=0 do dgclaw.env: o instalador a respeita e NUNCA
+# a reescreve nem a cria (sem a linha, o aviso fica ligado).
+configurar_aviso_atualizacao() {
+    local p_app="${DG_APP#"$R"}" p_lib="${DG_LIB#"$R"}" p_log="${DG_LOG#"$R"}" desligar
+    desligar="$(env_valor DGCLAW_AVISO_ATUALIZACAO)"
+    desligar="${desligar//[\'\"]/}"
+    criar_pasta 700 "$DG_LIB/web"
+    criar_pasta 700 "$DG_LIB/web/atualizacao"
+    criar_pasta 750 "$DG_LOG"
+    # Alvo do flock que serializa as checagens (unidade e CLI). So existe, nunca e apagado nem recriado:
+    # `install`/`mv` trocariam o arquivo no meio de uma checagem e quebrariam a trava.
+    executar touch "$DG_LIB/web/atualizacao/.trava"
+    executar chmod 600 "$DG_LIB/web/atualizacao/.trava"
+    cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-checar-atualizacao.service" 644
+[Unit]
+Description=DG Claw confere se saiu versao nova (so le o GitHub, nao instala nada)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/bin/flock -w 90 -E 75 $p_lib/web/atualizacao/.trava /usr/bin/node $p_app/scripts/checar-atualizacao.mjs
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=$p_lib/web/atualizacao $p_log
+PrivateTmp=yes
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+TimeoutStartSec=120
+FIM
+    cat <<'FIM' | escrever_arquivo "$DG_UNITS/dgclaw-checar-atualizacao.timer" 644
+[Unit]
+Description=DG Claw confere se saiu versao nova (a cada 6 horas)
+
+[Timer]
+OnBootSec=15min
+OnUnitActiveSec=6h
+RandomizedDelaySec=30min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+FIM
+    if [ "$desligar" = 0 ]; then
+        executar systemctl daemon-reload
+        executar systemctl disable --now dgclaw-checar-atualizacao.timer
+        info "aviso de nova versao instalado, mas desligado (DGCLAW_AVISO_ATUALIZACAO=0 no dgclaw.env). Para ligar: dgclaw atualizar --aviso ligar"
+        return 0
+    fi
+    ligar_unidade dgclaw-checar-atualizacao.timer
+    # Confere logo: depois de atualizar, o estado velho ("tem versao nova") nao pode ficar ate a proxima rodada.
+    executar systemctl start --no-block dgclaw-checar-atualizacao.service
 }
 
 # --- 10. imagem -----------------------------------------------------------------
@@ -1005,6 +1445,35 @@ mensagem_final() {
     fi
 }
 
+# --- 9b. identidade dos agentes ---------------------------------------------------
+# Agente criado antes da secao "Onde voce esta e o que voce consegue fazer" nao a tem. Regrava
+# o identidade.md de cada agente (dgclaw agente identidade): so o arquivo, nada e reiniciado,
+# vale na proxima sessao. Falha de um agente vira aviso e o instalador segue.
+atualizar_identidades() {
+    passo "Atualizando a identidade dos agentes"
+    local cli="$DG_APP/bin/dgclaw" slug n=0 rc
+    if [ "$ENSAIO" = 1 ]; then
+        info "[ensaio] rodaria 'dgclaw agente identidade <slug>' para cada agente do agentes.json"
+        return 0
+    fi
+    if ! tem_jq || [ ! -s "$DG_AGENTES_JSON" ] || [ ! -x "$cli" ]; then
+        info "nenhum agente para atualizar ainda"
+        return 0
+    fi
+    while IFS= read -r slug; do
+        [ -n "$slug" ] || continue
+        n=$((n + 1))
+        rc=0
+        "$cli" agente identidade "$slug" >/dev/null 2>"$DG_LOG/identidade-$slug.err" || rc=$?
+        if [ "$rc" -ne 0 ]; then
+            aviso "nao consegui regravar a identidade do agente $slug (codigo $rc; detalhes em $DG_LOG/identidade-$slug.err). O agente segue funcionando com a identidade antiga. Para refazer: dgclaw agente identidade $slug"
+        else
+            rm -f "$DG_LOG/identidade-$slug.err"
+        fi
+    done < <(jq -r '.agentes[] | select(.tipo == "agente") | .slug' "$DG_AGENTES_JSON")
+    ok "identidade conferida em $n agente(s)"
+}
+
 # --- main -----------------------------------------------------------------------
 main() {
     parse_args "$@"
@@ -1031,6 +1500,8 @@ main() {
     configurar_senha
     configurar_web
     configurar_admin
+    configurar_aviso_atualizacao
+    atualizar_identidades
     construir_imagem
     testar_fim
     mensagem_final

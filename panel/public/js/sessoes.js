@@ -12,7 +12,7 @@
 //     Aprovar e Negar (só com login; chave de API não decide);
 //   - modo "proxy": os cards vêm do DG Telegram (lib/sessoes-proxy.js), que guarda a chave
 //     da agente do lado do servidor. Lá decidir pedido, mandar tecla e mexer no cofre só se
-//     faz no DG Telegram, com o login do Danilo; a tela leva até lá por um botão.
+//     faz no DG Telegram, com o login do mantenedor; a tela leva até lá por um botão.
 // A aba SOME quando /api/sessoes-config diz ligado:false.
 //
 // O QUE A FONTE NÃO SABE FAZER A TELA ESCONDE, olhando `fonte.recursos` (apagar, decidir...).
@@ -188,7 +188,7 @@
       porque: 'Quem decide é você, e só com o seu login: uma chave de API não aprova pedido, porque um agente não pode autorizar o próprio pedido. A sessão não anda enquanto ninguém decidir.',
     },
     nova: {
-      corpo: 'Abre um formulário com o nome, o pedido que a sessão vai receber e, se quiser, a pasta de trabalho (dentro da pasta do agente). A pasta vira a primeira linha do pedido. A sessão usa o mesmo provedor e modelo da conversa principal.',
+      corpo: 'Abre um formulário com o nome, o pedido que a sessão vai receber e, se quiser, a pasta de trabalho (dentro da pasta do agente). A pasta vira a primeira linha do pedido. Se o agente tem o Claude e o Codex disponíveis, você escolhe qual dos dois trabalha no card (o da conversa principal já vem marcado); com um só, ele usa o da conversa principal e a escolha nem aparece.',
       porque: 'Quem lê o pedido não viu a sua conversa. Por isso o formulário pede que você diga o que é e onde fica, em vez de deixar a sessão adivinhar. Há um limite de sessões abertas ao mesmo tempo; se ele for atingido, a tela diz como liberar uma vaga.',
     },
     detalhe: {
@@ -230,7 +230,7 @@
         return Object.assign({}, p, {
           titulo: 'Abrir no DG Telegram',
           corpo: 'O botão leva ao mesmo card no DG Telegram (no pedido, se houver um esperando você), onde ficam handoff, retomar, arquivar, renomear e o recado.',
-          porque: 'Este painel só lê. As ações ficam onde o login do Danilo as protege.',
+          porque: 'Este painel só lê. As ações ficam onde o login do dono as protege.',
         });
       }
       return p;
@@ -279,7 +279,7 @@
         alvo: '#sx-lista .sx-pedido',
         titulo: 'Card esperando você',
         corpo: 'Quando um card para pedindo permissão (por exemplo, para apagar uma pasta), a linha mostra o pedido. O botão "Decidir no DG Telegram" abre, numa aba nova, a tela onde você aprova ou nega aquele pedido.',
-        porque: 'A decisão não é tomada aqui de propósito: um card não pode aprovar o próprio pedido, e só o login do Danilo no DG Telegram pode decidir. O painel mostra o pedido e leva você até lá.',
+        porque: 'A decisão não é tomada aqui de propósito: um card não pode aprovar o próprio pedido, e só o login do dono no DG Telegram pode decidir. O painel mostra o pedido e leva você até lá.',
       },
       {
         chave: 'cofre',
@@ -300,7 +300,7 @@
         alvo: '#sx-vista-det .sx-info',
         titulo: 'O card aberto',
         corpo: 'No alto ficam o nome, o estado e a pasta. A estrela marca como favorito e o lápis renomeia. Ao renomear, o prefixo de status que o card já tinha (▶️, ✅ ou ⏳) é mantido; você muda só o resto do nome.',
-        porque: 'O prefixo é como o Danilo e as outras agentes reconhecem o estado do card pelo nome. Perder esse prefixo bagunçaria a lista de quem olha o Bunker.',
+        porque: 'O prefixo é como o dono e os outros agentes reconhecem o estado do card pelo nome. Perder esse prefixo bagunçaria a lista de quem olha o Bunker.',
       },
       {
         chave: 'acoes',
@@ -361,9 +361,9 @@
   let sigLista = '';
   let sigChips = '';
   const rascunhos = new Map();
-  let novaRascunho = { nome: '', prompt: '', pasta: '', permissao: 'auto' };
+  let novaRascunho = { nome: '', prompt: '', pasta: '', permissao: 'auto', provedor: '' };
 
-  // Painel sem Cloudflare Access na frente (o da Isa): a aba só lê. O servidor recusa toda escrita
+  // Painel sem Cloudflare Access na frente (o da agente de referência): a aba só lê. O servidor recusa toda escrita
   // com 403; aqui a tela esconde o que não funcionaria, em vez de mostrar botão que só dá erro.
   const soLeitura = () => !!(cfg && cfg.soLeitura);
   const TEXTO_SO_LEITURA_PROXY = 'Neste painel a aba Sessões é só para ler: as ações (recado, criar, arquivar, renomear...) ficam no DG Telegram, porque este painel não tem a proteção de login do Cloudflare na frente.';
@@ -503,8 +503,8 @@
     return el('div', { class: 'sx-pedido' }, cab, texto,
       link ? el('a', {
         class: 'sx-btn prim', href: link, target: '_blank', rel: 'noopener',
-        title: 'A decisão não é tomada aqui: um card não pode aprovar o próprio pedido. Abre o DG Telegram, onde só o login do Danilo decide.',
-      }, 'Decidir no DG Telegram') : el('p', { class: 'sx-ped-nota' }, 'Decida no DG Telegram, com o login do Danilo.'));
+        title: 'A decisão não é tomada aqui: um card não pode aprovar o próprio pedido. Abre o DG Telegram, onde só o login do dono decide.',
+      }, 'Decidir no DG Telegram') : el('p', { class: 'sx-ped-nota' }, 'Decida no DG Telegram, com o login do dono.'));
   }
 
   function itemDaLista(it) {
@@ -628,8 +628,8 @@
     const nome = el('input', { id: 'sx-n-nome', maxlength: NOME_MAX, autocomplete: 'off', value: n.nome, placeholder: 'Ex.: Ajustar a tela de lembretes' });
     const prompt = el('textarea', { id: 'sx-n-prompt', maxlength: 20000, placeholder: 'O que ele precisa fazer. Quem ler não viu a sua conversa: diga o que é e onde fica.' });
     prompt.value = n.prompt;
-    const pasta = el('input', { id: 'sx-n-pasta', autocomplete: 'off', value: n.pasta, placeholder: local ? 'Deixe vazio para trabalhar na pasta do agente' : 'Deixe vazio para usar a pasta padrão da agente' });
     const local = modoLocal();
+    const pasta = el('input', { id: 'sx-n-pasta', autocomplete: 'off', value: n.pasta, placeholder: local ? 'Deixe vazio para trabalhar na pasta do agente' : 'Deixe vazio para usar a pasta padrão da agente' });
     const perm = el('select', { id: 'sx-n-perm', title: 'Automática: o Bunker só barra o que é arriscado. Pedir sempre: cada ação passa por você, no DG Telegram.' },
       el('option', { value: 'auto' }, 'Automática (só barra o arriscado)'),
       el('option', { value: 'default' }, 'Pedir sempre (cada ação passa por você)'));
@@ -637,13 +637,18 @@
     const erro = el('p', { class: 'sx-erro', role: 'alert', hidden: true });
     const cria = el('button', { type: 'button', class: 'sx-btn prim' }, 'Criar sessão');
     const cancela = el('button', { type: 'button', class: 'sx-btn sec' }, 'Cancelar');
-    const guarda = () => { novaRascunho = { nome: nome.value, prompt: prompt.value, pasta: pasta.value, permissao: perm.value }; };
-    for (const e of [nome, prompt, pasta, perm]) e.addEventListener('input', guarda);
+    // Claude ou Codex: só aparece quando o agente tem os dois disponíveis (GET /api/sessoes/provedores). Com um só, o
+    // card usa o da conversa principal e nada é mostrado. O motor da principal vem pré-selecionado.
+    const prov = el('select', { id: 'sx-n-prov', title: 'O programa que vai trabalhar neste card. O da conversa principal vem marcado.' });
+    const provLinha = el('label', { id: 'sx-n-prov-linha', hidden: true }, 'Motor do card', prov);
+    const guarda = () => { novaRascunho = { nome: nome.value, prompt: prompt.value, pasta: pasta.value, permissao: perm.value, provedor: provLinha.hidden ? '' : prov.value }; };
+    for (const e of [nome, prompt, pasta, perm, prov]) e.addEventListener('input', guarda);
     const folha = el('div', { class: 'sx-folha', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Nova sessão' },
       el('div', { class: 'sx-fcx', id: 'sx-form-nova' },
         el('h3', null, el('span', null, 'Nova sessão'), ajuda('nova', 'Como funciona a nova sessão')),
         el('label', null, 'Nome', nome),
         el('label', null, 'Pedido para o card', prompt),
+        provLinha,
         el('label', null, 'Pasta de trabalho (opcional)', pasta),
         local ? null : el('label', null, 'Permissão', perm),
         erro,
@@ -666,9 +671,10 @@
         // Sem `agente`: a chave da agente decide o dono do card.
         const corpo = { nome: vNome, prompt: vPrompt, pasta: pasta.value.trim() || null };
         if (!local) corpo.permissao = perm.value;
+        if (!provLinha.hidden && prov.value) corpo.provedor = prov.value;
         const res = await chama('/api/sessoes', { method: 'POST', timeoutMs: 80000, body: corpo });
         if (!res.ok) { falha(textoErro(res)); return; }
-        novaRascunho = { nome: '', prompt: '', pasta: '', permissao: 'auto' };
+        novaRascunho = { nome: '', prompt: '', pasta: '', permissao: 'auto', provedor: '' };
         fecha();
         carregaLista(true);
         const it = res.corpo.item || res.corpo;
@@ -681,6 +687,23 @@
     });
     document.body.append(folha);
     nome.focus();
+    carregaProvedores(prov, provLinha, n.provedor);
+  }
+
+  /** Preenche a escolha de motor do formulário. Qualquer falha (painel antigo, proxy do Bunker, rede) deixa a escolha
+   *  escondida: o card usa o motor da conversa principal, como sempre, e o motivo vai para o console. */
+  async function carregaProvedores(select, linha, rascunho) {
+    try {
+      const res = await chama('/api/sessoes/provedores');
+      if (!res.ok) throw new Error(`o painel respondeu ${res.status}: ${textoErro(res)}`);
+      const lista = Array.isArray(res.corpo.disponiveis) ? res.corpo.disponiveis : [];
+      if (lista.length < 2 || !select.isConnected) return;
+      for (const p of lista) select.append(el('option', { value: p.id }, p.id === res.corpo.principal ? `${p.nome} (o da conversa principal)` : p.nome));
+      select.value = lista.some((p) => p.id === rascunho) ? rascunho : res.corpo.principal;
+      linha.hidden = false;
+    } catch (e) {
+      console.warn('sessoes: não consegui saber quais motores o agente tem; o card novo usa o da conversa principal:', e.message);
+    }
   }
 
   // ─── Detalhe ──────────────────────────────────────────────────

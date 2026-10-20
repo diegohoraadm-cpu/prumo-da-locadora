@@ -1,6 +1,6 @@
 ---
 name: report
-description: Manda um relatorio de erro ou dificuldade pro autor do plugin DG Claw (DG Medeiros, repo DGatoM/DG-Claw). Use quando o usuario pedir "reportar problema", "mandar o erro pro autor", "relatar um bug do DG Claw", "abrir um report", "isso nao funciona, avisa o criador", ou rodar /dgclaw:report. Coleta um pacote de diagnostico SANITIZADO (versao do plugin, sistema, versoes de runtime, saida do doctor e so as linhas de erro dos logs), MOSTRA um preview, pede CONSENTIMENTO explicito e so entao envia. Nunca inclui memoria, identidade, personalidade nem token.
+description: Manda um relatorio de erro ou dificuldade pro mantenedor do Prumo da Locadora (repo diegohoraadm-cpu/prumo-da-locadora). Use quando o usuario pedir "reportar problema", "mandar o erro pro autor", "relatar um bug do DG Claw", "abrir um report", "isso nao funciona, avisa o criador", ou rodar /dgclaw:report. Coleta um pacote de diagnostico SANITIZADO (versao do plugin, sistema, versoes de runtime, saida do doctor e so as linhas de erro dos logs), MOSTRA um preview, pede CONSENTIMENTO explicito e so entao envia. Nunca inclui memoria, identidade, personalidade nem token.
 user-invocable: true
 ---
 
@@ -80,7 +80,7 @@ python3 "$PLUGIN/scripts/report.py" --config "$CFG" --desc "$DESC" --consent
 Ordem de destino, tudo configuravel por variavel de ambiente:
 
 1. `DGCLAW_REPORT_ENDPOINT` setado: manda o pacote por POST.
-2. Senao `DGCLAW_REPORT_GITHUB_REPO` (padrao `DGatoM/DG-Claw`): usa `gh issue
+2. Senao `DGCLAW_REPORT_GITHUB_REPO` (padrao `diegohoraadm-cpu/prumo-da-locadora`): usa `gh issue
    create` se o `gh` estiver logado; senao gera um link de issue ja preenchido pro
    dono abrir e colar.
 3. Senao: mantem o pacote local e explica o envio manual, mostrando

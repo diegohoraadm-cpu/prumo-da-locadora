@@ -13,6 +13,7 @@
 #   dgclaw-<slug>-heartbeat   30min  smart-check (decay) -> injeta poke se houver motivo
 #   dgclaw-<slug>-conversas-fts 15min indice da busca em conversas (python puro, sem Claude)
 #   dgclaw-<slug>-memory-reindex 4:20 indice da memoria semantica (modelo local, sem Claude)
+#   dgclaw-<slug>-monitor     5min   modo monitor dos cards (python puro, sem Claude)
 #
 # A LISTA de timers e uma ARRAY EXTENSIVEL (TIMERS[]) — ondas futuras (pulso/watchdog/etc)
 # acrescentam uma linha sem reescrever a logica de geracao.
@@ -163,18 +164,59 @@ for row in "${TIMERS[@]}"; do
     NAMES+=("$name")
 done
 
+# ─── MODO MONITOR (dgclaw-monitor) ────────────────────────────────────────────
+# Vigia SEM modelo dos cards (docs/MODO-MONITOR.md): a cada 5 min confere os cards monitorados no
+# runner e so cutuca a sessao principal quando ha evento. Sem cards monitorados sai na hora, sem
+# tocar no runner. Unidade propria (e nao uma linha de TIMERS) porque precisa do ambiente do
+# dgclaw-card: o RUNNER_TOKEN_FILE vem do config.sh, e o id da sessao principal (= o slug) e
+# fixado aqui. O token (modo 600, dono agente) e lido por quem roda a unidade; o vida_script do
+# bin/dgclaw troca User=root por User=agente nas unidades dgclaw-*.service.
+make_monitor_unit() {
+    cat > "/etc/systemd/system/dgclaw-${SLUG}-monitor.service" <<UNIT
+[Unit]
+Description=DG Claw modo monitor dos cards: ${SLUG}
+
+[Service]
+Type=oneshot
+User=root
+Environment=HOME=/root
+Environment=IS_SANDBOX=1
+Environment=TZ=${TZ_VAL}
+Environment=RUNNER_PORT=4300
+Environment=DGCLAW_AGENTE_ID=${SLUG}
+WorkingDirectory=${WS}
+ExecStart=/bin/bash -c 'set -a; source "${ABS_CONFIG}"; set +a; exec "${PLUGIN}/bin/dgclaw-monitor" run'
+UNIT
+    {
+        echo "[Unit]"
+        echo "Description=DG Claw modo monitor dos cards (timer): ${SLUG}"
+        echo
+        echo "[Timer]"
+        echo "OnUnitActiveSec=5min"
+        echo "OnBootSec=5min"
+        echo "Persistent=true"
+        echo
+        echo "[Install]"
+        echo "WantedBy=timers.target"
+    } > "/etc/systemd/system/dgclaw-${SLUG}-monitor.timer"
+}
+make_monitor_unit
+NAMES+=("monitor")
+
 systemctl daemon-reload
 for t in "${NAMES[@]}"; do
     systemctl enable --now "dgclaw-${SLUG}-${t}.timer"
 done
 
 echo "==> timers de vida instalados e ativos:"
+# So exibicao: se a listagem falhar, os timers ja foram habilitados acima.
 systemctl list-timers "dgclaw-${SLUG}-*" --no-pager 2>/dev/null | head -10 || true
 
 # Desativa a consolidacao simples do DG Claw, se existir (a reflexao do Alive ja consolida).
 if systemctl list-unit-files "dgclaw-${SLUG}-consolidate.timer" >/dev/null 2>&1; then
     if systemctl is-enabled --quiet "dgclaw-${SLUG}-consolidate.timer" 2>/dev/null; then
-        systemctl disable --now "dgclaw-${SLUG}-consolidate.timer" 2>/dev/null || true
+        systemctl disable --now "dgclaw-${SLUG}-consolidate.timer" \
+            || echo "aviso: nao consegui desativar dgclaw-${SLUG}-consolidate.timer; ele continua rodando junto com a reflexao. Rode: systemctl disable --now dgclaw-${SLUG}-consolidate.timer" >&2
         echo "==> consolidacao simples do DG Claw (dgclaw-${SLUG}-consolidate.timer) desativada"
         echo "    (a reflexao noturna do Alive assume a consolidacao, de forma mais rica)"
     fi

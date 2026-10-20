@@ -18,6 +18,19 @@
 
 const $ = id => document.getElementById(id);
 
+/* Regras puras da conversa (conversa-puro.js). Se o arquivo não carregar, a tela segue de pé com
+   versões mínimas que não separam nada: o render não pode quebrar por causa de um arquivo auxiliar. */
+const PURO = window.DGConversaPuro || (() => {
+  console.warn('conversa-puro.js não carregou (a página não encontrou /conversa-puro.js). A conversa abre, mas o áudio transcrito aparece sem o 🎤, os avisos fechados não descansam e o Reiniciar não confirma a volta do agente. Recarregue a página; se persistir, confira se o arquivo existe em web/public.');
+  return {
+    avisoDescansando: () => false,
+    registraFechamento: mapa => mapa || {},
+    separaAudio: texto => ({ audio: false, texto: String(texto == null ? '' : texto) }),
+    textoDaFala: texto => String(texto),
+    avaliaVolta: () => ({ acao: 'indeterminado' }),
+  };
+})();
+
 /* ── Partida: quem é o agente desta página? ───────────────────────────────
    O endereço é /a/<slug>. A lista de agentes vem da API; o agente da página é o
    da lista com esse id. Sem lista ou sem agente, a tela explica o que houve. */
@@ -104,7 +117,7 @@ const chat = $('chat'), wrap = $('wrap'), estadoEl = $('estado'), entrada = $('e
    ResizeObserver roda depois do layout e antes de pintar: nenhum quadro sai fora do lugar. */
 const rolagem = (() => {
   const R = window.DGRolagem;
-  const est = { noFim: true, ancora: null };
+  const est = { noFim: true, ancora: null, top: 0 };
   const nosVistos = new WeakSet();
   const itens = () => {
     const l = Array.from(wrap.children);
@@ -112,6 +125,7 @@ const rolagem = (() => {
     return l.filter(e => !e.hidden && e.offsetHeight > 0);
   };
   function captura() {
+    est.top = chat.scrollTop;
     est.noFim = R.estaNoFim(chat.scrollTop, chat.scrollHeight, chat.clientHeight);
     est.ancora = null;
     if (est.noFim) return;
@@ -151,8 +165,11 @@ const rolagem = (() => {
     new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) observa(n); })
       .observe(chat, { childList: true });
   }
-  // passivo: só mede. A posição de quem está rolando nunca é tocada aqui.
-  chat.addEventListener('scroll', captura, { passive: true });
+  // passivo: só mede. A posição de quem está rolando nunca é tocada aqui. O evento de scroll chega
+  // um quadro DEPOIS do scrollTop que nós mesmos pusemos (aoFim, aplica); se o conteúdo cresceu nesse
+  // meio tempo (visual, imagem), medir de novo daria "não estou no fim" e a conversa ficaria para trás.
+  // Por isso só mede quando o scrollTop mudou de verdade desde a última captura.
+  chat.addEventListener('scroll', () => { if (R.moveuDeVerdade(est.top, chat.scrollTop)) captura(); }, { passive: true });
   captura();
   return {
     captura,
@@ -179,17 +196,12 @@ const AQUI = location.pathname + location.search;
 const EH_ADMIN = AGENTE.tipo === 'admin';
 /* A Mesa e os Lembretes levam o agente junto (?a=), para o menu deles ser o deste agente. */
 (function () {
-  try { localStorage.setItem('dgclaw:agente', AGENTE.id); } catch (_) { /* sem armazenamento: a casca usa o primeiro agente */ }
+  // localStorage para a casca das outras telas; o cookie é o que o servidor lê na rota "/" (abre o último agente usado)
+  window.DGCasca.guardaAgente(AGENTE.id);
   [['btnMesa', '/mesa'], ['btnLembretes', '/lembretes']].forEach(([id, href]) => {
     const el = $(id);
     if (el) el.href = window.DGMenuLado.comAgente(href, AGENTE.id);
   });
-})();
-(function () {
-  const b = $('btnPainel');
-  if (!b || !AGENTE.tem_painel) return;
-  b.href = AGENTE.painel_url || ('/p/' + encodeURIComponent(AGENTE.id) + '/');
-  b.hidden = false;
 })();
 if (window.campoCofre) window.campoCofre.configurar({ agente: AGENTE.id, enviar: texto => new Promise((resolve, reject) => { enviarTexto(texto, null, { aoEntregar: (ok, motivo) => ok ? resolve() : reject(new Error(motivo || 'O agente não recebeu a mensagem.')) }); }) });
 if (window.DGOnboarding) window.DGOnboarding.iniciar({ agente: AGENTE, enviar: texto => new Promise((resolve, reject) => { enviarTexto(texto, null, { aoEntregar: (ok, motivo) => ok ? resolve() : reject(new Error(motivo || 'O Admin não recebeu a mensagem.')) }); }), refazer: () => render({ semRolar: true }) });
@@ -280,6 +292,11 @@ function atvFrase(est) {
     return { nome: nome + ' sem sinal: falta conectar a conta', acao: '', classe: 'atv-cinza',
              titulo: est.motivo || '' };
   }
+  if (est.alerta === 'login_expirado') {
+    const h = atvHora(est.expirou_em || est.desde);
+    return { nome: nome + ' parado: o login expirou' + (h ? ' às ' + h : ''), acao: '', classe: 'atv-cinza',
+             titulo: est.motivo || '' };
+  }
   if (est.estado === 'sem_sinal') {
     const h = atvHora(est.ultimo_sinal);
     return { nome: nome + ' sem sinal' + (h ? ' desde ' + h : ''), acao: '', classe: 'atv-cinza',
@@ -351,6 +368,7 @@ function integraAtividade(d) {
   if (telaOciosa()) estadoOcioso();
   else pintaAtividade();
   lcSincroniza();
+  leSincroniza();
   pcSincroniza();
   filaSincroniza();
 }
@@ -379,7 +397,7 @@ const LC = window.DGLoginCartao;
 const lcEl = $('loginCartao');
 const lc = { aberto: false, manual: false, iniciado: false, demo: false, dispensado: false,
              carregando: false, ocupado: false, dados: null, erro: '', codigo: '', copiado: false,
-             timer: null, conferindo: false, chave: '', fechaTimer: null };
+             timer: null, conferindo: false, chave: '', fechaTimer: null, expirado: false };
 const LOGIN_API = API + '/login';
 
 function lcVisao() {
@@ -517,10 +535,11 @@ function lcFecha(dispensar) {
   clearTimeout(lc.fechaTimer);
   if (dispensar) lc.dispensado = true;
   Object.assign(lc, { aberto: false, manual: false, iniciado: false, demo: false, carregando: false,
-                      ocupado: false, erro: '', codigo: '', copiado: false });
+                      ocupado: false, erro: '', codigo: '', copiado: false, expirado: false });
   const era = !lcEl.hidden;
   lcDesenha();
   if (era) estadoOcioso();
+  leAoFecharCartao();
 }
 function lcEmAndamento() {
   const e = lc.dados && lc.dados.estado;
@@ -557,9 +576,13 @@ async function lcConfere() {
 function lcConcluiu() {
   if (lc.fechaTimer) return;
   lcPara();
-  // O oi é pedido já: o servidor espera o agente subir (até 60 s) e entrega uma vez só.
-  api(LOGIN_API + '/oi', { method: 'POST', body: {}, timeoutMs: 75000 })
-    .catch(e => mostraAviso('A conta foi conectada, mas não consegui pedir o oi do agente: ' + e.message + '. Escreva um oi na conversa.'));
+  leLoginConcluido();
+  // O oi é pedido já: o servidor espera o agente subir (até 60 s) e entrega uma vez só. Com o login
+  // EXPIRADO não há oi: o runner reinicia a mesma sessão e entrega o recado "login-reconectado".
+  if (!lc.expirado) {
+    api(LOGIN_API + '/oi', { method: 'POST', body: {}, timeoutMs: 75000 })
+      .catch(e => mostraAviso('A conta foi conectada, mas não consegui pedir o oi do agente: ' + e.message + '. Escreva um oi na conversa.'));
+  }
   lc.fechaTimer = setTimeout(() => { lc.fechaTimer = null; lcFecha(false); }, 1500);
 }
 
@@ -616,20 +639,22 @@ async function lcCopia(texto) {
 }
 
 /* Abre o cartão. `manual`: veio do /login (fica mesmo com a conta conectada). */
-function lcAbre(manual) {
+function lcAbre(manual, semConferir) {
   if (lc.aberto) { if (manual) { lc.manual = true; lc.dispensado = false; } lcDesenha(); return; }
-  Object.assign(lc, { aberto: true, manual: !!manual, iniciado: false, erro: '', codigo: '', carregando: true,
+  Object.assign(lc, { aberto: true, manual: !!manual, iniciado: false, erro: '', codigo: '', carregando: !semConferir,
                       dados: { estado: 'nenhum', provedor: AGENTE.provedor, precisa_login: !manual } });
   lcDesenha();
-  lcConfere();
+  if (!semConferir) lcConfere();
 }
 
 /* Chamado a cada foto de atividade: abre o cartão quando falta conta e o fecha quando a falta some. */
 function lcSincroniza() {
   if (lc.demo) return;
   const est = window.atividadeFoto && window.atividadeFoto.agentes ? window.atividadeFoto.agentes[AGENTE.id] : null;
-  const semLogin = !!est && est.alerta === 'sem_login';
+  const expirado = !!est && est.alerta === 'login_expirado';
+  const semLogin = !!est && (est.alerta === 'sem_login' || expirado);
   if (!semLogin) lc.dispensado = false;
+  if (expirado) lc.expirado = true;
   if (semLogin && !lc.aberto && !lc.dispensado) lcAbre(false);
   else if (!semLogin && lc.aberto && !lc.manual && !lc.iniciado) lcFecha(false);
 }
@@ -641,6 +666,182 @@ function lcInterceptaLogin(texto) {
   return true;
 }
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') lcConfere(); });
+
+/* ── Pop-up "Seu login do Claude expirou" ──────────────────────────────────
+   A conta ESTAVA conectada e a credencial morreu (alerta 'login_expirado' da foto de atividade):
+   o agente parou de responder e nada aparecia na conversa. Este <dialog> modal explica o que houve
+   e oferece o caminho: reconectar (o cartão de login, que é levado para dentro do pop-up, em vez
+   de reescrito), reiniciar a sessão (o Reiniciar do menu, com a mesma faixa de acompanhamento) ou
+   "Agora não" (dispensa só ESTE incidente, guardado por agente + instante em sessionStorage; o
+   cartão no fim da conversa continua). Depois do login o runner reinicia a MESMA sessão sozinho: o
+   pop-up só espera o agente voltar. Quando decide e o que diz vem de login-expirado.js (com teste). */
+const LE = window.DGLoginExpirado;
+const leDlg = $('dlgLoginExpirado');
+const le = { aberto: false, fase: 'aviso', est: null, erro: '', timer: null, concluiu: false, origemCartao: null };
+const LE_DISPENSADOS = 'dgclaw-login-expirado-dispensados';
+let reiniciaSessao = null;   // ligado pelo bloco "Reiniciar sessão do agente", mais abaixo
+
+function leEstAtual() {
+  return window.atividadeFoto && window.atividadeFoto.agentes ? window.atividadeFoto.agentes[AGENTE.id] || null : null;
+}
+function leDispensados() {
+  try { return JSON.parse(sessionStorage.getItem(LE_DISPENSADOS) || '{}') || {}; }
+  catch (e) { console.warn('pop-up de login: não consegui ler os incidentes dispensados (' + e.message + '); mostro o pop-up de novo.'); return {}; }
+}
+function leDispensa() {
+  try { sessionStorage.setItem(LE_DISPENSADOS, JSON.stringify(LE.dispensar(leDispensados(), AGENTE.id, le.est || {}))); }
+  catch (e) { console.warn('pop-up de login: não guardei o "Agora não" (' + e.message + '); ele volta se a página recarregar.'); }
+}
+function leTextos() {
+  const est = le.est || leEstAtual() || {};
+  return LE.textos({ nome: AGENTE.nome, provedor: est.provedor || AGENTE.provedor, expirouEm: est.expirou_em, motivo: le.erro });
+}
+
+function leDesenha() {
+  if (!leDlg) return;
+  const t = leTextos(), f = le.fase;
+  $('leTit').textContent = f === 'pronto' ? t.pronto : t.titulo;
+  const txt = $('leTxt');
+  txt.textContent = t.corpo;
+  txt.hidden = f !== 'aviso';
+  $('leCartao').hidden = f !== 'cartao';
+  const estado = $('leEstado');
+  estado.textContent = f === 'reiniciando' ? t.reiniciando : f === 'pronto' ? t.pronto : '';
+  estado.hidden = !estado.textContent;
+  const erro = $('leErro');
+  erro.textContent = f === 'nao_voltou' ? t.naoVoltou : le.erro;
+  erro.hidden = !erro.textContent;
+  const prim = $('lePrimario'), sec = $('leSecundario'), nao = $('leAgoraNao');
+  prim.textContent = t.primario; sec.textContent = t.secundario;
+  prim.hidden = f !== 'aviso';
+  sec.hidden = !(f === 'aviso' || f === 'nao_voltou');
+  nao.hidden = f === 'pronto';
+  nao.textContent = f === 'aviso' || f === 'cartao' ? t.agoraNao : 'Fechar';
+}
+
+function leAbre() {
+  if (!LE || !leDlg || le.aberto) return;
+  le.est = leEstAtual();
+  Object.assign(le, { aberto: true, fase: 'aviso', erro: '', concluiu: false });
+  leDesenha();
+  if (leDlg.showModal) leDlg.showModal(); else leDlg.setAttribute('open', '');
+  try { $('lePrimario').focus({ preventScroll: true }); } catch (e) { console.warn('pop-up de login: não consegui pôr o foco no botão:', e.message); }
+}
+
+function leFecha(dispensar) {
+  if (!le.aberto) return;
+  clearTimeout(le.timer);
+  if (dispensar) leDispensa();
+  leDevolveCartao();
+  le.aberto = false;
+  if (leDlg.close) leDlg.close(); else leDlg.removeAttribute('open');
+}
+
+/* O cartão de login muda de lugar (do fim da conversa para dentro do pop-up) e volta depois. */
+function leLevaCartao() {
+  if (le.origemCartao || !lcEl) return;
+  le.origemCartao = { pai: lcEl.parentNode, depois: lcEl.nextSibling };
+  $('leCartao').appendChild(lcEl);
+}
+function leDevolveCartao() {
+  const o = le.origemCartao;
+  if (!o) return;
+  le.origemCartao = null;
+  o.pai.insertBefore(lcEl, o.depois && o.depois.parentNode === o.pai ? o.depois : null);
+}
+
+async function leReconectar() {
+  le.erro = '';
+  le.fase = 'cartao';
+  le.concluiu = false;
+  leLevaCartao();
+  leDesenha();
+  lc.expirado = true;
+  if (!lc.aberto) lcAbre(false, true);
+  else lcDesenha();
+  await lcComeca();
+}
+
+/* O cartão fechou: ou o login terminou (segue para esperar a volta) ou a pessoa cancelou (volta à pergunta). */
+function leAoFecharCartao() {
+  if (!le.aberto || le.fase !== 'cartao') return;
+  leDevolveCartao();
+  if (le.concluiu) leComecaVolta();
+  else { le.fase = 'aviso'; leDesenha(); try { $('lePrimario').focus({ preventScroll: true }); } catch (e) { /* o botão acabou de ser mostrado */ } }
+}
+function leLoginConcluido() {
+  if (le.aberto && le.fase === 'cartao') le.concluiu = true;
+}
+
+/* Espera o agente voltar a responder. Reaproveita a mesma regra do Reiniciar (avaliaVolta). */
+function leComecaVolta() {
+  clearTimeout(le.timer);
+  le.fase = 'reiniciando'; le.erro = '';
+  leDesenha();
+  const ini = Date.now();
+  const marco = atvAgoraMs() / 1000;
+  let vivas = 0, ultimoAgora = null;
+  const olha = () => {
+    if (!le.aberto || le.fase !== 'reiniciando') return;
+    const v = PURO.avaliaVolta({ marco, ultimoAgora, vivas, foto: window.atividadeFoto, agenteId: AGENTE.id, streamAberto, decorridoMs: Date.now() - ini });
+    vivas = v.vivas; ultimoAgora = v.ultimoAgora;
+    if (v.acao === 'voltou') return lePronto();
+    if (v.acao === 'login_expirado' || v.acao === 'sem_login') return leNaoVoltou(v.motivo || 'A conta continua sem login. Reconecte de novo.');
+    if (v.acao === 'indeterminado') return leNaoVoltou('A tela não consegue confirmar a volta (conversa-puro.js não carregou). Recarregue a página.');
+    if (Date.now() - ini > LE.PRAZO_VOLTA_MS) return leNaoVoltou('');
+    le.timer = setTimeout(olha, 2000);
+  };
+  le.timer = setTimeout(olha, 2000);
+}
+function leNaoVoltou(motivo) {
+  le.fase = 'nao_voltou'; le.erro = motivo;
+  leDesenha();
+  try { $('leSecundario').focus({ preventScroll: true }); } catch (e) { /* botão recém-mostrado */ }
+}
+function lePronto() {
+  le.fase = 'pronto'; le.erro = '';
+  leDesenha();
+  le.timer = setTimeout(() => leFecha(false), LE.FECHA_PRONTO_MS);
+}
+
+function leReiniciar() {
+  if (!reiniciaSessao) {
+    le.erro = 'O botão de reiniciar não carregou nesta página. Recarregue a página ou use o menu da conversa, "Reiniciar a sessão".';
+    leDesenha();
+    return;
+  }
+  leFecha(true);
+  reiniciaSessao();
+}
+
+/* A cada foto de atividade: abre quando o alerta aparece; com o alerta sumido (login feito pelo
+   terminal, ou o runner reiniciou sozinho) passa a esperar o "voltou". */
+function leSincroniza() {
+  if (!LE || !leDlg) return;
+  const est = leEstAtual();
+  if (LE.expirado(est)) le.est = est;
+  const d = LE.decisao({ aberto: le.aberto, fase: le.fase, agenteId: AGENTE.id, est, dispensados: leDispensados() });
+  if (d === 'abrir') leAbre();
+  else if (d === 'aguardar_volta') { leDevolveCartao(); leComecaVolta(); }
+}
+
+/* Mensagem recusada com LOGIN_EXPIRADO: a pessoa acabou de tentar falar, então abre mesmo se dispensou. */
+function leAbreAoRecusar() {
+  if (!LE || !leDlg) { mostraErro('O login da conta expirou, mas o pop-up de reconectar não carregou. Recarregue a página e use o cartão de login.'); return; }
+  const est = leEstAtual();
+  if (le.aberto) return;
+  if (est && LE.expirado(est)) { lc.expirado = true; }
+  leAbre();
+}
+
+if (leDlg && LE) {
+  $('lePrimario').onclick = () => { leReconectar(); };
+  $('leSecundario').onclick = leReiniciar;
+  $('leAgoraNao').onclick = () => leFecha(true);
+  leDlg.addEventListener('cancel', ev => { ev.preventDefault(); leFecha(true); });
+} else {
+  console.warn('pop-up de login expirado: ' + (!LE ? 'login-expirado.js não carregou' : 'falta #dlgLoginExpirado na página') + '. O cartão de login no fim da conversa continua funcionando.');
+}
 
 /* ── Cartão "O agente está esperando a sua permissão" ─────────────────────
    Aparece quando a foto de atividade traz alerta 'permissao' (o runner está em waiting_input).
@@ -786,9 +987,29 @@ function respiroDasFaixas() {
   posicionaSeta();
 }
 const mostraErro = t => faixa(fErro, t);
-const mostraAviso = t => faixa(fAviso, t);
 fErro.querySelector('.x').onclick = () => faixa(fErro, '');
-fAviso.querySelector('.x').onclick = () => faixa(fAviso, '');
+
+/* Aviso amarelo fechado no ✕ descansa 48 h (a cota de voz voltava toda hora). Passou o prazo
+   e o problema continua, ele volta. Sem localStorage, o aviso só deixa de ser silenciado.
+   Não confundir com fechaAviso, que é outra coisa. */
+const CHAVE_DESCANSO = 'dgclaw:avisos-fechados';
+function avisosFechados() {
+  try { return JSON.parse(localStorage.getItem(CHAVE_DESCANSO) || '{}') || {}; }
+  catch (e) { return {}; }
+}
+function fechaFaixaAviso() {
+  const t = fAviso.querySelector('.txt').textContent;
+  if (t) {
+    try { localStorage.setItem(CHAVE_DESCANSO, JSON.stringify(PURO.registraFechamento(avisosFechados(), t, Date.now()))); }
+    catch (e) { console.warn('aviso: não consegui guardar o fechamento (' + e.message + ')'); }
+  }
+  faixa(fAviso, '');
+}
+const mostraAviso = t => {
+  if (t && PURO.avisoDescansando(avisosFechados(), t, Date.now())) return;
+  faixa(fAviso, t);
+};
+fAviso.querySelector('.x').onclick = fechaFaixaAviso;
 
 /* Avisos que vêm da thread (ex.: "Nenhum transcript...") valem enquanto o
    servidor manda. Lista vazia limpa a faixa, mas só se o que está nela é o aviso
@@ -1129,9 +1350,17 @@ function htmlCorpo(m) {
     // veio marcado como mídia e o arquivo não chegou até aqui: o rótulo explica o que era
     midia = `<span class="midia">${ROTULO_MIDIA[m.kind]} (não baixada)</span>`;
   }
-  const cita = m.cita ? `<div class="cita"><b>${ehDono({ origin: m.cita.origin }) ? 'Você' :
-      esc(AGENTE.nome)}</b>${esc(m.cita.texto)}</div>` : '';
+  // a marca de áudio transcrito é para o agente: na tela vira um 🎤 no rodapé do balão
+  const citaDono = !!m.cita && ehDono({ origin: m.cita.origin });
+  const cita = m.cita ? `<div class="cita"><b>${citaDono ? 'Você' :
+      esc(AGENTE.nome)}</b>${esc(citaDono ? PURO.separaAudio(m.cita.texto).texto : m.cita.texto)}</div>` : '';
   let leg = legendaUtil(m);
+  let viaAudio = false;
+  if (leg && ehDono(m)) {
+    const sa = PURO.separaAudio(leg);
+    viaAudio = sa.audio;
+    leg = sa.texto;
+  }
   let doVisual = '';
   const dv = ehDono(m) ? separaDoVisual(leg) : null;
   if (dv) {
@@ -1144,8 +1373,9 @@ function htmlCorpo(m) {
   const corpo = leg ? doVisual + htmlLeg : doVisual;
   const reac = (m.reacoes && m.reacoes.length)
     ? `<span class="reac">${m.reacoes.map(esc).join(' ')}</span>` : '';
-  const meta = m.pendente ? metaPendente(m.local)
+  let meta = m.pendente ? metaPendente(m.local)
     : `<span class="meta">${m.editada ? 'editada · ' : ''}${esc(m.hhmm)}</span>`;
+  if (viaAudio) meta = meta.replace(/^<span class="meta"[^>]*>/, '$&<span title="Falado e transcrito automaticamente">🎤</span> · ');
   return htmlSelo(m) + cita + midia + corpo + reac + meta;
 }
 
@@ -1975,7 +2205,7 @@ $('formSair').addEventListener('submit', async ev => {
   try {
     for (const k of Object.keys(localStorage)) if (k.indexOf('dgclaw:') === 0) localStorage.removeItem(k);
   } catch (e) { console.warn('não consegui limpar o aparelho ao sair:', e.message); }
-  await cacheMidias.limpar();
+  if (cacheMidias) await cacheMidias.limpar();
   ev.target.submit();
 });
 
@@ -2013,7 +2243,11 @@ function ligaStream() {
   mudouStream();
   const abriu = () => {
     religaEspera = 3000;
-    if (!streamAberto) { streamAberto = true; jaConectou = true; mudouStream(); }
+    if (!streamAberto) {
+      const religou = jaConectou;
+      streamAberto = true; jaConectou = true; mudouStream();
+      if (religou) { atualizaNaoLidas(); agendaLido(); }
+    }
   };
   /* Cada evento traz JSON; JSON ruim vira aviso no console com o começo do
      texto, nunca erro mudo. */
@@ -2156,6 +2390,54 @@ function cartaoDoc(md) {
     `<a class="sec" href="${esc(md.url)}" download="${esc(md.nome || '')}">Baixar</a></div>`;
 }
 
+/* Zoom só da FOTO aberta no visor (a página nunca amplia; ver sem-zoom.js).
+   Pinça de dois dedos de 1x a 4x, um dedo arrasta quando ampliada, duplo toque
+   alterna 1x/2x. Cada abertura cria uma <img> nova, então volta a 1x ao fechar. */
+function ativaZoomImagem(img) {
+  img.dataset.zoomProprio = '1';
+  img.draggable = false;
+  img.style.touchAction = 'none';
+  img.style.transformOrigin = 'center center';
+  let esc = 1, tx = 0, ty = 0;
+  let dist0 = 0, esc0 = 1, ini = null, ultimoToque = 0, moveu = false;
+  const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+  const aplica = () => {
+    if (esc <= 1.02) { esc = 1; tx = 0; ty = 0; }
+    const mx = img.offsetWidth * (esc - 1) / 2, my = img.offsetHeight * (esc - 1) / 2;
+    tx = Math.max(-mx, Math.min(mx, tx));
+    ty = Math.max(-my, Math.min(my, ty));
+    img.style.transform = esc === 1 ? '' : 'translate(' + tx + 'px,' + ty + 'px) scale(' + esc + ')';
+  };
+  const alterna = () => { esc = esc > 1 ? 1 : 2; tx = 0; ty = 0; aplica(); };
+  img.addEventListener('touchstart', ev => {
+    moveu = false;
+    if (ev.touches.length === 2) { dist0 = dist(ev.touches) || 1; esc0 = esc; ini = null; }
+    else if (ev.touches.length === 1) ini = { x: ev.touches[0].clientX, y: ev.touches[0].clientY, tx, ty };
+  }, { passive: true });
+  img.addEventListener('touchmove', ev => {
+    ev.preventDefault();
+    if (ev.touches.length === 2 && dist0) {
+      moveu = true;
+      esc = Math.max(1, Math.min(4, esc0 * dist(ev.touches) / dist0));
+      aplica();
+    } else if (ev.touches.length === 1 && ini && esc > 1) {
+      const dx = ev.touches[0].clientX - ini.x, dy = ev.touches[0].clientY - ini.y;
+      if (Math.abs(dx) + Math.abs(dy) > 6) moveu = true;
+      tx = ini.tx + dx; ty = ini.ty + dy;
+      aplica();
+    }
+  }, { passive: false });
+  img.addEventListener('touchend', ev => {
+    if (ev.touches.length) { ini = null; return; }
+    ini = null;
+    if (moveu) { ultimoToque = 0; return; }
+    const agora = Date.now();
+    if (agora - ultimoToque < 300) { ultimoToque = 0; ev.preventDefault(); alterna(); }
+    else ultimoToque = agora;
+  }, { passive: false });
+  if (!ehToque) img.addEventListener('dblclick', alterna);
+}
+
 function abreLightbox(mid, opt) {
   const md = midias[mid];
   if (!md) return;
@@ -2173,6 +2455,7 @@ function abreLightbox(mid, opt) {
     img.alt = md.nome || 'foto';
     img.src = md.url;
     img.onerror = () => { lbCorpo.innerHTML = cartaoDoc(md); };
+    ativaZoomImagem(img);
     lbCorpo.appendChild(img);
   } else if (md.kind === 'video') {
     const v = document.createElement('video');
@@ -2716,6 +2999,7 @@ chat.addEventListener('drop', ev => {
 
 /* ── Menu lateral (gaveta do ☰) ───────────────────────────────────────────── */
 function abreMenu(abrir) {
+  if (abrir) atualizaNaoLidas();
   menu.classList.toggle('abre', abrir);
   overlayMenu.classList.toggle('abre', abrir);
 }
@@ -2731,6 +3015,109 @@ document.addEventListener('keydown', ev => {
 /* Foto, seletor de agentes, páginas do painel e Configurações: tudo no menu-lado.js.
    A lista já veio do boot, então não é buscada de novo. */
 window.DGMenuLado.inicia({ agente: AGENTE, agentes: agentesMenu, fecha: () => abreMenu(false) });
+
+/* ── Bolinha de não lidas ────────────────────────────────────────────────────
+   Quem guarda o "visto" é o servidor (por usuário e por agente), então o celular e o computador
+   concordam. Aqui a tela só pede a contagem, pinta e avisa até onde esta conversa foi vista. */
+let naoLidas = {};              // slug -> { nao_lidas, mais, visto_ep, ultima_ep, marco_novo, erro }
+let naoLidasEmVoo = null;
+function textoBolinha(n) { return n && (n.mais || n.nao_lidas > 99) ? '99+' : String(n.nao_lidas); }
+/* null (não medido) e o agente atual nunca mostram bolinha. */
+function bolinhaDe(a) {
+  const n = naoLidas[a.id];
+  if (a.id === AGENTE.id || !n || typeof n.nao_lidas !== 'number' || n.nao_lidas <= 0) return null;
+  return n;
+}
+function atualizaNaoLidas() {
+  if (naoLidasEmVoo) return naoLidasEmVoo;
+  naoLidasEmVoo = api('/api/v1/nao-lidas', { timeoutMs: 15000 }).then(d => {
+    if (!d || typeof d.agentes !== 'object' || !d.agentes) throw new Error('a resposta não trouxe o campo "agentes"');
+    const novo = {};
+    for (const slug of Object.keys(d.agentes)) {
+      const n = d.agentes[slug];
+      // falha pontual de um agente (nao_lidas null) não apaga a contagem que já tínhamos dele
+      novo[slug] = (n && typeof n.nao_lidas !== 'number' && naoLidas[slug]) ? naoLidas[slug] : n;
+    }
+    naoLidas = novo;
+    window.DGMenuLado.defineNaoLidas(naoLidas);
+    pintaTrocaBaixo();
+    pintaBolinhaMenu();
+  }).catch(e => {
+    console.warn('não consegui atualizar as mensagens não lidas (mantive a contagem anterior):', e.message);
+  }).finally(() => { naoLidasEmVoo = null; });
+  return naoLidasEmVoo;
+}
+
+/* Bolinha no ☰ com a soma dos outros agentes: no computador a fileira de avatares não aparece. */
+function pintaBolinhaMenu() {
+  const btn = $('btnMenu');
+  if (!btn) return;
+  const total = window.DGMenuLado.totalNaoLidas(agentesMenu, naoLidas, AGENTE.id);
+  let b = btn.querySelector('.bolinha-menu');
+  if (!total) { if (b) b.remove(); btn.setAttribute('aria-label', 'Abrir o menu'); return; }
+  if (!b) { b = document.createElement('span'); b.className = 'bolinha-menu'; b.setAttribute('aria-hidden', 'true'); btn.appendChild(b); }
+  btn.setAttribute('aria-label', 'Abrir o menu, ' + total + (total === 1 ? ' mensagem não lida' : ' mensagens não lidas') + ' em outros agentes');
+}
+
+let epLidoEnviado = 0, lidoTimer = null;
+/* Só conta como lida a conversa que a pessoa está vendo no fim: rolar lá em cima relendo o passado
+   não pode marcar como lidas as respostas novas que ainda estão abaixo. */
+const pertoDoFim = () => distanciaDoFim() < 160;
+function agendaLido() {
+  if (document.visibilityState !== 'visible' || !msgs.length || !pertoDoFim()) return;
+  const ep = maiorEp();
+  if (!(ep > epLidoEnviado)) return;
+  clearTimeout(lidoTimer);
+  lidoTimer = setTimeout(() => {
+    lidoTimer = null;
+    if (document.visibilityState !== 'visible' || !pertoDoFim()) return;
+    const alvo = maiorEp();
+    if (!(alvo > epLidoEnviado)) return;
+    api(API + '/lido', { method: 'POST', body: { ep: alvo }, timeoutMs: 15000 })
+      .then(() => { epLidoEnviado = Math.max(epLidoEnviado, alvo); })
+      .catch(e => console.warn('não consegui avisar o servidor que a conversa foi lida (tento de novo na próxima mensagem):', e.message));
+  }, 1000);
+}
+ouvintesChegada.push(agendaLido);
+// voltar a rolar até o fim reavalia (o debounce de agendaLido junta a rolagem toda)
+chat.addEventListener('scroll', agendaLido, { passive: true });
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return;
+  agendaLido();
+  atualizaNaoLidas();
+});
+// quem fica parado nesta conversa também vê chegar mensagem em outro agente
+setInterval(() => { if (document.visibilityState === 'visible') atualizaNaoLidas(); }, 60000);
+atualizaNaoLidas();
+
+/* Celular: a mesma lista do menu vira uma fileira de avatares embaixo, com a agente atual
+   destacada. O link é o mesmo do menu (/a/<id>). Com uma agente só, a fileira fica vazia e o CSS a esconde. */
+function pintaTrocaBaixo() {
+  const baixo = $('trocaBaixo');
+  if (!baixo) return;
+  document.body.classList.toggle('com-troca', agentesMenu.length >= 2);
+  if (agentesMenu.length < 2) { baixo.innerHTML = ''; return; }
+  baixo.innerHTML = agentesMenu.map(a => {
+    const atual = a.id === AGENTE.id;
+    const foto = a.avatar_img || (/^https:\/\//i.test(a.avatar || '') ? a.avatar : '');
+    const av = foto ? `<img src="${esc(foto)}" alt="">` : esc(a.avatar || (a.nome || '?').slice(0, 1));
+    const rot = a.nome + (a.subtitulo ? ', ' + a.subtitulo : '');
+    const nl = bolinhaDe(a);
+    const aviso = nl ? `, ${nl.nao_lidas} ${nl.nao_lidas === 1 ? 'mensagem não lida' : 'mensagens não lidas'}${nl.mais ? ' ou mais' : ''}` : '';
+    return `<a href="/a/${encodeURIComponent(a.id)}" title="${esc(rot)}" ` +
+      (atual ? `class="atual" aria-current="page" style="--cor-troca:${esc(a.cor || '#2f9e5e')}" ` : '') +
+      `aria-label="Abrir a conversa com ${esc(rot + aviso)}"><div class="av" style="background:${esc(a.cor || '#2f9e5e')}">${av}</div>` +
+      `${nl ? `<span class="bolinha-nl" aria-hidden="true">${textoBolinha(nl)}</span>` : ''}</a>`;
+  }).join('');
+  centralizaTrocaBaixo();
+}
+// sem scrollIntoView: ele rolaria a página toda
+function centralizaTrocaBaixo() {
+  const baixo = $('trocaBaixo'), atual = baixo && baixo.querySelector('.atual');
+  if (atual && baixo.clientWidth) baixo.scrollLeft = atual.offsetLeft - (baixo.clientWidth - atual.offsetWidth) / 2;
+}
+pintaTrocaBaixo();
+window.addEventListener('resize', centralizaTrocaBaixo);
 // ?texto=... chega do painel (ex.: "editar" numa rotina): o pedido já vem escrito no campo, sem
 // enviar sozinho, e o parâmetro sai da barra para não reaparecer ao recarregar.
 try {
@@ -3055,7 +3442,8 @@ async function entregaTranscricao(texto, manda) {
     setEstado('transcrição no campo: revise e envie');
     return;
   }
-  await enviarTexto(texto);
+  // envio direto sem revisão: o agente fica sabendo que pode haver erro de transcrição
+  await enviarTexto(PURO.textoDaFala(texto, true));
 }
 
 /* Botões dentro de uma faixa. A faixa() limpa os botões a cada texto novo,
@@ -3198,7 +3586,18 @@ async function mandaTexto(pend, semEsperar) {
       avisaEntrega(pend, false, motivo);
       return false;
     }
+    if (e.codigo === 'LOGIN_EXPIRADO' && !pend.anexos) {
+      // O texto não se perde: sai do balão de erro e volta ao campo (se a pessoa já não escreveu outra coisa).
+      if (pendentes.includes(pend) && pend.tentativa === tentativa) {
+        descartar(pend);
+        if (!entrada.value.trim()) { entrada.value = pend.texto; ajustaCampo(); }
+      }
+      leAbreAoRecusar();
+      avisaEntrega(pend, false, e.message);
+      return false;
+    }
     falhouTentativa(pend, tentativa, 'Não consegui entregar a mensagem: ', e.message);
+    if (e.codigo === 'LOGIN_EXPIRADO') leAbreAoRecusar();
     avisaEntrega(pend, false, e.message);
     return false;
   } finally {
@@ -3369,9 +3768,8 @@ async function esperaResposta(since) {
     mostraAviso('Parei de esperar. A mensagem foi entregue: a resposta aparece ' +
                 'aqui sozinha quando ela mandar.');
   } else if (!respostas.length) {
-    setEstado('sem resposta ainda');
-    mostraAviso('A ' + AGENTE.nome + ' não respondeu em 3 minutos. A mensagem foi ' +
-                'entregue: a resposta aparece aqui sozinha quando ela mandar.');
+    // sem faixa de propósito: a resposta chega sozinha pelo stream, e a escuta continua
+    estadoOcioso();
     if (lerRespostas) escuta = { since: since, ate: Date.now() + ESCUTA_MS };
   } else if (lerRespostas) {
     escuta = { since: since, ate: Date.now() + ESCUTA_MS };
@@ -3640,6 +4038,12 @@ function passosTutorial() {
     oque: 'No celular, o botão ☰ abre o menu do agente. No computador ele não aparece, porque o menu já fica fixo à esquerda.',
     como: 'Toque nele quando quiser trocar de agente, abrir uma página do painel ou sair. Toque fora do menu, no ✕ ou na tecla Esc para fechar.',
     porque: 'Mantém a tela da conversa limpa: o que não é conversa fica guardado no menu.' });
+  if ($('trocaBaixo') && $('trocaBaixo').offsetParent !== null) {
+    passos.push({ alvo: '#trocaBaixo', antes: fechaM, titulo: 'A fileira de agentes',
+      oque: 'Um avatar por agente, logo abaixo da barra de escrever. A conversa em que você está fica com um anel na cor dela.',
+      como: 'Toque no avatar de outro agente para abrir a conversa com ele. Arraste para o lado se não couberem todos. Ela some enquanto o teclado está aberto.',
+      porque: 'Trocar de agente com o polegar, sem abrir o menu ☰.' });
+  }
   if (!EH_ADMIN) {
     passos.push({ alvo: '#mlPainel', antes: abreM, titulo: 'As páginas do painel de ' + nome,
       oque: 'Status, Memória, Operações, Custos e as outras páginas que mostram como ' + nome + ' está, o que ele guarda e quanto gasta.',
@@ -3652,6 +4056,12 @@ function passosTutorial() {
       como: 'No Android e no computador, com Chrome ou Edge, o toque abre o pedido de instalação do navegador. No iPhone e no iPad, o item mostra o caminho: Compartilhar e depois Adicionar à Tela de Início. O item some sozinho quando o app já está instalado.',
       porque: 'O app instalado abre sem a barra do navegador e fica a um toque, como qualquer outro aplicativo.' });
   }
+  if ($('mlSessao') && !$('mlSessao').hidden) {
+    passos.push({ alvo: '#mlSessao', antes: abreM, titulo: 'Reiniciar a sessão',
+      oque: 'O botão que reinicia o processo de ' + nome + ' quando ele trava, sem você abrir terminal.',
+      como: 'Pede a sua confirmação, reinicia e mostra uma faixa no topo até ele voltar. A conversa continua de onde estava, porque o agente retoma a mesma sessão.',
+      porque: 'Quando o agente para de responder, reiniciar costuma resolver, e aqui é um toque.' });
+  }
   passos.push({ alvo: '#loginCartao', titulo: 'Conectar a sua conta',
     antes: () => {
       if (lc.aberto) return;
@@ -3661,13 +4071,13 @@ function passosTutorial() {
     },
     depois: () => { if (lc.demo) lcFecha(false); },
     oque: 'Um cartão que aparece no fim da conversa quando ' + nome + ' ainda não tem a sua conta do Claude ou do Codex conectada. O que você vê agora é só um exemplo.',
-    como: 'Toque em Conectar, abra a página de login, entre com a sua conta e, no Claude, cole aqui o código que ela mostrar no fim. A tela confere sozinha e avisa quando terminar. Para abrir o cartão a qualquer hora, escreva /login no campo de mensagem e envie: nada vai para o agente.',
-    porque: 'Sem conta conectada o agente não consegue responder. Assim você resolve aqui mesmo, sem abrir terminal.' });
-  if (!$('btnPainel').hidden) {
-    passos.push({ alvo: '#btnPainel', titulo: 'O botão Painel',
-      oque: 'Um atalho para o painel de ' + nome + ', com Status, Memória, Operações, Custos e as outras páginas.',
-      como: 'Toque nele e o painel abre na mesma janela. Para voltar, use o item Conversa do menu do painel ou o voltar do navegador.',
-      porque: 'Fica no topo para você passar da conversa ao painel com um toque, sem abrir o menu.' });
+    como: 'Toque em Conectar, abra a página de login, entre com a sua conta e, no Claude, cole aqui o código que ela mostrar no fim. A tela confere sozinha e avisa quando terminar. Para abrir o cartão a qualquer hora, escreva /login no campo de mensagem e envie: nada vai para o agente. Se a conta JÁ estava conectada e o login expirou, a tela abre na frente um aviso "Seu login do Claude expirou" com os botões Reconectar conta, Reiniciar a sessão e Agora não; depois do login, ' + nome + ' volta sozinho, na mesma conversa.',
+    porque: 'Sem conta conectada o agente não consegue responder. Assim você resolve aqui mesmo, sem abrir terminal, e o que você mandou durante a queda não se perde: o campo guarda o texto e ' + nome + ' responde o que ficou pendente.' });
+  if ($('btnSessoes') && !$('btnSessoes').hidden) {
+    passos.push({ alvo: '#btnSessoes', titulo: 'O botão Sessões',
+      oque: 'Um atalho para as sessões de trabalho de ' + nome + ': os cards que andam em paralelo com esta conversa. Uma bolinha vermelha avisa quando alguma espera uma decisão sua.',
+      como: 'Toque nele e a tela de Sessões abre dentro do painel do agente, na mesma janela. No celular o texto some e fica só o ícone 🖥.',
+      porque: 'É o mini-Bunker do agente: você acompanha e cria trabalhos longos sem sair procurando no menu, e o botão fica no topo, em todas as telas.' });
   }
   passos.push({ alvo: '#btnMesa', titulo: 'O botão Mesa',
     oque: 'Um atalho para a Mesa de tarefas, onde ficam as tarefas de todos os agentes.',
@@ -3716,12 +4126,21 @@ $('gmTutorial').onclick = iniciaTutorial;
 /* Acervo: a lista local aparece antes da revalidação da rede. */
 const acPainel = $('acervoPainel'), acLista = $('acervoLista');
 let acAba = 'midias';
-const cacheMidias = DGMidias.criar({ conta: caps.conta, agente: AGENTE.id, base: API,
-  mudou: aba => { if (aba === acAba) pintaAcervo(); } });
+// O HTML pode vir do cache do app de antes de uma atualização, sem o módulo de mídias: isso
+// nunca pode derrubar a conversa inteira. Sem o módulo, só o acervo avisa para recarregar.
+const cacheMidias = typeof DGMidias !== 'undefined'
+  ? DGMidias.criar({ conta: caps.conta, agente: AGENTE.id, base: API,
+    mudou: aba => { if (aba === acAba) pintaAcervo(); } })
+  : null;
+const ACERVO_SEM_MODULO = 'A página foi atualizada. Recarregue.';
+function dadosAcervo(aba) {
+  return cacheMidias ? cacheMidias.estado(aba)
+    : { itens: [], carregou: true, carregando: false, proximo: null, erro: ACERVO_SEM_MODULO };
+}
 function pintaAcervo() {
   if (acPainel.hidden) return;
-  const d = cacheMidias.estado(acAba);
-  $('acervoEstado').textContent = d.erro ? 'Não consegui atualizar: ' + d.erro :
+  const d = dadosAcervo(acAba);
+  $('acervoEstado').textContent = !cacheMidias ? ACERVO_SEM_MODULO : d.erro ? 'Não consegui atualizar: ' + d.erro :
     (!d.carregou ? 'Carregando os itens recentes…' : d.itens.length + ' itens carregados' + (d.carregando ? ' · atualizando…' : '')) +
     (d.avisoCache ? ' · ' + d.avisoCache : '');
   let html = acAba === 'midias' ? '<div class="acgrade">' : '';
@@ -3736,17 +4155,17 @@ function pintaAcervo() {
     html += `<div class="acitem">${corpo}<button class="acir" data-origem="${esc(it.msg_id)}" title="Ir para a mensagem de origem">${esc(it.dia || '')} ${esc(it.hhmm || '')} ↪</button></div>`;
   }
   if (acAba === 'midias') html += '</div>';
-  if (d.erro) html += '<button class="acmais" data-tentar>Atualizar novamente</button>';
+  if (d.erro && cacheMidias) html += '<button class="acmais" data-tentar>Atualizar novamente</button>';
   if (d.proximo) html += `<button class="acmais" data-mais ${d.carregando ? 'disabled' : ''}>${d.carregando ? 'Carregando…' : 'Carregar anteriores'}</button>`;
-  else if (d.carregou && !d.itens.length) html += '<p>Nenhum item deste tipo na conversa disponível.</p>';
+  else if (cacheMidias && d.carregou && !d.itens.length) html += '<p>Nenhum item deste tipo na conversa disponível.</p>';
   acLista.innerHTML = html;
 }
 function abreAcervo(aba = acAba) {
   acAba = aba; acPainel.hidden = false;
   for (const b of acPainel.querySelectorAll('[data-aba]')) b.setAttribute('aria-selected', String(b.dataset.aba === aba));
-  pintaAcervo(); cacheMidias.abrir(aba);
+  pintaAcervo(); if (cacheMidias) cacheMidias.abrir(aba);
 }
-function fechaAcervo() { acPainel.hidden = true; cacheMidias.fechar(); }
+function fechaAcervo() { acPainel.hidden = true; if (cacheMidias) cacheMidias.fechar(); }
 $('who').addEventListener('click', () => abreAcervo());
 $('who').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abreAcervo(); } });
 $('av').addEventListener('click', () => abreAcervo());
@@ -3754,9 +4173,10 @@ $('acervoFechar').onclick = fechaAcervo;
 document.addEventListener('keydown', e => { if (e.key === 'Escape') fechaAcervo(); });
 acPainel.querySelector('nav').onclick = e => { const b = e.target.closest('[data-aba]'); if (b) { acLista.scrollTop = 0; abreAcervo(b.dataset.aba); } };
 acLista.addEventListener('scroll', () => {
-  if (acLista.scrollHeight - acLista.scrollTop - acLista.clientHeight < 250) cacheMidias.mais(acAba);
+  if (cacheMidias && acLista.scrollHeight - acLista.scrollTop - acLista.clientHeight < 250) cacheMidias.mais(acAba);
 }, { passive: true });
 acLista.onclick = async e => {
+  if (!cacheMidias) return;
   if (e.target.closest('[data-mais]')) return cacheMidias.mais(acAba);
   if (e.target.closest('[data-tentar]')) return cacheMidias.abrir(acAba);
   const md = e.target.closest('[data-midia]'); if (md) return abreLightbox(md.dataset.midia);
@@ -3780,7 +4200,7 @@ function passoAcervo() {
 $('acervoAjuda').onclick = () => window.DGTour.inicia({ passos: [passoAcervo()] });
 document.addEventListener('click', async e => {
   const a = e.target.closest('a[href="/sair"]'); if (!a) return;
-  e.preventDefault(); await cacheMidias.limpar(); location.href = a.href;
+  e.preventDefault(); if (cacheMidias) await cacheMidias.limpar(); location.href = a.href;
 });
 
 /* ── Partida ──────────────────────────────────────────────────────────────── */
@@ -3862,6 +4282,106 @@ async function consultaAlertas() {
 consultaAlertas(); setInterval(consultaAlertas, 10000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) consultaAlertas(); });
 window.addEventListener('resize', posicionaAlertas);
+
+/* ── Reiniciar sessão do agente ─────────────────────────────────────────────
+   O item #gmReiniciar mora no menu (casca.js) e nasce escondido: só a Conversa o mostra.
+   Fluxo: diálogo de confirmação, POST /reiniciar (o runner refaz o processo e retoma a MESMA
+   conversa), faixa no topo e acompanhamento pela foto de atividade que o stream já traz.
+   "De volta" = o agente deixou de estar sem sinal por 2 leituras seguidas. Teto de 150 s. */
+(function () {
+  const faixaR = $('faixaReinicio'), dlg = $('dlgReinicio'), item = $('gmReiniciar');
+  if (!faixaR || !dlg || !item) { console.warn('reinício: faltam elementos na página (faixa, diálogo ou item do menu); o botão não foi ligado.'); return; }
+  const URL_REINICIO = API + '/reiniciar';
+  const txt = faixaR.querySelector('.rtxt'), ico = faixaR.querySelector('.rico');
+  let tempo = null, sumir = null, emCurso = false;
+  item.closest('section').hidden = false;
+
+  function mostra(tipo, texto, acoes) {
+    clearTimeout(sumir);
+    faixaR.className = tipo;
+    faixaR.hidden = false;
+    ico.textContent = tipo === 'ok' ? '✓' : tipo === 'erro' ? '!' : '↻';
+    txt.textContent = texto;
+    faixaR.querySelectorAll('.racoes').forEach(e => e.remove());
+    if (acoes && acoes.length) {
+      const caixa = document.createElement('div');
+      caixa.className = 'racoes';
+      for (const a of acoes) {
+        const b = document.createElement('button');
+        b.type = 'button'; b.textContent = a.rotulo; b.onclick = a.fn;
+        caixa.appendChild(b);
+      }
+      faixaR.appendChild(caixa);
+    }
+  }
+  const esconde = () => { clearTimeout(sumir); clearTimeout(tempo); faixaR.hidden = true; faixaR.className = ''; };
+  const falha = causa => mostra('erro', 'Não consegui reiniciar a sessão de ' + AGENTE.nome + ': ' + causa, [
+    { rotulo: 'Fechar', fn: esconde }, { rotulo: 'Tentar de novo', fn: dispara }]);
+
+  function acompanha(textoInicial) {
+    clearTimeout(tempo);
+    const ini = Date.now();
+    // Só vale retrato do servidor posterior ao pedido: a foto que já estava na tela pode ser antiga
+    // e ainda mostrar o agente "vivo" (ou "sem login") de antes do reinício.
+    const marco = atvAgoraMs() / 1000;
+    let vivas = 0, ultimoAgora = null;
+    mostra('rodando', textoInicial || 'Reiniciando a sessão de ' + AGENTE.nome + '…');
+    const volta = () => {
+      const v = PURO.avaliaVolta({ marco, ultimoAgora, vivas, foto: window.atividadeFoto, agenteId: AGENTE.id, streamAberto, decorridoMs: Date.now() - ini });
+      vivas = v.vivas; ultimoAgora = v.ultimoAgora;
+      if (v.acao === 'indeterminado') {
+        emCurso = false;
+        mostra('ok', 'Pedi o reinício da sessão de ' + AGENTE.nome + ', mas não consigo confirmar quando ele volta (o arquivo conversa-puro.js não carregou). Recarregue a página para conferir.');
+        sumir = setTimeout(esconde, 12000);
+        return;
+      }
+      if (v.acao === 'sem_login' || v.acao === 'login_expirado') {
+        emCurso = false;
+        return falha('o agente voltou, mas está sem a conta do Claude/Codex conectada. ' + (v.motivo || 'Conecte a conta pelo cartão que aparece na conversa.'));
+      }
+      if (v.acao === 'voltou') {
+        emCurso = false;
+        mostra('ok', AGENTE.nome + ' voltou. A conversa continua daqui, de onde estava.');
+        sumir = setTimeout(esconde, 8000);
+        return;
+      }
+      if (Date.now() - ini > 150000) {
+        emCurso = false;
+        return falha('passaram 150 s e o agente não voltou a responder. Peça ao Admin para conferir o serviço dele (dgclaw status).');
+      }
+      tempo = setTimeout(volta, 2000);
+    };
+    tempo = setTimeout(volta, 2000);
+  }
+
+  async function dispara() {
+    if (emCurso) return;
+    emCurso = true;
+    mostra('rodando', 'Reiniciando a sessão de ' + AGENTE.nome + '…');
+    try {
+      await api(URL_REINICIO, { method: 'POST', body: {}, timeoutMs: 40000 });
+    } catch (e) {
+      // 504: o pedido pode ter chegado ao runner. Oferecer "Tentar de novo" já reiniciaria duas vezes,
+      // então a faixa mostra o aviso e passa a acompanhar até o agente responder.
+      if (e.status === 504) return acompanha(e.message);
+      emCurso = false;
+      return falha(e.message);
+    }
+    acompanha();
+  }
+
+  function abreDialogo() {
+    abreMenu(false);
+    if (emCurso) return;
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+    $('dlgReinicioNao').focus();
+  }
+  const fechaDialogo = () => { if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); };
+  $('dlgReinicioNao').onclick = fechaDialogo;
+  $('dlgReinicioSim').onclick = () => { fechaDialogo(); dispara(); };
+  item.onclick = abreDialogo;
+  reiniciaSessao = dispara;   // o pop-up de login expirado usa o mesmo reinício e a mesma faixa
+})();
 
 }   // fim de iniciaTela
 

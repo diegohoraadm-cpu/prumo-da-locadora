@@ -274,7 +274,7 @@ checar_portas() {
 # /etc/os-release de sempre). Fica separada para os testes poderem exercitar so esta parte.
 checar_versao_so() {
     local so
-    [ -r "$R/etc/os-release" ] || falha "nao achei /etc/os-release, entao nao sei qual sistema e este." "o DG Claw v1 instala em Ubuntu 22.04, 24.04 ou 26.04."
+    [ -r "$R/etc/os-release" ] || falha "nao achei /etc/os-release, entao nao sei qual sistema e este." "o Prumo da Locadora v1 instala em Ubuntu 22.04, 24.04 ou 26.04."
     # shellcheck source=/dev/null
     so="$(. "$R/etc/os-release" && printf '%s %s' "${ID:-?}" "${VERSION_ID:-?}")"
     # 22.04 e 24.04 sao as versoes testadas. O 26.04 ja instalou do comeco ao fim (imersao de
@@ -285,7 +285,7 @@ checar_versao_so() {
         "ubuntu 26.04")
             ok "sistema: $so"
             aviso "O Prumo da Locadora foi feito e testado no Ubuntu 24.04. O 26.04 tem funcionado, mas pode apresentar alguma instabilidade. Vou instalar mesmo assim." ;;
-        *) falha "este sistema e '$so' e o DG Claw v1 so instala em Ubuntu 22.04, 24.04 ou 26.04." \
+        *) falha "este sistema e '$so' e o Prumo da Locadora v1 so instala em Ubuntu 22.04, 24.04 ou 26.04." \
                "crie um servidor com Ubuntu 24.04 e rode o instalador nele." ;;
     esac
 }
@@ -616,7 +616,7 @@ _migracao_gravar() {
         done <<<"$lista"
     fi
     cat >"$pasta/LEIA.txt" <<LEIA || { printf 'PASSO: gravar LEIA.txt\n' >&2; return 1; }
-Esta pasta foi criada pelo instalador do DG Claw em $(date '+%d/%m/%Y %H:%M:%S').
+Esta pasta foi criada pelo instalador do Prumo da Locadora em $(date '+%d/%m/%Y %H:%M:%S').
 
 Antes de atualizar o programa em ${DG_APP#"$R"}, o instalador viu que ele
 pode ter sido alterado a mao (ou nao teve como comparar com a versao oficial). Como a atualizacao
@@ -1362,7 +1362,7 @@ primeiro_boot() {
         return 0
     fi
     if ! tem_jq; then return 0; fi
-    corpo="$(jq -n --arg t '<plataforma recado="primeiro-boot">A instalacao do servidor terminou e o dono vai abrir o chat em instantes. Este e um aviso da plataforma, nao uma mensagem escrita por ele. Cumprimente-o agora pelo chat c_admin, usando mcp__dgchat__reply, com esta mensagem: "Oi! Eu sou o Admin do seu DG Claw. Cuido da maquina e crio os seus agentes, cada um na sua propria caixa, separado dos outros. Vamos criar o primeiro? Toque em **Quero criar meu primeiro agente**, na janela aqui do chat. Se preferir, me diga aqui mesmo como ele vai se chamar." Depois espere a resposta dele e siga a skill criar-agente.</plataforma>' \
+    corpo="$(jq -n --arg t '<plataforma recado="primeiro-boot">A instalacao do servidor terminou e o dono vai abrir o chat em instantes. Este e um aviso da plataforma, nao uma mensagem escrita por ele. Cumprimente-o agora pelo chat c_admin, usando mcp__dgchat__reply, com esta mensagem: "Oi! Eu sou o Admin do seu Prumo da Locadora. Cuido da maquina e crio os seus agentes, cada um na sua propria caixa, separado dos outros. Vamos criar o primeiro? Toque em **Quero criar meu primeiro agente**, na janela aqui do chat. Se preferir, me diga aqui mesmo como ele vai se chamar." Depois espere a resposta dele e siga a skill criar-agente.</plataforma>' \
         '{text: $t, submit: true}')"
     # O token vai por arquivo de configuracao do curl (modo 600), nunca na linha de comando.
     cfg="$(mktemp)"
@@ -1411,7 +1411,7 @@ testar_fim() {
 
     if fonte_tem web/server.js; then
         esperar_http 30 http://127.0.0.1:8300/ \
-            || falha "o DG Claw Web nao respondeu em http://127.0.0.1:8300/." \
+            || falha "o Prumo da Locadora nao respondeu em http://127.0.0.1:8300/." \
                      "veja o motivo com: journalctl -u dgclaw-web -n 30"
         ok "Prumo da Locadora respondendo"
     fi

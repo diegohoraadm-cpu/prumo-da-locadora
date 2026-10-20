@@ -1,16 +1,16 @@
-# Personalizar o seu DG Claw sem perder a mudança na próxima atualização
+# Personalizar o seu Prumo da Locadora sem perder a mudança na próxima atualização
 
-O DG Claw é seu, e você pode pedir ao Admin para ajustar o que quiser: um botão novo, uma cor, uma
+O Prumo da Locadora é seu, e você pode pedir ao Admin para ajustar o que quiser: um botão novo, uma cor, uma
 habilidade, um jeito diferente de um agente trabalhar. Só que existe uma pegadinha: a atualização oficial
 troca os arquivos do programa por completo. Uma mudança feita no lugar errado desaparece sozinha na
-próxima vez que você pedir "atualiza o DG Claw". Este guia mostra onde cada tipo de mudança deve ficar,
+próxima vez que você pedir "atualiza o Prumo da Locadora". Este guia mostra onde cada tipo de mudança deve ficar,
 para ela sobreviver. O Admin lê este documento antes de mexer em qualquer coisa.
 
 > **Mudança importante para as personalizações.** Este aplicativo vai ser personalizado por vocês e
 > continuar sendo atualizado pelo Danilo. Para manter a estabilidade e preservar as suas alterações,
 > vale uma regra daqui para frente: toda personalização entra no registro de personalizações, e antes de
 > mexer no programa convém ler a seção "A arquitetura em uma página", logo abaixo, para a mudança respeitar
-> o núcleo do DG Claw.
+> o núcleo do Prumo da Locadora.
 
 ## A arquitetura em uma página
 
@@ -18,7 +18,7 @@ Pense em lugares diferentes, cada um com a sua regra.
 
 | Lugar | O que é | O que acontece na atualização |
 | --- | --- | --- |
-| O clone (a pasta onde você baixou o DG Claw, guardada em `DGCLAW_REPO`, no arquivo `/etc/dgclaw/dgclaw.env`) | A cópia do código, com o histórico de versões (git) | Recebe a versão nova |
+| O clone (a pasta onde você baixou o Prumo da Locadora, guardada em `DGCLAW_REPO`, no arquivo `/etc/dgclaw/dgclaw.env`) | A cópia do código, com o histórico de versões (git) | Recebe a versão nova |
 | `/opt/dgclaw/app` | Cópia de trabalho do programa, de onde o painel, o Admin e a imagem dos agentes leem | É apagada e refeita a partir do clone |
 | `/opt/dgclaw/admin` | A casa do Admin: instruções dele, habilidades próprias, registro das suas personalizações | Preservada |
 | `/var/lib/dgclaw/agentes/<nome>/home` | A casa de cada agente: memória, identidade, personalidade, rotinas, habilidades | Preservada |
@@ -203,9 +203,9 @@ Para ver o cruzamento sem mudar nada, o Admin roda `sudo dgclaw atualizar --simu
 `sudo dgclaw personalizacoes conferir`). Depois do seu sim, o ajuste segue o capítulo "Personalização
 que cruza com a versão nova" do `docs/ATUALIZAR.md`.
 
-## Quem já tinha o DG Claw antes desta versão
+## Quem já tinha o Prumo da Locadora antes desta versão
 
-Se o seu DG Claw é anterior a esta funcionalidade, a primeira atualização faz uma migração. Antes de
+Se o seu Prumo da Locadora é anterior a esta funcionalidade, a primeira atualização faz uma migração. Antes de
 copiar a versão nova, o instalador compara a pasta do programa (`/opt/dgclaw/app`) com a versão oficial
 que estava instalada. O que alguém mudou direto ali é guardado em
 `/opt/dgclaw/admin/personalizacoes-migracao/<data>/`, com estes arquivos: `LISTA.txt` (uma letra por arquivo: M mudou, A acrescentado, D apagado, P só a permissão,

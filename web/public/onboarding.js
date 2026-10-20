@@ -198,7 +198,7 @@
     ];
     function tutorial(seletor) { if (window.DGTour) window.DGTour.inicia({ passos: seletor ? passos.filter(p=>p.alvo===seletor) : passos }); }
     function cab(titulo) {
-      return '<div class="nas-topo"><span class="nas-marca">DG CLAW · ADMIN</span><button type="button" class="nas-tutorial">Tutorial</button></div><h2>'+titulo+'</h2>';
+      return '<div class="nas-topo"><span class="nas-marca">PRUMO DA LOCADORA · ADMIN</span><button type="button" class="nas-tutorial">Tutorial</button></div><h2>'+titulo+'</h2>';
     }
     function ligarAjuda() {
       host.querySelector('.nas-tutorial').onclick = () => tutorial();

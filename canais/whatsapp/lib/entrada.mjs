@@ -122,7 +122,7 @@ export function criarEntrada({ opcoes, registrar, agora, lids, aprenderLid, esta
     if (!r.ok) {
       registrar(`nao entreguei a mensagem ${id} de ${numero} ao agente: ${r.motivo}`);
       const aviso = r.status === 409
-        ? 'Sua mensagem não chegou ao agente: ele está sem login ou sem chave. Avise o dono para abrir o painel do DG Claw.'
+        ? 'Sua mensagem não chegou ao agente: ele está sem login ou sem chave. Avise o dono para abrir o painel do Prumo da Locadora.'
         : 'Sua mensagem não chegou ao agente agora. Tente de novo daqui a pouco.';
       try {
         await sock.sendMessage(jid, { text: aviso });

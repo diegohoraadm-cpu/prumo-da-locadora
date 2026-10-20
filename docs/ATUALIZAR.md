@@ -1,7 +1,7 @@
-# Atualizar o DG Claw
+# Atualizar o Prumo da Locadora
 
-Este documento é o roteiro da atualização do DG Claw, passo a passo. Quase sempre quem segue é o
-Admin, quando o dono pede "atualiza o DG Claw" no chat; o dono não é programador e vê só a conversa.
+Este documento é o roteiro da atualização do Prumo da Locadora, passo a passo. Quase sempre quem segue é o
+Admin, quando o dono pede "atualiza o Prumo da Locadora" no chat; o dono não é programador e vê só a conversa.
 
 Resumo: use **`dgclaw atualizar`**. Ele faz backup, baixa a versão nova, reinstala, recria a máquina de
 cada agente e confere que nada do dono sumiu ou mudou. Nunca monte esse caminho na mão com `git pull`,
@@ -10,7 +10,7 @@ conferências não dependerem de quem está lembrando.
 
 ## Quando usar
 
-- O dono pede para atualizar o DG Claw, "pegar a versão nova" ou "ficar com as novidades".
+- O dono pede para atualizar o Prumo da Locadora, "pegar a versão nova" ou "ficar com as novidades".
 - O dono diz que viu uma novidade ou correção que ainda não aparece no painel dele.
 - Uma correção que você precisa já saiu no repositório.
 
@@ -48,7 +48,7 @@ system prune --volumes`, `podman rm` de container sem passar por `dgclaw agente 
 
 ## Antes de começar
 
-1. Avise o dono, em uma frase: "Vou atualizar o DG Claw. Faço um backup antes de mexer em qualquer
+1. Avise o dono, em uma frase: "Vou atualizar o Prumo da Locadora. Faço um backup antes de mexer em qualquer
    coisa. Leva de 10 a 30 minutos, os agentes ficam fora do ar por um minuto cada e eu aviso quando
    terminar."
 2. Veja se há conversa em andamento com algum agente que não pode cair agora (`dgclaw agente listar`).
@@ -232,7 +232,7 @@ Veja também `docs/BACKUP.md` para os backups manuais (`dgclaw backup`) e a rest
 
 ## Ler o que muda antes de instalar
 
-Cada DG Claw é personalizado e usado de um jeito, e pode guardar informações sensíveis do dono. Por isso,
+Cada Prumo da Locadora é personalizado e usado de um jeito, e pode guardar informações sensíveis do dono. Por isso,
 antes de instalar qualquer atualização, quem cuida dela (quase sempre o Admin) lê o que mudou e verifica
 se a versão nova pode trazer dano ou risco aos arquivos, aos dados e às personalizações de agora. Se
 encontrar risco, por exemplo uma função nova que abre acesso a dados ou ao banco, avisa o dono antes e não
@@ -254,7 +254,7 @@ O `dgclaw atualizar` força esse passo:
 
 ## Personalizações do dono
 
-Quem personalizou o próprio DG Claw (um botão, uma cor, um comportamento do painel) tem essas mudanças
+Quem personalizou o próprio Prumo da Locadora (um botão, uma cor, um comportamento do painel) tem essas mudanças
 guardadas como commits na branch `personalizacoes` do clone e anotadas em
 `/opt/dgclaw/admin/PERSONALIZACOES.md`. O guia completo está em `docs/PERSONALIZAR.md`. A atualização
 nunca pode levar embora uma personalização sem o dono saber, e o `dgclaw atualizar` cuida disso sozinho
@@ -357,7 +357,7 @@ versões já publicadas do modelo (pelo histórico do git do clone):
 
 Quando houver `.novo`, faça a junção **manual e conservadora**: rode `diff /opt/dgclaw/admin/CLAUDE.md
 /opt/dgclaw/admin/CLAUDE.md.novo`, traga para o arquivo do dono as seções e linhas que são novidades do
-modelo (no mínimo a linha `dgclaw atualizar` da tabela de ferramentas e a seção "Atualizar o DG Claw"),
+modelo (no mínimo a linha `dgclaw atualizar` da tabela de ferramentas e a seção "Atualizar o Prumo da Locadora"),
 **sem apagar nada que o dono escreveu**, e depois apague o `.novo`. Conte ao dono em uma frase o que
 entrou. O backup tem a versão dele de antes (`admin.tar.gz`). A junção só vale para as próximas
 conversas do Admin, depois do reinício.
@@ -466,7 +466,7 @@ senão para a `main` (`cd <clone> && git switch personalizacoes`, ou `git switch
 
 Frases curtas e sem jargão. Container vira "a caixa do agente".
 
-- **Início**: "Vou atualizar o DG Claw. Primeiro faço uma cópia de segurança de tudo o que é seu, depois
+- **Início**: "Vou atualizar o Prumo da Locadora. Primeiro faço uma cópia de segurança de tudo o que é seu, depois
   instalo a versão nova. Leva de 10 a 30 minutos."
 - **Clone com alteração**: "Achei uma alteração local nos arquivos do programa. Posso guardá-la de lado e
   seguir? Nada se perde." (só continue com `--forcar-local` depois do sim)

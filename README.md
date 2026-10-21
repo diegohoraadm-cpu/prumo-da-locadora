@@ -6,7 +6,6 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/diegohoraadm-cpu/prumo-da-locadora/actions/workflows/ci.yml"><img src="https://github.com/diegohoraadm-cpu/prumo-da-locadora/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/diegohoraadm-cpu/prumo-da-locadora?label=licen%C3%A7a&style=flat" alt="Licença MIT"></a>
 </p>
 

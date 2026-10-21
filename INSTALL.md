@@ -81,8 +81,8 @@ No card do **Admin**:
 2. Preencha a função e o tom da conversa. Se quiser, suba uma foto ou gere um avatar ilustrado no
    navegador.
 3. Toque em **Criar meu agente**. O Admin prepara o agente e a tela acompanha as etapas reais.
-4. Quando aparecer **Conectar minha assinatura**, abra o painel do agente e use **Entrar com a
-   assinatura**, na aba Status. Volte ao Admin e toque em **Já entrei. Pode testar.**
+4. Quando aparecer **Conectar minha assinatura**, toque nele para abrir o painel do agente e use
+   **Conectar minha conta**, na aba Status. Volte ao Admin e toque em **Já entrei. Pode testar.**
 5. Depois que o agente responder ao teste, a caixa abre e aparece a badge com o nome e a foto dele (ou
    um avatar neutro). Toque nela para começar a conversa.
 

@@ -26,15 +26,15 @@ Feito pela **LocaAção** para os locadores da Escola do Locador, a partir do
 
 ## Antes da instalação: 3 coisas prontas
 
-1. **Servidor (VPS)** com Ubuntu 24.04 puro, sem painel: Hostinger KVM 2 ou equivalente (2 GB de memória
-   no mínimo, 15 GB livres, portas 80 e 443 livres). Guarde a senha de root.
+1. **Servidor (VPS)** com Ubuntu 24.04 puro, sem painel: a Hostinger KVM 2 serve (o mínimo é 2 GB de
+   memória e 15 GB livres, com as portas 80 e 443 livres). Guarde a senha de root.
 2. **Assinatura do Claude** ativa (Pro ou superior), com login e senha em mãos.
 3. **Bot do Telegram** criado no @BotFather (`/newbot`), com o token guardado. Opcional: dá para começar
    só pelo navegador.
 
 ## Instalação, passo a passo
 
-Leva de 20 a 30 minutos. Os comandos vão no terminal do servidor.
+Os comandos vão no terminal do servidor, um bloco de cada vez.
 
 **Passo 1. Entrar no servidor.** No painel da Hostinger, abra a VPS e use o **Terminal do navegador**.
 Ou, no computador:
@@ -61,6 +61,7 @@ claude
 **Passo 4. Instalar o Prumo da Locadora.** Troque `seunome` pelo usuário que você quer usar no painel:
 
 ```sh
+apt install -y git
 git clone https://github.com/diegohoraadm-cpu/prumo-da-locadora
 cd prumo-da-locadora
 sudo ./install.sh --usuario seunome --com-imagem
@@ -73,14 +74,16 @@ um **link de primeiro acesso**. Pode rodar de novo sem estragar nada.
 cadastre uma senha de pelo menos 12 caracteres. Você entra direto no chat do **Admin**. Se o link
 vencer: `sudo dgclaw primeiro-acesso`.
 
-**Passo 6. Criar o seu assistente.** No card do Admin, toque em **Quero criar meu primeiro agente**, dê
-um nome e diga a função. Quando aparecer **Conectar minha assinatura**, abra o painel do agente, aba
-Status, e use **Entrar com a assinatura** (é o mesmo login do passo 3, agora dentro do assistente).
-Volte e toque em **Já entrei. Pode testar.**
+**Passo 6. Criar o seu assistente.** No card do Admin, toque em **Quero criar meu primeiro agente**,
+digite o nome e toque em **Continuar**. Preencha a função e o tom e toque em **Criar meu agente**.
+Quando aparecer **Conectar minha assinatura**, toque nele: abre a página do assistente. Lá, toque em
+**Conectar minha conta** e faça o login (é a mesma assinatura do passo 3, agora dentro do assistente).
+Volte ao Admin e toque em **Já entrei. Pode testar.**
 
 **Passo 7. Ligar o Telegram.** Abra a conversa com o **seu assistente** (não com o Admin) e mande uma
 mensagem só com o token do bot, sem nenhuma palavra junto. O painel guarda o token em segredo e mostra só
-o final dele. Em seguida mande "oi" para o bot no celular e avise o assistente: ele confirma que é você
+o final dele. Em seguida abra o bot no Telegram do celular, toque em **Iniciar**, mande "oi" e avise o
+assistente: ele confirma que é você
 (só o seu Telegram fica liberado) e liga o canal.
 
 Travou em algum passo? Veja [Se algo der errado](#se-algo-der-errado). O guia técnico completo, com cada
@@ -99,14 +102,14 @@ opção do instalador, está em [INSTALL.md](INSTALL.md).
 ## Se algo der errado
 
 - **"não acho o comando claude"**: rode de novo a segunda linha do passo 2 e repita o passo 4.
-- **"Claude não está logado"**: faça o passo 3 e repita o passo 4.
+- **Aviso "não achei o Claude nem o Codex logado"**: o instalador termina, mas o Admin não vai responder. Faça o passo 3 e repita o passo 4.
 - **Porta 80 ou 443 ocupada**: o servidor já tem outro sistema (Easypanel, por exemplo). Use uma VPS nova, com Ubuntu puro.
 - **O painel não abre em HTTPS**: espere 2 minutos; se continuar, confira no painel da Hostinger se as portas 80 e 443 estão liberadas.
 - **Criar o primeiro assistente demora**: na primeira vez ele prepara a imagem (de 10 a 20 minutos). A tela acompanha; não repita a instalação.
 
 ## Segurança, em uma linha cada
 
-- Só o endereço HTTPS fica aberto na internet; o resto roda dentro do servidor.
+- Só o HTTPS e o acesso SSH ficam abertos na internet; o resto roda dentro do servidor.
 - Senha guardada só como hash, com limite de tentativas; as chaves do cofre nunca aparecem inteiras.
 - Cada assistente começa com poderes limitados (o Gmail nasce só lendo) e você libera aos poucos.
 - Limite conhecido: quem tem a senha de root do servidor enxerga tudo. Guarde essa senha.
@@ -128,12 +131,13 @@ ao assistente certo, que mantém viva a sessão do Claude Code ou do Codex. Desc
 
 ```mermaid
 flowchart LR
-  N[Navegador ou Telegram] -->|HTTPS| C[Caddy]
+  N[Navegador] -->|HTTPS| C[Caddy]
   C --> W[Painel]
   W --> RA[Admin]
   W --> RG[Seus assistentes]
   RA --> M1[Claude Code no servidor]
   RG --> M2[Claude Code no espaço de cada um]
+  T[Telegram] <-->|o assistente busca as mensagens| RG
 ```
 
 ## Licença

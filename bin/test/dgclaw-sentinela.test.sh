@@ -86,9 +86,15 @@ printf '%s' "$SAO" >"$SAUDE"; envelhece "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/a
 ok "bom e marca velha: estado limpo" "$([ -z "$(ls "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela")" ] && echo 0 || echo 1)"
 
 # 4b. Atualizacao em andamento (pid vivo na marca): nao confere nada. Pid morto: segue.
-echo $$ >"$DGCLAW_RAIZ/var/lib/dgclaw/atualizando"
+bash -c 'exec -a "dgclaw atualizar" sleep 60' & ATU=$!
+sleep 0.2; echo $ATU >"$DGCLAW_RAIZ/var/lib/dgclaw/atualizando"
 printf '{"ok":true,"agente":{"status":"errored","ptyVivo":false},"sessionId":"s1"}' >"$SAUDE"; rodar
 ok "durante o dgclaw atualizar: nenhum pedido e nenhum reparo" "$([ ! -s "$REQ" ] && [ ! -s "$T/dgclaw.log" ] && echo 0 || echo 1)"
+kill $ATU 2>/dev/null; wait $ATU 2>/dev/null
+# pid reaproveitado (depois de um reboot): vivo, mas nao e um atualizar
+sleep 60 & OUTRO=$!; echo $OUTRO >"$DGCLAW_RAIZ/var/lib/dgclaw/atualizando"; rodar; kill $OUTRO 2>/dev/null; wait $OUTRO 2>/dev/null
+ok "marca com pid vivo de outro processo: confere normal" "$(grep -qx 'agente reiniciar ana' "$T/dgclaw.log"; echo $?)"
+rm -f "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/"*
 echo 999999 >"$DGCLAW_RAIZ/var/lib/dgclaw/atualizando"; rodar
 ok "marca de atualizacao com pid morto: confere normal" "$(grep -qx 'agente reiniciar ana' "$T/dgclaw.log"; echo $?)"
 rm -f "$DGCLAW_RAIZ/var/lib/dgclaw/atualizando" "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/"*; printf '%s' "$SAO" >"$SAUDE"
@@ -114,9 +120,9 @@ echo '{}' >"$H/.claude/plugins/installed_plugins.json"; rodar
 ok "plugin ausente: dgclaw agente reparar" "$(grep -qx 'agente reparar ana' "$T/dgclaw.log"; echo $?)"
 printf '{"plugins":{"telegram@claude-plugins-official":[{}]}}' >"$H/.claude/plugins/installed_plugins.json"
 
-# 7. Bot do Telegram morto e o reinicio nao resolve: o aviso traz a dica do outro computador.
+# 7. Bot do Telegram morto e o reinicio nao resolve: avisa, sem prometer o caso do outro computador.
 rm -f "$T/bun-vivo" "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/"*; rodar
-ok "telegram mudo: aviso com a dica de fechar o outro computador" "$(grep sendMessage "$REQ" | grep -q 'outro+computador'; echo $?)"
+ok "telegram mudo: reinicia e avisa que nao resolveu" "$(grep -qx 'agente reiniciar ana' "$T/dgclaw.log" && grep sendMessage "$REQ" | grep -q 'n%C3%A3o+resolveu' && ! grep sendMessage "$REQ" | grep -q 'outro+computador'; echo $?)"
 touch "$T/bun-vivo"; rm -f "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/"*
 
 # 7b. Turno sem resposta: reinicia, a saude volta, mas o turno continua; o aviso pede uma mensagem nova.

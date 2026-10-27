@@ -40,9 +40,16 @@ _atu_problema() { ATU_PROBLEMAS=$((ATU_PROBLEMAS + 1)); printf '   FALHOU  %s\n'
 
 # Se a atualizacao parar no meio, a pessoa precisa saber onde parou, que os dados estao salvos
 # e como seguir ou voltar.
+# _atu_tira_marca: apaga a marca que segura a Sentinela (bin/dgclaw-sentinela), so se for deste processo:
+# um --simular nunca apaga a de um atualizar de verdade que esteja rodando.
+_atu_tira_marca() {
+    if [ "$(cat "$DG_LIB/atualizando" 2>/dev/null)" = "$$" ]; then rm -f "$DG_LIB/atualizando"; fi
+    return 0
+}
+
 _atualizar_ao_sair() {
     local rc=$?
-    rm -f "$DG_LIB/atualizando"  # a marca que segura a Sentinela (bin/dgclaw-sentinela)
+    _atu_tira_marca
     [ "$rc" -eq 0 ] && return 0
     {
         printf '\nA atualizacao parou em: %s.\n' "${ATU_ETAPA:-inicio}"
@@ -487,7 +494,7 @@ atualizar_main() {
         aviso "houve $ATU_PROBLEMAS problema(s) na conferencia; deixo o Admin como esta, para voce nao perder o chat enquanto resolve."
     fi
 
-    trap - EXIT
+    trap - EXIT; _atu_tira_marca
     printf '\n'
     if [ "$ENSAIO" = 1 ]; then
         printf 'Simulacao terminada: nada foi mudado. Para atualizar de verdade: sudo dgclaw atualizar\n'
@@ -703,7 +710,7 @@ atualizar_voltar() {
         atualizar_agendar_reinicio_do_admin "$resumo_arq" "$log_arq"
     fi
     printf '\n'
-    trap - EXIT
+    trap - EXIT; _atu_tira_marca
     if [ "$ENSAIO" = 1 ]; then printf 'Simulacao terminada: nada foi mudado.\n'; return 0; fi
     if [ "$ATU_PROBLEMAS" -gt 0 ]; then
         printf 'Voltei, mas com %s problema(s) (linhas FALHOU acima). O backup do estado anterior ao --voltar esta em %s.\n' "$ATU_PROBLEMAS" "$backup_agora" >&2

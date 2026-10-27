@@ -265,12 +265,13 @@ function criarServidor(opcoes) {
   }
 
   /* A primeira linha da seção "## Seu papel" do AGENT.md do agente (escrita pelo dgclaw na criação), até 200
-     caracteres. A casa é do agente: sem seguir atalho no AGENT.md e lendo só o começo de um arquivo comum. */
+     caracteres. A casa é do agente: sem seguir atalho no AGENT.md, sem esperar por FIFO (O_NONBLOCK; um FIFO
+     aberto sem ele travaria o Web inteiro) e lendo só o começo de um arquivo comum. */
   function papelDe(a) {
     if (!a.home_host) return '';
     let fd;
     try {
-      fd = fs.openSync(path.join(a.home_host, 'AGENT.md'), fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW);
+      fd = fs.openSync(path.join(a.home_host, 'AGENT.md'), fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW | fs.constants.O_NONBLOCK);
       if (!fs.fstatSync(fd).isFile()) return '';
       const buf = Buffer.alloc(32 * 1024);
       const m = /^## Seu papel[ \t]*\r?\n(?:[ \t]*\r?\n)*([^\r\n]+)/m.exec(buf.toString('utf8', 0, fs.readSync(fd, buf, 0, buf.length, 0)));

@@ -4,6 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const { spawnSync } = require('node:child_process');
 const { subirWeb, pastaTemp } = require('./ajuda');
 
 // Runner em porta fechada: a lista cai na reserva do rótulo na hora, sem esperar.
@@ -77,4 +78,12 @@ test('papel: AGENT.md que é atalho não é seguido', async () => {
   try {
     assert.equal((await t.c.get('/api/v1/agents')).json.agentes.find((a) => a.id === 'beto').papel, '');
   } finally { await t.fechar(); }
+});
+
+test('papel: AGENT.md trocado por FIFO não trava o Web', () => {
+  // processo à parte com prazo: se a leitura bloquear, o event loop para e só o prazo de fora pega
+  const r = spawnSync(process.execPath, [path.join(__dirname, 'fixtures', 'papel-fifo.js')], { timeout: 15000, encoding: 'utf8' });
+  assert.equal(r.error && r.error.code, undefined, 'o processo passou do prazo: a leitura do papel bloqueou no FIFO');
+  assert.equal(r.status, 0, r.stderr);
+  assert.deepEqual(JSON.parse(r.stdout), { status: 200, papel: '' });
 });

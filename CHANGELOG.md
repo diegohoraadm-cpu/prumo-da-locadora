@@ -15,6 +15,17 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
   paralela ou se precisa de um agente fixo, e nesse caso pede ao Admin. A conversa antiga com os
   outros agentes continua guardada.
 
+### Como atualizar
+
+- Nesta versão o Admin ganha uma regra nova na seção "Criar agentes": ele só cria agente a pedido do
+  seu agente principal. Se você personalizou as instruções do Admin, a atualização não as troca e
+  deixa a versão nova ao lado, como `CLAUDE.md.novo` (ou `AGENTS.md.novo`, se o seu Admin usa o
+  Codex). Peça ao Admin para juntar a seção "Criar agentes" nova ao seu arquivo, sem apagar o que
+  você já personalizou.
+- O agente principal é o primeiro agente que você criou. Se o seu principal é outro, troque o nome
+  curto dele no arquivo `/var/lib/dgclaw/web/principal.json`, que aparece na primeira vez que você
+  abre o painel atualizado.
+
 - Dependências atualizadas: pino 10 no canal do WhatsApp, express-rate-limit 8 no painel,
   TypeScript 7 no runner e as GitHub Actions do CI (checkout, setup-node e setup-python 7,
   upload-artifact 7, sbom-action 0.24.3).

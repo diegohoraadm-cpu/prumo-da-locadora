@@ -6,7 +6,8 @@ description: Conduz o Admin do DG Claw na criação de um agente novo, em conver
 # Criar um agente
 
 Quem pode pedir: o dono, só para o primeiro agente (que vira o principal); depois dele, só o agente
-principal. A regra e como conferir o pedido estão na seção "Criar agentes" do `CLAUDE.md` do Admin.
+principal. A regra e como conferir o pedido estão na seção "Criar agentes" das instruções do Admin
+(`CLAUDE.md` no Claude, `AGENTS.md` no Codex).
 
 Esta skill é o roteiro do Admin para criar um agente de trabalho. A conversa tem dez passos, com uma
 pergunta por vez, e termina com o agente respondendo de verdade. O dono não vê o terminal: toda fala

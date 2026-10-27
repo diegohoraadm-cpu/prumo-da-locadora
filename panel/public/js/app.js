@@ -408,7 +408,7 @@ window.addEventListener('hashchange', () => {
 const SUBTITULO_ABA = {
   conversa: 'fale com ele por aqui',
   status: 'como ele está agora',
-  identity: 'quem ele é, em arquivos que você edita',
+  identity: 'quem ele é, no texto que ele segue',
   personality: 'os nove números e o que ele pensa',
   memory: 'o que ficou, em texto que você pode ler',
   costs: 'quanto ele custou este mês',
@@ -443,8 +443,8 @@ const EXPLICACAO_ABA = {
   status: 'A página inicial: os números do mês, se as operações do sistema estão funcionando, '
     + 'se a memória de trabalho está em dia, o que ele sabe agora sobre você (a memória dele, para ler '
     + 'e corrigir) e as rotinas que você pediu.',
-  identity: 'Quem ele é, em arquivos de texto que você mesmo edita aqui: o nome, o papel e as '
-    + 'regras que ele segue.',
+  identity: 'Quem ele é: o nome, o papel, o jeito e os limites, no texto que ele segue e que você '
+    + 'pode editar aqui.',
   personality: 'Os nove números que regulam o jeito dele, mais as ideias e as metas que ele '
     + 'mesmo escreveu.',
   memory: 'Todos os arquivos de memória dele, em texto que você pode ler e corrigir à mão.',
@@ -1940,10 +1940,28 @@ window.loadLog = loadLog;
 
 // ─── IDENTITY Panel ────────────────────────────
 
+// O runner lê a identidade (.plataforma/identidade.md, feita a partir do AGENT.md) só quando
+// a sessão sobe, e quem refaz esse arquivo é a CLI do Admin (bin/dgclaw). Por isso o pedido vai
+// ao Admin; o botão de reiniciar do painel não refaz a identidade.
+const avisoQuemSou = () => 'Salvou? A mudança só vale quando o assistente subir de novo: peça ao Admin, na conversa '
+  + `dele, "atualize a identidade ${APP_CONFIG.agentName ? 'de ' + APP_CONFIG.agentName : 'do assistente'} e reinicie". `
+  + 'O botão de reiniciar do painel não serve para isso.';
+
+/** O AGENT.md em seções "## ". O que vem antes da primeira (título e nota técnica) fica de fora. */
+function secoesQuemSou(texto) {
+  const saida = [];
+  for (const linha of texto.split('\n')) {
+    const h = linha.match(/^##\s+(.+?)\s*$/);
+    if (h) saida.push({ titulo: h[1], corpo: [] });
+    else if (saida.length) saida[saida.length - 1].corpo.push(linha);
+  }
+  if (!saida.length) return [{ titulo: 'Quem sou', corpo: texto }];
+  return saida.map((x) => ({ titulo: x.titulo, corpo: x.corpo.join('\n').trim() }));
+}
+
 async function loadIdentity() {
-  // Os arquivos de quem ele é, cada um num cartão que abre no leitor/editor
-  // compartilhado. Antes cada um abria embaixo do título em letra de 8px, sem
-  // botão de editar, com o tutorial prometendo "edite ali mesmo".
+  // A aba mostra o AGENT.md, que é o que o agente segue de verdade. Os seis arquivos
+  // antigos (SOUL, IDENTITY...) o container não cria; se algum existir, aparece embaixo.
   const files = [
     { name: 'SOUL.md', icon: '🔥', dica: 'A alma dele: o jeito de ser e de falar.' },
     { name: 'IDENTITY.md', icon: '👤', dica: 'O nome, o papel e o que ele faz para você.' },
@@ -1952,22 +1970,38 @@ async function loadIdentity() {
     { name: 'ETHICS.md', icon: '⚖️', dica: 'O código de ética. Só leitura: ele protege você e quem fala com ele.' },
     { name: 'LAWS.md', icon: '📜', dica: 'As leis que ele nunca quebra. Só leitura, por desenho.' },
   ];
-  // Arquivo que este agente não tem não aparece: um cartão que abre em "não achei"
-  // ensina a pessoa a desconfiar da tela.
   const data = await API.identity();
-  const chave = { 'SOUL.md': 'soul', 'IDENTITY.md': 'identity', 'PERSONALITY.md': 'personality', 'ETHICS.md': 'ethics', 'LAWS.md': 'laws', 'CREATOR.md': 'creator' };
-  const existentes = data ? files.filter((f) => !chave[f.name] || (data[chave[f.name]] || '').trim()) : files;
   const el = document.getElementById('identity-files');
-  if (!existentes.length) {
-    // Agente novo: os arquivos de identidade ainda nascem vazios. Em branco a aba parece quebrada.
-    el.innerHTML = '<p class="section-updated" style="padding:12px 4px">Ainda vazio. Peça ao agente na conversa: preencha sua identidade e personalidade e me pergunte o que precisar.</p>';
+  if (!data) {
+    el.innerHTML = '<p class="section-updated" style="padding:12px 4px">Não consegui ler quem ele é agora. A faixa no topo da tela diz o motivo.</p>';
     return;
   }
-  el.innerHTML = `<div class="memory-list">${existentes.map((f) => `<button type="button" class="memory-item" data-path="${f.name}" title="${escapeHtml(f.dica)}">
+  const chave = { 'SOUL.md': 'soul', 'IDENTITY.md': 'identity', 'PERSONALITY.md': 'personality', 'ETHICS.md': 'ethics', 'LAWS.md': 'laws', 'CREATOR.md': 'creator' };
+  const existentes = files.filter((f) => (data[chave[f.name]] || '').trim());
+  const agente = (data.agent || '').trim();
+  const md = (t) => (window.DGLeitor ? window.DGLeitor.renderizar('md', t) : `<pre>${escapeHtml(t)}</pre>`);
+  let html = '<p class="qs-ajuda">Este é o texto que ele segue para saber quem é e como trabalhar para você.</p>'
+    + `<p class="dgl-aviso">${escapeHtml(avisoQuemSou())}</p>`;
+  if (agente) {
+    html += '<div class="qs-acoes"><button type="button" class="dgl-btn principal" id="qs-editar">Editar quem sou</button></div>'
+      + secoesQuemSou(agente).map((s, i) => `<details class="qs-secao"${i === 0 ? ' open' : ''}>
+        <summary>${escapeHtml(s.titulo)}</summary>
+        <div class="md-leitura">${md(s.corpo) || '<p class="dgl-vazio">Seção vazia.</p>'}</div>
+      </details>`).join('');
+  } else {
+    html += '<p class="section-updated" style="padding:12px 4px">Não achei o texto de quem ele é (o arquivo AGENT.md). Peça ao Admin para conferir a casa deste assistente.</p>';
+  }
+  if (existentes.length) {
+    html += `<div class="section-title" style="margin-top:18px">Outros arquivos de quem ele é</div>
+    <div class="memory-list">${existentes.map((f) => `<button type="button" class="memory-item" data-path="${f.name}" title="${escapeHtml(f.dica)}">
       <span class="mi-icon" aria-hidden="true">${f.icon}</span>
       <span class="mi-name">${f.name}<small class="mi-dica">${escapeHtml(f.dica)}</small></span>
       <span class="mi-date">abrir →</span>
     </button>`).join('')}</div>`;
+  }
+  el.innerHTML = html;
+  const editar = document.getElementById('qs-editar');
+  if (editar) editar.addEventListener('click', () => window.DGLeitor.abrir('AGENT.md', { titulo: 'Quem sou', aoSalvar: loadIdentity, recadoSalvo: avisoQuemSou() }));
   el.querySelectorAll('[data-path]').forEach((b) => b.addEventListener('click', () => window.DGLeitor.abrir(b.dataset.path)));
 }
 

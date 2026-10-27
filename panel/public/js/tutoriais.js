@@ -181,15 +181,15 @@
     identity: [
       tela(
         'Quem ele é, e você pode mudar',
-        'Os arquivos de texto que definem o agente: a alma e o jeito de falar, o papel dele, a personalidade, o que ele sabe sobre você, a ética e as leis. Clique em qualquer um para ler; os que podem ser mudados têm o botão Editar.',
+        'O texto que define o agente, dividido por partes: quem ele é, o jeito dele, como trabalha e os limites. Clique numa parte para ler; o botão Editar quem sou abre o texto inteiro para mudar.',
         'Esta é a tela com mais poder do painel, e por isso ela é texto simples e não um formulário cheio de caixinhas: o que está escrito aqui é o que ele vai seguir, e você precisa conseguir ler a coisa inteira de uma vez.',
       ),
       {
         chave: 'arquivos',
         alvo: '#identity-files',
-        titulo: 'Cada arquivo é uma parte dele',
-        corpo: 'Abrir mostra o texto renderizado, fácil de ler. Editar troca por uma caixa de texto grande; Salvar grava no mesmo arquivo de onde ele lê, e a versão anterior fica guardada. A ética e as leis são só de leitura.',
-        porque: 'Muda nas PRÓXIMAS conversas, e não na que está aberta: ele lê estes arquivos ao começar. Depois de salvar, o painel oferece avisar ele na hora. A ética e as leis ficam travadas de propósito: são as regras que protegem você e quem fala com ele, e nem um pedido seu muda isso.',
+        titulo: 'Cada parte é um pedaço dele',
+        corpo: 'Editar troca o texto por uma caixa grande; Salvar grava no mesmo arquivo (AGENT.md), e a versão anterior fica guardada.',
+        porque: 'A mudança não vale na conversa que está aberta, só quando o assistente subir de novo: peça ao Admin, na conversa dele, para atualizar a identidade do assistente e reiniciar ele. O botão de reiniciar do painel não serve para isso.',
       },
     ],
 

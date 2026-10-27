@@ -55,7 +55,7 @@ direto, sem o procedimento da branch.
 | Uma habilidade nova para o Admin | `/opt/dgclaw/admin/.claude/skills/<nome>/SKILL.md`, com um nome que não seja de nenhuma habilidade de fábrica | "Admin, cria uma habilidade que me manda todo dia um resumo da saúde do servidor" |
 | Uma habilidade nova para um agente | `~/.claude/skills/<nome>` dentro da casa dele | "Cria uma habilidade para a Bia montar o relatório de vendas do jeito que eu gosto" |
 | Mudar o jeito do Admin trabalhar | `CLAUDE.md` ou `AGENTS.md` em `/opt/dgclaw/admin` | "Admin, daqui para frente sempre me avise antes de reiniciar um agente" |
-| Identidade e personalidade de um agente | `IDENTITY.md` e `PERSONALITY.md` na casa dele | "Deixa a Bia mais direta e menos formal" |
+| Identidade e personalidade de um agente | `AGENT.md` na casa dele; o dono edita pela aba Quem sou do painel do agente, e o Admin regrava a identidade (`dgclaw agente identidade <nome>`) para valer na próxima sessão | "Deixa a Bia mais direta e menos formal" |
 | Rotinas de um agente | Pelo próprio agente (ficam na casa, em `.dgclaw/self-crons.json`) | "Todo dia útil às 8h, a Bia me manda a agenda" |
 | Chaves de voz, limites de envio, fuso, endereços permitidos | `/etc/dgclaw/web.env` (a linha certa, sem apagar as outras) | "Admin, liga o microfone com a minha chave do Groq" |
 | Configuração de um agente (assinatura, conexões, memória, arquivos) | Painel do próprio agente, em `/p/<nome>/` | "Conecta o Telegram da Bia" |

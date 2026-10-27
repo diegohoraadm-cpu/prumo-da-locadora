@@ -21,10 +21,23 @@ echo "parar, iniciar, reiniciar"
 dgclaw agente parar ana >/dev/null 2>&1
 afirma "parar chama podman stop" grep -q '^podman stop dgclaw-ana' "$STUB_LOG"
 nega "reiniciar com o agente parado explica e falha" dgclaw agente reiniciar ana
+echo "MARCA-EDITADA-NO-INICIAR" >>"$LIB/agentes/ana/home/AGENT.md"
 dgclaw agente iniciar ana >/dev/null 2>&1
+afirma "iniciar regrava a identidade com o AGENT.md editado" grep -q 'MARCA-EDITADA-NO-INICIAR' "$LIB/agentes/ana/home/.plataforma/identidade.md"
 afirma "iniciar chama podman start" grep -q '^podman start dgclaw-ana' "$STUB_LOG"
+echo "MARCA-EDITADA-NO-REINICIAR" >>"$LIB/agentes/ana/home/AGENT.md"
 dgclaw agente reiniciar ana >/dev/null 2>&1
+afirma "reiniciar regrava a identidade com o AGENT.md editado" grep -q 'MARCA-EDITADA-NO-REINICIAR' "$LIB/agentes/ana/home/.plataforma/identidade.md"
 afirma "reiniciar reinicia so o runner por dentro" grep -q '^podman exec dgclaw-ana systemctl restart dgclaw-runner' "$STUB_LOG"
+if [ "$(id -u)" != 0 ]; then  # root le arquivo com modo 000, entao o caso so vale sem root
+    IDT="$LIB/agentes/ana/home/.plataforma/identidade.md"
+    cp "$IDT" "$TMP/identidade-antes"
+    chmod 000 "$LIB/agentes/ana/home/AGENT.md"
+    saida="$(dgclaw agente reiniciar ana 2>&1)"
+    chmod 644 "$LIB/agentes/ana/home/AGENT.md"
+    igual "AGENT.md ilegivel: identidade.md fica como estava, sem gravacao parcial" "$(cat "$TMP/identidade-antes")" "$(cat "$IDT")"
+    afirma "AGENT.md ilegivel: avisa que nao regravou" grep -q 'nao consegui regravar a identidade' <<<"$saida"
+fi
 nega "agente desconhecido recusado" dgclaw agente parar fantasma
 
 echo "remover"

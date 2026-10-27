@@ -90,6 +90,9 @@ bash -c 'exec -a "dgclaw atualizar" sleep 60' & ATU=$!
 sleep 0.2; echo $ATU >"$DGCLAW_RAIZ/var/lib/dgclaw/atualizando"
 printf '{"ok":true,"agente":{"status":"errored","ptyVivo":false},"sessionId":"s1"}' >"$SAUDE"; rodar
 ok "durante o dgclaw atualizar: nenhum pedido e nenhum reparo" "$([ ! -s "$REQ" ] && [ ! -s "$T/dgclaw.log" ] && echo 0 || echo 1)"
+touch -d '3 hours ago' "$DGCLAW_RAIZ/var/lib/dgclaw/atualizando"; rodar
+ok "marca do atualizar com mais de 2 h (pid vivo, cmdline certo): confere normal" "$(grep -qx 'agente reiniciar ana' "$T/dgclaw.log"; echo $?)"
+rm -f "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/"*
 kill $ATU 2>/dev/null; wait $ATU 2>/dev/null
 # pid reaproveitado (depois de um reboot): vivo, mas nao e um atualizar
 sleep 60 & OUTRO=$!; echo $OUTRO >"$DGCLAW_RAIZ/var/lib/dgclaw/atualizando"; rodar; kill $OUTRO 2>/dev/null; wait $OUTRO 2>/dev/null

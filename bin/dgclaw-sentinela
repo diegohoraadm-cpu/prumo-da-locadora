@@ -128,7 +128,8 @@ agentes_ler | jq -e 'any(.agentes[]; .tipo == "agente")' >/dev/null 2>&1 || exit
 mkdir -p "$ESTADO" "$DG_LOG" && chmod 700 "$ESTADO"
 # O `dgclaw atualizar` recria os containers: no meio dele tudo parece quebrado. A marca e dele (lib/atualizar.sh).
 # So vale se o pid ainda e um `dgclaw atualizar`: depois de um reboot o numero pode ser de outro processo.
-p="$(tr -dc '0-9' 2>/dev/null <"$DG_LIB/atualizando")"
+# Marca com mais de 2 h e de um atualizar que morreu sem limpar (queda de energia, SIGKILL): ignorada.
+p=""; [ -n "$(find "$DG_LIB/atualizando" -mmin -120 2>/dev/null)" ] && p="$(tr -dc '0-9' 2>/dev/null <"$DG_LIB/atualizando")"
 if [ -n "$p" ] && tr '\0' ' ' 2>/dev/null </proc/"$p"/cmdline | grep -q 'dgclaw.* atualizar'; then log "atualizacao em andamento (pid $p); esta rodada nao confere nada"; exit 0; fi
 while IFS=$'\t' read -r SLUG NOME URL H TD PROV COFRE; do
     [[ "$SLUG" =~ ^[a-z0-9][a-z0-9-]{1,30}$ ]] || continue

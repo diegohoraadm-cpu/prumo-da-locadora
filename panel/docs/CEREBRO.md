@@ -69,13 +69,13 @@ aceita link `http`/`https`.
 ## O que pode ser editado
 
 Lista de **permissão** (`EDITAVEIS` em `panel/lib/memoria.js`):
-`working-memory.md`, `MEMORY.md`, `memory/**` (`.md`, `.json`, `.txt`), `SOUL.md`,
-`PERSONALITY.md`, `IDENTITY.md`, `CREATOR.md`.
+`working-memory.md`, `MEMORY.md`, `memory/**` (`.md`, `.json`, `.txt`), `AGENT.md` (pela
+aba Quem sou), `SOUL.md`, `PERSONALITY.md`, `IDENTITY.md`, `CREATOR.md`.
 
 Ficam de fora, de propósito, e o leitor diz o motivo no lugar do botão:
 `LAWS.md` e `ETHICS.md` (as regras de segurança dele, imutáveis por desenho; o
-próprio arquivo pede `chmod 444`), `AGENT.md` e `CLAUDE.md` (a atualização do
-plugin reescreve, a edição se perderia), e arquivo marcado como somente leitura
+próprio arquivo pede `chmod 444`), `CLAUDE.md` (a atualização do plugin
+reescreve, a edição se perderia), e arquivo marcado como somente leitura
 no sistema.
 
 ## As travas da gravação

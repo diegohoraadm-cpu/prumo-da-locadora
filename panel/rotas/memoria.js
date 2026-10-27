@@ -91,6 +91,8 @@ module.exports = function registrar(router, ctx) {
 
   router.get('/api/identity', (req, res) => {
     res.json({
+      // A identidade de verdade do agente: a aba Quem sou mostra este por seções.
+      agent: readFile(path.join(P.AGENT_DIR, 'AGENT.md')) || '',
       soul: readFile(P.SOUL_FILE) || '',
       personality: readFile(P.PERSONALITY_FILE) || '',
       identity: readFile(P.IDENTITY_FILE) || '',

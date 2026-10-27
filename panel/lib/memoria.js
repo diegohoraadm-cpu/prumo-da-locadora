@@ -61,9 +61,12 @@ const BACKUPS_POR_ARQUIVO = 20;
  * O que pode ser editado à mão, por caminho relativo ao agentDir.
  *
  * Ficam DE FORA, de propósito: LAWS.md e ETHICS.md (as regras de segurança dele,
- * imutáveis por desenho: o próprio arquivo pede chmod 444), AGENT.md e CLAUDE.md
- * (as instruções de trabalho, que o plugin reescreve na atualização e apagaria a
+ * imutáveis por desenho: o próprio arquivo pede chmod 444), CLAUDE.md (as
+ * instruções de trabalho, que o plugin reescreve na atualização e apagaria a
  * edição), e qualquer coisa fora destas pastas.
+ *
+ * AGENT.md entra (27/10/2026): é a identidade do agente, a aba Quem sou edita
+ * ele, e a CLI só cria o arquivo se ele não existe (bin/dgclaw, escrever_se_novo).
  */
 const EDITAVEIS = [
   /^working-memory\.md$/,
@@ -72,11 +75,11 @@ const EDITAVEIS = [
   /^memory\/[^/]+\.(md|json|txt)$/,
   /^memory\/[^/]+\/[^/]+\.(md|json|txt)$/,
   /^(SOUL|PERSONALITY|IDENTITY|CREATOR)\.md$/,
+  /^AGENT\.md$/,
 ];
 const MOTIVO_NAO_EDITAVEL = {
   'LAWS.md': 'são as leis de segurança dele, e elas são imutáveis de propósito: nem um pedido seu muda essas regras. Quem cuida do sistema altera pelo instalador.',
   'ETHICS.md': 'é o código de ética dele, que protege você e quem fala com ele. Ele é mudado pelo instalador, não à mão.',
-  'AGENT.md': 'são as instruções de trabalho dele, e a próxima atualização do plugin reescreve este arquivo. Uma edição aqui se perderia.',
   'CLAUDE.md': 'são as instruções de trabalho dele, e a próxima atualização do plugin reescreve este arquivo. Uma edição aqui se perderia.',
 };
 
@@ -167,7 +170,7 @@ function buildMemoria(config) {
     if (recusa) return recusa;
     if (MOTIVO_NAO_EDITAVEL[rel]) return MOTIVO_NAO_EDITAVEL[rel];
     if (!EDITAVEIS.some((re) => re.test(rel))) {
-      return 'só a memória (working-memory.md, MEMORY.md, a pasta memory/) e os arquivos de quem ele é (SOUL, PERSONALITY, IDENTITY, CREATOR) podem ser editados por aqui';
+      return 'só a memória (working-memory.md, MEMORY.md, a pasta memory/) e os arquivos de quem ele é (AGENT, SOUL, PERSONALITY, IDENTITY, CREATOR) podem ser editados por aqui';
     }
     if (stat && (stat.mode & 0o222) === 0) {
       return 'o arquivo foi marcado como somente leitura no sistema, de propósito. Quem cuida do sistema sabe o motivo.';

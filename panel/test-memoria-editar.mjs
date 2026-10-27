@@ -48,6 +48,8 @@ escrever('memory/relacoes.json', '{"dono":{"nome":"Paulo"}}');
 escrever('memory/2026-09-30.md', '# Diário\n\nfoi um dia calmo\n');
 escrever('memory/secreto.md', 'não pode abrir\n');
 escrever('LAWS.md', '# Leis\n', 0o444);
+escrever('CLAUDE.md', '# Instruções\n');
+escrever('AGENT.md', '# Bia\n\n## Quem voce e\n\nA assistente do Paulo.\n');
 escrever('.dgclaw/cofre.chave', 'CHAVE-MESTRA-DE-TESTE');
 escrever('.dgclaw/cofre/segredos/x.enc', 'blob');
 escrever('.claude/projects/s.jsonl', '{}');
@@ -103,7 +105,7 @@ for (const [p, porque] of [
   ['.dgclaw/cofre.chave', 'o cofre'],
   ['memory/atalho.md', 'link simbólico para fora'],
   ['LAWS.md', 'lei imutável'],
-  ['AGENT.md', 'fora da lista de editáveis'],
+  ['CLAUDE.md', 'instruções que a atualização reescreve'],
 ]) {
   const r = mem.gravar({ path: p, conteudo: 'invadido', versaoLida: 'qualquer' });
   ok(r.status >= 400 && r.status < 500, `gravar ${p} é recusado (${porque}) com ${r.status}`);
@@ -148,6 +150,14 @@ console.log('\nGravação: sucesso, cópia, registro e permissões');
   const ult = log[log.length - 1];
   ok(ult.path === 'MEMORY.md' && ult.versaoDepois === r.corpo.versao, 'a edição foi anotada no registro');
   ok(!JSON.stringify(log).includes('corrigido pelo dono'), 'o registro guarda o quê e quando, nunca o conteúdo');
+}
+{
+  // A aba Quem sou edita o AGENT.md (27/10/2026); o CLAUDE.md continua recusado acima.
+  const ag = mem.ler('AGENT.md').corpo;
+  ok(ag.editavel === true, 'AGENT.md abre como editável');
+  ok(mem.ler('CLAUDE.md').corpo.editavel === false, 'CLAUDE.md abre só para leitura');
+  const r = mem.gravar({ path: 'AGENT.md', conteudo: ag.conteudo + '\n## Limites\n\nNunca pagar nada.\n', versaoLida: ag.versao });
+  ok(r.status === 200 && /Nunca pagar/.test(fs.readFileSync(path.join(RAIZ, 'AGENT.md'), 'utf8')), 'AGENT.md grava com a versão certa');
   ok(mem.ler('MEMORY.md').corpo.autoria.voceFoiOUltimo === true, 'e o leitor sabe que a última mão foi do dono');
 }
 {

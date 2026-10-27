@@ -1319,7 +1319,7 @@ Description=DG Claw sentinela: confere se cada agente responde e avisa o dono
 Type=oneshot
 User=root
 ExecStart=/usr/bin/bash $p_app/bin/dgclaw-sentinela
-TimeoutStartSec=15min
+TimeoutStartSec=1h
 FIM
     cat <<'FIM' | escrever_arquivo "$DG_UNITS/dgclaw-sentinela.timer" 644
 [Unit]
@@ -1328,12 +1328,15 @@ Description=DG Claw sentinela dos agentes (a cada 10 minutos)
 [Timer]
 OnBootSec=10min
 OnUnitActiveSec=10min
-Persistent=true
 
 [Install]
 WantedBy=timers.target
 FIM
-    ligar_unidade dgclaw-sentinela.timer
+    # Sem `restart`: a unidade le o script a cada rodada, e reiniciar o timer no meio do `dgclaw atualizar`
+    # dispararia uma rodada com os containers sendo trocados (a propria Sentinela tambem se segura pela marca).
+    executar systemctl daemon-reload
+    executar systemctl enable dgclaw-sentinela.timer
+    systemctl is-active --quiet dgclaw-sentinela.timer || executar systemctl start dgclaw-sentinela.timer
 }
 
 # --- 10. imagem -----------------------------------------------------------------

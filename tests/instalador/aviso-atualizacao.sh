@@ -73,5 +73,7 @@ caso_sentinela_instala_e_liga_o_timer() {
     afirma "a unidade roda a sentinela do app como root" tem "$u/dgclaw-sentinela.service" "ExecStart=/usr/bin/bash /opt/dgclaw/app/bin/dgclaw-sentinela"
     afirma "a cada 10 minutos" tem "$u/dgclaw-sentinela.timer" "OnUnitActiveSec=10min"
     afirma "o timer foi ligado" tem "$STUB_LOG" "systemctl enable dgclaw-sentinela.timer"
+    nega "sem Persistent (o timer nao tem OnCalendar)" tem "$u/dgclaw-sentinela.timer" "Persistent"
+    nega "o timer nunca e reiniciado (o atualizar roda este instalador)" tem "$STUB_LOG" "systemctl restart dgclaw-sentinela.timer"
     limpar_cenario
 }

@@ -12,11 +12,13 @@
 #   turno      o ultimo turno foi erro (scripts/_lib/saude_sessao.py)              -> reiniciar, se ele recomendar
 #   plugin     Telegram ligado e o plugin nao esta instalado                       -> reparar
 #   telegram   Telegram ligado e o processo do plugin (bot.pid) nao esta vivo      -> reiniciar
-#   bot_duplo  o log do plugin diz que outro computador usa o mesmo bot (sem reparo)
+# Bot aberto em outro computador nao e detectado: o plugin so escreve o "409 Conflict" no stderr dele,
+# que nao chega a nenhum arquivo confiavel. Depois de 8 conflitos ele sai, e isso cai em "telegram",
+# cujo aviso traz a dica de fechar o outro computador.
 # Com problema: tenta UMA vez o reparo, confere de novo e avisa o dono pelo painel (aviso no
 # aparelho e recado ao Admin) e, com o Telegram do agente ligado, pelo bot dele. O mesmo problema
-# do mesmo agente so e tratado de novo depois de DGCLAW_SENTINELA_HORAS horas (padrao 6); o
-# estado fica em /var/lib/dgclaw/sentinela/ e o log em /var/log/dgclaw/sentinela.log.
+# do mesmo agente so e tratado de novo depois de DGCLAW_SENTINELA_HORAS horas (padrao 6), mesmo que
+# ele fique bom no meio (cai-volta-cai nao vira reinicio a cada rodada); o estado fica em /var/lib/dgclaw/sentinela/ e o log em /var/log/dgclaw/sentinela.log.
 # Agente do Codex: so container e runner (login, turno e Telegram sao do Claude).
 #
 # Testes: bin/test/dgclaw-sentinela.test.sh. Variaveis so para eles: DGCLAW_RAIZ (lib/comum.sh),
@@ -35,15 +37,13 @@ JANELA=$(( ${DGCLAW_SENTINELA_HORAS:-6} * 3600 ))
 ESPERA="${DGCLAW_TEMPO_ESPERA:-60}"
 TG_API="${DGCLAW_TELEGRAM_API:-https://api.telegram.org}"
 ADMIN_URL="${DGCLAW_ADMIN_URL:-http://127.0.0.1:4300}"
-mkdir -p "$ESTADO" "$DG_LOG" && chmod 700 "$ESTADO"
 log() { printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >>"$LOGF"; }
 
 # diagnosticar <depois-do-reparo 0|1>: poe em PROB o codigo do primeiro problema (vazio = tudo bem) e,
 # no caso "turno", o laudo do saude_sessao.py em TURNO. Usa as variaveis do agente da volta (SLUG, URL,
-# H, TD, PROV, COFRE). Depois do reparo o turno nao e relido: o erro antigo continua no fim do
-# transcript ate o dono mandar mensagem nova.
+# H, TD, PROV, COFRE). Com 1 (logo depois do reparo) o turno nao e relido; quem rele e o laco principal.
 diagnosticar() {
-    local saude st pty sid ult canais estado pid t
+    local saude st pty sid ult canais pid t
     PROB=""; TURNO=""
     [ "$(podman inspect -f '{{.State.Status}}' "dgclaw-$SLUG" 2>/dev/null)" = running ] || { PROB=parado; return; }
     saude="$(curl -fsS --max-time 5 "$URL/api/saude" 2>/dev/null)" || { PROB=runner; return; }
@@ -68,12 +68,14 @@ diagnosticar() {
     canais="$H/.dgclaw/canais.json"
     [ "$(jq -r '.telegram.ligado // false' "$canais" 2>/dev/null)" = true ] || return 0
     grep -qF 'telegram@claude-plugins-official' "$H/.claude/plugins/installed_plugins.json" 2>/dev/null || { PROB=plugin; return; }
-    estado="$(jq -r '.telegram.estado_dir // ""' "$canais")"
-    pid="$(tr -dc '0-9' <"$H/${estado#/home/agente/}/bot.pid" 2>/dev/null)"
-    { [ -n "$pid" ] && podman exec "dgclaw-$SLUG" grep -qa server.ts "/proc/$pid/cmdline" 2>/dev/null; } || { PROB=telegram; return; }
-    # shortcut: le so as ultimas linhas do log mais novo do plugin; outro texto de conflito, so com um caso real para copiar.
-    t="$(ls -t "$H/.cache/claude-cli-nodejs/-home-agente/mcp-logs-plugin-telegram-telegram/"* 2>/dev/null | head -1)"
-    if [ -n "$t" ] && tail -n 50 "$t" | grep -q 'terminated by other getUpdates'; then PROB=bot_duplo; fi
+    pid="$(tr -dc '0-9' 2>/dev/null <"$(pasta_telegram)/bot.pid")"
+    { [ -n "$pid" ] && podman exec "dgclaw-$SLUG" grep -qa server.ts "/proc/$pid/cmdline" 2>/dev/null; } || PROB=telegram
+}
+
+# pasta_telegram: o estado do canal (bot.pid, .env, access.json) na visao do host, pelo estado_dir do canais.json.
+pasta_telegram() {
+    local e; e="$(jq -r '.telegram.estado_dir // "/home/agente/.dgclaw/telegram"' "$H/.dgclaw/canais.json" 2>/dev/null)"
+    printf '%s/%s' "$H" "${e#/home/agente/}"
 }
 
 # frase <problema>: o que aconteceu e a correcao em uma linha, para leigo.
@@ -85,14 +87,13 @@ frase() {
         login) echo "O login do Claude do agente $NOME venceu, então ele parou de pensar. Abra o agente $NOME no painel e clique em Entrar com a assinatura." ;;
         turno) jq -r --arg n "$NOME" '"O agente \($n) parou: " + (.frase // "o último turno deu erro") + " " + (.comoResolver // "")' <<<"$TURNO" ;;
         plugin) echo "O Telegram do agente $NOME está ligado, mas a peça que conversa com o Telegram sumiu. Peça ao Admin no painel: \"reinstale o Telegram do agente $NOME\"." ;;
-        telegram) echo "O agente $NOME parou de receber mensagens do Telegram. Peça ao Admin no painel: \"reinicie o agente $NOME\"." ;;
-        bot_duplo) echo "O bot do Telegram do agente $NOME está aberto em outro computador também, e por isso fica mudo. Feche o outro (por exemplo, o Claude do seu computador ligado no mesmo bot)." ;;
+        telegram) echo "O agente $NOME parou de receber mensagens do Telegram. Peça ao Admin no painel: \"reinicie o agente $NOME\". Se o mesmo bot estiver ligado em outro computador (por exemplo, no Claude do seu computador), feche lá, porque dois ao mesmo tempo deixam o bot mudo." ;;
     esac
 }
 
 # avisar <texto> <problema> <resultado do reparo>: painel sempre (aparelho + Admin); Telegram do agente quando ligado.
 avisar() {
-    local texto="$1" prob="$2" token chat cfg r="nenhum aparelho ativado (o Web ainda nao criou as chaves)"
+    local texto="$1" prob="$2" token chat cfg tg r="nenhum aparelho ativado (o Web ainda nao criou as chaves)"
     # Sem as chaves do Web nenhum aparelho se inscreveu; e quem cria as chaves e o Web, nunca a Sentinela.
     [ -f "$DG_LIB/web/push/vapid.json" ] && r="$(node -e 'const p = require(process.argv[1]).criarPush({ dataDir: process.argv[2], log: () => {} });
         p.enviar({ titulo: "Sentinela do Prumo", corpo: process.argv[3], tag: "sentinela-" + process.argv[4], url: "/a/" + process.argv[4] })
@@ -111,8 +112,9 @@ avisar() {
         rm -f "$cfg"
     fi
     [ "$(jq -r '.telegram.ligado // false' "$H/.dgclaw/canais.json" 2>/dev/null)" = true ] || return 0
-    token="$(grep -m1 '^TELEGRAM_BOT_TOKEN=' "$H/.dgclaw/telegram/.env" 2>/dev/null | cut -d= -f2-)"
-    chat="$(jq -r '.allowFrom[0] // ""' "$H/.dgclaw/telegram/access.json" 2>/dev/null)"
+    tg="$(pasta_telegram)"
+    token="$(grep -m1 '^TELEGRAM_BOT_TOKEN=' "$tg/.env" 2>/dev/null | cut -d= -f2-)"
+    chat="$(jq -r '.allowFrom[0] // ""' "$tg/access.json" 2>/dev/null)"
     if [[ ! "$token" =~ ^[0-9]+:[A-Za-z0-9_-]+$ ]] || [ -z "$chat" ]; then
         log "$SLUG: Telegram ligado, mas sem token ou sem o chat do dono; ficou so o painel"; return 0
     fi
@@ -123,11 +125,17 @@ avisar() {
 }
 
 [ "$(id -u)" = 0 ] || [ -n "$R" ] || { echo "a sentinela precisa rodar como root (sudo)." >&2; exit 1; }
+agentes_ler | jq -e 'any(.agentes[]; .tipo == "agente")' >/dev/null 2>&1 || exit 0
+mkdir -p "$ESTADO" "$DG_LOG" && chmod 700 "$ESTADO"
+# O `dgclaw atualizar` recria os containers: no meio dele tudo parece quebrado. A marca e dele (lib/atualizar.sh).
+p="$(tr -dc '0-9' 2>/dev/null <"$DG_LIB/atualizando")"
+if [ -n "$p" ] && kill -0 "$p" 2>/dev/null; then log "atualizacao em andamento (pid $p); esta rodada nao confere nada"; exit 0; fi
 while IFS=$'\t' read -r SLUG NOME URL H TD PROV COFRE; do
     [[ "$SLUG" =~ ^[a-z0-9][a-z0-9-]{1,30}$ ]] || continue
     depois=""
     diagnosticar 0; prob="$PROB"
-    if [ -z "$prob" ]; then rm -f "$ESTADO/$SLUG".*; continue; fi
+    # Bom agora: so sai a marca com mais de 6 h; a recente segura o proximo reparo e aviso.
+    if [ -z "$prob" ]; then find "$ESTADO" -name "$SLUG.*" -mmin +$((JANELA / 60)) -delete; continue; fi
     marca="$ESTADO/$SLUG.$prob"
     if [ -f "$marca" ] && [ $(( $(date +%s) - $(cat "$marca") )) -lt "$JANELA" ]; then
         log "$SLUG: segue com '$prob'; o dono ja foi avisado ha menos de $((JANELA / 3600)) h"; continue
@@ -146,7 +154,10 @@ while IFS=$'\t' read -r SLUG NOME URL H TD PROV COFRE; do
         fim=$(( $(date +%s) + ESPERA ))
         while diagnosticar 1; [ -n "$PROB" ] && [ "$(date +%s)" -lt "$fim" ]; do sleep 5; done
         depois="$PROB"
-        if [ -z "$depois" ]; then
+        if [ -z "$depois" ] && [ "$prob" = turno ] && diagnosticar 0 && [ "$PROB" = turno ]; then
+            depois=turno
+            texto="O agente $NOME parou por um erro e eu reiniciei ele, mas o erro continua no fim da conversa. Mande uma mensagem para ele; se não responder, peça ao Admin no painel: \"conserte o agente $NOME\"."
+        elif [ -z "$depois" ]; then
             texto="O agente $NOME tinha parado de responder e eu consertei sozinho; já voltou. Se você mandou mensagem e ficou sem resposta, mande de novo."
         else
             texto="$texto (Tentei consertar sozinho e não resolveu.)"

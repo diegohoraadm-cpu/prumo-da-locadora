@@ -42,6 +42,7 @@ _atu_problema() { ATU_PROBLEMAS=$((ATU_PROBLEMAS + 1)); printf '   FALHOU  %s\n'
 # e como seguir ou voltar.
 _atualizar_ao_sair() {
     local rc=$?
+    rm -f "$DG_LIB/atualizando"  # a marca que segura a Sentinela (bin/dgclaw-sentinela)
     [ "$rc" -eq 0 ] && return 0
     {
         printf '\nA atualizacao parou em: %s.\n' "${ATU_ETAPA:-inicio}"
@@ -411,6 +412,8 @@ atualizar_main() {
     fi
 
     trap _atualizar_ao_sair EXIT
+    # A Sentinela fica parada enquanto este pid existir: no meio da troca os containers parecem quebrados.
+    if [ "$ENSAIO" != 1 ]; then printf '%s\n' "$$" >"$DG_LIB/atualizando" 2>/dev/null || true; fi
     if [ "$ENSAIO" = 1 ]; then printf 'SIMULACAO: nada sera mudado; so mostro o que seria feito.\n'; fi
 
     ATU_ETAPA="conferindo o clone"

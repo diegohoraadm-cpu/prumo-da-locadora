@@ -68,27 +68,42 @@ ok "a Sentinela nao cria as chaves do aviso no aparelho" "$([ ! -e "$DGCLAW_RAIZ
 rodar
 ok "repetido em menos de 6 h: sem reparo e sem aviso" "$([ ! -s "$T/dgclaw.log" ] && ! grep -q admin/input "$REQ" && echo 0 || echo 1)"
 # ... e depois de 6 h volta a tratar.
-echo $(( $(date +%s) - 7 * 3600 )) >"$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/ana.runner"
+envelhece() { echo $(( $(date +%s) - 7 * 3600 )) >"$1"; touch -d '7 hours ago' "$1"; }
+envelhece "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/ana.runner"
 node -e 'require(process.argv[1]).criarPush({ dataDir: process.argv[2], log() {} }).enviar({ titulo: "x" })' "$AQUI/../../web/lib/push.js" "$DGCLAW_RAIZ/var/lib/dgclaw/web"
 rodar; ok "passadas 6 h: trata de novo" "$(grep -qx 'agente reiniciar ana' "$T/dgclaw.log"; echo $?)"
 
 ok "com as chaves do Web, tenta o aviso no aparelho" "$(grep -q 'aviso no aparelho: 0 de 0 aparelhos' "$LOGF"; echo $?)"
 ok "recado ao Admin diz o resultado do reparo" "$(grep -q 'dgclaw agente reiniciar nao resolveu' "$REQ"; echo $?)"
 
-# 4. Voltou: o estado some.
+# 4. Cai, volta e cai de novo em menos de 6 h: a marca fica e segura reparo e aviso.
 printf '%s' "$SAO" >"$SAUDE"; rodar
-ok "recuperado: estado limpo" "$([ -z "$(ls "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela")" ] && echo 0 || echo 1)"
+ok "voltou: a marca recente fica" "$([ -f "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/ana.runner" ] && echo 0 || echo 1)"
+printf '{"ok":true,"agente":{"status":"errored","ptyVivo":false},"sessionId":"s1"}' >"$SAUDE"; rodar
+ok "caiu de novo em menos de 6 h: sem reparo e sem aviso" "$([ ! -s "$T/dgclaw.log" ] && ! grep -q admin/input "$REQ" && echo 0 || echo 1)"
+# ... e saudavel com a marca de mais de 6 h: a marca sai.
+printf '%s' "$SAO" >"$SAUDE"; envelhece "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/ana.runner"; rodar
+ok "bom e marca velha: estado limpo" "$([ -z "$(ls "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela")" ] && echo 0 || echo 1)"
+
+# 4b. Atualizacao em andamento (pid vivo na marca): nao confere nada. Pid morto: segue.
+echo $$ >"$DGCLAW_RAIZ/var/lib/dgclaw/atualizando"
+printf '{"ok":true,"agente":{"status":"errored","ptyVivo":false},"sessionId":"s1"}' >"$SAUDE"; rodar
+ok "durante o dgclaw atualizar: nenhum pedido e nenhum reparo" "$([ ! -s "$REQ" ] && [ ! -s "$T/dgclaw.log" ] && echo 0 || echo 1)"
+echo 999999 >"$DGCLAW_RAIZ/var/lib/dgclaw/atualizando"; rodar
+ok "marca de atualizacao com pid morto: confere normal" "$(grep -qx 'agente reiniciar ana' "$T/dgclaw.log"; echo $?)"
+rm -f "$DGCLAW_RAIZ/var/lib/dgclaw/atualizando" "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/"*; printf '%s' "$SAO" >"$SAUDE"
 
 # 5. Telegram ligado, plugin vivo nao: reinicia, o reparo conserta, aviso de "consertei" pelo bot.
-jq -n --arg e /home/agente/.dgclaw/telegram '{versao: 1, telegram: {ligado: true, estado_dir: $e}}' >"$H/.dgclaw/canais.json"
-printf 'TELEGRAM_BOT_TOKEN=%s\n' "$BOT" >"$H/.dgclaw/telegram/.env"
-printf '{"allowFrom":["555111"]}' >"$H/.dgclaw/telegram/access.json"
+jq -n --arg e /home/agente/.dgclaw/tg2 '{versao: 1, telegram: {ligado: true, estado_dir: $e}}' >"$H/.dgclaw/canais.json"
+mkdir -p "$H/.dgclaw/tg2"; printf 'TELEGRAM_BOT_TOKEN=%s\n' "$BOT" >"$H/.dgclaw/tg2/.env"
+printf '{"allowFrom":["555111"]}' >"$H/.dgclaw/tg2/access.json"
+printf '{"allowFrom":["999"]}' >"$H/.dgclaw/telegram/access.json"
 printf '{"plugins":{"telegram@claude-plugins-official":[{}]}}' >"$H/.claude/plugins/installed_plugins.json"
-echo 4242 >"$H/.dgclaw/telegram/bot.pid"; touch "$T/conserta"
+echo 4242 >"$H/.dgclaw/tg2/bot.pid"; touch "$T/conserta"
 ( for _ in $(seq 300); do ps -eo args | grep -F "$BOT" | grep -v grep >>"$T/ps.txt"; sleep 0.01; done ) & MON=$!
 rodar; kill $MON 2>/dev/null; wait $MON 2>/dev/null
 ok "plugin parado: reiniciar" "$(grep -qx 'agente reiniciar ana' "$T/dgclaw.log"; echo $?)"
-ok "aviso pelo bot do agente, para o chat do dono" "$(grep "/bot$BOT/sendMessage" "$REQ" | grep -q 'chat_id=555111'; echo $?)"
+ok "aviso pelo bot do agente, para o chat do dono (.env e access.json do estado_dir do canal)" "$(grep "/bot$BOT/sendMessage" "$REQ" | grep -q 'chat_id=555111'; echo $?)"
 ok "o aviso diz que consertou" "$(grep sendMessage "$REQ" | grep -q 'consertei'; echo $?)"
 ok "o token nao aparece no ps" "$([ ! -s "$T/ps.txt" ] && echo 0 || echo 1)"
 ok "o token nao aparece no log" "$(! grep -qF "$BOT" "$LOGF"; echo $?)"
@@ -99,12 +114,25 @@ echo '{}' >"$H/.claude/plugins/installed_plugins.json"; rodar
 ok "plugin ausente: dgclaw agente reparar" "$(grep -qx 'agente reparar ana' "$T/dgclaw.log"; echo $?)"
 printf '{"plugins":{"telegram@claude-plugins-official":[{}]}}' >"$H/.claude/plugins/installed_plugins.json"
 
-# 7. Bot aberto em outro computador: aviso sem reparo.
-mkdir -p "$H/.cache/claude-cli-nodejs/-home-agente/mcp-logs-plugin-telegram-telegram"
-echo '409 Conflict: terminated by other getUpdates request' >"$H/.cache/claude-cli-nodejs/-home-agente/mcp-logs-plugin-telegram-telegram/a.txt"
-rodar
-ok "bot duplicado: avisa sem reparo" "$([ ! -s "$T/dgclaw.log" ] && grep sendMessage "$REQ" | grep -q 'outro+computador' && echo 0 || echo 1)"
-rm -rf "$H/.cache"
+# 7. Bot do Telegram morto e o reinicio nao resolve: o aviso traz a dica do outro computador.
+rm -f "$T/bun-vivo" "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/"*; rodar
+ok "telegram mudo: aviso com a dica de fechar o outro computador" "$(grep sendMessage "$REQ" | grep -q 'outro+computador'; echo $?)"
+touch "$T/bun-vivo"; rm -f "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/"*
+
+# 7b. Turno sem resposta: reinicia, a saude volta, mas o turno continua; o aviso pede uma mensagem nova.
+python3 - "$TD/s1.jsonl" <<'PY'
+import json, sys
+from datetime import datetime, timezone, timedelta
+t = lambda m: (datetime.now(timezone.utc) - timedelta(minutes=m)).isoformat().replace("+00:00", "Z")
+regs = [{"type": "user", "timestamp": t(60), "message": {"role": "user", "content": "oi"}},
+        {"type": "assistant", "timestamp": t(59), "message": {"model": "x", "role": "assistant", "stop_reason": "end_turn", "content": [{"type": "text", "text": "ola"}]}},
+        {"type": "user", "timestamp": t(30), "message": {"role": "user", "content": '<dgchat from="Dono" chat="c_x" msg="p1" ts="%s">tudo bem?</dgchat>' % t(30)}}]
+open(sys.argv[1], "w").write("\n".join(json.dumps(r) for r in regs) + "\n")
+PY
+touch -d '30 minutes ago' "$TD/s1.jsonl"; touch "$T/conserta"; rodar; rm -f "$T/conserta"
+ok "turno sem resposta: reiniciar" "$(grep -qx 'agente reiniciar ana' "$T/dgclaw.log"; echo $?)"
+ok "erro segue no turno: pede mensagem nova, nao diz consertei" "$(grep sendMessage "$REQ" | grep -q 'erro+continua' && ! grep sendMessage "$REQ" | grep -q 'consertei'; echo $?)"
+rm -f "$TD/s1.jsonl" "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/"*
 
 # 8. Login vencido no ultimo turno: aviso com a frase do saude_sessao, sem reiniciar.
 python3 - "$TD/s1.jsonl" <<'PY'
@@ -126,6 +154,10 @@ rm -f "$H/.claude/.credentials.json"; rodar
 ok "sem credencial: aviso de login, sem reparo" "$([ ! -s "$T/dgclaw.log" ] && grep sendMessage "$REQ" | grep -q 'Entrar+com+a+assinatura' && echo 0 || echo 1)"
 echo exited >"$T/estado"; rodar
 ok "container parado: aviso, sem reparo" "$([ ! -s "$T/dgclaw.log" ] && grep -q "problema 'parado'" "$REQ" && echo 0 || echo 1)"
+
+# 10. Sem agente nenhum: sai sem conferir nada.
+echo '{"versao": 1, "agentes": []}' >"$DGCLAW_RAIZ/etc/dgclaw/agentes.json"; rodar
+ok "agentes.json vazio: nenhum pedido" "$([ ! -s "$REQ" ] && echo 0 || echo 1)"
 
 echo "$((N - FALHAS)) de $N ok"
 [ "$FALHAS" = 0 ]

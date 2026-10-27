@@ -135,13 +135,16 @@ Detalhe de cada tipo em `docs/SAUDE-E-MODO-SEGURO.md`.
 A cada 10 minutos o timer `dgclaw-sentinela.timer` roda `bin/dgclaw-sentinela` no servidor. Para
 cada agente ela confere, nesta ordem: o container de pé, o `/api/saude` respondendo sem erro, o
 login do Claude, o último turno (o `saude_sessao.py` da seção 2.3) e, com o Telegram ligado, o
-plugin instalado, o processo dele vivo e o aviso de bot aberto em outro computador no log do plugin.
+plugin instalado e o processo dele vivo. Bot aberto em outro computador ela não enxerga (o plugin só
+conta isso no terminal dele); quando o plugin desiste e para, o aviso de "Telegram parado" traz a
+dica de fechar o outro computador.
 
 Quando acha um problema, ela tenta uma vez o conserto seguro (`dgclaw agente reiniciar`, ou
 `dgclaw agente reparar` quando falta o plugin) e avisa o dono com a correção em uma linha: no
 aparelho dele (se ele ativou os avisos), num recado ao Admin e, com o Telegram ligado, pelo bot do
-próprio agente. Container desligado, login vencido e bot duplicado só geram aviso, porque o conserto
-depende do dono. O mesmo problema do mesmo agente só volta a ser tratado depois de 6 horas.
+próprio agente. Container desligado e login vencido só geram aviso, porque o conserto depende do
+dono; se o erro continua na conversa depois do reinício, o aviso pede ao dono uma mensagem nova. O mesmo problema do mesmo agente só volta a ser tratado depois de 6 horas,
+mesmo que ele melhore no meio. Durante o `sudo dgclaw atualizar` ela não confere nada.
 
 No socorro, comece pelo log dela: ele diz o que ela viu e o que já tentou.
 

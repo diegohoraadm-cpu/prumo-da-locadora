@@ -1940,10 +1940,12 @@ window.loadLog = loadLog;
 
 // ─── IDENTITY Panel ────────────────────────────
 
-// A mudança no AGENT.md só entra no que ele lê quando o Admin regrava a identidade
-// (bin/dgclaw, `dgclaw agente identidade`): nem /new nem reiniciar fazem isso sozinhos.
-const AVISO_QUEM_SOU = 'A mudança vale na próxima sessão, depois de um passo do Admin: salve, peça ao Admin '
-  + 'para regravar a identidade do assistente e então mande /new na conversa.';
+// O runner lê a identidade (.plataforma/identidade.md, feita a partir do AGENT.md) só quando
+// a sessão sobe, e quem refaz esse arquivo é a CLI do Admin (bin/dgclaw). Por isso o pedido vai
+// ao Admin; o botão de reiniciar do painel não refaz a identidade.
+const avisoQuemSou = () => 'Salvou? A mudança só vale quando o assistente subir de novo: peça ao Admin, na conversa '
+  + `dele, "atualize a identidade ${APP_CONFIG.agentName ? 'de ' + APP_CONFIG.agentName : 'do assistente'} e reinicie". `
+  + 'O botão de reiniciar do painel não serve para isso.';
 
 /** O AGENT.md em seções "## ". O que vem antes da primeira (título e nota técnica) fica de fora. */
 function secoesQuemSou(texto) {
@@ -1979,7 +1981,7 @@ async function loadIdentity() {
   const agente = (data.agent || '').trim();
   const md = (t) => (window.DGLeitor ? window.DGLeitor.renderizar('md', t) : `<pre>${escapeHtml(t)}</pre>`);
   let html = '<p class="qs-ajuda">Este é o texto que ele segue para saber quem é e como trabalhar para você.</p>'
-    + `<p class="dgl-aviso">${escapeHtml(AVISO_QUEM_SOU)}</p>`;
+    + `<p class="dgl-aviso">${escapeHtml(avisoQuemSou())}</p>`;
   if (agente) {
     html += '<div class="qs-acoes"><button type="button" class="dgl-btn principal" id="qs-editar">Editar quem sou</button></div>'
       + secoesQuemSou(agente).map((s, i) => `<details class="qs-secao"${i === 0 ? ' open' : ''}>
@@ -1999,7 +2001,7 @@ async function loadIdentity() {
   }
   el.innerHTML = html;
   const editar = document.getElementById('qs-editar');
-  if (editar) editar.addEventListener('click', () => window.DGLeitor.abrir('AGENT.md', { titulo: 'Quem sou', aoSalvar: loadIdentity, recadoSalvo: AVISO_QUEM_SOU }));
+  if (editar) editar.addEventListener('click', () => window.DGLeitor.abrir('AGENT.md', { titulo: 'Quem sou', aoSalvar: loadIdentity, recadoSalvo: avisoQuemSou() }));
   el.querySelectorAll('[data-path]').forEach((b) => b.addEventListener('click', () => window.DGLeitor.abrir(b.dataset.path)));
 }
 

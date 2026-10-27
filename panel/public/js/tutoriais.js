@@ -189,7 +189,7 @@
         alvo: '#identity-files',
         titulo: 'Cada parte é um pedaço dele',
         corpo: 'Editar troca o texto por uma caixa grande; Salvar grava no mesmo arquivo (AGENT.md), e a versão anterior fica guardada.',
-        porque: 'A mudança não vale na conversa que está aberta: depois de salvar, peça ao Admin para regravar a identidade do assistente e mande /new na conversa.',
+        porque: 'A mudança não vale na conversa que está aberta, só quando o assistente subir de novo: peça ao Admin, na conversa dele, para atualizar a identidade do assistente e reiniciar ele. O botão de reiniciar do painel não serve para isso.',
       },
     ],
 

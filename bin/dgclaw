@@ -364,7 +364,6 @@ renderizar_template() {
     sed \
         -e 's|^Voce conversa pelo Telegram e vive 24/7 numa VPS\.$|Voce conversa com {{DONO}} pelo painel (aba Conversa) e vive 24/7 num servidor.\n\n## Seu papel\n\n{{PAPEL}}|' \
         -e 's|^- So o {{DONO}} fala com voce (a lista de permissao do Telegram garante isso)\.|- So o {{DONO}} fala com voce, pelo painel.|' \
-        -e 's|systemctl restart dgclaw-{{SLUG}}\.service|systemctl restart dgclaw-runner.service|' \
         -e "s|{{NOME}}|$nome|g" \
         -e "s|{{SLUG}}|$slug|g" \
         -e "s|{{DONO}}|$dono|g" \
@@ -448,13 +447,16 @@ regravar_identidade_md() {
     local C_PAPEL="${C_PAPEL:-$TEXTO_PAPEL_NEUTRO}" C_JEITO="${C_JEITO:-$TEXTO_JEITO_NEUTRO}" C_DATA="${C_DATA:-$(date +%F)}"
     [ -f "$tpl/ambiente/agente.md" ] || falha "o modelo $tpl/ambiente/agente.md nao existe." \
         "a copia do DG Claw em $APP_DIR esta incompleta; reinstale com o instalador."
-    {
-        if [ -f "$h/AGENT.md" ]; then cat "$h/AGENT.md"; else renderizar_template "$tpl/AGENT.md.tmpl"; fi
-        printf '\n---\n\n'
-        regra_canal_dgchat
-        printf '\n---\n\n'
-        renderizar_template "$tpl/ambiente/agente.md"
-    } | escrever_se_mudou "$h/.plataforma/identidade.md" 644 "$ug"
+    # Monta tudo antes de gravar, com &&: chamada dentro de `( ... ) || aviso` o set -e nao vale,
+    # e um passo que falhasse no meio deixaria um identidade.md parcial sem aviso.
+    local texto
+    texto="$(
+        { if [ -f "$h/AGENT.md" ]; then cat "$h/AGENT.md"; else renderizar_template "$tpl/AGENT.md.tmpl"; fi; } \
+            && printf '\n---\n\n' && regra_canal_dgchat && printf '\n---\n\n' \
+            && renderizar_template "$tpl/ambiente/agente.md"
+    )" || falha "nao consegui montar o identidade.md do agente $C_SLUG; o arquivo atual ficou como estava." \
+        "confira se $h/AGENT.md e $tpl/ambiente/agente.md existem e podem ser lidos."
+    printf '%s\n' "$texto" | escrever_se_mudou "$h/.plataforma/identidade.md" 644 "$ug"
 }
 
 gerar_runner_json() {
@@ -1122,6 +1124,12 @@ agente_acao() {
     exigir_ferramentas jq podman
     existe_agente "$slug" || falha "nao conheco o agente '$slug' (nao esta no agentes.json e nao tem container)." \
         "veja os que existem com: dgclaw agente listar"
+    if [ "$acao" != parar ]; then
+        # A pessoa pode ter editado o AGENT.md: a identidade e regravada ao subir e vale na
+        # proxima sessao. Subshell: o falha() dela nao pode impedir o runner de subir.
+        ( regravar_config_sh "$slug" "$(agentes_obter "$slug")" identidade ) \
+            || aviso "nao consegui regravar a identidade do agente $slug; ele sobe com a anterior (tente: dgclaw agente identidade $slug)."
+    fi
     case "$acao" in
         parar)
             executar podman stop "$c" >/dev/null

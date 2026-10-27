@@ -53,8 +53,10 @@ principal quando volta ao registro. Quem troca o principal é o Admin, a pedido 
 "Criar agentes" do `templates/admin/CLAUDE.md` e do `templates/admin/AGENTS.md`). Os outros agentes
 de trabalho são a equipe do principal: saem do seletor de agentes, a conversa deles (`/a/<slug>`)
 leva à aba Equipe da Mesa, o Web recusa a conversa pelo painel deles (`/api/chat` e, na aba
-Sessões, recado, anexo, card novo e a sessão principal), e o Admin só cria agente novo a pedido do
-principal.
+Sessões, recado, anexo, handoff, card novo e a conversa e as ações da sessão principal, menos a
+decisão de permissão), e o Admin só cria agente novo a pedido do principal. A lista e o item da
+sessão principal seguem abertos e mostram a última fala dele (`ultima_fala`, até 280 caracteres) e
+o pedido de permissão.
 
 ## Instalação e primeiro agente
 

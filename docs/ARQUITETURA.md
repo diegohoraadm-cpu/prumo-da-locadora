@@ -44,6 +44,15 @@ A CLI reserva portas e faixas de usuários, cria os arquivos a partir dos modelo
 container e cadastra o agente. A separação usa permissões de arquivos, namespaces de usuários,
 montagens controladas e regras de rede. Os testes de isolamento conferem esses limites.
 
+O dono conversa com um agente de trabalho só, o principal. O Web escolhe o principal na primeira
+vez que monta a lista de agentes: é o primeiro agente de trabalho do `agentes.json`, e o slug dele
+fica gravado em `/var/lib/dgclaw/web/principal.json` (`{"slug": "..."}`). Dali em diante vale o
+arquivo, mesmo que a ordem do registro mude quando um agente é recriado. Para trocar o principal,
+edite o slug nesse arquivo; se o agente gravado sair do registro, o Web escolhe de novo pela mesma
+regra. Os outros agentes de trabalho são a equipe do principal: saem do seletor de agentes, a
+conversa deles (`/a/<slug>`) leva à aba Equipe da Mesa, e o Admin só cria agente novo a pedido do
+principal (seção "Criar agentes" do `templates/admin/CLAUDE.md`).
+
 ## Instalação e primeiro agente
 
 O [instalador](../INSTALL.md) confere os requisitos, instala dependências, configura o HTTPS e o

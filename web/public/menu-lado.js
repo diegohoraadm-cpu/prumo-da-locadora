@@ -81,9 +81,9 @@
     if (o.comTroca) {
       passos.push({
         alvo: '#mlTroca', antes: abre, titulo: 'Trocar de agente',
-        oque: 'Um seletor com todos os agentes que trabalham para você, cada um com a sua foto. O Admin vem primeiro, com o selo "admin"; o agente em que você está aparece marcado com "aqui".',
+        oque: 'Um seletor com os agentes que conversam com você: o Admin, que vem primeiro com o selo "admin", e o seu agente principal. O agente em que você está aparece marcado com "aqui". Os outros agentes são a equipe do principal e ficam na aba Equipe da Mesa.',
         como: 'Toque em "trocar de agente" e escolha um da lista: a conversa e o menu passam a ser dele. Cada agente tem a própria conversa e a própria memória.',
-        porque: 'Você escolhe com quem falar sem sair desta tela. O Admin cuida da instalação e dos ajustes; os outros fazem o trabalho do dia a dia.',
+        porque: 'Você escolhe com quem falar sem sair desta tela. O Admin cuida da instalação e dos ajustes; o principal faz o trabalho do dia a dia e chama a equipe quando precisa.',
       });
     }
     return passos;
@@ -216,6 +216,8 @@
       $('mlRecarrega').onclick = recarrega.bind(null, ag);
       return;
     }
+    // o seletor só leva a quem conversa com o dono (o Admin e o principal); a equipe fica na aba Equipe da Mesa
+    lista = lista.filter(a => !a.equipe);
     // sem outro agente para onde ir, o seletor só atrapalha
     troca.hidden = lista.length < 2;
     const ordem = lista.filter(a => a.tipo === 'admin').concat(lista.filter(a => a.tipo !== 'admin'));
@@ -395,7 +397,8 @@
 
     /* Fora da Conversa, o item Conversa vira link para ela; na Conversa, só fecha a gaveta. */
     const irConversa = $('gmIrConversa');
-    if (opcoes.ativo && opcoes.ativo !== 'conversa') {
+    if (ag.equipe) irConversa.remove();   // agente da equipe não conversa com o dono
+    else if (opcoes.ativo && opcoes.ativo !== 'conversa') {
       const a = document.createElement('a');
       a.className = 'ml-tab'; a.id = 'gmIrConversa';
       a.href = ag.id ? '/a/' + encodeURIComponent(ag.id) : '/';

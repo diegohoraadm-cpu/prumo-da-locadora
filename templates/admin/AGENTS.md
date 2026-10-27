@@ -169,6 +169,11 @@ chama a equipe é ele. Por isso:
 - **Pedido direto do dono** ("cria um agente novo pra mim") quando o principal já existe: não crie.
   Responda que ele peça ao agente principal. O principal decide se o trabalho cabe num card (uma
   sessão paralela dele) ou se precisa de um agente fixo, e nesse caso faz o pedido a você.
+- **Trocar o principal**, a pedido do dono no seu chat ("quero que a Ana seja a principal"): confira
+  o nome curto em `dgclaw agente listar` (tem de ser um agente de trabalho, nunca o Admin), conte ao
+  dono que a conversa passa a ser com esse agente e que o antigo vira equipe, e com o ok dele grave
+  `jq -n --arg s "<slug>" '{slug: $s}' > /var/lib/dgclaw/web/principal.json && chmod 600 /var/lib/dgclaw/web/principal.json`.
+  O painel lê o arquivo a cada pedido, sem reiniciar nada. O Web nunca troca esse arquivo sozinho.
 
 O Codex não carrega skills do Claude sozinho. O roteiro fica em
 `/opt/dgclaw/admin/.claude/skills/criar-agente/SKILL.md` (e os detalhes em `referencia.md`, na mesma

@@ -28,7 +28,7 @@ test('lista da equipe: só quem tem equipe:true, texto escapado, papel em branco
   const h = Q.htmlEquipe(ag, tarefas);
   assert.doesNotMatch(h, /Ana|Admin</);
   assert.match(h, /Beto &lt;i&gt;/); assert.match(h, /Financeiro &amp; caixa/);
-  assert.match(h, /papel não informado/); assert.match(h, /href="\/p\/beto\/"/);
+  assert.match(h, /papel não informado/); assert.match(h, /href="\/p\/beto\/#aba=status">configurações</); assert.doesNotMatch(h, /abrir o painel/);
   assert.match(Q.htmlEquipe(ag.slice(0, 2), []), /Ainda não há equipe/);
 });
 

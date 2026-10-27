@@ -3,7 +3,8 @@
 
    A equipe são os agentes de trabalho que não são o principal (o servidor marca cada um com `equipe: true`
    em /api/v1/agents). O dono não conversa com eles: quem chama a equipe é o principal. Aqui o dono vê quem
-   são, o papel de cada um e o estado, tirado das tarefas de hoje na Mesa.
+   são, o papel de cada um e o estado, tirado das tarefas de hoje na Mesa. O link leva às configurações do
+   agente (cofre, memória); a conversa do painel dele o Web recusa (web/server.js, ehChatDoPainel).
 
    Parte pura (sem DOM, com teste em web/test/equipe-tela.test.js): estadoDe e htmlEquipe.
    Parte com DOM: registra a aba pela window.DGMesaAbas, depois da aba Tarefas. */
@@ -38,7 +39,7 @@
         `<span class="mz-selo ${esc(e.classe)}">${esc(e.texto)}</span></div>` +
         `<p>${esc(a.papel || 'papel não informado')}</p>` +
         (e.titulo ? `<p class="mz-vazio">${esc(e.titulo)}</p>` : '') +
-        (a.painel_url ? `<a class="mz-btn" href="${esc(a.painel_url)}">abrir o painel</a>` : '') + '</li>';
+        (a.painel_url ? `<a class="mz-btn" href="${esc(a.painel_url)}#aba=status">configurações</a>` : '') + '</li>';
     }).join('') + '</ul>';
   }
 

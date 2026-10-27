@@ -38,21 +38,39 @@ test('principal: o primeiro agente de trabalho, gravado em principal.json e est�
   } finally { await t.fechar(); }
 });
 
-test('principal: arquivo ilegível não é sobrescrito; slug que saiu do registro é trocado', async () => {
+test('principal: arquivo ilegível não é sobrescrito; slug que some por um instante não troca o gravado', async () => {
   const t = await cenario([ag('admin', 'admin'), ag('ana', 'agente'), ag('beto', 'agente')]);
   const arq = path.join(t.dados, 'principal.json');
+  const lista = async () => (await t.c.get('/api/v1/agents')).json.agentes;
   try {
     fs.writeFileSync(arq, '{ escrito à mão');
-    assert.equal((await t.c.get('/api/v1/agents')).json.agentes.find((a) => a.id === 'ana').principal, true);
+    assert.equal((await lista()).find((a) => a.id === 'ana').principal, true);
     assert.equal(fs.readFileSync(arq, 'utf8'), '{ escrito à mão');
     assert.match(t.log.texto(), /Não consegui ler o agente principal/);
 
     fs.writeFileSync(arq, JSON.stringify({ slug: 'beto' }));
-    assert.equal((await t.c.get('/api/v1/agents')).json.agentes.find((a) => a.id === 'beto').principal, true, 'escolha do dono vale');
+    assert.equal((await lista()).find((a) => a.id === 'beto').principal, true, 'escolha do dono vale');
 
-    fs.writeFileSync(arq, JSON.stringify({ slug: 'sumiu' }));
-    assert.equal((await t.c.get('/api/v1/agents')).json.agentes.find((a) => a.id === 'ana').principal, true);
-    assert.deepEqual(JSON.parse(fs.readFileSync(arq, 'utf8')), { slug: 'ana' });
+    // remover beto e criar de novo: no meio, beto some do registro; o arquivo não pode mudar
+    fs.writeFileSync(t.agentesPath, JSON.stringify({ versao: 1, agentes: [ag('admin', 'admin'), ag('ana', 'agente')] }));
+    assert.equal((await lista()).find((a) => a.id === 'ana').principal, true, 'enquanto beto está fora, vale o primeiro');
+    assert.deepEqual(JSON.parse(fs.readFileSync(arq, 'utf8')), { slug: 'beto' });
+    fs.writeFileSync(t.agentesPath, JSON.stringify({ versao: 1, agentes: [ag('admin', 'admin'), ag('ana', 'agente'), ag('beto', 'agente')] }));
+    const depois = await lista();
+    assert.equal(depois.find((a) => a.id === 'beto').principal, true, 'beto voltou e segue principal');
+    assert.equal(depois.find((a) => a.id === 'ana').equipe, true);
+  } finally { await t.fechar(); }
+});
+
+test('painel: a conversa do painel de um agente da equipe é recusada, em qualquer grafia do caminho', async () => {
+  const t = await cenario([ag('admin', 'admin'), ag('ana', 'agente'), ag('beto', 'agente')]);
+  try {
+    for (const c of ['/p/beto/api/chat/mensagens', '/p/beto//api/chat/mensagem', '/p/beto/API/Chat/parar', '/p/beto/api/chat%2Fmensagem', '/p/beto/x/../api/chat/mensagens']) {
+      const r = c.includes('mensagens') ? await t.c.get(c) : await t.c.post(c, { json: { text: 'oi' } });
+      assert.equal(r.status, 403, c); assert.match(r.json.erro, /equipe/, c);
+    }
+    assert.notEqual((await t.c.get('/p/ana/api/chat/mensagens')).status, 403, 'o principal segue com a conversa');
+    assert.notEqual((await t.c.get('/p/beto/api/memory')).status, 403, 'o resto do painel da equipe abre');
   } finally { await t.fechar(); }
 });
 

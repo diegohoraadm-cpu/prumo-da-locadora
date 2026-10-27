@@ -279,6 +279,14 @@ function criarServidor(opcoes) {
     } catch (_) { return ''; /* sem AGENT.md legível a Equipe mostra "papel não informado" */ } finally { if (fd !== undefined) fs.closeSync(fd); }
   }
 
+  /* A rota da conversa do painel (/api/chat/...), com o caminho decodificado e sem barra dobrada, porque o
+     Express do painel casa rota sem diferenciar maiúscula. */
+  function ehChatDoPainel(resto) {
+    let r = resto;
+    try { r = decodeURIComponent(resto); } catch (_) { return true; /* caminho ilegível: trata como conversa e recusa */ }
+    return /^\/+api\/+chat(?:\/|$)/i.test(r);
+  }
+
   /* Equipe: agente de trabalho que não é o principal. O dono não conversa com ele; ele aparece na Mesa (aba Equipe). */
   const ehEquipe = (a, principal) => a.tipo !== 'admin' && a.slug !== principal;
 
@@ -761,6 +769,10 @@ function criarServidor(opcoes) {
         return H.erroJson(res, 401, 'Você precisa entrar para abrir o painel. Faça login em /login.');
       }
       if (!pp[2]) { res.writeHead(302, { Location: `/p/${pp[1]}/${url.search}` }); return res.end(); }
+      // O painel de um agente da equipe abre (cofre, memória, sessões), mas sem a conversa dele com o dono.
+      if (ehChatDoPainel(pp[2]) && ehEquipe(registro.obter(pp[1]) || { tipo: 'admin' }, registro.principal())) {
+        return H.erroJson(res, 403, 'Este agente é da equipe do seu agente principal, e o dono não conversa com ele direto. Peça ao principal, que ele chama a equipe.');
+      }
       return proxy.responder(req, res, pp[1], sessao.usuario);
     }
 

@@ -287,6 +287,27 @@ function criarServidor(opcoes) {
     return /^\/+api\/+chat(?:\/|$)/i.test(r);
   }
 
+  /* Aba Sessões do painel de um agente da equipe: fecha o que é conversa com ele (recado, anexo e handoff em
+     qualquer sessão, card novo, que nasce com um pedido, e tudo da sessão principal dele menos a decisão de
+     permissão). A lista, o item e a decisão de permissão dos cards seguem abertos: não são conversa, e sem a
+     decisão um card da equipe ficaria parado. O id da sessão principal é o agente_id do registro. */
+  function ehSessaoFechada(resto, metodo, agente) {
+    let p;
+    try { p = decodeURIComponent(resto).split('/').filter(Boolean); } catch (_) { return true; /* caminho ilegível: recusa */ }
+    if ((p[0] || '').toLowerCase() !== 'api' || (p[1] || '').toLowerCase() !== 'sessoes') return false;
+    const id = (p[2] || '').toLowerCase(), acao = (p[3] || '').toLowerCase();
+    if (!id) return metodo !== 'GET' && metodo !== 'HEAD';
+    if (['recado', 'anexo', 'handoff'].includes(acao)) return true;
+    return id === String(agente.agente_id).toLowerCase() && acao !== '' && acao !== 'decidir';
+  }
+
+  /* A conversa do dono com um agente da equipe pelo painel dele (aba de conversa ou aba Sessões): fechada. */
+  function conversaDaEquipe(slug, resto, metodo) {
+    const a = registro.obter(slug);
+    if (!a || !ehEquipe(a, registro.principal())) return false;
+    return ehChatDoPainel(resto) || ehSessaoFechada(resto, metodo, a);
+  }
+
   /* Equipe: agente de trabalho que não é o principal. O dono não conversa com ele; ele aparece na Mesa (aba Equipe). */
   const ehEquipe = (a, principal) => a.tipo !== 'admin' && a.slug !== principal;
 
@@ -770,7 +791,7 @@ function criarServidor(opcoes) {
       }
       if (!pp[2]) { res.writeHead(302, { Location: `/p/${pp[1]}/${url.search}` }); return res.end(); }
       // O painel de um agente da equipe abre (cofre, memória, sessões), mas sem a conversa dele com o dono.
-      if (ehChatDoPainel(pp[2]) && ehEquipe(registro.obter(pp[1]) || { tipo: 'admin' }, registro.principal())) {
+      if (conversaDaEquipe(pp[1], pp[2], m)) {
         return H.erroJson(res, 403, 'Este agente é da equipe do seu agente principal, e o dono não conversa com ele direto. Peça ao principal, que ele chama a equipe.');
       }
       return proxy.responder(req, res, pp[1], sessao.usuario);
@@ -864,7 +885,7 @@ function criarServidor(opcoes) {
         return nega(403, 'Origem não permitida.');
       }
       // Upgrade também chega ao painel: a conversa de um agente da equipe fica fechada por aqui igual.
-      if (ehChatDoPainel(pp[2] || '') && ehEquipe(registro.obter(pp[1]) || { tipo: 'admin' }, registro.principal())) {
+      if (conversaDaEquipe(pp[1], pp[2] || '', req.method)) {
         return nega(403, 'Este agente é da equipe do seu agente principal; a conversa com ele fica fechada.');
       }
       return proxy.upgrade(req, socket, head, pp[1], sessao.usuario);

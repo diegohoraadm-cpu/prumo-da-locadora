@@ -122,3 +122,22 @@ test('painel: pedido com Upgrade não fura o bloqueio da conversa da equipe', as
     assert.equal(status, 403);
   } finally { await t.fechar(); }
 });
+
+test('painel: na aba Sessões de um agente da equipe, recado, card novo e conversa da sessão principal são recusados', async () => {
+  const t = await cenario([ag('admin', 'admin'), ag('ana', 'agente'), ag('beto', 'agente')]);
+  const pede = (metodo, c) => (metodo === 'GET' ? t.c.get(c) : t.c.post(c, { json: { texto: 'oi', prompt: 'oi', nome: 'x' } }));
+  try {
+    const fechadas = [['POST', '/p/beto/api/sessoes/beto/recado'], ['GET', '/p/beto/api/sessoes/beto/conversa'],
+      ['POST', '/p/beto/api/sessoes/card1/recado'], ['POST', '/p/beto/api/sessoes/card1/anexo'], ['POST', '/p/beto/api/sessoes'],
+      ['POST', '/p/beto/API/Sessoes/BETO/Recado'], ['POST', '/p/beto//api/sessoes/beto/retomar'], ['GET', '/p/beto/api/sessoes/b%65to/conversa']];
+    for (const [metodo, c] of fechadas) {
+      const r = await pede(metodo, c);
+      assert.equal(r.status, 403, `${metodo} ${c}`); assert.match(r.json.erro, /equipe/, c);
+    }
+    const abertas = [['GET', '/p/beto/api/sessoes'], ['GET', '/p/beto/api/sessoes/card1'], ['POST', '/p/beto/api/sessoes/card1/decidir'],
+      ['POST', '/p/beto/api/sessoes/beto/decidir'], ['GET', '/p/beto/api/sessoes-config'], ['POST', '/p/ana/api/sessoes/ana/recado']];
+    for (const [metodo, c] of abertas) assert.notEqual((await pede(metodo, c)).status, 403, `${metodo} ${c}`);
+    const semPainel = await t.c.get('/p/beto/api/memory');
+    assert.match(semPainel.texto, /a conversa é com o principal/); assert.doesNotMatch(semPainel.texto, /\/a\/beto/);
+  } finally { await t.fechar(); }
+});

@@ -364,7 +364,6 @@ renderizar_template() {
     sed \
         -e 's|^Voce conversa pelo Telegram e vive 24/7 numa VPS\.$|Voce conversa com {{DONO}} pelo painel (aba Conversa) e vive 24/7 num servidor.\n\n## Seu papel\n\n{{PAPEL}}|' \
         -e 's|^- So o {{DONO}} fala com voce (a lista de permissao do Telegram garante isso)\.|- So o {{DONO}} fala com voce, pelo painel.|' \
-        -e 's|systemctl restart dgclaw-{{SLUG}}\.service|systemctl restart dgclaw-runner.service|' \
         -e "s|{{NOME}}|$nome|g" \
         -e "s|{{SLUG}}|$slug|g" \
         -e "s|{{DONO}}|$dono|g" \
@@ -1122,6 +1121,12 @@ agente_acao() {
     exigir_ferramentas jq podman
     existe_agente "$slug" || falha "nao conheco o agente '$slug' (nao esta no agentes.json e nao tem container)." \
         "veja os que existem com: dgclaw agente listar"
+    if [ "$acao" != parar ]; then
+        # A pessoa pode ter editado o AGENT.md: a identidade e regravada ao subir e vale na
+        # proxima sessao. Subshell: o falha() dela nao pode impedir o runner de subir.
+        ( regravar_config_sh "$slug" "$(agentes_obter "$slug")" identidade ) \
+            || aviso "nao consegui regravar a identidade do agente $slug; ele sobe com a anterior (tente: dgclaw agente identidade $slug)."
+    fi
     case "$acao" in
         parar)
             executar podman stop "$c" >/dev/null

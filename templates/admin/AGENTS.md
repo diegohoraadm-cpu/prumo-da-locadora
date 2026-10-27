@@ -171,8 +171,9 @@ chama a equipe é ele. Por isso:
   sessão paralela dele) ou se precisa de um agente fixo, e nesse caso faz o pedido a você.
 - **Trocar o principal**, a pedido do dono no seu chat ("quero que a Ana seja a principal"): confira
   o nome curto em `dgclaw agente listar` (tem de ser um agente de trabalho, nunca o Admin), conte ao
-  dono que a conversa passa a ser com esse agente e que o antigo vira equipe, e com o ok dele grave
-  `jq -n --arg s "<slug>" '{slug: $s}' > /var/lib/dgclaw/web/principal.json && chmod 600 /var/lib/dgclaw/web/principal.json`.
+  dono que a conversa passa a ser com esse agente e que o antigo vira equipe, e com o ok dele grave o nome
+  num arquivo novo e só então no lugar do antigo, para o painel nunca ler um arquivo pela metade:
+  `cd /var/lib/dgclaw/web && (umask 077; jq -n --arg s "<slug>" '{slug: $s}' > principal.json.novo) && mv principal.json.novo principal.json`.
   O painel lê o arquivo a cada pedido, sem reiniciar nada. O Web nunca troca esse arquivo sozinho.
 
 O Codex não carrega skills do Claude sozinho. O roteiro fica em

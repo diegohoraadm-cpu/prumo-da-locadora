@@ -863,6 +863,10 @@ function criarServidor(opcoes) {
         log('aviso', `WebSocket em ${url.pathname} recusado: Origin ${String(req.headers.origin || '(sem Origin)').slice(0, 80)} não é a deste Web.`);
         return nega(403, 'Origem não permitida.');
       }
+      // Upgrade também chega ao painel: a conversa de um agente da equipe fica fechada por aqui igual.
+      if (ehChatDoPainel(pp[2] || '') && ehEquipe(registro.obter(pp[1]) || { tipo: 'admin' }, registro.principal())) {
+        return nega(403, 'Este agente é da equipe do seu agente principal; a conversa com ele fica fechada.');
+      }
       return proxy.upgrade(req, socket, head, pp[1], sessao.usuario);
     } catch (e) {
       log('erro', `Falha no upgrade de ${String(req.url).split('?')[0]}: ${e.message}`);

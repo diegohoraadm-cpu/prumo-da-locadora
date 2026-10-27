@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
+const http = require('node:http');
 const { subirWeb, pastaTemp } = require('./ajuda');
 
 // Runner em porta fechada: a lista cai na reserva do rótulo na hora, sem esperar.
@@ -104,4 +105,20 @@ test('papel: AGENT.md trocado por FIFO não trava o Web', () => {
   assert.equal(r.error && r.error.code, undefined, 'o processo passou do prazo: a leitura do papel bloqueou no FIFO');
   assert.equal(r.status, 0, r.stderr);
   assert.deepEqual(JSON.parse(r.stdout), { status: 200, papel: '' });
+});
+
+test('painel: pedido com Upgrade não fura o bloqueio da conversa da equipe', async () => {
+  const t = await cenario([ag('admin', 'admin'), ag('ana', 'agente'), ag('beto', 'agente')]);
+  try {
+    const cookie = Object.entries(t.c.jar).map(([k, v]) => `${k}=${v}`).join('; ');
+    const status = await new Promise((resolve, reject) => {
+      const req = http.request({ host: '127.0.0.1', port: t.porta, method: 'POST', path: '/p/beto/api/chat/parar',
+        headers: { Cookie: cookie, Origin: `http://127.0.0.1:${t.porta}`, Connection: 'Upgrade', Upgrade: 'websocket', 'Content-Length': 0 } });
+      req.on('response', (r) => { r.resume(); resolve(r.statusCode); });
+      req.on('upgrade', (r, sock) => { sock.destroy(); resolve(r.statusCode); });
+      req.on('error', reject);
+      req.end();
+    });
+    assert.equal(status, 403);
+  } finally { await t.fechar(); }
 });

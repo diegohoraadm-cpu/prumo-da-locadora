@@ -135,7 +135,13 @@ fotografar >"$TMP/depois.txt"
 igual "arquivos do aluno intactos" "" "$(diff "$TMP/antes.txt" "$TMP/depois.txt")"
 
 echo "simular"
+echo 424242 >"$RAIZ/var/lib/dgclaw/atualizando"   # marca de um atualizar de verdade, de outro processo
 dgclaw atualizar --simular --forcar-local >"$TMP/o2.txt" 2>&1; rc=$?
+afirma "simular nao apaga a marca de outro atualizar (a Sentinela)" grep -qx 424242 "$RAIZ/var/lib/dgclaw/atualizando"
+echo 424242 >"$RAIZ/var/lib/dgclaw/atualizando"
+dgclaw atualizar --simular --repo "$TMP/nao-existe" >/dev/null 2>&1
+afirma "simular que falha nao apaga a marca de outro atualizar" grep -qx 424242 "$RAIZ/var/lib/dgclaw/atualizando"
+rm -f "$RAIZ/var/lib/dgclaw/atualizando"
 igual "--simular termina com 0" "0" "$rc"
 afirma "avisa que e simulacao" grep -q 'SIMULACAO' "$TMP/o2.txt"
 afirma "mostra o stash que faria" grep -q '\[ensaio\] guardaria isso num stash' "$TMP/o2.txt"
@@ -170,6 +176,7 @@ echo imagem-v2 >"$STUB_ESTADO/imagem-id"   # a imagem "mudou": os containers vel
 : >"$STUB_LOG"
 dgclaw atualizar --ok-do-dono >"$TMP/o3.txt" 2>&1; rc=$?
 igual "atualizar sai com 0" "0" "$rc"
+nega "o atualizar de verdade apaga a propria marca da Sentinela" test -e "$RAIZ/var/lib/dgclaw/atualizando"
 [ "$rc" -eq 0 ] || sed 's/^/      | /' "$TMP/o3.txt" | tail -n 30
 afirma "diz que concluiu" grep -q 'Atualizacao concluida' "$TMP/o3.txt"
 afirma "diz como voltar atras" grep -q 'sudo dgclaw atualizar --voltar ' "$TMP/o3.txt"

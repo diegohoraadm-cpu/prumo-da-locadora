@@ -96,7 +96,7 @@ opção do instalador, está em [INSTALL.md](INSTALL.md).
 - **Mesa de tarefas**: uma tela com o que cada assistente está fazendo, o que travou e o que espera por você.
 - **Canais**: chat no navegador, Telegram e, se quiser, WhatsApp ([docs/CANAL-WHATSAPP.md](docs/CANAL-WHATSAPP.md)).
 - **Modo escondido**: esconde nomes, valores e senhas da tela para mostrar uma conversa sem expor dados.
-- **Saúde e emergência**: o painel confere se cada assistente está respondendo, e há um roteiro de socorro ([docs/EMERGENCIA.md](docs/EMERGENCIA.md)).
+- **Saúde e emergência**: o painel confere se cada assistente está respondendo, a Sentinela avisa você no celular e no Telegram quando um deles para (e tenta consertar sozinha), e há um roteiro de socorro ([docs/EMERGENCIA.md](docs/EMERGENCIA.md)).
 
 ## Se algo der errado
 

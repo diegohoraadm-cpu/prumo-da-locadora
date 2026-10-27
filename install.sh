@@ -1305,6 +1305,40 @@ FIM
     executar systemctl start --no-block dgclaw-checar-atualizacao.service
 }
 
+# --- 9c. sentinela ----------------------------------------------------------------
+# configurar_sentinela: a SENTINELA (docs/EMERGENCIA.md, secao 2.4). Um timer de 10 min roda
+# bin/dgclaw-sentinela como root: confere cada agente, tenta uma vez o reparo seguro e avisa o dono.
+# Instalacao antiga ganha a Sentinela no proximo `dgclaw atualizar`, que roda este instalador.
+configurar_sentinela() {
+    local p_app="${DG_APP#"$R"}"
+    cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-sentinela.service" 644
+[Unit]
+Description=DG Claw sentinela: confere se cada agente responde e avisa o dono
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/bin/bash $p_app/bin/dgclaw-sentinela
+TimeoutStartSec=1h
+FIM
+    cat <<'FIM' | escrever_arquivo "$DG_UNITS/dgclaw-sentinela.timer" 644
+[Unit]
+Description=DG Claw sentinela dos agentes (a cada 10 minutos)
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=10min
+
+[Install]
+WantedBy=timers.target
+FIM
+    # Sem `restart`: a unidade le o script a cada rodada, e reiniciar o timer no meio do `dgclaw atualizar`
+    # dispararia uma rodada com os containers sendo trocados (a propria Sentinela tambem se segura pela marca).
+    executar systemctl daemon-reload
+    executar systemctl enable dgclaw-sentinela.timer
+    systemctl is-active --quiet dgclaw-sentinela.timer || executar systemctl start dgclaw-sentinela.timer
+}
+
 # --- 10. imagem -----------------------------------------------------------------
 imagem_pronta() { podman image exists "localhost/dgclaw-agente:$VERSAO" >/dev/null 2>&1; }
 
@@ -1501,6 +1535,7 @@ main() {
     configurar_web
     configurar_admin
     configurar_aviso_atualizacao
+    configurar_sentinela
     atualizar_identidades
     construir_imagem
     testar_fim

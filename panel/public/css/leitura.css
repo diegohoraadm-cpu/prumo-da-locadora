@@ -193,6 +193,14 @@ html[data-tema="escuro"] .bolha.de-agente .bolha-canal.canal-whatsapp{color:#5fe
 /* ─── listas de arquivo (Memória e Identidade), agora botões ────────────── */
 button.memory-item{width:100%;text-align:left;font:inherit;color:inherit;min-height:44px}
 .mi-dica{display:block;font-weight:400;font-size:12.5px;color:var(--fraco);white-space:normal}
+
+/* ─── aba Quem sou: o AGENT.md por seções ───────────────────────────────── */
+.qs-ajuda{margin:0 0 10px;color:var(--fraco);font-size:14px}
+.qs-acoes{margin:0 0 14px}
+.qs-acoes .dgl-btn{min-height:44px;display:inline-flex;align-items:center}
+.qs-secao{background:var(--painel);border:1px solid var(--linha);border-radius:12px;box-shadow:var(--sombra);margin-bottom:10px}
+.qs-secao>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;padding:0 15px;font-weight:600;text-wrap:balance}
+.qs-secao>.md-leitura{padding:0 15px 13px}
 .vazio-util.convite b{color:var(--texto);font-weight:600}
 
 /* O histórico da Personalidade: texto renderizado numa caixa que rola por dentro. */

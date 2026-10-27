@@ -7,6 +7,14 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 ## [Não lançado]
 
+### Adicionado
+
+- A Sentinela: a cada 10 minutos o servidor confere se cada agente está respondendo (máquina de pé,
+  sessão sem erro, login do Claude e, com o Telegram ligado, o plugin e o bot). Quando algo para, ela
+  tenta uma vez o conserto seguro e avisa você no aparelho, pelo Admin e pelo Telegram do agente, com
+  a correção em uma linha e no máximo um aviso a cada 6 horas para o mesmo problema. Quem já tem o
+  DG Claw instalado ganha a Sentinela no próximo `sudo dgclaw atualizar`.
+
 ### Alterado
 
 - Dependências atualizadas: pino 10 no canal do WhatsApp, express-rate-limit 8 no painel,

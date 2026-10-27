@@ -65,3 +65,13 @@ caso_aviso_ensaio_so_descreve() {
     nega "nenhum systemctl enable" tem "$STUB_LOG" "systemctl enable"
     limpar_cenario
 }
+
+caso_sentinela_instala_e_liga_o_timer() {
+    novo_cenario
+    afirma "a instalacao termina" instalacao_basica
+    local u="$RAIZ/etc/systemd/system"
+    afirma "a unidade roda a sentinela do app como root" tem "$u/dgclaw-sentinela.service" "ExecStart=/usr/bin/bash /opt/dgclaw/app/bin/dgclaw-sentinela"
+    afirma "a cada 10 minutos" tem "$u/dgclaw-sentinela.timer" "OnUnitActiveSec=10min"
+    afirma "o timer foi ligado" tem "$STUB_LOG" "systemctl enable dgclaw-sentinela.timer"
+    limpar_cenario
+}

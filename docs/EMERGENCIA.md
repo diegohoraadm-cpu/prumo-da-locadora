@@ -130,6 +130,30 @@ python3 /opt/dgclaw/app/scripts/_lib/saude_sessao.py --json --jsonl "$F" --sem-c
 
 Detalhe de cada tipo em `docs/SAUDE-E-MODO-SEGURO.md`.
 
+### 2.4 A Sentinela avisa primeiro
+
+A cada 10 minutos o timer `dgclaw-sentinela.timer` roda `bin/dgclaw-sentinela` no servidor. Para
+cada agente ela confere, nesta ordem: o container de pé, o `/api/saude` respondendo sem erro, o
+login do Claude, o último turno (o `saude_sessao.py` da seção 2.3) e, com o Telegram ligado, o
+plugin instalado, o processo dele vivo e o aviso de bot aberto em outro computador no log do plugin.
+
+Quando acha um problema, ela tenta uma vez o conserto seguro (`dgclaw agente reiniciar`, ou
+`dgclaw agente reparar` quando falta o plugin) e avisa o dono com a correção em uma linha: no
+aparelho dele (se ele ativou os avisos), num recado ao Admin e, com o Telegram ligado, pelo bot do
+próprio agente. Container desligado, login vencido e bot duplicado só geram aviso, porque o conserto
+depende do dono. O mesmo problema do mesmo agente só volta a ser tratado depois de 6 horas.
+
+No socorro, comece pelo log dela: ele diz o que ela viu e o que já tentou.
+
+```bash
+tail -n 30 /var/log/dgclaw/sentinela.log
+systemctl list-timers dgclaw-sentinela.timer --no-pager
+```
+
+O estado fica em `/var/lib/dgclaw/sentinela/` (um arquivo `<slug>.<problema>` com a hora do
+aviso); apagar o arquivo faz ela tratar o problema de novo na próxima rodada. Instalação antiga
+ganha a Sentinela no próximo `sudo dgclaw atualizar`.
+
 ## 3. Árvore "parou de responder" (na ordem; pare no primeiro que explicar)
 
 ### 3.1 O site abre?

@@ -245,6 +245,8 @@ test('agente sem cofre_arquivo continua tendo o transcrever encaminhado ao paine
   const voz = vozFalsa(true);
   const s = await cenario({ voz });
   try {
+    // a conversa do painel (e o ditado dela) só existe para o principal; a da equipe o Web recusa
+    fs.writeFileSync(path.join(s.t.dados, 'principal.json'), JSON.stringify({ slug: 'velha' }));
     await s.t.c.post('/p/velha/api/chat/transcrever', { corpo: Buffer.alloc(4096, 1), headers: { 'Content-Type': 'audio/webm' } });
     assert.equal(s.painel.visto.length, 1); assert.equal(s.painel.visto[0].url, '/p/velha/api/chat/transcrever');
     assert.equal(voz.chamadas.length, 0);

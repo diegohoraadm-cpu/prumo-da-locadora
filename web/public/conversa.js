@@ -102,8 +102,9 @@ const esc = s => String(s == null ? '' : s)
   .replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 /* Admin primeiro (com selo "admin"); o resto na ordem que o servidor mandou. */
+// a equipe do principal não conversa com o dono: fica fora do seletor (está na aba Equipe da Mesa)
 const agentesMenu = agentesLista.filter(a => a.tipo === 'admin')
-  .concat(agentesLista.filter(a => a.tipo !== 'admin'));
+  .concat(agentesLista.filter(a => a.tipo !== 'admin' && !a.equipe));
 
 const chat = $('chat'), wrap = $('wrap'), estadoEl = $('estado'), entrada = $('entrada');
 

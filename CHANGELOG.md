@@ -9,6 +9,11 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 ### Alterado
 
+- Você conversa só com o seu agente principal. Os outros agentes passam a ser a equipe dele: saem
+  da lista de conversas e aparecem na aba **Equipe** da Mesa, com nome, papel e o que estão fazendo.
+  Para ter um agente novo, peça ao principal; ele decide se basta uma sessão paralela ou se precisa
+  de um agente fixo, e nesse caso pede ao Admin. A conversa antiga com os outros agentes continua
+  guardada.
 - Dependências atualizadas: pino 10 no canal do WhatsApp, express-rate-limit 8 no painel,
   TypeScript 7 no runner e as GitHub Actions do CI (checkout, setup-node e setup-python 7,
   upload-artifact 7, sbom-action 0.24.3).
@@ -16,6 +21,18 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
   versões minor e patch; as GitHub Actions vêm todas num PR só. As versões major continuam
   separadas, com no máximo três PRs abertos por pasta. A versão major do Express fica de fora: o
   Express 5 muda o roteamento e quebrou o CI do painel, e a migração vai ser uma tarefa própria.
+
+### Como atualizar
+
+- Nesta versão o Admin ganha uma regra nova na seção "Criar agentes": ele só cria agente a pedido do
+  seu agente principal. Se você personalizou as instruções do Admin, a atualização não as troca e
+  deixa a versão nova ao lado, como `CLAUDE.md.novo` (ou `AGENTS.md.novo`, se o seu Admin usa o
+  Codex). Peça ao Admin para juntar a seção "Criar agentes" nova ao seu arquivo, sem apagar o que
+  você já personalizou.
+- Na primeira vez que você abre o painel atualizado, o principal passa a ser o agente de trabalho
+  mais antigo da lista de agentes. Se você removeu e criou de novo algum agente, ele foi para o fim
+  da lista, e o escolhido pode não ser o que você espera. Para trocar, peça ao Admin no chat:
+  "quero que a Ana seja a minha agente principal".
 
 ## [1.0.0] - 2026-10-19
 

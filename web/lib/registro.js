@@ -50,7 +50,7 @@ function normaliza(bruto, indice) {
   };
 }
 
-function criarRegistro({ caminho, log }) {
+function criarRegistro({ caminho, log, arquivoPrincipal }) {
   let assinatura = null;       // "mtimeMs:size" ou "ausente"
   let estado = { ok: false, erro: 'o registro ainda não foi lido', agentes: [] };
   let ultimoErroLogado = null;
@@ -106,9 +106,45 @@ function criarRegistro({ caminho, log }) {
     log('info', `Registro de agentes carregado de ${caminho}: ${agentes.map((a) => a.slug).join(', ')}.`);
   }
 
+  /* O agente principal é o único com quem o dono conversa; os outros agentes de trabalho são a equipe dele.
+     Sem arquivoPrincipal, o primeiro agente de trabalho do agentes.json vira o principal e fica gravado.
+     Depois de gravado, o arquivo nunca é trocado sozinho: remover e criar de novo um agente (o que o
+     `dgclaw agente remover` sugere) tira o slug do registro por um instante, e regravar ali trocaria o
+     principal para sempre. Enquanto o gravado está fora do registro, vale o primeiro agente de trabalho, sem
+     gravar. Quem troca o principal é o Admin, a pedido do dono (seção "Criar agentes" das instruções dele). */
+  let ultimoAvisoPrincipal = null;
+  function avisaPrincipal(motivo) {
+    if (motivo !== ultimoAvisoPrincipal) { ultimoAvisoPrincipal = motivo; log('aviso', motivo); }
+  }
+  function principal() {
+    recarrega();
+    const trabalho = estado.agentes.filter((a) => a.tipo !== 'admin');
+    const primeiro = trabalho.length ? trabalho[0].slug : null;
+    if (!arquivoPrincipal) return primeiro;
+    let gravado;
+    try { gravado = JSON.parse(fs.readFileSync(arquivoPrincipal, 'utf8')).slug; } catch (e) {
+      if (e.code !== 'ENOENT') {
+        avisaPrincipal(`Não consegui ler o agente principal em ${arquivoPrincipal} (${e.code || e.message}); usei o primeiro agente de trabalho do registro e não mexi no arquivo.`);
+        return primeiro;
+      }
+      if (!primeiro) return null;
+      try {
+        const tmp = `${arquivoPrincipal}.${process.pid}.tmp`;
+        fs.writeFileSync(tmp, `${JSON.stringify({ slug: primeiro })}\n`, { mode: 0o600 });
+        fs.renameSync(tmp, arquivoPrincipal);
+        log('info', `Agente principal gravado em ${arquivoPrincipal}: ${primeiro}.`);
+      } catch (e2) { avisaPrincipal(`Não consegui gravar o agente principal em ${arquivoPrincipal} (${e2.code || e2.message}); sigo com ${primeiro} sem gravar.`); }
+      return primeiro;
+    }
+    if (trabalho.some((a) => a.slug === gravado)) return gravado;
+    avisaPrincipal(`O agente principal gravado em ${arquivoPrincipal} (${JSON.stringify(gravado)}) não está no registro agora; enquanto isso vale ${primeiro}. O arquivo não muda sozinho.`);
+    return primeiro;
+  }
+
   return {
     /** { ok, erro, agentes } já atualizado se o arquivo mudou. */
     estado() { recarrega(); return estado; },
+    principal,
     obter(slug) { recarrega(); return estado.ok ? estado.agentes.find((a) => a.slug === slug) || null : null; },
   };
 }

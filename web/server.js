@@ -72,7 +72,7 @@ function criarServidor(opcoes) {
     log('erro', `Não consegui preparar a pasta de dados ${config.dataDir} (${e.code || e.message}). Crie-a com permissão 700 ou aponte DGCLAW_WEB_DATA para um lugar gravável; as sessões não serão salvas.`);
   }
 
-  const registro = criarRegistro({ caminho: config.agentesPath, log });
+  const registro = criarRegistro({ caminho: config.agentesPath, log, arquivoPrincipal: path.join(config.dataDir, 'principal.json') });
   const runner = criarRunner({ log, timeoutMs: opcoes.timeoutRunnerMs });
   const auth = criarAuth({ config, log, agora: opcoes.agora });
   const primeiroAcesso = criarPrimeiroAcesso({ config, auth, log, agora: opcoes.agora });
@@ -166,15 +166,15 @@ function criarServidor(opcoes) {
   }
 
   /* A rota "/" abre o último agente usado (cookie dgclaw_agente, gravado pela casca), se ele ainda existe no registro;
-     senão o primeiro que não é o Admin (é com ele que a pessoa trabalha); senão o Admin. */
+     e não é da equipe; senão o principal (é com ele que a pessoa trabalha); senão o Admin. */
   function agenteInicial(req) {
     const agentes = registro.estado().agentes;
     let guardado = H.parseCookies(req.headers.cookie).dgclaw_agente;
     try { guardado = guardado && decodeURIComponent(guardado); } catch (_) { guardado = null; /* cookie ilegível: cai no primeiro agente */ }
-    const doCookie = guardado && agentes.find((a) => a.slug === guardado);
+    const principal = registro.principal();
+    const doCookie = guardado && agentes.find((a) => a.slug === guardado && !ehEquipe(a, principal));
     if (doCookie) return doCookie.slug;
-    const trabalho = agentes.find((a) => a.tipo !== 'admin');
-    return (trabalho || agentes[0]).slug;
+    return principal || agentes[0].slug;
   }
 
   function falhaDoRegistro(req, res, api) {
@@ -264,10 +264,59 @@ function criarServidor(opcoes) {
     return { avatar: av || (a.nome[0] || '?').toUpperCase(), avatar_img: null };
   }
 
+  /* A primeira linha da seção "## Seu papel" do AGENT.md do agente (escrita pelo dgclaw na criação), até 200
+     caracteres. A casa é do agente: sem seguir atalho no AGENT.md, sem esperar por FIFO (O_NONBLOCK; um FIFO
+     aberto sem ele travaria o Web inteiro) e lendo só o começo de um arquivo comum. */
+  function papelDe(a) {
+    if (!a.home_host) return '';
+    let fd;
+    try {
+      fd = fs.openSync(path.join(a.home_host, 'AGENT.md'), fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW | fs.constants.O_NONBLOCK);
+      if (!fs.fstatSync(fd).isFile()) return '';
+      const buf = Buffer.alloc(32 * 1024);
+      const m = /^## Seu papel[ \t]*\r?\n(?:[ \t]*\r?\n)*([^\r\n]+)/m.exec(buf.toString('utf8', 0, fs.readSync(fd, buf, 0, buf.length, 0)));
+      return m ? m[1].trim().slice(0, 200) : '';
+    } catch (_) { return ''; /* sem AGENT.md legível a Equipe mostra "papel não informado" */ } finally { if (fd !== undefined) fs.closeSync(fd); }
+  }
+
+  /* A rota da conversa do painel (/api/chat/...), com o caminho decodificado e sem barra dobrada, porque o
+     Express do painel casa rota sem diferenciar maiúscula. */
+  function ehChatDoPainel(resto) {
+    let r = resto;
+    try { r = decodeURIComponent(resto); } catch (_) { return true; /* caminho ilegível: trata como conversa e recusa */ }
+    return /^\/+api\/+chat(?:\/|$)/i.test(r);
+  }
+
+  /* Aba Sessões do painel de um agente da equipe: fecha o que é conversa com ele (recado, anexo e handoff em
+     qualquer sessão, card novo, que nasce com um pedido, e tudo da sessão principal dele menos a decisão de
+     permissão). A lista, o item e a decisão de permissão dos cards seguem abertos: não são conversa, e sem a
+     decisão um card da equipe ficaria parado. O id da sessão principal é o agente_id do registro. */
+  function ehSessaoFechada(resto, metodo, agente) {
+    let p;
+    try { p = decodeURIComponent(resto).split('/').filter(Boolean); } catch (_) { return true; /* caminho ilegível: recusa */ }
+    if ((p[0] || '').toLowerCase() !== 'api' || (p[1] || '').toLowerCase() !== 'sessoes') return false;
+    const id = (p[2] || '').toLowerCase(), acao = (p[3] || '').toLowerCase();
+    if (!id) return metodo !== 'GET' && metodo !== 'HEAD';
+    if (['recado', 'anexo', 'handoff'].includes(acao)) return true;
+    return id === String(agente.agente_id).toLowerCase() && acao !== '' && acao !== 'decidir';
+  }
+
+  /* A conversa do dono com um agente da equipe pelo painel dele (aba de conversa ou aba Sessões): fechada. */
+  function conversaDaEquipe(slug, resto, metodo) {
+    const a = registro.obter(slug);
+    if (!a || !ehEquipe(a, registro.principal())) return false;
+    return ehChatDoPainel(resto) || ehSessaoFechada(resto, metodo, a);
+  }
+
+  /* Equipe: agente de trabalho que não é o principal. O dono não conversa com ele; ele aparece na Mesa (aba Equipe). */
+  const ehEquipe = (a, principal) => a.tipo !== 'admin' && a.slug !== principal;
+
   async function agentePublico(a) {
     const rotulo = await conversa.rotuloProvedor(a);
+    const principal = registro.principal();
     return Object.assign({
       id: a.slug, nome: a.nome, subtitulo: a.subtitulo || rotulo, cor: a.cor, tipo: a.tipo,
+      principal: a.slug === principal, equipe: ehEquipe(a, principal), papel: ehEquipe(a, principal) ? papelDe(a) : '',
       provedor: a.provedor, modelo: a.modelo, rotulo_provedor: rotulo,
       tem_painel: !!a.porta_painel, painel_url: a.porta_painel ? `/p/${a.slug}/` : null,
       voz: voz.vozDoAgente(a), tem_voz: voz.vozDoAgente(a), microfone: voz.microfone,
@@ -741,6 +790,10 @@ function criarServidor(opcoes) {
         return H.erroJson(res, 401, 'Você precisa entrar para abrir o painel. Faça login em /login.');
       }
       if (!pp[2]) { res.writeHead(302, { Location: `/p/${pp[1]}/${url.search}` }); return res.end(); }
+      // O painel de um agente da equipe abre (cofre, memória, sessões), mas sem a conversa dele com o dono.
+      if (conversaDaEquipe(pp[1], pp[2], m)) {
+        return H.erroJson(res, 403, 'Este agente é da equipe do seu agente principal, e o dono não conversa com ele direto. Peça ao principal, que ele chama a equipe.');
+      }
       return proxy.responder(req, res, pp[1], sessao.usuario);
     }
 
@@ -776,6 +829,11 @@ function criarServidor(opcoes) {
       const slug = decodeURIComponent(pa[1]);
       if (!RX_SLUG_ROTA.test(slug) || !registro.obter(slug)) {
         return H.paginaErro(res, 404, 'Agente não encontrado', `Não existe agente chamado "${H.escapaHtml(slug.slice(0, 40))}". Volte ao início para ver a lista.`);
+      }
+      // Agente da equipe não tem conversa com o dono: a página dele é a aba Equipe da Mesa.
+      if (ehEquipe(registro.obter(slug), registro.principal())) {
+        res.writeHead(302, { Location: '/mesa#equipe', 'Cache-Control': 'no-store' });
+        return res.end();
       }
       if (!servirArquivo(req, res, path.join(config.publicDir, 'conversa.html'), 'no-store')) {
         log('erro', `A tela da conversa não está instalada: falta ${path.join(config.publicDir, 'conversa.html')}.`);
@@ -825,6 +883,10 @@ function criarServidor(opcoes) {
       if (!origemOk(req)) {
         log('aviso', `WebSocket em ${url.pathname} recusado: Origin ${String(req.headers.origin || '(sem Origin)').slice(0, 80)} não é a deste Web.`);
         return nega(403, 'Origem não permitida.');
+      }
+      // Upgrade também chega ao painel: a conversa de um agente da equipe fica fechada por aqui igual.
+      if (conversaDaEquipe(pp[1], pp[2] || '', req.method)) {
+        return nega(403, 'Este agente é da equipe do seu agente principal; a conversa com ele fica fechada.');
       }
       return proxy.upgrade(req, socket, head, pp[1], sessao.usuario);
     } catch (e) {

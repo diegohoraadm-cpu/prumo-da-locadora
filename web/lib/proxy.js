@@ -51,7 +51,10 @@ function criarProxy({ config, registro, log, cofreRotas }) {
     if (!est.ok) return { status: 503, motivo: est.erro };
     const agente = est.agentes.find((a) => a.slug === slug);
     if (!agente) return { status: 404, motivo: `Não existe agente com o nome "${slug}".` };
-    if (!agente.porta_painel) return { status: 404, motivo: `${agente.nome} não tem painel (porta_painel vazia no registro). A conversa fica em /a/${agente.slug}.` };
+    if (!agente.porta_painel) {
+      const equipe = agente.tipo !== 'admin' && registro.principal && agente.slug !== registro.principal();
+      return { status: 404, motivo: `${agente.nome} não tem painel (porta_painel vazia no registro). ${equipe ? `${agente.nome} é da equipe do seu agente principal: a conversa é com o principal.` : `A conversa fica em /a/${agente.slug}.`}` };
+    }
     const s = lerSegredo(agente);
     if (s.erro) { log('erro', s.erro); return { status: 500, motivo: s.erro }; }
     return { agente, segredo: s.segredo };

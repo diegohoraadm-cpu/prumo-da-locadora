@@ -9,6 +9,12 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 ### Alterado
 
+- Você conversa só com o seu agente principal, o primeiro que criou. Os outros agentes passam a ser a
+  equipe dele: saem da lista de conversas e aparecem na aba **Equipe** da Mesa, com nome, papel e o
+  que estão fazendo. Para ter um agente novo, peça ao principal; ele decide se basta uma sessão
+  paralela ou se precisa de um agente fixo, e nesse caso pede ao Admin. A conversa antiga com os
+  outros agentes continua guardada.
+
 - Dependências atualizadas: pino 10 no canal do WhatsApp, express-rate-limit 8 no painel,
   TypeScript 7 no runner e as GitHub Actions do CI (checkout, setup-node e setup-python 7,
   upload-artifact 7, sbom-action 0.24.3).

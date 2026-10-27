@@ -25,7 +25,7 @@ dgclaw-mesa listar
 ```
 
 A regra de quando criar uma tarefa está na seção "Mesa de tarefas" do `CLAUDE.md` do agente
-(`templates/CLAUDE.md.tmpl`; no Codex, `templates/AGENTS.md.tmpl`) e na skill `mesa`
+(`templates/CLAUDE.md.tmpl`; o agente Codex le o mesmo arquivo, mandado pelo `templates/AGENTS.md.tmpl`) e na skill `mesa`
 (`/dgclaw:mesa`). Quando o dono mexe numa tarefa pela tela, o Web manda ao agente um recado
 começando com `[Mesa]`.
 

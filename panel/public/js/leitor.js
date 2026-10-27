@@ -175,7 +175,7 @@
       desenharCabeca();
       modoLeitura();
       if (r.corpo.semMudanca) { recado('ok', 'Nada mudou, então não gravei nada.', ''); return; }
-      recado('ok', 'Salvo.', 'Ele lê este arquivo no começo da próxima conversa. Se quiser que valha já nesta, avise ele.',
+      recado('ok', 'Salvo.', estado.recadoSalvo || 'Ele lê este arquivo no começo da próxima conversa. Se quiser que valha já nesta, avise ele.',
         [{ rotulo: 'Avisar ele agora', classe: 'principal', acao: avisar }]);
       if (typeof estado.aoSalvar === 'function') estado.aoSalvar(estado.arquivo);
       return;
@@ -217,7 +217,7 @@
   /**
    * Abre um arquivo. `opcoes.titulo` troca o título (o raio-X manda "Memória de
    * trabalho" em vez do nome do arquivo); `opcoes.aoSalvar` é chamado depois de
-   * gravar, para a tela de baixo se atualizar.
+   * gravar, para a tela de baixo se atualizar; `opcoes.recadoSalvo` troca o texto do "Salvo.".
    */
   async function abrir(caminho, opcoes = {}) {
     const voltarFoco = document.activeElement;
@@ -243,7 +243,7 @@
     document.addEventListener('keydown', tecla);
     fundo.addEventListener('click', (ev) => { if (ev.target === fundo) fechar(false); });
     fundo.querySelector('.dgl-x').addEventListener('click', () => fechar(false));
-    estado = { fundo, tecla, voltarFoco, titulo: opcoes.titulo || null, aoSalvar: opcoes.aoSalvar, arquivo: { path: caminho } };
+    estado = { fundo, tecla, voltarFoco, titulo: opcoes.titulo || null, aoSalvar: opcoes.aoSalvar, recadoSalvo: opcoes.recadoSalvo, arquivo: { path: caminho } };
     fundo.querySelector('.dgl-caminho').textContent = caminho;
     fundo.querySelector('.dgl-x').focus();
 

@@ -208,7 +208,7 @@
   const PASSOS = {
     boletins: [
       { alvo: '#secBoletins', titulo: 'Avisos de segurança do Prumo da Locadora',
-        oque: 'Os avisos sobre falhas em ferramentas que o seu sistema usa, conferidos e aprovados pela equipe do Prumo da Locadora. Cada um mostra a data, a gravidade, o link da fonte oficial e o que muda quando você corrige.',
+        oque: 'Os avisos sobre falhas em ferramentas que o seu sistema usa, conferidos e aprovados pela equipe do DG Claw (o projeto de origem) e publicados aqui quando a correção já está no Prumo da Locadora. Cada um mostra a data, a gravidade, o link da fonte oficial e o que muda quando você corrige.',
         como: 'A cada hora o servidor consulta a lista pública de avisos, sem enviar nada seu. Atualizar leva ao chat do Admin com o pedido já escrito, e você só envia. Lembrar depois adia o lembrete por 24 horas. Entendi é para os avisos sem correção ainda: nada a aplicar agora, e ele sai da fila.',
         porque: 'Antes cada aviso abria a própria janela. Agora existe um aviso único no alto das telas e os detalhes ficam aqui, para você resolver com calma e sem fechar várias janelas.' },
     ],

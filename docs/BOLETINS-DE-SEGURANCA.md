@@ -18,12 +18,14 @@ com o sim explícito do dono, pelo roteiro de [ATUALIZAR.md](ATUALIZAR.md).
 3. Todo boletim tem uma **fonte oficial** (o registro da falha feito por quem mantém a ferramenta). Sem
    fonte, o boletim é descartado: nada de alerta sem prova.
 
+No Prumo da Locadora, os boletins chegam junto com a atualização que traz a correção do DG Claw para cá: o aviso só aparece quando o `dgclaw atualizar` já resolve.
+
 O formato do arquivo está em `docs/interno/CONTRATO-BOLETINS.md`.
 
 ## Como o servidor percebe
 
 A cada hora (e 5 minutos depois de ligar o servidor) um timer roda `scripts/checar-boletins.mjs`. Ele lê
-`https://raw.githubusercontent.com/DGatoM/DG-Claw/main/seguranca/boletins.json`, uma leitura pública, sem
+`https://raw.githubusercontent.com/diegohoraadm-cpu/prumo-da-locadora/main/seguranca/boletins.json` (o repositório do Prumo da Locadora), uma leitura pública, sem
 token e sem conta. **O que sai do servidor é só o IP, como em qualquer acesso.** Nenhum dado da instalação
 (domínio, nome do dono, agentes, conversas, chaves) é enviado.
 

@@ -56,7 +56,7 @@ const RX_SLUG_ROTA = /^[a-z0-9][a-z0-9-]{0,31}$/;
 
 const LOGIN_RESERVA = '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Entrar</title>' +
   '<style>body{font-family:system-ui,sans-serif;max-width:22rem;margin:14vh auto;padding:0 1rem}input,button{display:block;width:100%;margin:.5rem 0;padding:.6rem;font-size:1rem}</style></head><body>' +
-  '<h1>DG Claw</h1><p id="e" style="color:#b00"></p><form method="post" action="/login"><input name="usuario" placeholder="Usuário" autocomplete="username" required>' +
+  '<h1>Prumo da Locadora</h1><p id="e" style="color:#b00"></p><form method="post" action="/login"><input name="usuario" placeholder="Usuário" autocomplete="username" required>' +
   '<input name="senha" type="password" placeholder="Senha" autocomplete="current-password" required><input type="hidden" name="next" value=""><button>Entrar</button></form>' +
   '<script>var q=new URLSearchParams(location.search);document.getElementById("e").textContent=q.get("erro")||"";document.querySelector("[name=next]").value=q.get("next")||"/"</script></body></html>';
 
@@ -842,7 +842,7 @@ function criarServidor(opcoes) {
     if (ehMutacao(req) && !slugCaixa && !origemOk(req)) {
       const visto = req.headers.origin ? String(req.headers.origin).slice(0, 80) : '(sem Origin)';
       log('aviso', `Pedido ${m} ${p} recusado: Origin ${visto} não é a deste Web (${H.origemPropria(req, config.proxiesConfiaveis)}).`);
-      const motivo = `Pedido recusado: a origem ${visto} não é a deste site. Abra o DG Claw pelo endereço normal e tente de novo.`;
+      const motivo = `Pedido recusado: a origem ${visto} não é a deste site. Abra o Prumo da Locadora pelo endereço normal e tente de novo.`;
       const jsonPedido = /application\/json/i.test(String(req.headers['content-type'] || '')) || /application\/json/i.test(String(req.headers.accept || ''));
       if (p === '/login' && !jsonPedido) return voltaAoLogin(res, 'origem', '/');
       return querHtml(req) && !p.startsWith('/api/') ? H.paginaErro(res, 403, 'Pedido recusado', motivo) : H.erroJson(res, 403, motivo);

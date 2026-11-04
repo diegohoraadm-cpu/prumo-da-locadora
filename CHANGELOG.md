@@ -22,6 +22,7 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
   Para ter um agente novo, peça ao principal; ele decide se basta uma sessão paralela ou se precisa
   de um agente fixo, e nesse caso pede ao Admin. A conversa antiga com os outros agentes continua
   guardada.
+
 **A ronda de segurança deixou de pesar na memória.** Em servidores pequenos, de 4 GB, a verificação de segurança podia
 passar de 1 GB de memória e fazer o sistema derrubar os seus agentes. Agora ela lê uma falha por vez e guarda só o
 que importa, então o pico fica abaixo de 100 MB nos testes. Servidores de até 4,5 GB rodam a ronda no modo econômico, uma
@@ -31,7 +32,7 @@ e nunca um agente. Nada muda no que você vê na tela Segurança, só ganha um a
 
 ### Como atualizar (ronda leve)
 
-Peça ao Admin, no chat: "atualiza o DG Claw". Ele confirma com você e instala; agentes, conversas e configurações
+Peça ao Admin, no chat: "atualiza o Prumo da Locadora". Ele confirma com você e instala; agentes, conversas e configurações
 ficam como estão. Em servidor pequeno, o horário da ronda passa para as 04:00 a não ser que você já tenha escolhido o seu.
 
 **Um aviso de segurança só, no lugar da pilha de janelas.** Antes, cada falha crítica da ronda e cada boletim
@@ -45,7 +46,7 @@ Lembrar depois e Entendi. Ideia de um aluno.
 
 ### Como atualizar este aviso
 
-Peça ao Admin, no chat: "atualiza o DG Claw". Ele confirma com você e instala; agentes, conversas e configurações
+Peça ao Admin, no chat: "atualiza o Prumo da Locadora". Ele confirma com você e instala; agentes, conversas e configurações
 ficam como estão. Depois, no celular, feche o painel e abra de novo para o navegador baixar a tela nova. Na
 primeira visita a janela nova aparece uma vez; feche e ela só volta pelos motivos acima.
 
@@ -89,7 +90,7 @@ aprovar sem querer o comando que surgiu em seguida, e o botão Aprovar de uma te
 
 ### Como atualizar
 
-1. **Peça ao Admin, no chat: "atualiza o DG Claw".** A atualização reconstrói a imagem e recria os
+1. **Peça ao Admin, no chat: "atualiza o Prumo da Locadora".** A atualização reconstrói a imagem e recria os
    agentes, e é isso que liga o medidor: a medição sai do runner (o processo que mantém cada agente vivo)
    e do hook novo que ele grava a cada subida. Agente que você deixou parado continua com o runner
    antigo e mostra "sem dado" até ser ligado de novo.
@@ -107,7 +108,7 @@ aprovar sem querer o comando que surgiu em seguida, e o botão Aprovar de uma te
    ainda não ativou. No iPhone, o aviso só chega com o DG Claw instalado na tela de início. Se o app
    instalado abrir com aviso de erro, feche e abra de novo para ele buscar os arquivos novos.
 6. **Para ter a ronda de segurança, clique em Instalar na faixa de nova versão do painel ou peça ao Admin:
-   "atualiza o DG Claw".** Depois de atualizar, a ronda faz a primeira rodada sozinha e passa a varrer o
+   "atualiza o Prumo da Locadora".** Depois de atualizar, a ronda faz a primeira rodada sozinha e passa a varrer o
    servidor três vezes ao dia, sem você configurar nada. Quando aparecer uma falha nova que afeta o seu
    servidor, o Admin avisa no chat e o painel mostra o que fazer. Nesta versão a lista de correções que a
    ronda pode aplicar sozinha começa vazia, então nada é mexido sem o seu sim. Se mais tarde ela passar a
@@ -180,7 +181,7 @@ passo primeiro.
 
 ### Como atualizar (caixa de cofre)
 
-1. **Peça ao Admin, no chat: "atualiza o DG Claw".** Isso traz a tela nova. Se o painel ainda mostrar o
+1. **Peça ao Admin, no chat: "atualiza o Prumo da Locadora".** Isso traz a tela nova. Se o painel ainda mostrar o
    cartão antigo, reinicie-o de fora do chat com `sudo systemctl restart dgclaw-web`. No celular, feche e
    abra o app uma vez para ele buscar os arquivos novos.
 2. **Para os agentes que você já tem**, rode `sudo dgclaw agente identidade <agente>` para cada um. Assim
@@ -194,7 +195,7 @@ um relatório, uma pesquisa grande) vai para um card na aba Sessões, e o agente
 quando terminar. Tarefa de poucos minutos ele passa para um ajudante em segundo plano. Assim ele
 continua respondendo você enquanto trabalha.
 
-1. **Peça ao Admin, no chat: "atualiza o DG Claw".** A atualização recria os agentes, e é nesse passo
+1. **Peça ao Admin, no chat: "atualiza o Prumo da Locadora".** A atualização recria os agentes, e é nesse passo
    que a regra entra nas instruções de cada um, inclusive dos que você já tem. Nada do que você
    personalizou (`AGENT.md`, `CLAUDE.md`, memória) é tocado.
 2. **Agente que estava desligado** só recebe a regra quando for ligado de novo. Se quiser aplicar sem
@@ -251,6 +252,7 @@ continua respondendo você enquanto trabalha.
   mais antigo da lista de agentes. Se você removeu e criou de novo algum agente, ele foi para o fim
   da lista, e o escolhido pode não ser o que você espera. Para trocar, peça ao Admin no chat:
   "quero que a Ana seja a minha agente principal".
+
 Nada a configurar: atualize como de costume (`sudo dgclaw atualizar` ou peça ao Admin). Depois, no
 celular, feche e abra o app uma vez para ele buscar os arquivos novos. A primeira vez que cada foto for
 pedida demora um instante a mais, porque é quando o painel a baixa; as seguintes vêm na hora. Fotos que
@@ -268,7 +270,7 @@ sobrevivem à atualização.
 
 Para quem já tem o DG Claw instalado, na ordem:
 
-1. **Peça ao Admin, no chat: "atualiza o DG Claw".** Ele faz a simulação, conta em palavras simples o
+1. **Peça ao Admin, no chat: "atualiza o Prumo da Locadora".** Ele faz a simulação, conta em palavras simples o
    que muda e só instala depois do seu ok. Pelo terminal, o caminho é `sudo dgclaw atualizar --simular`
    e, depois de ler o relatório, `sudo dgclaw atualizar --ok-do-dono --segundo-plano`. Se o seu DG Claw é
    anterior a esta versão (instalado até 19/10/2026), o comando que você tem ainda não conhece o

@@ -772,7 +772,7 @@ def inventario_app(cfg, avisos):
     app = caminhos()["app"]
     comps = []
     if not os.path.isdir(app):
-        avisos.append(f"A pasta do app ({app}) não existe: os pacotes do DG Claw ficaram fora da ronda.")
+        avisos.append(f"A pasta do app ({app}) não existe: os pacotes do Prumo da Locadora ficaram fora da ronda.")
         return comps
     prof = cfg.get("profundidade_lockfiles", 3)
     for pasta, dirs, arqs in os.walk(app):
@@ -786,7 +786,7 @@ def inventario_app(cfg, avisos):
                 with open(arq, encoding="utf-8") as f:
                     comps += parse_lock(f.read(), onde)
             except (OSError, json.JSONDecodeError) as e:
-                avisos.append(f"O lockfile {ref(arq)} do DG Claw está ilegível ({erro_curto(e)}); os pacotes dele ficaram fora desta ronda.")
+                avisos.append(f"O lockfile {ref(arq)} do Prumo da Locadora está ilegível ({erro_curto(e)}); os pacotes dele ficaram fora desta ronda.")
     cf = os.path.join(app, "container", "Containerfile")
     try:
         with open(cf, encoding="utf-8") as f:
@@ -2362,7 +2362,7 @@ def aplicar_passos(ac):
         base = os.path.realpath(raiz_repo_seguranca())
         origem = os.path.realpath(os.path.join(base, ac["arquivo"]))
         if not origem.startswith(base + os.sep) or not os.path.isfile(origem):
-            raise ErroRonda(f"O arquivo nft '{ac['arquivo']}' da ação {ac['id']} não está dentro de seguranca/ do DG Claw instalado. Não apliquei nada.")
+            raise ErroRonda(f"O arquivo nft '{ac['arquivo']}' da ação {ac['id']} não está dentro de seguranca/ do Prumo da Locadora instalado. Não apliquei nada.")
         r = cmd(["nft", "-c", "-f", origem], timeout=30)
         if r.returncode != 0:
             raise ErroRonda(f"O nft recusou o arquivo da ação {ac['id']} na validação (nft -c): {limpa(r.stderr, 140)}. Não apliquei nada.")
@@ -2474,7 +2474,7 @@ def aplicar_acao(cfg, a_id, ac, por, exigir_saude_antes):
     """Aplica uma ação do catálogo com teste de saúde antes e depois; se piorar, desfaz. Devolve o registro gravado."""
     antes_saude = saude(cfg)
     if exigir_saude_antes and not saude_boa(antes_saude):
-        raise ErroRonda("Não apliquei sozinha: o painel ou um serviço do DG Claw já não estava saudável antes (" +
+        raise ErroRonda("Não apliquei sozinha: o painel ou um serviço do Prumo da Locadora já não estava saudável antes (" +
                         json.dumps(antes_saude, ensure_ascii=False) + "). Um achado crítico fica para o dono decidir.")
     ant, dep, desf, texto_desf, reinicio = aplicar_passos(ac)
     depois_saude = saude(cfg)

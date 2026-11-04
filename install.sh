@@ -1347,7 +1347,7 @@ FIM
     systemctl is-active --quiet dgclaw-sentinela.timer || executar systemctl start dgclaw-sentinela.timer
 }
 
-# --- 9c. boletins de seguranca ----------------------------------------------------
+# --- 9d. boletins de seguranca ----------------------------------------------------
 # configurar_boletins_seguranca: o AVISO DE SEGURANCA (docs/BOLETINS-DE-SEGURANCA.md). Um timer de 1 h roda
 # scripts/checar-boletins.mjs, que so le o GitHub publico e guarda os boletins pendentes em
 # /var/lib/dgclaw/web/atualizacao/boletins.json para o painel mostrar a janela e o selo. Nao baixa nem instala nada.
@@ -1407,7 +1407,7 @@ FIM
     executar systemctl start --no-block dgclaw-checar-boletins.service
 }
 
-# --- 9d. ronda de seguranca ---------------------------------------------------------
+# --- 9e. ronda de seguranca ---------------------------------------------------------
 # configurar_ronda_seguranca: a RONDA DE SEGURANCA DE FABRICA (docs/RONDA-DE-SEGURANCA.md). Unidades do
 # systemd, todas rodando seguranca/ronda/ronda.py (Python da biblioteca padrao):
 #   dgclaw-ronda.timer           3 vezes ao dia (DGCLAW_RONDA_HORARIOS, padrao "07:00 13:00 19:00", fuso do servidor)

@@ -38,7 +38,7 @@ const FORMA_DA_CHAVE = {
 
 const SEM_RUNNER = {
   error: 'A versão do agente ainda não informa o provedor',
-  howToFix: 'A plataforma que roda o agente é de uma versão antiga, sem a escolha de modelo. Atualize o DG Claw para ver esta parte (peça ao Admin, ou a quem cuida da instalação); enquanto isso o agente segue funcionando como estava.',
+  howToFix: 'A plataforma que roda o agente é de uma versão antiga, sem a escolha de modelo. Atualize o Prumo da Locadora para ver esta parte (peça ao Admin, ou a quem cuida da instalação); enquanto isso o agente segue funcionando como estava.',
 };
 
 /** Tira de um texto qualquer o que parece chave (e a chave exata, se for dada). */
@@ -221,7 +221,7 @@ module.exports = function registrarRotasDeProvedor(router, { CONFIG, cofre, serv
         console.error(`[uso] GET /api/uso: o runner não respondeu ou é antigo (${limpar(r.motivo)}); respondi 502`);
         return res.status(502).json({
           error: 'Não consegui perguntar ao agente quanto da assinatura já foi usado.',
-          howToFix: 'Se o agente acabou de reiniciar, tente de novo em um minuto. Se a versão do DG Claw é antiga, atualize: o medidor de uso é novo.',
+          howToFix: 'Se o agente acabou de reiniciar, tente de novo em um minuto. Se a versão do Prumo da Locadora é antiga, atualize: o medidor de uso é novo.',
         });
       }
       if (r.status >= 400) {

@@ -890,7 +890,7 @@ class Niveis(Base):
     def test_boletim_atualizar_sistema_nao_vira_atualizar_dgclaw(self):
         a = self.boletim_para_openssl("atualizar-sistema")
         self.assertEqual(a["correcao"], {"tipo": "apt", "disponivel": True, "executavel": False})
-        self.assertNotIn("DG Claw", a["como_corrigir"])
+        self.assertNotIn("Prumo da Locadora", a["como_corrigir"])
 
     def test_boletim_aguardar_e_parar_servico_nao_marcam_correcao(self):
         for acao in ("aguardar", "parar-servico"):
@@ -899,7 +899,7 @@ class Niveis(Base):
                 a = self.boletim_para_openssl(acao)
                 self.assertNotEqual(a["correcao"]["tipo"], "atualizar-dgclaw")
                 self.assertIs(a["correcao"]["executavel"], False)
-                self.assertNotIn("versão nova do DG Claw", a["como_corrigir"])
+                self.assertNotIn("versão nova do Prumo da Locadora", a["como_corrigir"])
 
     def test_boletim_atualizar_sistema_sem_pacote_do_sistema_mantem_executavel_falso(self):
         S["osv_paginas"]["npm|express|4.17.1"] = [["GHSA-aaaa-bbbb-cccc"]]
@@ -916,7 +916,7 @@ class Niveis(Base):
         self.ronda("executar", "--sem-avisar")
         a = self.achado("GHSA-aaaa-bbbb-cccc")
         self.assertEqual(a["correcao"], {"tipo": "nenhuma", "disponivel": False, "executavel": False})
-        self.assertIn("versão nova do DG Claw", a["como_corrigir"])
+        self.assertIn("versão nova do Prumo da Locadora", a["como_corrigir"])
 
     def test_sem_fonte_oficial_nao_vira_alerta(self):
         S["osv_paginas"]["npm|express|4.17.1"] = [["OSV-2026-1"]]

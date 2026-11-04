@@ -112,7 +112,7 @@
   function fatosHtml(a) {
     let h = fato('Publicada em', esc(a.publicado_em ? dataBr(a.publicado_em) : 'data não informada'), 'rp-f-data');
     h += fato('Gravidade', esc(gravidadeRotulo(a.severidade)), 'rp-f-grav');
-    if (a.onde && a.onde.length) h += fato('Onde afeta', a.onde.map(esc).join('<br>'), 'rp-f-onde');
+    if (a.onde && a.onde.length) h += fato('Onde afeta', a.onde.map(o => esc(String(o).replace(/^DG Claw/, 'Prumo da Locadora'))).join('<br>'), 'rp-f-onde');
     h += fato('O que faz', esc(a.o_que_faz || 'A fonte oficial não descreve o impacto.'), 'rp-f-faz');
     h += fato('Como corrigir', esc(a.como_corrigir || 'Ainda não há orientação publicada.'), 'rp-f-como');
     h += fato('Fonte oficial', linkHtml(a.fonte_url), 'rp-f-fonte');

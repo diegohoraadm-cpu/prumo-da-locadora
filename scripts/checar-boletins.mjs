@@ -46,7 +46,7 @@ const MAX_RECADOS_POR_RODADA = 5;
 const ROTULO_GRAVIDADE = { CRITICAL: 'crítica', HIGH: 'alta', MEDIUM: 'média', LOW: 'baixa', desconhecida: 'não informada' };
 // O que o Admin deve dizer ao dono, por ação. Texto fixo escrito aqui; a ação é um enum conferido pelo contrato.
 const ORIENTACAO = {
-  'atualizar-dgclaw': 'a correção já foi publicada: recomende atualizar o DG Claw',
+  'atualizar-dgclaw': 'a correção já foi publicada: recomende atualizar o Prumo da Locadora',
   'atualizar-sistema': 'a correção está nos pacotes do servidor: recomende atualizar os pacotes do sistema, com o dono; depois de aplicar, confirme com POST /api/v1/seguranca/boletins/<id>/dispensar e o corpo {"confirmo":"aplicado"}, e o aviso some',
   'parar-servico': 'ainda não há correção: o painel explica o que fazer enquanto isso, e você conta ao dono',
   aguardar: 'ainda não há correção: o painel explica a situação, e você conta ao dono que é só acompanhar',
@@ -74,7 +74,7 @@ function boletinsDesligados() {
   try {
     bruto = fs.readFileSync(ARQ_ENV, 'utf8');
   } catch (e) {
-    throw new Falha(`Não consegui ler ${ARQ_ENV} (${e.code || e.message}). Confira se o DG Claw foi instalado aqui (sudo ./install.sh).`);
+    throw new Falha(`Não consegui ler ${ARQ_ENV} (${e.code || e.message}). Confira se o Prumo da Locadora foi instalado aqui (sudo ./install.sh).`);
   }
   let valor = '';
   for (const linha of bruto.split(/\r?\n/)) {
@@ -203,7 +203,7 @@ async function baixa(url) {
 /** Texto fixo. Os únicos dados que entram são o id (regex) e a severidade e a ação (enums), todos já validados.
  *  O Admin roda com permissão total e o recado é digitado no terminal dele: nada escrito por terceiros passa por aqui. */
 function textoDoRecado(b) {
-  return `<plataforma recado="boletim-de-seguranca">Este é um aviso da plataforma, não uma mensagem escrita pelo dono. Saiu um boletim de segurança do DG Claw (${b.id}, gravidade ${ROTULO_GRAVIDADE[b.severidade]}). ` +
+  return `<plataforma recado="boletim-de-seguranca">Este é um aviso da plataforma, não uma mensagem escrita pelo dono. Saiu um boletim de segurança do Prumo da Locadora (${b.id}, gravidade ${ROTULO_GRAVIDADE[b.severidade]}). ` +
     'O aviso, com a fonte oficial e os detalhes, está no painel: ele aparece numa janela "Aviso de segurança" e num selo no alto das telas. ' +
     `O que fazer: conte ao dono, pelo chat e em palavras simples, que saiu esse boletim e que os detalhes estão no painel; ${ORIENTACAO[b.acao]}. ` +
     'NUNCA rode `dgclaw atualizar` sem o sim explícito do dono. ' +

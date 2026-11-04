@@ -130,7 +130,7 @@ console.log('\nGET com runner fora do ar ou antigo');
 {
   runner.modo = 'antigo';
   const r = await chamar('GET /api/provedor');
-  ok(r.status === 503 && r.corpo.error === 'A versão do agente ainda não informa o provedor' && /Atualize o DG Claw/.test(r.corpo.howToFix), 'runner antigo (404): 503 amigável');
+  ok(r.status === 503 && r.corpo.error === 'A versão do agente ainda não informa o provedor' && /Atualize o Prumo da Locadora/.test(r.corpo.howToFix), 'runner antigo (404): 503 amigável');
   runner.modo = 'antigo-cru';
   const rc = await chamar('GET /api/provedor');
   ok(rc.status === 503 && rc.corpo.error === 'A versão do agente ainda não informa o provedor' && !/Not found/.test(JSON.stringify(rc.corpo)), 'runner antigo que responde "Not found" cru: o painel traduz, o texto cru não chega à tela');

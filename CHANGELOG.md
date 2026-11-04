@@ -22,6 +22,216 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
   Para ter um agente novo, peça ao principal; ele decide se basta uma sessão paralela ou se precisa
   de um agente fixo, e nesse caso pede ao Admin. A conversa antiga com os outros agentes continua
   guardada.
+**A ronda de segurança deixou de pesar na memória.** Em servidores pequenos, de 4 GB, a verificação de segurança podia
+passar de 1 GB de memória e fazer o sistema derrubar os seus agentes. Agora ela lê uma falha por vez e guarda só o
+que importa, então o pico fica abaixo de 100 MB nos testes. Servidores de até 4,5 GB rodam a ronda no modo econômico, uma
+vez por dia às 04:00 (se você tiver definido os seus horários, eles valem). Se mesmo assim a ronda passar do limite de
+memória, ela termina avisando que ficou parcial e o motivo, e o sistema, se precisar encerrar alguém, encerra a ronda
+e nunca um agente. Nada muda no que você vê na tela Segurança, só ganha um aviso de "parcial" quando for o caso.
+
+### Como atualizar (ronda leve)
+
+Peça ao Admin, no chat: "atualiza o DG Claw". Ele confirma com você e instala; agentes, conversas e configurações
+ficam como estão. Em servidor pequeno, o horário da ronda passa para as 04:00 a não ser que você já tenha escolhido o seu.
+
+**Um aviso de segurança só, no lugar da pilha de janelas.** Antes, cada falha crítica da ronda e cada boletim
+abria a própria janela, e quem tinha várias precisava fechar uma por uma, todo dia. Agora aparece uma janela só,
+"Seu ambiente está em risco", que conta quantos pontos de segurança pedem a sua atenção, mostra os mais graves e
+tem o botão "Ver na Segurança". Fechar uma vez fecha tudo. Ela só volta sozinha se aparecer um problema novo, se
+algum ficar mais grave ou depois de 24 horas, no máximo uma vez por dia. Enquanto houver pendência, um selo
+discreto no alto da tela leva à Segurança. Nenhum aviso sumiu: cada falha continua na tela Segurança com os fatos e
+os botões de antes, e os boletins ganharam uma seção própria lá, "Avisos de segurança do DG Claw", com Atualizar,
+Lembrar depois e Entendi. Ideia de um aluno.
+
+### Como atualizar este aviso
+
+Peça ao Admin, no chat: "atualiza o DG Claw". Ele confirma com você e instala; agentes, conversas e configurações
+ficam como estão. Depois, no celular, feche o painel e abra de novo para o navegador baixar a tela nova. Na
+primeira visita a janela nova aparece uma vez; feche e ela só volta pelos motivos acima.
+
+**Tela Segurança e botão de emergência.** O menu ganhou a tela Segurança: o horário da última ronda, o que foi
+aplicado sozinho (com o botão Desfazer), as falhas críticas que pedem a sua decisão (aplicar, agendar ou tirar do
+ar) e as de impacto leve, com a correção pronta esperando o seu ok. Falha crítica abre uma janela vermelha que volta
+a cada visita até você decidir. O botão de emergência tira o sistema da internet e mantém só o seu acesso pelo
+Tailscale; pede um código de uso único e a frase de confirmação, e religa sozinho em 5 minutos se ninguém confirmar.
+No terminal: `sudo dgclaw emergencia simular`. Detalhes em `docs/BOTAO-DE-EMERGENCIA.md`.
+
+**Aviso de segurança no painel.** Quando a equipe publica um boletim sobre uma falha de segurança numa das
+ferramentas que o DG Claw usa, o servidor percebe sozinho (uma leitura pública do GitHub a cada hora) e o painel
+mostra uma janela "Aviso de segurança", com a fonte oficial e o que muda, e um selo discreto que fica no alto das
+telas até o assunto se resolver. O botão Atualizar leva ao chat do Admin com o pedido já escrito; você só envia.
+Nada é instalado sem o seu sim, e ao atualizar o aviso some sozinho. Para desligar, ponha
+`DGCLAW_BOLETINS_SEGURANCA=0` no `dgclaw.env`. Detalhes em `docs/BOLETINS-DE-SEGURANCA.md`.
+
+**Ronda de segurança de fábrica.** Todo DG Claw instalado passa a ter uma ronda que, três vezes ao dia (07:00,
+13:00 e 19:00, no horário do servidor), procura falhas de segurança que afetam aquela instalação: os pacotes do
+servidor, o kernel que está rodando, o que escuta na rede, os pacotes do DG Claw e os serviços que você conectou
+(Notion, Slack, Google Drive e outros). Quem não usa o Notion não recebe aviso sobre o Notion. As falhas aparecem
+em três níveis: o que a ronda corrigiu sozinha, o que precisa da sua decisão e o que dá para corrigir sem
+pressa. Só quando há uma falha nova o Admin é avisado e conta a você no chat; nos outros dias ninguém fala nada.
+Se alguma fonte de consulta ficar fora do ar, a ronda diz que ficou parcial, e nunca finge que está tudo limpo.
+Para desligar, ponha `DGCLAW_RONDA_SEGURANCA=0` no `dgclaw.env`. Detalhes em `docs/RONDA-DE-SEGURANCA.md`.
+
+Duas correções da imagem dos agentes. A Tela não derruba mais a aba nova: o Chrome da Tela passava do limite
+de processos que o sistema dá a cada serviço e a segunda aba abria em branco ou quebrava. E o Pillow, a
+biblioteca de imagens do Python que vem na imagem, subiu para a 13.0.0, que fecha cinco falhas críticas de
+segurança da versão anterior. As duas valem depois de atualizar, quando a imagem é reconstruída.
+
+Duas ideias trazidas do Orca (https://github.com/stablyai/orca, licença MIT; crédito no `NOTICE`): o
+medidor de uso da assinatura e o aviso de que um agente precisa de você.
+
+Agora dá para responder pelo chat a pergunta de escolha que o agente faz (aquela com opções para marcar): a
+pergunta aparece num cartão acima da caixa de mensagem, com as opções, um campo para outra resposta e o botão de
+cancelar. A mensagem digitada enquanto ele espera essa resposta não fica mais presa em silêncio: a tela avisa, mantém o seu texto na
+caixa e manda você responder a pergunta primeiro. A aprovação de um comando também não pode mais ser confundida
+com a resposta da pergunta: se você responder pelo terminal no meio, o resto da resposta é interrompido em vez de
+aprovar sem querer o comando que surgiu em seguida, e o botão Aprovar de uma tela desatualizada é recusado.
+
+### Como atualizar
+
+1. **Peça ao Admin, no chat: "atualiza o DG Claw".** A atualização reconstrói a imagem e recria os
+   agentes, e é isso que liga o medidor: a medição sai do runner (o processo que mantém cada agente vivo)
+   e do hook novo que ele grava a cada subida. Agente que você deixou parado continua com o runner
+   antigo e mostra "sem dado" até ser ligado de novo.
+2. **Espere uma resposta de cada agente.** O número do uso só aparece depois da primeira resposta
+   desde a atualização, porque é o próprio Claude Code (ou o Codex) que informa o quanto já foi gasto
+   ao responder. Até lá, o Status mostra "sem dado", e isso é esperado, não erro.
+3. **Regrave a identidade dos agentes que você já tem**, com `sudo dgclaw agente identidade <agente>`
+   para cada um. Nesta versão eles aprendem que você vê o uso da assinatura no Status e que um agente
+   pode consultar o próprio uso. O comando não mexe no `CLAUDE.md`, no `AGENT.md` nem na memória que
+   você personalizou.
+4. **Se você personalizou o `CLAUDE.md` ou o `AGENTS.md` do Admin,** leve do `.novo` para o seu
+   arquivo as duas linhas sobre "uso da assinatura" e "estado de cada agente", sem apagar o que você
+   escreveu. Sem elas o Admin não sabe onde fica o medidor quando você perguntar.
+5. **Para receber os avisos no celular,** ative "Avisos neste aparelho" na tela de Lembretes, se
+   ainda não ativou. No iPhone, o aviso só chega com o DG Claw instalado na tela de início. Se o app
+   instalado abrir com aviso de erro, feche e abra de novo para ele buscar os arquivos novos.
+6. **Para ter a ronda de segurança, clique em Instalar na faixa de nova versão do painel ou peça ao Admin:
+   "atualiza o DG Claw".** Depois de atualizar, a ronda faz a primeira rodada sozinha e passa a varrer o
+   servidor três vezes ao dia, sem você configurar nada. Quando aparecer uma falha nova que afeta o seu
+   servidor, o Admin avisa no chat e o painel mostra o que fazer. Nesta versão a lista de correções que a
+   ronda pode aplicar sozinha começa vazia, então nada é mexido sem o seu sim. Se mais tarde ela passar a
+   corrigir algo sozinha, ela conta o que fez e você desfaz com um pedido ao Admin.
+
+### Adicionado
+
+- **Caixa de cofre na conversa.** Quando o agente precisa de uma senha ou chave de um serviço (OpenAI,
+  Hostinger, Groq...), ele mostra na própria conversa um cartão com um campo de senha, e o valor vai
+  direto para o cofre dele, sem passar pela conversa. O cartão ficou mais completo: avisa "Já tem uma
+  guardada (final 9z8y)" quando a chave já existe (também depois de recarregar a página), tem botão
+  para mostrar o que você colou, cabe em tela de celular e explica que salvar reinicia o agente para a
+  chave valer, e que a conversa continua de onde parou. O agente recebe, entregue pelo servidor, só o nome e o final da chave
+  (`[cofre] NOME guardada (final 1a2b).`), e a mensagem aparece com a etiqueta "do cofre". Os visuais da
+  lousa ganharam a peça `dv-cofre`, que abre o mesmo cartão quando a chave faz parte de um passo a
+  passo. Na aba Cofre, a seção das chaves que deixam outro programa usar a API passou a se chamar
+  "Chaves de acesso à API" e diz que não é ali que se guarda senha de serviço, com um atalho para o
+  formulário "Guardar uma chave". O tutorial da conversa ganhou um passo sobre a caixa de cofre.
+  Documento em `docs/COFRE-NA-CONVERSA.md` (também em `GET /api/v1/cofre/docs.md`).
+- **Uso da assinatura.** O Status de cada agente ganhou o cartão "Uso da assinatura", com quanto já foi
+  gasto da janela de 5 horas e do limite semanal, a hora em que cada um zera e há quanto tempo foi
+  medido. O menu ☰ ganhou "Uso das assinaturas", com todos os agentes juntos. No Claude, o número vem
+  da linha de status do próprio Claude Code a cada resposta; no Codex, do registro da sessão. O que não
+  foi medido aparece como "sem dado", nunca como zero. Janela que já zerou mostra a hora em que zerou,
+  e não o percentual antigo. Pela API: `GET /api/v1/uso` (o agente que pergunta pela caixa recebe só o
+  dele), `GET /api/uso` no painel do agente e `GET /api/agents/<id>/uso` no runner. Documento em
+  `web/docs/USO-DA-ASSINATURA.md`.
+- **"Precisa de você".** O menu ☰ e a fileira de avatares do celular mostram o estado de cada agente:
+  trabalhando (pontinhos), terminou com resposta não lida (a bolinha de sempre) ou precisa de você
+  (selo âmbar com "!"), quando ele pede permissão para usar uma ferramenta, faz uma pergunta de
+  escolha ou perde o login. Pela API: `GET /api/v1/estados`. Documento em
+  `web/docs/ESTADO-DOS-AGENTES.md`.
+- **Aviso no celular** quando um agente precisa de você ou termina uma resposta. O aviso não sai
+  quando você já está olhando aquela conversa, e sai no máximo um por agente a cada minuto. O aviso de
+  "terminou" diz só "Respondeu na conversa", sem nada do texto, porque a tela bloqueada do celular não
+  pede senha. Os dois
+  tipos se ligam e desligam na tela de Lembretes. O aviso não aprova nada: para aprovar uma permissão
+  é preciso abrir a conversa.
+- **Marcar como não lida.** No menu ☰ (botão ⋯ ou toque longo no agente) e no cabeçalho da conversa.
+  A marca fica até você abrir a conversa de novo; rolar a tela não a apaga.
+
+- A voz agora lê a resposta inteira, não só o começo. O texto é limpo (tabela, código e link não viram
+  fala), fatiado por parágrafo e frase, e a tela toca os pedaços em sequência, já preparando o próximo
+  enquanto o atual toca. Parar de falar ou gravar um áudio novo interrompe a leitura toda. O aviso de
+  "resposta cortada" saiu, e um texto de mais de 40 pedaços é recusado com o motivo.
+- Com o modo de ouvir ligado, a mensagem segue ao agente com `voz="1"` no envelope, e ele responde curto, em
+  frases faladas, sem tabela nem URL. O campo `voz: true` também vale para quem usa o `/send` por API.
+- Cada fala do agente ganha um botão 🎧 (só com o modo de ouvir ligado) para ouvir de novo, sem reabrir o
+  microfone.
+
+- Fila de leitura em voz. Uma resposta nova do agente não derruba mais a que você está ouvindo: ela entra no
+  fim da fila e toca depois, uma por vez. Enquanto você grava, nada toca; a que estava tocando pausa e, quando
+  você envia ou cancela a gravação, ela continua (do começo, se tinha tocado menos de 20%, senão de onde
+  parou), seguida das que chegaram nesse meio tempo. Cada balão mostra se está tocando agora ou na fila. Para
+  pular, toque no 🎧 do balão que quer ouvir: ele toca e segue dali. Só as respostas normais do agente entram
+  na fila sozinhas; as mensagens de rotina só tocam se você apertar o 🎧 delas.
+
+### Como atualizar (voz)
+
+Nesta versão há uma instrução nova para o seu agente saber quando você está ouvindo a resposta, e ela
+precisa entrar nas instruções dele sem apagar o que você personalizou. Para isso, rode
+`sudo dgclaw agente identidade <agente>` para cada agente que você já tem. No celular, feche e abra o app
+uma vez para ele buscar os arquivos novos.
+
+### Como atualizar (fila de voz)
+
+Não há nada para rodar: é só a tela. No celular, feche e abra o app uma vez para ele buscar os arquivos novos
+(ou recarregue a página no computador). Quem ainda não atualizou a parte de voz acima precisa fazer aquele
+passo primeiro.
+
+### Como atualizar (caixa de cofre)
+
+1. **Peça ao Admin, no chat: "atualiza o DG Claw".** Isso traz a tela nova. Se o painel ainda mostrar o
+   cartão antigo, reinicie-o de fora do chat com `sudo systemctl restart dgclaw-web`. No celular, feche e
+   abra o app uma vez para ele buscar os arquivos novos.
+2. **Para os agentes que você já tem**, rode `sudo dgclaw agente identidade <agente>` para cada um. Assim
+   eles aprendem o aviso novo (`[cofre] NOME guardada (final 1a2b).`) e a peça `dv-cofre`, sem apagar o
+   que você personalizou.
+
+### Como atualizar (seu agente sempre livre para conversar)
+
+Nesta versão os agentes ganham uma regra nova: trabalho demorado (montar uma apresentação, um site,
+um relatório, uma pesquisa grande) vai para um card na aba Sessões, e o agente avisa você na conversa
+quando terminar. Tarefa de poucos minutos ele passa para um ajudante em segundo plano. Assim ele
+continua respondendo você enquanto trabalha.
+
+1. **Peça ao Admin, no chat: "atualiza o DG Claw".** A atualização recria os agentes, e é nesse passo
+   que a regra entra nas instruções de cada um, inclusive dos que você já tem. Nada do que você
+   personalizou (`AGENT.md`, `CLAUDE.md`, memória) é tocado.
+2. **Agente que estava desligado** só recebe a regra quando for ligado de novo. Se quiser aplicar sem
+   esperar, rode `sudo dgclaw agente identidade <agente>`.
+
+### Corrigido
+
+- **O primeiro pedido de um card ficava parado na caixa de entrada.** A sessão do card nasce em modo
+  `auto`, e na primeira vez o Claude Code mostrava um aviso sobre esse modo na frente da caixa. O texto
+  do pedido ficava escrito ali, sem ninguém processar, até alguém dar Enter à mão (7 minutos, na aula de
+  27/10). Agora o aviso já vem marcado como visto. Se ele aparecer mesmo assim, o agente não digita o
+  pedido e o log diz o que fazer.
+- **Reiniciar o Admin levava 90 segundos e derrubava o vigia do container do agente.** O container
+  criado pelo Admin ficava pendurado no serviço dele, e cada reinício (inclusive o automático das
+  atualizações de segurança do Ubuntu) esperava 90 segundos e encerrava à força o processo que cuida do
+  container. Agora cada container sobe separado do serviço de quem o ligou.
+- **Erros vermelhos falsos no log logo depois de instalar.** O painel subia antes de existir a lista de
+  agentes e registrava três erros, que sumiam sozinhos. Agora ele só liga depois que a lista existe.
+- **Avisos que não eram problema.** "Digitei 3 Enters e nenhum abriu turno" aparecia no `/compact`
+  automático; "não achei o registro da sessão" aparecia
+  para conversa recém-criada; e "agente fora do ar" se repetia a cada 30 segundos enquanto o agente só
+  esperava o login. Os três agora só aparecem quando há algo de errado de verdade, e uma vez por estado.
+
+- A foto do agente cadastrada por endereço (`https://...`) aparecia pela metade no iPhone, com o verde do
+  avatar por baixo. A mesma foto de fora era pedida várias vezes por página. Agora o painel baixa a foto
+  uma vez, guarda em `/var/lib/dgclaw/web/avatares/` e entrega do próprio endereço do painel
+  (`/api/v1/agents/<agente>/avatar`), inteira e com cache de um ano. O cache se renova sozinho quando você
+  troca o endereço da foto no cadastro. Enquanto a foto carrega, o círculo fica cinza claro em vez da cor
+  do agente. Foto de SVG não é aceita (PNG, JPEG, WebP, GIF e AVIF até 5 MB); se o download falhar, a
+  resposta e o log dizem o motivo.
+
+### Alterado
+
+- As sessões paralelas do agente (as do descritor e as criadas por `POST /api/sessoes`, inclusive a de
+  bastidores) agora sobem sempre em modo `auto`, em vez de herdar o `bypassPermissions` da principal. O
+  agente principal continua em `bypassPermissions`, que é obrigatório. Os pedidos de permissão das outras
+  sessões aparecem na tela pelo cartão de permissão.
 - Dependências atualizadas: pino 10 no canal do WhatsApp, express-rate-limit 8 no painel,
   TypeScript 7 no runner e as GitHub Actions do CI (checkout, setup-node e setup-python 7,
   upload-artifact 7, sbom-action 0.24.3).
@@ -41,6 +251,10 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
   mais antigo da lista de agentes. Se você removeu e criou de novo algum agente, ele foi para o fim
   da lista, e o escolhido pode não ser o que você espera. Para trocar, peça ao Admin no chat:
   "quero que a Ana seja a minha agente principal".
+Nada a configurar: atualize como de costume (`sudo dgclaw atualizar` ou peça ao Admin). Depois, no
+celular, feche e abra o app uma vez para ele buscar os arquivos novos. A primeira vez que cada foto for
+pedida demora um instante a mais, porque é quando o painel a baixa; as seguintes vêm na hora. Fotos que
+você enviou pelo formulário de criar agente já saíam do painel e não mudam.
 
 ## [1.0.0] - 2026-10-19
 

@@ -243,7 +243,21 @@ test('messages: agente que nunca conversou não mostra faixa de erro', async () 
     const r = (await s.t.c.get('/api/v1/agents/ana/messages')).json;
     assert.equal(r.ok, true); assert.deepEqual(r.msgs, []);
     assert.deepEqual(r.avisos, [], 'sem nenhum registro é o estado normal: sem faixa');
-    assert.match(s.t.log.texto(), /Thread de Ana: o runner diz que a sessão é sess-nova-0001/);
+    assert.match(s.t.log.texto(), /\[info\] Thread de Ana: sessão nova, aguardando a primeira troca/);
+    assert.doesNotMatch(s.t.log.texto(), /\[aviso\] Thread de Ana/, 'sessão que acabou de nascer não vira aviso');
+  } finally { await s.fechar(); }
+});
+
+test('messages: sessão sem arquivo por mais de 10 minutos vira aviso no log', async () => {
+  let agora = Date.now();
+  const s = await cenario({ ana: { sessionId: 'sess-nova-0001' } }, { opcoesServidor: { agora: () => agora } });
+  try {
+    fs.rmSync(path.join(s.transcripts, '-home-agente', 'sess-ana-00001.jsonl'));
+    await s.t.c.get('/api/v1/agents/ana/messages');
+    assert.doesNotMatch(s.t.log.texto(), /\[aviso\] Thread de Ana/);
+    agora += 11 * 60 * 1000;
+    await s.t.c.get('/api/v1/agents/ana/messages');
+    assert.match(s.t.log.texto(), /\[aviso\] Thread de Ana: o runner diz que a sessão é sess-nova-0001.*Já faz 11 min/);
   } finally { await s.fechar(); }
 });
 
@@ -530,4 +544,41 @@ test('páginas: / vai para o Admin, /a/<slug> serve a conversa e slug inexistent
     assert.equal(nao.status, 404); assert.match(nao.texto, /Não existe agente/);
     assert.equal((await s.t.c.get('/api/saude', { semCookie: true })).json.ok, true);
   } finally { await s.fechar(); }
+});
+
+test('avatar por https sai pelo mesmo domínio e sem foto dá 404 explicado', async () => {
+  const s = await cenario();
+  try {
+    const sem = await s.t.c.get('/api/v1/agents/ana/avatar');
+    assert.equal(sem.status, 404); assert.match(sem.json.erro, /não tem foto/);
+  } finally { await s.fechar(); }
+});
+
+test('send: voz:true põe voz="1" no fim dos atributos do envelope; sem voz (ou outro valor) não põe', async () => {
+  const s = await cenario();
+  try {
+    await s.t.c.post('/api/v1/agents/ana/send', { json: { text: 'falado', voz: true } });
+    await s.t.c.post('/api/v1/agents/ana/send', { json: { text: 'escrito' } });
+    await s.t.c.post('/api/v1/agents/ana/send', { json: { text: 'texto da string', voz: 'true' } });
+    await s.t.c.post('/api/v1/agents/ana/send', { json: { text: 'um', voz: 1 } });
+    const [a, b, c, d] = s.rAna.rec.inputs.map((i) => i.text);
+    assert.match(a, /^<dgchat from="pessoa" chat="c_ana" msg="[^"]+" ts="[^"]+" voz="1">falado<\/dgchat>$/);
+    for (const t of [b, c, d]) assert.ok(!t.includes('voz='), t);
+  } finally { await s.fechar(); }
+});
+
+test('send: comando de barra não leva a tag de voz', async () => {
+  const s = await cenario();
+  try {
+    const r = await s.t.c.post('/api/v1/agents/ana/send', { json: { text: '/compact', voz: true } });
+    assert.equal(r.status, 200, r.texto);
+    for (const i of s.rAna.rec.inputs) assert.ok(!i.text.includes('voz='), i.text);
+  } finally { await s.fechar(); }
+});
+
+test('montarEnvelope: voz só com true', () => {
+  const base = { from: 'pessoa', chat: 'c', msg: 'm', ts: 't', text: 'x' };
+  assert.equal(montarEnvelope({ ...base, voz: true }), '<dgchat from="pessoa" chat="c" msg="m" ts="t" voz="1">x</dgchat>');
+  assert.equal(montarEnvelope({ ...base, voz: 'true' }), '<dgchat from="pessoa" chat="c" msg="m" ts="t">x</dgchat>');
+  assert.equal(montarEnvelope(base), '<dgchat from="pessoa" chat="c" msg="m" ts="t">x</dgchat>');
 });

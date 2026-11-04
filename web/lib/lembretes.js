@@ -742,7 +742,7 @@ function criarLembretes({ config, registro, runner, push, log, agora }) {
       res.end(texto);
     } catch (e) {
       log('erro', `Lembretes: não consegui ler docs/LEMBRETES.md (${e.code || e.message}).`);
-      H.erroJson(res, 500, 'O documento dos lembretes não foi encontrado no servidor. Reinstale o DG Claw Web.');
+      H.erroJson(res, 500, 'O documento dos lembretes não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
     }
   }
 

@@ -145,7 +145,7 @@ function criarAtualizacao(opcoes) {
       res.end(t);
     } catch (e) {
       log('erro', `Atualização: não consegui ler docs/ATUALIZACAO.md (${e.code || e.message}).`);
-      H.erroJson(res, 500, 'O documento do aviso de atualização não foi encontrado no servidor. Reinstale o DG Claw Web.');
+      H.erroJson(res, 500, 'O documento do aviso de atualização não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
     }
   }
 

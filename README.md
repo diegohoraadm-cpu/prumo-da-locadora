@@ -52,7 +52,6 @@ echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
 **Passo 3. Entrar na sua assinatura do Claude.** Rode `claude`, escolha o tema, escolha entrar com a
 assinatura, abra o link no navegador do computador, faça o login e cole o código de volta no terminal.
 Quando ele abrir a conversa, saia com `/exit`.
-
 ```sh
 claude
 ```
@@ -97,6 +96,8 @@ opção do instalador, está em [INSTALL.md](INSTALL.md).
 - **Canais**: chat no navegador, Telegram e, se quiser, WhatsApp ([docs/CANAL-WHATSAPP.md](docs/CANAL-WHATSAPP.md)).
 - **Modo escondido**: esconde nomes, valores e senhas da tela para mostrar uma conversa sem expor dados.
 - **Saúde e emergência**: o painel confere se cada assistente está respondendo, a Sentinela avisa você no celular e no Telegram quando um deles para (e tenta consertar sozinha), e há um roteiro de socorro ([docs/EMERGENCIA.md](docs/EMERGENCIA.md)).
+- **Manual**: o que o Prumo da Locadora faz e como se usa, página por página, aberto pelo painel em ☰ > Manual ([docs/manual/README.md](docs/manual/README.md)).
+- **Provedores**: Claude Code ou Codex, escolhidos na instalação ([docs/PROVEDORES.md](docs/PROVEDORES.md)).
 
 ## Se algo der errado
 

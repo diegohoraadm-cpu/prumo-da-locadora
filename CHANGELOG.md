@@ -9,6 +9,8 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 ### Adicionado
 
+**Vários colaboradores no mesmo agente.** Antes, cada agente aceitava um colaborador só, e um segundo convite era recusado até você revogar o primeiro. Agora você convida quantas pessoas quiser para o mesmo agente. Na tela **Convidar colaborador** cada pessoa aparece num cartão, com os botões de mandar o convite de novo e de revogar o acesso, e o formulário para convidar mais alguém fica sempre abaixo. Revogar ou reenviar o convite de uma pessoa não mexe nas outras. Cada pessoa continua acessando um agente só, e as mensagens de cada uma chegam ao agente marcadas com o nome e o e-mail de quem falou. Nada precisa ser feito para atualizar.
+
 **Aba Pedidos na Mesa: a fila de tudo o que você pediu aos agentes.** A Mesa (`/mesa`) ganha uma aba nova, a primeira e a que
 abre por padrão. Cada pedido seu a um agente vira um item, na ordem em que chegou, com o estado: fazendo, esperando você (com o
 motivo), entregue, feito ou cancelado. O agente abre o item antes de começar e vai movendo enquanto trabalha. Quando ele marca
@@ -68,8 +70,6 @@ Comando que pode levar senha ou chave aparece só com o nome do programa, sem os
 Nesta versão há uma instrução nova para o Admin, que explica a tela Logs e pede que ele não leia o conteúdo dos logs. Ela
 precisa entrar nas instruções dele sem apagar o que você já personalizou. O histórico que os agentes já têm aparece sozinho
 na tela, sem migração e sem nada a configurar.
-
-**Vários colaboradores no mesmo agente.** Antes, cada agente aceitava um colaborador só, e um segundo convite era recusado até você revogar o primeiro. Agora você convida quantas pessoas quiser para o mesmo agente. Na tela **Convidar colaborador** cada pessoa aparece num cartão, com os botões de mandar o convite de novo e de revogar o acesso, e o formulário para convidar mais alguém fica sempre abaixo. Revogar ou reenviar o convite de uma pessoa não mexe nas outras. Cada pessoa continua acessando um agente só, e as mensagens de cada uma chegam ao agente marcadas com o nome e o e-mail de quem falou. Nada precisa ser feito para atualizar.
 
 **Correção na rede dos containers no Ubuntu 26.04: netavark em modo iptables.** No Ubuntu 26.04 o netavark usa nftables por padrão, e o `ufw` (que o instalador liga) bloqueia o encaminhamento de pacotes, então nenhum container de agente tinha internet (a construção da imagem falhava com "Temporary failure resolving archive.ubuntu.com"). O instalador agora grava `/etc/containers/containers.conf.d/50-dgclaw-firewall-iptables.conf` com `firewall_driver = "iptables"`, que é o modo em que a cerca de rede do Prumo da Locadora foi desenhada. No Ubuntu 24.04 isso não muda nada. Se você já definiu `firewall_driver` em qualquer arquivo do podman (`/etc/containers/containers.conf`, a pasta `containers.conf.d` ou o padrão em `/usr/share/containers`), o instalador não grava o dele e não mexe no seu: só avisa quando o valor não é `iptables`.
 

@@ -87,6 +87,21 @@ assistente: ele confirma que é você
 Travou em algum passo? Veja [Se algo der errado](#se-algo-der-errado). O guia técnico completo, com cada
 opção do instalador, está em [INSTALL.md](INSTALL.md).
 
+### Instalar numa VPS que já tem nginx (ou outro proxy)
+
+Se o servidor já usa as portas 80 e 443, instale atrás do proxy que você já tem:
+
+```sh
+sudo ./install.sh --usuario maria --dominio painel.minhaempresa.com.br --proxy-existente --faixa-rede 10.91.0.0/16
+```
+
+Nesse modo o instalador não instala o Caddy nem mexe no ufw. O Prumo da Locadora escuta só em `127.0.0.1:8300`
+(ou na porta de `--porta-painel`) e, no fim, o instalador imprime o trecho pronto para o nginx e as linhas
+para um túnel da Cloudflare. O domínio é obrigatório, e o modo fica guardado para as próximas execuções e
+para `sudo dgclaw atualizar`. Quem já tem podman ou docker no servidor deve usar `--faixa-rede` (sugestão:
+`10.91.0.0/16`) para os agentes não disputarem IPs com outras redes. Os detalhes estão em
+[INSTALL.md](INSTALL.md#instalar-numa-vps-que-já-tem-nginx-ou-outro-proxy).
+
 ## O que ele faz
 
 - **Admin**: cria e administra os outros assistentes por conversa, e cuida do servidor.
@@ -125,8 +140,11 @@ confere que senha, memória, conversas e cofres continuam iguais. No terminal, o
 
 ## Como funciona por dentro
 
-O navegador chega ao Caddy (HTTPS), que entrega o painel. O painel autentica você e passa cada mensagem
-ao assistente certo, que mantém viva a sessão do Claude Code ou do Codex. Descrição completa em
+O navegador chega ao Caddy (portas 80 e 443, HTTPS), que entrega o Prumo da Locadora em `127.0.0.1`. (Com
+`--proxy-existente`, quem faz esse papel é o seu nginx ou túnel.) O Prumo da Locadora
+autentica você e encaminha cada mensagem ao **runner** correto, que mantém viva a sessão do Claude Code ou
+do Codex. O runner do Admin roda no servidor; o de cada agente roda dentro do container do agente. As
+respostas voltam pelo mesmo caminho para o chat. A descrição completa está em
 [docs/ARQUITETURA.md](docs/ARQUITETURA.md).
 
 ```mermaid

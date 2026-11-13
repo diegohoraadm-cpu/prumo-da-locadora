@@ -7,7 +7,26 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 ## [Não lançado]
 
+### Corrigido
+
+- O vigia de saúde não confunde mais o resumo da compactação com uma mensagem sua sem resposta. Antes, depois de cada compactação, o agente era reiniciado várias vezes seguidas sem motivo e o painel avisava que ele não estava respondendo.
+- Quando o texto entregue ao agente demora a ser aceito, o sistema continua tentando enviar por mais de um minuto em vez de deixá-lo parado na caixa de entrada.
+
 ### Adicionado
+
+**Nova tela Logs no Admin.** No menu do Admin, o item **Logs** (endereço `/logs`) mostra, do mais novo para o mais antigo,
+tudo o que cada agente fez: mensagens, comandos, arquivos e ferramentas, tanto dos agentes que usam o Claude quanto dos que
+usam o Codex. Há filtros por período, tipo, sessão e palavra, e cada registro abre para mostrar o comando, o arquivo e o
+resultado. O texto sai com chaves e senhas escondidas, e a tela diz com clareza quando uma fonte não existe ou não pôde ser
+lida, em vez de parecer que o agente não fez nada. Só você, no navegador, vê os logs: colaboradores e agentes não têm acesso.
+Comando que pode levar senha ou chave aparece só com o nome do programa, sem os argumentos. A tela ajuda a conferir, mas não prova nada, porque um agente pode reescrever a própria casa.
+
+### Como atualizar (logs dos agentes)
+
+Nesta versão há uma instrução nova para o Admin, que explica a tela Logs e pede que ele não leia o conteúdo dos logs. Ela
+precisa entrar nas instruções dele sem apagar o que você já personalizou. O histórico que os agentes já têm aparece sozinho
+na tela, sem migração e sem nada a configurar.
+
 
 **Vários colaboradores no mesmo agente.** Antes, cada agente aceitava um colaborador só, e um segundo convite era recusado até você revogar o primeiro. Agora você convida quantas pessoas quiser para o mesmo agente. Na tela **Convidar colaborador** cada pessoa aparece num cartão, com os botões de mandar o convite de novo e de revogar o acesso, e o formulário para convidar mais alguém fica sempre abaixo. Revogar ou reenviar o convite de uma pessoa não mexe nas outras. Cada pessoa continua acessando um agente só, e as mensagens de cada uma chegam ao agente marcadas com o nome e o e-mail de quem falou. Nada precisa ser feito para atualizar.
 

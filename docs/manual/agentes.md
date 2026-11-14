@@ -42,6 +42,14 @@ Quem cria e cuida dos agentes é o Admin, a sessão administradora do servidor. 
 **Limites.** Pedido rápido não vira tarefa. Os estados são `fazendo`, `travada`, `esperando_dono`, `concluida` e `cancelada`. Tarefa em `fazendo` sem atualização há 45 minutos aparece como "parada?". Tarefa que espera o dono avisa o aparelho dele. O agente só mexe nas próprias tarefas. Progresso não medido aparece vazio, nunca como zero.
 **Se der erro.** Os erros da rota vêm em português com o motivo. Mais em [../../web/docs/MESA.md](../../web/docs/MESA.md) e [../MESA-DE-TAREFAS.md](../MESA-DE-TAREFAS.md).
 
+## Fila de pedidos (aba Pedidos da Mesa)
+
+**O que é.** A primeira aba da Mesa (`/mesa`): cada pedido do dono a um agente vira um item, na ordem em que chegou, com o estado `fazendo`, `esperando_dono`, `entregue`, `feito` ou `cancelado`. O agente abre o item antes de começar e o move enquanto trabalha; o dono acompanha, abre o item entregue, marca como feito ou cancela.
+**Como pedir.** "O que eu pedi e ainda não foi entregue?", "me mostra a fila de pedidos". Pelo lado do agente, o comando é `dgclaw-mesa pedido` (`criar`, `fazendo`, `esperar`, `entregar`, `cancelar`, `listar`, `ver`).
+**Precisa de.** Nada. A fila fica na pasta de dados do Web, sem serviço externo.
+**Limites.** O agente nunca marca `feito`: o pedido entregue vira `feito` quando o dono abre o item na tela ou escreve na conversa daquele agente depois da entrega. O agente só vê e mexe nos próprios pedidos. A lista padrão mostra os abertos e os fechados de hoje e de ontem; o resto fica arquivado e sai com "Ver arquivados". Não existe vigia que abra sozinho o item que o agente esqueceu. A regra "Fila de pedidos" entra nos agentes antigos regravando a identidade deles (`dgclaw agente identidade <agente>`).
+**Se der erro.** Os erros da rota vêm em português com o motivo. Mais em [../../web/docs/PEDIDOS.md](../../web/docs/PEDIDOS.md).
+
 ## Quadro de avisos
 
 **O que é.** Recados curtos entre os agentes: uma decisão do dono, uma preferência, uma entrega, um aprendizado, uma referência, um pedido ou o resumo do dia. O dono vê o quadro em `/avisos` e também pode postar e retirar avisos.
@@ -93,7 +101,7 @@ Quem cria e cuida dos agentes é o Admin, a sessão administradora do servidor. 
 **O que é.** O dono convida uma pessoa para conversar com um agente de trabalho. Ela usa a conversa, as sessões e as páginas do painel (para ler), mas não o Admin, os outros agentes, o cofre, as chaves de API, a conta de IA, os canais nem a Tela.
 **Como convidar.** Só o dono convida, pela tela `/colaboradores` (menu ☰, item **Convidar colaborador**, com o agente escolhido). Digite o e-mail da pessoa, toque em **Convidar** e mande o texto do convite (ou deixe o e-mail sair, se o SMTP estiver configurado). A senha temporária vale 7 dias e a pessoa cria a própria senha em `/trocar-senha` no primeiro acesso.
 **O Admin não convida.** A rota `/api/v1/colaboradores` só aceita a sessão do dono no navegador: pedido que chega pela caixa de um agente (`dgclaw-api`) leva 403, e não achei no código outro jeito de o Admin chamar essa rota. O texto de instrução do Admin ainda sugere a API, mas vale o que está aqui: o Admin orienta o dono a usar a tela.
-**Limites.** Um colaborador por agente e um agente por colaborador. O Admin nunca é compartilhado. As mensagens dele chegam ao agente marcadas como vindas de um colaborador. O dono revoga o acesso a qualquer momento e a sessão cai na hora.
+**Limites.** Um agente pode ter vários colaboradores, e cada colaborador acessa um agente só. O Admin nunca é compartilhado. As mensagens dele chegam ao agente marcadas como vindas de um colaborador. O dono revoga o acesso a qualquer momento e a sessão cai na hora.
 **Se der erro.** E-mail não enviado: a tela mostra o motivo e o texto do convite para copiar. Mais em [../../web/docs/COLABORADORES.md](../../web/docs/COLABORADORES.md). A criação do colaborador pelo Admin (`dgclaw colaborador`) está em [em-desenvolvimento.md](em-desenvolvimento.md).
 
 ## Skills

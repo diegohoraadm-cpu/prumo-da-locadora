@@ -42,7 +42,7 @@ test('/conectar sem o arquivo da tela explica o que faltou', async () => {
   try {
     const r = await s.t.c.get('/conectar', { headers: { Accept: 'text/html' } });
     assert.equal(r.status, 500);
-    assert.match(r.texto, /Reinstale o DG Claw Web/);
+    assert.match(r.texto, /Reinstale o Prumo da Locadora Web/);
   } finally { await s.fechar(); }
 });
 

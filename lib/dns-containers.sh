@@ -1,12 +1,12 @@
 # shellcheck shell=bash
-# lib/dns-containers.sh: DNS dos containers do DG Claw (carregado com source por bin/dgclaw e por
+# lib/dns-containers.sh: DNS dos containers do Prumo da Locadora (carregado com source por bin/dgclaw e por
 # scripts/teste-isolamento.sh).
 #
 # As redes dos agentes sao criadas com --disable-dns, entao o container herda o DNS do host. Em
 # servidor fisico dentro de uma rede de empresa (clinica, escritorio) esse DNS costuma ficar numa
 # rede privada (ex.: 192.168.25.6), que a cerca dos agentes (lib/firewall.sh) bloqueia de proposito:
 # o agente ficava sem DNS. Em vez de abrir excecao na cerca (o agente nunca deve tocar a rede
-# interna), so os containers do DG Claw recebem DNS publico, por `--dns`. Nada muda no DNS global
+# interna), so os containers do Prumo da Locadora recebem DNS publico, por `--dns`. Nada muda no DNS global
 # do podman nem nos containers de outros usos do servidor.
 
 # ip_na_faixa_bloqueada <ipv4>: verdadeiro se o IP cai numa faixa que a cerca (lib/firewall.sh)

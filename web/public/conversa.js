@@ -692,7 +692,7 @@ function lcAbre(manual, semConferir) {
   // Colaborador conecta a conta pela página Conectar conta (que confere no servidor se o agente está sem conta).
   // Aqui só avisa, uma vez, em vez de abrir o cartão do dono.
   if (window.DGPapel && window.DGPapel.colaborador) {
-    if (!lcAvisouColab) { lcAvisouColab = true; mostraAviso('O agente ainda não tem uma conta de IA conectada. Você pode conectar a sua em Conectar conta, no menu. Se o login expirou e a conta não é sua, avise o dono do DG Claw.'); }
+    if (!lcAvisouColab) { lcAvisouColab = true; mostraAviso('O agente ainda não tem uma conta de IA conectada. Você pode conectar a sua em Conectar conta, no menu. Se o login expirou e a conta não é sua, avise o dono do Prumo da Locadora.'); }
     return;
   }
   if (lc.aberto) { if (manual) { lc.manual = true; lc.dispensado = false; } lcDesenha(); return; }

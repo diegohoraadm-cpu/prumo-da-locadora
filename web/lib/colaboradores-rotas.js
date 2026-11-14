@@ -69,7 +69,7 @@ function criarColaboradoresRotas({ colaboradores, auth, registro, email, config,
     if (extra) return { base: extra, aviso: null };
     return {
       base: `http://127.0.0.1:${config.porta}`,
-      aviso: 'Este DG Claw não tem domínio configurado, então o link do convite é o endereço local e só abre no próprio servidor. Configure um domínio (sudo dgclaw dominio trocar <nome>) ou passe o endereço de acesso à pessoa.',
+      aviso: 'Este Prumo da Locadora não tem domínio configurado, então o link do convite é o endereço local e só abre no próprio servidor. Configure um domínio (sudo dgclaw dominio trocar <nome>) ou passe o endereço de acesso à pessoa.',
     };
   }
 

@@ -1,10 +1,10 @@
-// Hooks nativos do Codex para os agentes do DG Claw.
+// Hooks nativos do Codex para os agentes do Prumo da Locadora.
 //
 // O Claude recebe os hooks do plugin (recall de memória, quadro de avisos, contexto de início) pelo
 // plugin e os `promptHooks` pelo `--settings`. O Codex 0.163 tem hooks nativos, mas só roda um hook
-// depois de CONFIADO. Este módulo faz as duas metades, só com o que o DG Claw distribui:
+// depois de CONFIADO. Este módulo faz as duas metades, só com o que o Prumo da Locadora distribui:
 //
-//   1. grava (mesclando) o `<CODEX_HOME>/hooks.json` com os hooks do DG Claw;
+//   1. grava (mesclando) o `<CODEX_HOME>/hooks.json` com os hooks do Prumo da Locadora;
 //   2. grava no `<CODEX_HOME>/config.toml` a confiança SÓ desses hooks: uma seção
 //      `[hooks.state."<arquivo>:<evento>:<grupo>:<posição>"]` com `trusted_hash`.
 //
@@ -24,7 +24,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { log } from "../logger.js";
 
-/** Marca os comandos que são do DG Claw: tudo o que tem esta marca (no começo ou depois do `cd '<pasta>' && `), no hooks.json, é regravado a cada spawn. */
+/** Marca os comandos que são do Prumo da Locadora: tudo o que tem esta marca (no começo ou depois do `cd '<pasta>' && `), no hooks.json, é regravado a cada spawn. */
 export const MARCA_DO_DGCLAW = "DGCLAW_MOTOR=codex ";
 
 export type EventoDoCodex = "SessionStart" | "UserPromptSubmit";
@@ -64,7 +64,7 @@ export function hashDoHook(h: { evento: EventoDoCodex; matcher?: string; command
 }
 
 /**
- * Acha a raiz do plugin do DG Claw (a pasta que tem `hooks/dispatch.ts`) subindo a partir deste
+ * Acha a raiz do plugin do Prumo da Locadora (a pasta que tem `hooks/dispatch.ts`) subindo a partir deste
  * arquivo: no container é `/opt/dgclaw/app` (da imagem, de root, fora da casa do agente); no
  * repositório é a raiz dele. Nunca usa `.dgclaw/plugin`, que fica na casa do agente e ele pode escrever.
  */
@@ -108,7 +108,7 @@ export interface EntradaDeHooks {
    * como workspace e ler arquivos dele.
    */
   workspace: string;
-  /** O agente está num workspace servidor do DG Claw (tem `.dgclaw/config.sh`). */
+  /** O agente está num workspace servidor do Prumo da Locadora (tem `.dgclaw/config.sh`). */
   temWorkspace: boolean;
   temBun: boolean;
   /** O `python3` está no PATH do agente (o hook dos promptHooks é um script Python). */
@@ -223,12 +223,12 @@ interface Grupo {
 }
 type Arquivo = { hooks?: Record<string, Grupo[]>; [k: string]: unknown };
 
-/** Parece comando do DG Claw: tem a marca em qualquer lugar. Só serve para DESCARTAR, nunca para confiar. */
+/** Parece comando do Prumo da Locadora: tem a marca em qualquer lugar. Só serve para DESCARTAR, nunca para confiar. */
 export const pareceDoDgclaw = (c: unknown): boolean => typeof c === "string" && c.includes(MARCA_DO_DGCLAW.trim());
 
 /**
- * Mescla os hooks do DG Claw no objeto do hooks.json. Nada que venha do arquivo existente ganha
- * confiança: o conjunto do DG Claw é só o que o runner calculou (`hooks`). Entradas com a marca do DG
+ * Mescla os hooks do Prumo da Locadora no objeto do hooks.json. Nada que venha do arquivo existente ganha
+ * confiança: o conjunto do Prumo da Locadora é só o que o runner calculou (`hooks`). Entradas com a marca do DG
  * Claw que não são exatamente um dos comandos calculados (formato antigo, guarda de sessão, forjadas)
  * são trocadas pelos comandos calculados ou descartadas, e nunca mantidas.
  *
@@ -586,7 +586,7 @@ function conferirComTomllib(original: string, novo: string, itens: Array<{ chave
   if (!j.originalValido) return; // já era inválido antes de nós: não dá para comparar
   if (!j.novoValido) throw new TomlNaoEditavel(`o config.toml ficaria inválido depois da edição (${j.erroNovo ?? "erro de TOML"}); não gravei`);
   if (!j.hashesOk) throw new TomlNaoEditavel("depois da edição o trusted_hash lido pelo TOML não bate com o esperado; não gravei");
-  if (!j.soHash) throw new TomlNaoEditavel("a edição mudaria algo além do trusted_hash dos hooks do DG Claw; não gravei");
+  if (!j.soHash) throw new TomlNaoEditavel("a edição mudaria algo além do trusted_hash dos hooks do Prumo da Locadora; não gravei");
 }
 
 /**
@@ -660,7 +660,7 @@ export interface ResultadoDosHooks {
 }
 
 /**
- * Instala os hooks do DG Claw no CODEX_HOME e confia só neles. Idempotente: rodar de novo não
+ * Instala os hooks do Prumo da Locadora no CODEX_HOME e confia só neles. Idempotente: rodar de novo não
  * duplica e regrava a confiança se o conteúdo do hook mudou. Falhar aqui não derruba o spawn: o
  * agente sobe sem os hooks (o log diz o que fazer).
  */
@@ -729,7 +729,7 @@ function instalarComTrava(opts: OpcoesDeInstalacao): ResultadoDosHooks {
         if (Date.now() > limite) {
           log.aviso(
             opts.area,
-            `a trava ${trava} continuou ocupada por ${Math.round(espera / 1000)} s (outra sessão está instalando os hooks, ou um runner caiu no meio): não gravei os hooks do DG Claw nem a confiança da pasta nesta subida: o agente sobe sem o recall de memória e sem o quadro de avisos, e o Codex pode abrir perguntando se confia na pasta (responda 1 no terminal do painel). ` +
+            `a trava ${trava} continuou ocupada por ${Math.round(espera / 1000)} s (outra sessão está instalando os hooks, ou um runner caiu no meio): não gravei os hooks do Prumo da Locadora nem a confiança da pasta nesta subida: o agente sobe sem o recall de memória e sem o quadro de avisos, e o Codex pode abrir perguntando se confia na pasta (responda 1 no terminal do painel). ` +
               `Reinicie o agente; se a mensagem se repetir, apague a pasta ${trava} (ela só marca "instalando")`,
           );
           return { instalados: 0, motivo: "trava ocupada" };
@@ -738,7 +738,7 @@ function instalarComTrava(opts: OpcoesDeInstalacao): ResultadoDosHooks {
       }
     }
   } catch (err) {
-    log.aviso(opts.area, `não consegui criar a trava dos hooks em ${trava} (${err instanceof Error ? err.message : String(err)}): não gravei os hooks do DG Claw. Conferir a permissão de escrita em ${opts.home}`);
+    log.aviso(opts.area, `não consegui criar a trava dos hooks em ${trava} (${err instanceof Error ? err.message : String(err)}): não gravei os hooks do Prumo da Locadora. Conferir a permissão de escrita em ${opts.home}`);
     return { instalados: 0, motivo: "sem trava" };
   }
   try {
@@ -810,15 +810,15 @@ function instalarSemTrava(opts: OpcoesDeInstalacao): ResultadoDosHooks {
     if (temWorkspace && raiz && !temBun) {
       log.aviso(
         area,
-        `o agente está num workspace do DG Claw mas não achei o "bun" no PATH, então o Codex fica sem o recall de memória, o quadro de avisos e o contexto de início. ` +
+        `o agente está num workspace do Prumo da Locadora mas não achei o "bun" no PATH, então o Codex fica sem o recall de memória, o quadro de avisos e o contexto de início. ` +
           `O bun vem na imagem do agente (npm i -g bun); conferir "command -v bun" dentro do container`,
       );
     } else if (temWorkspace && !raiz) {
-      log.aviso(area, `não achei hooks/dispatch.ts perto do runner, então o Codex fica sem os hooks do DG Claw. Reinstalar ou atualizar o DG Claw`);
+      log.aviso(area, `não achei hooks/dispatch.ts perto do runner, então o Codex fica sem os hooks do Prumo da Locadora. Reinstalar ou atualizar o Prumo da Locadora`);
     }
     for (const f of [arquivo, toml]) {
       if (ehLink(f)) {
-        log.aviso(area, `${f} é um atalho (link simbólico): não gravei os hooks do DG Claw para não escrever em outro lugar. Troque o atalho por um arquivo comum e reinicie o agente`);
+        log.aviso(area, `${f} é um atalho (link simbólico): não gravei os hooks do Prumo da Locadora para não escrever em outro lugar. Troque o atalho por um arquivo comum e reinicie o agente`);
         if (f !== toml) soPasta();
         else if (opts.confiancaDaPasta) log.aviso(area, `${toml} é um atalho (link simbólico): também não gravei a confiança da pasta ${opts.confiancaDaPasta}`);
         return { instalados: 0, motivo: "atalho" };
@@ -841,7 +841,7 @@ function instalarSemTrava(opts: OpcoesDeInstalacao): ResultadoDosHooks {
       } catch (err) {
         log.aviso(
           area,
-          `${arquivo} não é um JSON válido (${err instanceof Error ? err.message : String(err)}): não mexi nele e o Codex fica sem os hooks do DG Claw. ` +
+          `${arquivo} não é um JSON válido (${err instanceof Error ? err.message : String(err)}): não mexi nele e o Codex fica sem os hooks do Prumo da Locadora. ` +
             `Conserte ou apague o arquivo (ele guarda só hooks) e reinicie o agente`,
         );
         soPasta();
@@ -854,12 +854,12 @@ function instalarSemTrava(opts: OpcoesDeInstalacao): ResultadoDosHooks {
     }
     const { novo, confiar, descartados, deslocados } = mesclarHooks(atual, hooks, arquivo);
     if (descartados > 0) {
-      log.info(area, `troquei ou tirei ${descartados} entrada(s) do hooks.json que tinham a marca do DG Claw mas não eram um dos comandos que o runner calcula (formato antigo ou escritas à mão); elas não recebem confiança`);
+      log.info(area, `troquei ou tirei ${descartados} entrada(s) do hooks.json que tinham a marca do Prumo da Locadora mas não eram um dos comandos que o runner calcula (formato antigo ou escritas à mão); elas não recebem confiança`);
     }
     if (deslocados > 0) {
       log.aviso(
         area,
-        `${deslocados} hook(s) seu(s) em ${arquivo} mudaram de posição porque entradas antigas do DG Claw que vinham antes deles saíram; o Codex liga a confiança à posição, então eles voltam a pedir confiança UMA vez. ` +
+        `${deslocados} hook(s) seu(s) em ${arquivo} mudaram de posição porque entradas antigas do Prumo da Locadora que vinham antes deles saíram; o Codex liga a confiança à posição, então eles voltam a pedir confiança UMA vez. ` +
           `Confie de novo neles com /hooks no Codex`,
       );
     }
@@ -877,7 +877,7 @@ function instalarSemTrava(opts: OpcoesDeInstalacao): ResultadoDosHooks {
           if (!(err instanceof TomlNaoEditavel)) throw err;
           log.aviso(
             area,
-            `não gravei os hooks do DG Claw no Codex: ${err.message}. O config.toml (${toml}) ficou como estava (salvo a confiança da pasta) e o agente sobe sem o recall de memória e sem o quadro de avisos. ` +
+            `não gravei os hooks do Prumo da Locadora no Codex: ${err.message}. O config.toml (${toml}) ficou como estava (salvo a confiança da pasta) e o agente sobe sem o recall de memória e sem o quadro de avisos. ` +
               `Para ligar, deixe a confiança de cada hook como uma seção comum [hooks.state."<chave>"] (ou apague a definição que está em outra forma) e reinicie o agente`,
           );
           soPasta();
@@ -892,7 +892,7 @@ function instalarSemTrava(opts: OpcoesDeInstalacao): ResultadoDosHooks {
   } catch (err) {
     log.aviso(
       area,
-      `não consegui instalar os hooks do DG Claw no Codex (${arquivo}): ${err instanceof Error ? err.message : String(err)}. ` +
+      `não consegui instalar os hooks do Prumo da Locadora no Codex (${arquivo}): ${err instanceof Error ? err.message : String(err)}. ` +
         `O agente sobe sem o recall de memória e sem o quadro de avisos. Conferir a permissão de escrita em ${home}`,
     );
     return { instalados: 0, motivo: "erro de escrita" };

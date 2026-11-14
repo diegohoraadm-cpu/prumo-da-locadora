@@ -12,7 +12,7 @@ dele, como `painel.minhaempresa.com.br`. Quem pede quase nunca é técnico: fale
 vez, e só mexa no servidor depois que o DNS estiver certo.
 
 > Se `dgclaw dominio` disser "atras de proxy existente", o HTTPS é do nginx ou do túnel do dono, não
-> do Caddy do DG Claw. Nesse caso `dgclaw dominio trocar <nome>` só grava o nome e imprime os trechos
+> do Caddy do Prumo da Locadora. Nesse caso `dgclaw dominio trocar <nome>` só grava o nome e imprime os trechos
 > novos para ele atualizar o proxy dele (o DNS e o certificado são dele); os passos abaixo sobre o IP
 > da VPS e o Caddy não se aplicam.
 

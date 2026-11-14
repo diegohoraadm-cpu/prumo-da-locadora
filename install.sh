@@ -27,7 +27,7 @@
 #  11. testa de ponta a ponta e da o primeiro boot ao Admin
 #
 # Servidor que ja tem nginx, Caddy proprio ou tunel nas portas 80 e 443: use --proxy-existente.
-# O instalador nao instala nem configura Caddy e nao mexe no ufw; o DG Claw Web escuta so em
+# O instalador nao instala nem configura Caddy e nao mexe no ufw; o Prumo da Locadora Web escuta so em
 # 127.0.0.1:<porta do painel> e, no fim, o instalador imprime o trecho para colar no seu proxy.
 # O modo e a porta ficam no dgclaw.env (DGCLAW_PROXY_EXISTENTE, DGCLAW_PORTA_PAINEL) e valem nas
 # proximas execucoes e em `dgclaw atualizar`; --sem-proxy-existente volta ao modo normal.
@@ -91,10 +91,10 @@ Instala o Prumo da Locadora neste servidor: painel com HTTPS, Admin e a base par
   --provedor claude|codex
                         com qual assinatura o Admin trabalha (padrao: o que estiver logado aqui)
   --proxy-existente     para servidor que ja tem nginx, Caddy ou tunel nas portas 80 e 443: nao instala
-                        Caddy, nao mexe no ufw, deixa o DG Claw Web so em 127.0.0.1 e mostra no fim o
+                        Caddy, nao mexe no ufw, deixa o Prumo da Locadora Web so em 127.0.0.1 e mostra no fim o
                         trecho para o seu proxy. Exige --dominio. Fica valendo nas proximas execucoes
-  --sem-proxy-existente volta ao modo normal (Caddy do DG Claw) numa nova execucao
-  --porta-painel <N>    porta local do DG Claw Web, de 1024 a 65535 (padrao 8300)
+  --sem-proxy-existente volta ao modo normal (Caddy do Prumo da Locadora) numa nova execucao
+  --porta-painel <N>    porta local do Prumo da Locadora Web, de 1024 a 65535 (padrao 8300)
   --faixa-rede <A.B.0.0/16>
                         faixa de IPs das redes dos agentes (padrao 10.89.0.0/16). Se a maquina ja tem
                         podman ou docker em uso, escolha outra, por exemplo 10.91.0.0/16. Nao muda
@@ -164,7 +164,7 @@ validar_args() {
     # As duas flags opostas so aparecem juntas por engano; o ultimo valor ganharia em silencio.
     if [ "$ARG_PROXY_EXISTENTE_AMBAS" = 1 ]; then
         falha "--proxy-existente e --sem-proxy-existente foram usadas juntas." \
-            "use so uma: --proxy-existente para ficar atras do seu nginx/tunel, --sem-proxy-existente para voltar ao Caddy do DG Claw."
+            "use so uma: --proxy-existente para ficar atras do seu nginx/tunel, --sem-proxy-existente para voltar ao Caddy do Prumo da Locadora."
     fi
     [ -n "$USUARIO" ] || falha "faltou dizer o usuario do painel (--usuario)." \
         "rode de novo com --usuario <nome>, por exemplo: sudo ./install.sh --usuario maria"
@@ -220,7 +220,7 @@ resolver_opcoes_rede() {
     if [ -n "$TUNEL_ARG" ]; then v="$TUNEL_ARG"; elif [ "$(env_valor DGCLAW_ATRAS_DE_TUNEL)" = 1 ]; then v=1; else v=0; fi
     if [ "$PROXY_EXISTENTE" = 1 ] && [ "$v" = 1 ]; then
         falha "--proxy-existente e --atras-de-tunel estao ligados ao mesmo tempo (por opcao ou gravados em ${DG_ETC#"$R"}/dgclaw.env), e um exclui o outro: o primeiro nao instala o Caddy, e o segundo depende do Caddy para o certificado interno." \
-            "use so um dos dois. Para ficar com o seu proxy e desligar o tunel gravado, rode com --sem-tunel; para ficar com o tunel do DG Claw e desligar o proxy gravado, rode com --sem-proxy-existente."
+            "use so um dos dois. Para ficar com o seu proxy e desligar o tunel gravado, rode com --sem-tunel; para ficar com o tunel do Prumo da Locadora e desligar o proxy gravado, rode com --sem-proxy-existente."
     fi
 }
 
@@ -339,7 +339,7 @@ ler_senha() {
 # --- 1. checagens ---------------------------------------------------------------
 pular_checagens() { [ -n "$R" ] && [ "${DGCLAW_PULAR_CHECAGENS:-}" = 1 ]; }
 
-# porta_painel_e_nossa <nome do processo> <porta> <pid>: quem escuta na porta do painel e o DG Claw Web
+# porta_painel_e_nossa <nome do processo> <porta> <pid>: quem escuta na porta do painel e o Prumo da Locadora Web
 # de uma instalacao anterior? Aqui "nosso" quer dizer: processo node, a unidade dgclaw-web ativa, a
 # porta igual a que o dgclaw.env anterior guardou (8300 se nao guardou nada) e o PID do processo
 # dentro da unidade dgclaw-web.service (lido em $R/proc/<pid>/cgroup). Sem o PID, ou sem o cgroup,
@@ -382,8 +382,8 @@ checar_portas() {
         fi
         if [ "$porta" != 80 ] && [ "$porta" != 443 ]; then continue; fi
         if [ "$PROXY_EXISTENTE" = 1 ]; then
-            # Modo proxy: quem ocupa a 80/443 e justamente o proxy que vai receber o DG Claw.
-            aviso "a porta $porta esta com ${nome:-um processo que nao consegui identificar}. Tudo bem: com --proxy-existente ela continua com o seu proxy, e o DG Claw fica so em 127.0.0.1:$PORTA_PAINEL."
+            # Modo proxy: quem ocupa a 80/443 e justamente o proxy que vai receber o Prumo da Locadora.
+            aviso "a porta $porta esta com ${nome:-um processo que nao consegui identificar}. Tudo bem: com --proxy-existente ela continua com o seu proxy, e o Prumo da Locadora fica so em 127.0.0.1:$PORTA_PAINEL."
             continue
         fi
         # Caddy na 80/443 e o nosso proprio servidor de uma instalacao anterior.
@@ -395,7 +395,7 @@ checar_portas() {
             "o HTTPS do painel precisa das portas 80 e 443. Pare o programa que as usa (por exemplo: systemctl stop nginx apache2), ou use outro servidor para ele; depois rode de novo. Se voce quer MANTER esse programa (nginx, Caddy ou tunel) como porta de entrada, rode com --proxy-existente."
     fi
     if [ -n "$painel_ocupado" ]; then
-        falha "a porta $PORTA_PAINEL, que o DG Claw Web usa em 127.0.0.1, ja esta em uso por $painel_ocupado." \
+        falha "a porta $PORTA_PAINEL, que o Prumo da Locadora Web usa em 127.0.0.1, ja esta em uso por $painel_ocupado." \
             "escolha outra porta livre e rode de novo, por exemplo: --porta-painel 8400. Para ver quem usa: ss -ltnp | grep :$PORTA_PAINEL"
     fi
     if [ "$PROXY_EXISTENTE" = 1 ]; then
@@ -441,7 +441,7 @@ agente_registrado() {
     fi
 }
 
-# rede_e_nossa <nome> <label dgclaw.v1>: a rede do podman e do DG Claw v1? Sim se tem o label
+# rede_e_nossa <nome> <label dgclaw.v1>: a rede do podman e do Prumo da Locadora v1? Sim se tem o label
 # dgclaw.v1=1 (o que o dgclaw agente criar poe), se e a sonda do teste de isolamento, ou se e
 # exatamente dgclaw-<slug> de um agente do agentes.json (redes criadas antes do label). Outro sistema
 # pode ter redes que tambem comecam com "dgclaw-" (dgclaw-net-*): essas NAO sao nossas e entram na
@@ -454,7 +454,7 @@ rede_e_nossa() {
 
 # checar_faixa_rede: antes de mexer em qualquer coisa, confere que a faixa dos agentes
 # (1) nao troca de lugar debaixo de agentes que ja existem e (2) nao pisa em rede de outro sistema
-# (podman fora do DG Claw, docker, VPN, a rede do provedor). Duas redes na mesma faixa fazem o
+# (podman fora do Prumo da Locadora, docker, VPN, a rede do provedor). Duas redes na mesma faixa fazem o
 # trafego dos agentes ir parar no lugar errado, e isso so aparece depois, como erro estranho.
 # NAO e pulada em pular_checagens: nos testes roda com `podman` e `ip` falsos no PATH.
 checar_faixa_rede() {
@@ -481,7 +481,7 @@ checar_faixa_rede() {
             iface="${resto%%|*}"; rotulo="${resto#*|}"
             iface="${iface//[[:space:]]/}"; rotulo="${rotulo//[[:space:]]/}"
             if rede_e_nossa "$nome" "$rotulo"; then
-                # Rede de agente do DG Claw v1: o que importa e se ela esta dentro da faixa pedida.
+                # Rede de agente do Prumo da Locadora v1: o que importa e se ela esta dentro da faixa pedida.
                 ifaces_dg+="$iface "
                 subs_dg+="$subs "
                 if [ "$nome" = dgclaw-sonda ]; then continue; fi
@@ -502,7 +502,7 @@ checar_faixa_rede() {
     fi
 
     if [ -n "$fora_dg" ]; then
-        falha "ja existem redes de agentes do DG Claw fora da faixa $FAIXA_REDE:$fora_dg" \
+        falha "ja existem redes de agentes do Prumo da Locadora fora da faixa $FAIXA_REDE:$fora_dg" \
             "trocar a faixa exige recriar os agentes, e eu nao faco isso em silencio. Rode de novo sem --faixa-rede (ou com a faixa em que eles estao), ou remova os agentes antes (sudo dgclaw agente remover <agente>)."
     fi
 
@@ -517,7 +517,7 @@ checar_faixa_rede() {
                 for ((i = 1; i + 1 < ${#campos[@]}; i++)); do
                     if [ "${campos[$i]}" = dev ]; then dev="${campos[$((i + 1))]}"; break; fi
                 done
-                # Rota de uma rede de agente que o DG Claw ja criou: e nossa, por interface ou por sub-rede.
+                # Rota de uma rede de agente que o Prumo da Locadora ja criou: e nossa, por interface ou por sub-rede.
                 if [ -n "$dev" ] && [[ "$ifaces_dg" == *" $dev "* ]]; then continue; fi
                 if [[ "$subs_dg" == *" $destino "* ]]; then continue; fi
                 vistas+=" $destino"
@@ -799,7 +799,7 @@ migrar_tabela_netavark() {
         info "apaguei a tabela inet netavark, que sobrou do modo nftables; o netavark recria as regras em iptables."
         return 0
     fi
-    aviso "existe a tabela inet netavark (regras antigas do netavark em nftables) e estes containers nao estao parados:$ocupados. Por isso nao apaguei a tabela, e os containers podem continuar sem internet ate a troca. Para trocar: (1) pare cada agente com: sudo dgclaw agente parar <slug>${slugs:+ (agentes aqui:$slugs)}; (2) rode sudo ./install.sh de novo; (3) ligue de novo com: sudo dgclaw agente iniciar <slug>.${outros:+ Os containers que nao sao do DG Claw tambem precisam estar parados para a tabela sair.}"
+    aviso "existe a tabela inet netavark (regras antigas do netavark em nftables) e estes containers nao estao parados:$ocupados. Por isso nao apaguei a tabela, e os containers podem continuar sem internet ate a troca. Para trocar: (1) pare cada agente com: sudo dgclaw agente parar <slug>${slugs:+ (agentes aqui:$slugs)}; (2) rode sudo ./install.sh de novo; (3) ligue de novo com: sudo dgclaw agente iniciar <slug>.${outros:+ Os containers que nao sao do Prumo da Locadora tambem precisam estar parados para a tabela sair.}"
 }
 
 # --- 3. dominio -----------------------------------------------------------------
@@ -825,7 +825,7 @@ escolher_dominio() {
         return 0
     fi
     # Atras do seu proxy, o nome precisa existir ANTES: o nginx ou o tunel e que respondem por ele.
-    # Os enderecos gratuitos (sslip.io, hstgr.cloud) so funcionam apontando para o Caddy do DG Claw.
+    # Os enderecos gratuitos (sslip.io, hstgr.cloud) so funcionam apontando para o Caddy do Prumo da Locadora.
     if [ "$PROXY_EXISTENTE" = 1 ]; then
         falha "no modo --proxy-existente o dominio e obrigatorio: o seu nginx ou tunel precisa de um nome para responder, e eu nao escolho um por voce." \
             "informe o nome que voce vai apontar para o proxy, por exemplo: sudo ./install.sh --usuario $USUARIO --dominio painel.minhaempresa.com.br --proxy-existente"
@@ -1289,7 +1289,7 @@ configurar_firewall() {
         # estado: o ufw.conf diz se ele esta ligado). Abrir a 80/443 ou ligar o ufw sozinho podia
         # cortar o SSH de quem usa outra porta, ou liberar o que ela fechou de proposito.
         if ufw_ativo_pelo_arquivo; then
-            info "o ufw esta ligado e ficou como estava: nao criei nenhuma regra nova. A 80 e a 443 sao do seu proxy; o DG Claw escuta so em 127.0.0.1:$PORTA_PAINEL."
+            info "o ufw esta ligado e ficou como estava: nao criei nenhuma regra nova. A 80 e a 443 sao do seu proxy; o Prumo da Locadora escuta so em 127.0.0.1:$PORTA_PAINEL."
         else
             info "o ufw esta desligado ou nao existe aqui, e continua assim: nao liguei nem instalei firewall de entrada. Se voce usa outro firewall, ele e quem decide as portas 80 e 443."
         fi
@@ -1319,7 +1319,7 @@ configurar_firewall() {
 
     cat <<'FIM' | escrever_arquivo "$DG_UNITS/dgclaw-firewall.service" 644
 [Unit]
-Description=DG Claw: cerca de rede dos containers dos agentes
+Description=Prumo da Locadora: cerca de rede dos containers dos agentes
 After=network-online.target podman.service ufw.service
 Wants=network-online.target
 
@@ -1469,7 +1469,7 @@ configurar_web() {
     # Heredoc SEM aspas so para a porta entrar; o resto do texto nao tem nenhum $.
     cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-web.service" 644
 [Unit]
-Description=DG Claw Web (painel e chat)
+Description=Prumo da Locadora Web (painel e chat)
 After=network-online.target
 Wants=network-online.target
 
@@ -1666,7 +1666,7 @@ configurar_admin() {
 
     cat <<'FIM' | escrever_arquivo "$DG_UNITS/dgclaw-admin.service" 644
 [Unit]
-Description=DG Claw Admin (agente de sistema, roda como root no servidor)
+Description=Prumo da Locadora Admin (agente de sistema, roda como root no servidor)
 After=network-online.target
 Wants=network-online.target
 
@@ -1716,7 +1716,7 @@ configurar_monitor_admin() {
     criar_pasta 700 "$DG_ADMIN/.dgclaw/logs"
     cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-admin-monitor.service" 644
 [Unit]
-Description=DG Claw modo monitor dos cards do Admin
+Description=Prumo da Locadora modo monitor dos cards do Admin
 After=dgclaw-admin.service
 
 [Service]
@@ -1732,7 +1732,7 @@ ExecStart=/usr/bin/python3 $p_app/bin/dgclaw-monitor run
 FIM
     cat <<'FIM' | escrever_arquivo "$DG_UNITS/dgclaw-admin-monitor.timer" 644
 [Unit]
-Description=DG Claw modo monitor dos cards do Admin (a cada 5 minutos)
+Description=Prumo da Locadora modo monitor dos cards do Admin (a cada 5 minutos)
 
 [Timer]
 OnBootSec=5min
@@ -1764,7 +1764,7 @@ configurar_aviso_atualizacao() {
     executar chmod 600 "$DG_LIB/web/atualizacao/.trava"
     cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-checar-atualizacao.service" 644
 [Unit]
-Description=DG Claw confere se saiu versao nova (so le o GitHub, nao instala nada)
+Description=Prumo da Locadora confere se saiu versao nova (so le o GitHub, nao instala nada)
 After=network-online.target
 Wants=network-online.target
 
@@ -1784,7 +1784,7 @@ TimeoutStartSec=120
 FIM
     cat <<'FIM' | escrever_arquivo "$DG_UNITS/dgclaw-checar-atualizacao.timer" 644
 [Unit]
-Description=DG Claw confere se saiu versao nova (a cada 6 horas)
+Description=Prumo da Locadora confere se saiu versao nova (a cada 6 horas)
 
 [Timer]
 OnBootSec=15min
@@ -1814,7 +1814,7 @@ configurar_sentinela() {
     local p_app="${DG_APP#"$R"}"
     cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-sentinela.service" 644
 [Unit]
-Description=DG Claw sentinela: confere se cada agente responde e avisa o dono
+Description=Prumo da Locadora sentinela: confere se cada agente responde e avisa o dono
 
 [Service]
 Type=oneshot
@@ -1824,7 +1824,7 @@ TimeoutStartSec=1h
 FIM
     cat <<'FIM' | escrever_arquivo "$DG_UNITS/dgclaw-sentinela.timer" 644
 [Unit]
-Description=DG Claw sentinela dos agentes (a cada 10 minutos)
+Description=Prumo da Locadora sentinela dos agentes (a cada 10 minutos)
 
 [Timer]
 OnBootSec=10min
@@ -1858,7 +1858,7 @@ configurar_boletins_seguranca() {
     executar chmod 600 "$DG_LIB/web/atualizacao/.trava-boletins"
     cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-checar-boletins.service" 644
 [Unit]
-Description=DG Claw confere se saiu boletim de seguranca (so le o GitHub, nao instala nada)
+Description=Prumo da Locadora confere se saiu boletim de seguranca (so le o GitHub, nao instala nada)
 After=network-online.target
 Wants=network-online.target
 
@@ -1878,7 +1878,7 @@ TimeoutStartSec=120
 FIM
     cat <<'FIM' | escrever_arquivo "$DG_UNITS/dgclaw-checar-boletins.timer" 644
 [Unit]
-Description=DG Claw confere se saiu boletim de seguranca (a cada 1 hora)
+Description=Prumo da Locadora confere se saiu boletim de seguranca (a cada 1 hora)
 
 [Timer]
 OnBootSec=5min
@@ -1988,7 +1988,7 @@ IOSchedulingClass=idle
 CPUQuota=50%"
     cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-ronda.service" 644
 [Unit]
-Description=DG Claw ronda de seguranca (varre as falhas que afetam esta instalacao)
+Description=Prumo da Locadora ronda de seguranca (varre as falhas que afetam esta instalacao)
 After=network-online.target
 Wants=network-online.target
 
@@ -2001,13 +2001,13 @@ $cargas
 $limites
 FIM
     {
-        printf '[Unit]\nDescription=DG Claw ronda de seguranca (horarios de DGCLAW_RONDA_HORARIOS)\n\n[Timer]\n'
+        printf '[Unit]\nDescription=Prumo da Locadora ronda de seguranca (horarios de DGCLAW_RONDA_HORARIOS)\n\n[Timer]\n'
         printf '%s' "$linhas"
         printf 'RandomizedDelaySec=20min\nPersistent=true\nUnit=dgclaw-ronda.service\n\n[Install]\nWantedBy=timers.target\n'
     } | escrever_arquivo "$DG_UNITS/dgclaw-ronda.timer" 644
     cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-ronda-vigia.service" 644
 [Unit]
-Description=DG Claw confere se a ronda de seguranca terminou (e roda de novo uma vez se nao)
+Description=Prumo da Locadora confere se a ronda de seguranca terminou (e roda de novo uma vez se nao)
 After=network-online.target
 Wants=network-online.target
 
@@ -2021,7 +2021,7 @@ $limites
 FIM
     cat <<'FIM' | escrever_arquivo "$DG_UNITS/dgclaw-ronda-vigia.timer" 644
 [Unit]
-Description=DG Claw vigia da ronda de seguranca (de hora em hora)
+Description=Prumo da Locadora vigia da ronda de seguranca (de hora em hora)
 
 [Timer]
 OnCalendar=hourly
@@ -2034,7 +2034,7 @@ WantedBy=timers.target
 FIM
     cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-ronda-inventario.service" 644
 [Unit]
-Description=DG Claw refaz o inventario da ronda de seguranca (so le, nao aplica nada)
+Description=Prumo da Locadora refaz o inventario da ronda de seguranca (so le, nao aplica nada)
 
 [Service]
 Type=oneshot
@@ -2050,7 +2050,7 @@ $limites
 FIM
     cat <<'FIM' | escrever_arquivo "$DG_UNITS/dgclaw-ronda-inventario.timer" 644
 [Unit]
-Description=DG Claw inventario da ronda de seguranca (a cada 3 dias)
+Description=Prumo da Locadora inventario da ronda de seguranca (a cada 3 dias)
 
 [Timer]
 OnBootSec=40min
@@ -2067,7 +2067,7 @@ FIM
     # .<uuid>.tmp e renomeia para <uuid>.json; o rename dispara o PathChanged, e o executor ignora o que comeca com ponto.
     cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-seguranca-pedidos.path" 644
 [Unit]
-Description=DG Claw pedidos do painel para a ronda de seguranca
+Description=Prumo da Locadora pedidos do painel para a ronda de seguranca
 
 [Path]
 PathChanged=$p_lib/web/seguranca/pedidos
@@ -2080,7 +2080,7 @@ WantedBy=multi-user.target
 FIM
     cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-seguranca-pedidos.service" 644
 [Unit]
-Description=DG Claw executa os pedidos do painel para a ronda de seguranca (so os tipos aceitos, nunca comando livre)
+Description=Prumo da Locadora executa os pedidos do painel para a ronda de seguranca (so os tipos aceitos, nunca comando livre)
 
 [Service]
 Type=oneshot
@@ -2092,7 +2092,7 @@ Nice=10
 FIM
     cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-emergencia-estado.service" 644
 [Unit]
-Description=DG Claw regrava o estado do botao de emergencia para a tela do painel
+Description=Prumo da Locadora regrava o estado do botao de emergencia para a tela do painel
 
 [Service]
 Type=oneshot
@@ -2102,7 +2102,7 @@ TimeoutStartSec=120
 FIM
     cat <<'FIM' | escrever_arquivo "$DG_UNITS/dgclaw-emergencia-estado.timer" 644
 [Unit]
-Description=DG Claw estado do botao de emergencia (a cada 10 minutos)
+Description=Prumo da Locadora estado do botao de emergencia (a cada 10 minutos)
 
 [Timer]
 OnBootSec=2min
@@ -2139,7 +2139,7 @@ configurar_anonimizar() {
     fi
     cat <<'FIM' | escrever_arquivo "$DG_UNITS/dgclaw-anonimizar-instalar@.service" 644
 [Unit]
-Description=DG Claw: instalar o detector de nomes da anonimizacao (%i)
+Description=Prumo da Locadora: instalar o detector de nomes da anonimizacao (%i)
 After=network-online.target
 Wants=network-online.target
 
@@ -2164,7 +2164,7 @@ construir_imagem() {
     # O comando fica numa linha so dentro do bash -c: o systemd nao faz redirecionamento sozinho.
     cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-imagem.service" 644
 [Unit]
-Description=DG Claw: construir a imagem dos agentes
+Description=Prumo da Locadora: construir a imagem dos agentes
 After=network-online.target podman.service
 Wants=network-online.target
 
@@ -2255,9 +2255,9 @@ testar_fim() {
     fi
 
     if [ "$PROXY_EXISTENTE" = 1 ]; then
-        # O nginx ou o tunel ainda nao foram apontados para o DG Claw (isso e o ultimo passo, na
+        # O nginx ou o tunel ainda nao foram apontados para o Prumo da Locadora (isso e o ultimo passo, na
         # mao da pessoa), entao testar https://dominio aqui falharia sempre.
-        info "modo proxy existente: nao testo https://$DOMINIO/, porque o seu proxy ainda nao aponta para o DG Claw."
+        info "modo proxy existente: nao testo https://$DOMINIO/, porque o seu proxy ainda nao aponta para o Prumo da Locadora."
     elif [ "$TUNEL" = 1 ]; then
         info "esperando o Caddy responder em $DOMINIO pelo loopback (ate ${espera}s)..."
         esperar_http "$espera" -k --resolve "$DOMINIO:443:127.0.0.1" "https://$DOMINIO/" \
@@ -2304,7 +2304,7 @@ mensagem_final() {
     if [ -n "$PRIMEIRO_ACESSO_TOKEN" ]; then
         printf '\n   Primeiro acesso (uso único, vale 30 min): https://%s/primeiro-acesso#%s\n' "$DOMINIO" "$PRIMEIRO_ACESSO_TOKEN"
         if [ "$PROXY_EXISTENTE" = 1 ]; then
-            printf '   Esse link só abre depois que o seu proxy estiver apontando para o DG Claw, e vale 30 min.\n'
+            printf '   Esse link só abre depois que o seu proxy estiver apontando para o Prumo da Locadora, e vale 30 min.\n'
         fi
         printf '   Abra o link de primeiro acesso, cadastre sua senha e você já entra no chat do Admin.\n'
         printf '   Se o link expirar, gere outro com: sudo dgclaw primeiro-acesso\n\n'
@@ -2362,7 +2362,7 @@ main() {
     validar_args
     resolver_opcoes_rede
     if [ "$ENSAIO" = 1 ]; then printf 'ENSAIO: nada sera mudado neste servidor; so vou mostrar o que faria.\n'; fi
-    if [ "$PROXY_EXISTENTE" = 1 ]; then info "modo proxy existente: o HTTPS fica com o seu nginx/tunel; DG Claw Web em 127.0.0.1:$PORTA_PAINEL."; fi
+    if [ "$PROXY_EXISTENTE" = 1 ]; then info "modo proxy existente: o HTTPS fica com o seu nginx/tunel; Prumo da Locadora Web em 127.0.0.1:$PORTA_PAINEL."; fi
 
     ler_senha
     checar_maquina

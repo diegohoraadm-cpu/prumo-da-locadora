@@ -119,7 +119,7 @@
     // Colaborador: o servidor já explica em português quem pode o quê (outra pessoa conectando, agente já conectado...).
     if (colaborador && msg && (status === 403 || status === 409)) return { sessaoExpirada: false, texto: msg };
     if (colaborador && status === 503) {
-      return { sessaoExpirada: false, texto: 'O agente não respondeu' + (msg ? ' (' + msg + ')' : '') + '. Tente de novo em instantes; se continuar, avise o dono do DG Claw.' };
+      return { sessaoExpirada: false, texto: 'O agente não respondeu' + (msg ? ' (' + msg + ')' : '') + '. Tente de novo em instantes; se continuar, avise o dono do Prumo da Locadora.' };
     }
     if (status === 400) {
       return { sessaoExpirada: false, texto: msg || ('O painel recusou o pedido para ' + fazer + '. Confira o que foi digitado e tente de novo.') };
@@ -137,7 +137,7 @@
     }
     if (acao === 'codigo' && RX_CODIGO_RUIM.test(msg)) return { sessaoExpirada: false, texto: FRASE_CODIGO_RUIM };
     if (RX_PRAZO.test(msg)) return { sessaoExpirada: false, texto: FRASE_PRAZO };
-    return { sessaoExpirada: false, texto: 'Não consegui ' + fazer + ' (erro ' + status + (msg ? ': ' + msg : '') + '). Tente de novo e, se repetir, ' + (colaborador ? 'avise o dono do DG Claw.' : 'peça ajuda ao Admin.') };
+    return { sessaoExpirada: false, texto: 'Não consegui ' + fazer + ' (erro ' + status + (msg ? ': ' + msg : '') + '). Tente de novo e, se repetir, ' + (colaborador ? 'avise o dono do Prumo da Locadora.' : 'peça ajuda ao Admin.') };
   }
 
   /**
@@ -185,7 +185,7 @@
     if (ctx.colaborador) {
       // Só o agente dele, sem menção a Admin. Já conectado: uma frase e nenhum botão.
       if (sel.chave === 'api') return Object.assign(base, { fase: 'api', texto: (d && d.mensagem) || (nome + ' usa uma chave de API, e não há conta para conectar aqui.') });
-      if (d && d.so_dono) return Object.assign(base, { fase: 'so_dono', texto: d.mensagem || 'O login deste agente expirou. Avise o dono do DG Claw.' });
+      if (d && d.so_dono) return Object.assign(base, { fase: 'so_dono', texto: d.mensagem || 'O login deste agente expirou. Avise o dono do Prumo da Locadora.' });
       if (d && d.ocupado) return Object.assign(base, { fase: 'ocupado', texto: d.mensagem || 'Outra pessoa está conectando a conta deste agente agora.' });
     }
     if (sel.chave === 'sem_resposta') {

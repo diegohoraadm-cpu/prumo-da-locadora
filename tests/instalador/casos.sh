@@ -1127,7 +1127,7 @@ caso_rede_containers_preserva_tabela_com_container_ativo() {
         afirma "estado $estado: lista o agente que nao esta parado" tem "$SAIDA" "dgclaw-beto"
         afirma "estado $estado: manda rodar o install.sh" tem "$SAIDA" "rode sudo ./install.sh de novo"
         afirma "estado $estado: manda iniciar de novo" tem "$SAIDA" "sudo dgclaw agente iniciar <slug>"
-        afirma "estado $estado: container de fora tambem precisa parar" tem "$SAIDA" "nao sao do DG Claw tambem precisam estar parados"
+        afirma "estado $estado: container de fora tambem precisa parar" tem "$SAIDA" "nao sao do Prumo da Locadora tambem precisam estar parados"
         limpar_cenario
     done
 }
@@ -1422,7 +1422,7 @@ caso_caddy_arquivo_antigo_identico_e_atualizado() {
     novo_cenario
     mkdir -p "$RAIZ/etc/caddy" "$TMP/estado"
     echo caddy >"$TMP/estado/ativos" # o Caddy ja esta no ar, como numa atualizacao de verdade
-    printf '# DG Claw: gerado pelo install.sh. Rodar o instalador de novo reescreve este arquivo.\n%s {\n\treverse_proxy 127.0.0.1:8300\n}\n' "$DOM_CADDY" >"$RAIZ/etc/caddy/Caddyfile"
+    printf '# Prumo da Locadora: gerado pelo install.sh. Rodar o instalador de novo reescreve este arquivo.\n%s {\n\treverse_proxy 127.0.0.1:8300\n}\n' "$DOM_CADDY" >"$RAIZ/etc/caddy/Caddyfile"
     afirma "a atualizacao termina com sucesso" instalacao_basica
     afirma "ganhou a compressao" tem "$RAIZ/etc/caddy/Caddyfile" "zstd"
     igual "$(contar "$RAIZ/etc/caddy/Caddyfile" reverse_proxy)" 1 || { echo "      FALHOU: reverse_proxy duplicado"; FALHAS=$((FALHAS + 1)); }
@@ -1434,7 +1434,7 @@ caso_caddy_arquivo_antigo_identico_e_atualizado() {
 caso_caddy_arquivo_personalizado_e_preservado() {
     novo_cenario
     mkdir -p "$RAIZ/etc/caddy"
-    printf '# DG Claw: gerado pelo install.sh. Rodar o instalador de novo reescreve este arquivo.\n%s {\n\treverse_proxy 127.0.0.1:8300\n\theader X-Minha-Linha "do dono"\n}\n' "$DOM_CADDY" >"$RAIZ/etc/caddy/Caddyfile"
+    printf '# Prumo da Locadora: gerado pelo install.sh. Rodar o instalador de novo reescreve este arquivo.\n%s {\n\treverse_proxy 127.0.0.1:8300\n\theader X-Minha-Linha "do dono"\n}\n' "$DOM_CADDY" >"$RAIZ/etc/caddy/Caddyfile"
     cp "$RAIZ/etc/caddy/Caddyfile" "$TMP/caddy-antes"
     afirma "a atualizacao termina com sucesso" instalacao_basica
     afirma "arquivo personalizado intacto" cmp "$TMP/caddy-antes" "$RAIZ/etc/caddy/Caddyfile"
@@ -1450,7 +1450,7 @@ caso_tunel_caddy_personalizado_sempre_para() {
     # 1) so o bind: para e explica
     novo_cenario
     mkdir -p "$RAIZ/etc/caddy"; cf="$RAIZ/etc/caddy/Caddyfile"
-    printf '# DG Claw: gerado pelo install.sh.\n%s\n\treverse_proxy 127.0.0.1:8300\n}\n' "$base" >"$cf"
+    printf '# Prumo da Locadora: gerado pelo install.sh.\n%s\n\treverse_proxy 127.0.0.1:8300\n}\n' "$base" >"$cf"
     cp "$cf" "$TMP/caddy-antes"
     nega "personalizado so com bind: a instalacao para" instalacao_basica --dominio "$DOM_CADDY" --atras-de-tunel
     afirma "explica o porque" tem "$SAIDA" "so aceita o site que ele mesmo gera"
@@ -1460,7 +1460,7 @@ caso_tunel_caddy_personalizado_sempre_para() {
     # 2) bind + header, mas com um segundo bind externo (os binds acumulam no Caddy): tambem para
     novo_cenario
     mkdir -p "$RAIZ/etc/caddy"; cf="$RAIZ/etc/caddy/Caddyfile"
-    printf '# DG Claw: gerado pelo install.sh.\n%s\tbind 0.0.0.0\n\t@tunel header Cf-Connecting-IP *\n\thandle @tunel {\n\t\treverse_proxy 127.0.0.1:8300 {\n\t\t\theader_up X-Forwarded-For {http.request.header.Cf-Connecting-IP}\n\t\t}\n\t}\n\thandle {\n\t\treverse_proxy 127.0.0.1:8300\n\t}\n}\n' "$base" >"$cf"
+    printf '# Prumo da Locadora: gerado pelo install.sh.\n%s\tbind 0.0.0.0\n\t@tunel header Cf-Connecting-IP *\n\thandle @tunel {\n\t\treverse_proxy 127.0.0.1:8300 {\n\t\t\theader_up X-Forwarded-For {http.request.header.Cf-Connecting-IP}\n\t\t}\n\t}\n\thandle {\n\t\treverse_proxy 127.0.0.1:8300\n\t}\n}\n' "$base" >"$cf"
     cp "$cf" "$TMP/caddy-antes"
     nega "personalizado com bind extra: a instalacao para" instalacao_basica --dominio "$DOM_CADDY" --atras-de-tunel
     afirma "o Caddyfile do dono ficou intacto" cmp "$TMP/caddy-antes" "$cf"
@@ -1482,7 +1482,7 @@ caso_caddy_site_de_outros_continua_preservado() {
     cp "$RAIZ/etc/caddy/Caddyfile" "$TMP/caddy-antes"
     afirma "a instalacao termina com sucesso" instalacao_basica
     afirma "Caddyfile dos outros intacto" cmp "$TMP/caddy-antes" "$RAIZ/etc/caddy/Caddyfile"
-    afirma "site do DG Claw em conf.d com a compressao" tem "$RAIZ/etc/caddy/conf.d/dgclaw.caddy" "zstd"
+    afirma "site do Prumo da Locadora em conf.d com a compressao" tem "$RAIZ/etc/caddy/conf.d/dgclaw.caddy" "zstd"
     nega "o conf.d nao ganhou event-stream" tem "$RAIZ/etc/caddy/conf.d/dgclaw.caddy" "event-stream"
     limpar_cenario
 }
@@ -1491,7 +1491,7 @@ caso_caddy_validacao_que_falha_nao_recarrega_e_restaura() {
     novo_cenario
     mkdir -p "$RAIZ/etc/caddy" "$TMP/estado"
     echo caddy >"$TMP/estado/ativos"
-    printf '# DG Claw: gerado pelo install.sh. Rodar o instalador de novo reescreve este arquivo.\n%s {\n\treverse_proxy 127.0.0.1:8300\n}\n' "$DOM_CADDY" >"$RAIZ/etc/caddy/Caddyfile"
+    printf '# Prumo da Locadora: gerado pelo install.sh. Rodar o instalador de novo reescreve este arquivo.\n%s {\n\treverse_proxy 127.0.0.1:8300\n}\n' "$DOM_CADDY" >"$RAIZ/etc/caddy/Caddyfile"
     cp "$RAIZ/etc/caddy/Caddyfile" "$TMP/caddy-antes"
     touch "$TMP/estado/caddy-falha"
     nega "a instalacao para quando o Caddy recusa" instalacao_basica
@@ -1518,7 +1518,7 @@ caso_caddy_caddyfile_padrao_do_pacote_e_substituido() {
     mkdir -p "$RAIZ/etc/caddy" "$TMP/estado"
     printf ':80 {\n\t# Set this path to your site'"'"'s directory.\n\troot * /usr/share/caddy\n\tfile_server\n}\n' >"$RAIZ/etc/caddy/Caddyfile"
     afirma "a instalacao termina com sucesso" instalacao_basica
-    afirma "o site do DG Claw foi gravado" tem "$RAIZ/etc/caddy/Caddyfile" "$DOM_CADDY {"
+    afirma "o site do Prumo da Locadora foi gravado" tem "$RAIZ/etc/caddy/Caddyfile" "$DOM_CADDY {"
     afirma "com o proxy" tem "$RAIZ/etc/caddy/Caddyfile" "reverse_proxy 127.0.0.1:8300"
     afirma "e a compressao" tem "$RAIZ/etc/caddy/Caddyfile" "zstd"
     nega "o file_server do pacote saiu" tem "$RAIZ/etc/caddy/Caddyfile" "file_server"
@@ -1540,7 +1540,7 @@ caso_caddy_restauracao_mantem_modo_do_arquivo() {
     novo_cenario
     mkdir -p "$RAIZ/etc/caddy" "$TMP/estado"
     echo caddy >"$TMP/estado/ativos"
-    printf '# DG Claw: gerado pelo install.sh. Rodar o instalador de novo reescreve este arquivo.\n%s {\n\treverse_proxy 127.0.0.1:8300\n}\n' "$DOM_CADDY" >"$RAIZ/etc/caddy/Caddyfile"
+    printf '# Prumo da Locadora: gerado pelo install.sh. Rodar o instalador de novo reescreve este arquivo.\n%s {\n\treverse_proxy 127.0.0.1:8300\n}\n' "$DOM_CADDY" >"$RAIZ/etc/caddy/Caddyfile"
     chmod 640 "$RAIZ/etc/caddy/Caddyfile"
     cp -p "$RAIZ/etc/caddy/Caddyfile" "$TMP/caddy-antes"
     touch "$TMP/estado/caddy-falha"

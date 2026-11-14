@@ -62,13 +62,13 @@ test("hooksDoAgente: os quatro hooks do plugin com os mesmos timeouts do hooks.j
   );
   // o conjunto não depende da sessão nem dos promptHooks dela: só dos dados do runner
   assert.deepEqual(hooksDoAgente({ raiz: "/opt/dgclaw/app", workspace: "/home/a/ws", temWorkspace: true, temBun: true, pastaDeEstado: "/home/a/.plataforma" }), hooks);
-  // sem workspace do DG Claw ou sem bun, só o hook dos promptHooks fica; sem python3, os do plugin
+  // sem workspace do Prumo da Locadora ou sem bun, só o hook dos promptHooks fica; sem python3, os do plugin
   assert.equal(hooksDoAgente({ raiz: "/opt/dgclaw/app", workspace: "/w", temWorkspace: false, temBun: true, pastaDeEstado: "/e" }).length, 1);
   assert.equal(hooksDoAgente({ raiz: "/opt/dgclaw/app", workspace: "/w", temWorkspace: true, temBun: false, temPython: false, pastaDeEstado: "/e" }).length, 0);
   assert.equal(hooksDoAgente({ raiz: "/opt/dgclaw/app", workspace: "/w", temWorkspace: true, temBun: true }).length, 4);
 });
 
-test("config.toml gerado: hooks.json e confiança só dos hooks do DG Claw, preservando o que já havia", () => {
+test("config.toml gerado: hooks.json e confiança só dos hooks do Prumo da Locadora, preservando o que já havia", () => {
   const c = cenario("preserva");
   const alheio = { hooks: { UserPromptSubmit: [{ hooks: [{ type: "command", command: "echo da-pessoa", timeout: 3 }] }] }, outro: 1 };
   fs.writeFileSync(path.join(c.home, "hooks.json"), JSON.stringify(alheio));
@@ -848,7 +848,7 @@ test("hooks.json que é atalho não é seguido", () => {
   assert.equal(lerTexto(alvo), "{}");
 });
 
-test("sem workspace do DG Claw nem promptHooks, nada é criado", () => {
+test("sem workspace do Prumo da Locadora nem promptHooks, nada é criado", () => {
   const c = cenario("nada");
   fs.rmSync(path.join(c.ws, ".dgclaw"), { recursive: true });
   const r = instalarHooksNoCodex({ home: c.home, env: c.env, cwd: c.ws, promptHooks: [], area: "t", raiz: c.plugin });
@@ -885,7 +885,7 @@ test("o spawn do Codex instala os hooks e NUNCA passa bypass de confiança nos a
 });
 
 // ---------------------------------------------------------------------------------------------
-// Com o Codex de verdade: o que o próprio Codex diz do hook do DG Claw e do hook externo.
+// Com o Codex de verdade: o que o próprio Codex diz do hook do Prumo da Locadora e do hook externo.
 // Pulado (com aviso) se não há `codex` no PATH.
 
 /** O codex de verdade: o PATH dos testes tem na frente um codex falso (test/fixtures/bin), que não serve aqui. */
@@ -922,7 +922,7 @@ setTimeout(() => { console.error("sem resposta do app-server"); p.kill(); proces
   return JSON.parse(execFileSync("node", ["-e", script], { encoding: "utf8", timeout: 30_000 }));
 }
 
-test("Codex de verdade: o hook do DG Claw sai trusted, o hash calculado aqui é o do Codex e o hook externo fica untrusted", { skip: temCodex ? false : "sem codex no PATH: teste de integração pulado" }, () => {
+test("Codex de verdade: o hook do Prumo da Locadora sai trusted, o hash calculado aqui é o do Codex e o hook externo fica untrusted", { skip: temCodex ? false : "sem codex no PATH: teste de integração pulado" }, () => {
   const c = cenario("real");
   instala(c, ["echo do-dgclaw"]);
   // um repositório clonado pelo agente, com um hooks.json malicioso, numa pasta que o config.toml marca como confiável

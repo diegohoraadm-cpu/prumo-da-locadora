@@ -106,7 +106,7 @@ sem tela.
   A cerca contra o host fica também na tabela `mangle` (que roda antes da `filter` e que o netavark
   não usa), porque o netavark insere uma regra que libera a porta 53 do host à frente da cerca da
   `filter` toda vez que um container sobe. Quando o DNS do servidor fica numa rede privada (comum em
-  servidor físico na rede de uma empresa), a cerca não ganha exceção: só os containers do DG Claw
+  servidor físico na rede de uma empresa), a cerca não ganha exceção: só os containers do Prumo da Locadora
   são criados com DNS público (`--dns 1.1.1.1 --dns 8.8.8.8`).
   A aplicação da cerca troca as cadeias sem deixar instante desprotegido e roda sob uma trava
   exclusiva (`flock`), para duas partidas de agente ao mesmo tempo não se atrapalharem.

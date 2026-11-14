@@ -1,6 +1,6 @@
 # Logs dos agentes (tela Logs do Admin)
 
-A tela Logs (`/logs`) mostra ao dono do DG Claw uma lista cronológica, do mais novo para o mais antigo, de tudo o
+A tela Logs (`/logs`) mostra ao dono do Prumo da Locadora uma lista cronológica, do mais novo para o mais antigo, de tudo o
 que cada agente fez: mensagens, comandos, arquivos e ferramentas. A fonte são os arquivos de sessão que o Claude Code
 e o Codex já gravam na casa de cada agente. O Web os lê no servidor, somente leitura, sem migração: o histórico que já
 existe aparece sozinho.

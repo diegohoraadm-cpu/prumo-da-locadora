@@ -67,7 +67,7 @@ afirma "outros sites: site do DG Claw em conf.d" grep -q '^outro.exemplo.com.br 
 afirma "outros sites: Caddyfile dos outros preservado" grep -q 'loja.exemplo.com' "$CF"
 
 # Caddyfile personalizado (0640): vira copia ao lado e o bloco gerado entra no lugar
-printf '# DG Claw: gerado\nantigo.exemplo.com {\n\treverse_proxy 127.0.0.1:8300\n\theader X-Minha-Linha "do dono"\n}\n' >"$CF"
+printf '# Prumo da Locadora: gerado\nantigo.exemplo.com {\n\treverse_proxy 127.0.0.1:8300\n\theader X-Minha-Linha "do dono"\n}\n' >"$CF"
 rm -f "$CONFD" "$DGCLAW_RAIZ"/etc/caddy/*.antes-dominio-*
 chmod 640 "$CF"
 cp -p "$CF" "$TMP/cf-antes"
@@ -84,7 +84,7 @@ afirma "personalizado: copia igual ao original byte a byte" cmp "$COPIA" "$TMP/c
 igual "personalizado: copia com 640" "640" "$(stat -c %a "$COPIA")"
 
 # validate falho restaura o personalizado com 640 e nao grava o env
-printf '# DG Claw: gerado\nantigo.exemplo.com {\n\treverse_proxy 127.0.0.1:8300\n\theader X-Minha-Linha "do dono"\n}\n' >"$CF"
+printf '# Prumo da Locadora: gerado\nantigo.exemplo.com {\n\treverse_proxy 127.0.0.1:8300\n\theader X-Minha-Linha "do dono"\n}\n' >"$CF"
 chmod 640 "$CF"; cp -p "$CF" "$TMP/cf-antes"
 printf 'DGCLAW_DOMINIO=antigo.exemplo.com\n' >"$ETC/dgclaw.env"; cp -p "$ETC/dgclaw.env" "$TMP/env-antes"
 touch "$STUB_ESTADO/caddy-falha"
@@ -107,7 +107,7 @@ nega "conf.d: nenhuma copia dentro de conf.d" bash -c "ls '$(dirname "$CONFD")'/
 afirma "conf.d: site novo gravado" grep -q '^confd.exemplo.com.br {' "$CONFD"
 
 # Caddyfile gerado pelo instalador: ganha a compressao ao trocar
-printf '# DG Claw: gerado\nantigo.exemplo.com {\n\treverse_proxy 127.0.0.1:8300\n}\n' >"$CF"
+printf '# Prumo da Locadora: gerado\nantigo.exemplo.com {\n\treverse_proxy 127.0.0.1:8300\n}\n' >"$CF"
 dgclaw dominio trocar gerado.exemplo.com.br --sem-conferir-dns >"$TMP/o.txt" 2>&1
 afirma "gerado: nome novo com compressao" grep -q 'zstd' "$CF"
 nega "gerado: sem event-stream" grep -q 'event-stream' "$CF"
@@ -121,7 +121,7 @@ nega "ensaio: conf.d nao ganhou o nome" grep -q 'sem-dns' "$CONFD"
 
 # atras de tunel: sem conferir DNS contra o IP publico, HTTPS por loopback com -k, tls internal
 printf 'DGCLAW_DOMINIO=teste.exemplo.org\nDGCLAW_ATRAS_DE_TUNEL=1\nLINHA_DA_MARTA=oi\n' >"$ETC/dgclaw.env"
-printf '# DG Claw: antigo\nteste.exemplo.org {\n\ttls internal\n\treverse_proxy 127.0.0.1:8300\n}\n' >"$CF"
+printf '# Prumo da Locadora: antigo\nteste.exemplo.org {\n\ttls internal\n\treverse_proxy 127.0.0.1:8300\n}\n' >"$CF"
 dgclaw dominio >"$TMP/o.txt" 2>&1
 afirma "tunel mostrar: diz que esta atras de tunel" grep -q 'atras de um tunel' "$TMP/o.txt"
 nega "tunel mostrar: nao manda criar registro A" grep -q 'registro DNS tipo A' "$TMP/o.txt"

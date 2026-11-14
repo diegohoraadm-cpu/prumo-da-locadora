@@ -40,7 +40,7 @@
 #
 # A faixa dos agentes (REDE_AGENTES) vem do DGCLAW_FAIXA_REDE do dgclaw.env (padrao 10.89.0.0/16;
 # o instalador grava com --faixa-rede). Todo salto para as nossas cadeias, nas duas tabelas (mangle e
-# filter), casa so com `-s <faixa>`: container que nao e do DG Claw v1 (outro sistema, outra faixa)
+# filter), casa so com `-s <faixa>`: container que nao e do Prumo da Locadora v1 (outro sistema, outra faixa)
 # nunca cai na cerca. Se a faixa mudou desde a ultima vez, os saltos da faixa antiga sao removidos
 # (o novo entra antes).
 #
@@ -147,7 +147,7 @@ saltos_de_outra_faixa() {
 }
 
 # extras_inserir <tabela> <cadeia-origem> <cadeia-destino>: poe o salto de cada faixa em FAIXAS_EXTRAS
-# (faixa antiga que ainda tem rede de agente do DG Claw) para o destino, se ainda nao existir.
+# (faixa antiga que ainda tem rede de agente do Prumo da Locadora) para o destino, se ainda nao existir.
 extras_inserir() {
     local f
     for f in "${FAIXAS_EXTRAS[@]}"; do
@@ -301,7 +301,7 @@ cerca_egress() { cadeia_publicar "$1" FORWARD DGCLAW_EGRESS regras_egress RETURN
 cerca_host() { cadeia_publicar "$1" INPUT DGCLAW_HOST regras_host DROP 2; }
 
 # faixas_extras_calcular: preenche FAIXAS_EXTRAS com as faixas /16 (A.B.0.0/16) DIFERENTES da atual que
-# ainda tem rede de agente do DG Claw (label dgclaw.v1=1, ou dgclaw-<slug> de agente do agentes.json).
+# ainda tem rede de agente do Prumo da Locadora (label dgclaw.v1=1, ou dgclaw-<slug> de agente do agentes.json).
 # O salto de uma faixa assim NUNCA e removido: se o dono gravou uma faixa nova no dgclaw.env (ou outro
 # processo gravou, por exemplo um `agente criar` concorrente), o agente que ficou na faixa antiga
 # continuaria sem passar pelas cercas. Se o podman nao responde, nao da para saber: vale o que ja
@@ -328,7 +328,7 @@ faixas_extras_calcular() {
                     f="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.0.0/16"
                     [ "$f" = "$REDE_AGENTES" ] && continue
                     faixa_e_extra "$f" || FAIXAS_EXTRAS+=("$f")
-                    echo "dgclaw-firewall: a rede '$nome' do DG Claw esta em $s, fora da faixa atual $REDE_AGENTES. Mantive o salto da faixa $f na cerca, para ela continuar isolada. Para resolver: volte DGCLAW_FAIXA_REDE para $f em /etc/dgclaw/dgclaw.env, ou recrie o agente na faixa nova (sudo dgclaw agente remover <agente>) e rode a cerca de novo." >&2
+                    echo "dgclaw-firewall: a rede '$nome' do Prumo da Locadora esta em $s, fora da faixa atual $REDE_AGENTES. Mantive o salto da faixa $f na cerca, para ela continuar isolada. Para resolver: volte DGCLAW_FAIXA_REDE para $f em /etc/dgclaw/dgclaw.env, ou recrie o agente na faixa nova (sudo dgclaw agente remover <agente>) e rode a cerca de novo." >&2
                 done
             done <<<"$nomes"
         else

@@ -29,7 +29,7 @@ DG_AGENTES_JSON="$DG_ETC/agentes.json"
 DG_REGISTRO="$DG_ETC/registro.tsv"
 DG_TRAVA="$DG_ETC/.agentes.lock"
 DG_IMAGEM_PADRAO="localhost/dgclaw-agente:latest"
-# Porta do DG Claw Web no host (so em 127.0.0.1) e faixa de rede dos agentes. Os dois podem ser
+# Porta do Prumo da Locadora Web no host (so em 127.0.0.1) e faixa de rede dos agentes. Os dois podem ser
 # trocados na instalacao (--porta-painel, --faixa-rede) e ficam no dgclaw.env.
 DG_PORTA_PAINEL_PADRAO=8300
 DG_FAIXA_REDE_PADRAO="10.89.0.0/16"
@@ -499,13 +499,13 @@ CADDY_TIPOS_COMPRIMIDOS=(
     'application/json' 'application/manifest+json' 'application/xml' 'image/svg+xml'
 )
 
-# bloco_caddy <dominio> [tunel|publico] [porta]: o site do DG Claw. Sem o 2o argumento vale o modo atual
-# (modo_tunel). A porta e a do DG Claw Web no host (padrao 8300, a mesma do --porta-painel); nao confundir
+# bloco_caddy <dominio> [tunel|publico] [porta]: o site do Prumo da Locadora. Sem o 2o argumento vale o modo atual
+# (modo_tunel). A porta e a do Prumo da Locadora Web no host (padrao 8300, a mesma do --porta-painel); nao confundir
 # com a 8300 de DENTRO do container de cada agente.
 bloco_caddy() {
     local tipo modo="${2:-}" porta="${3:-$DG_PORTA_PAINEL_PADRAO}"
     if [ -z "$modo" ]; then if modo_tunel; then modo=tunel; else modo=publico; fi; fi
-    printf '# DG Claw: gerado pelo install.sh. Se voce editar este arquivo, o instalador e o dgclaw atualizar\n'
+    printf '# Prumo da Locadora: gerado pelo install.sh. Se voce editar este arquivo, o instalador e o dgclaw atualizar\n'
     printf '# deixam a sua versao como esta (so o dgclaw dominio troca o nome do site).\n'
     printf '%s {\n' "$1"
     if [ "$modo" = tunel ]; then
@@ -584,7 +584,7 @@ caddy_restaurar_site() {
     fi
 }
 
-# escrever_site_caddy <dominio> [trocar] [porta]: grava o site do DG Claw no Caddyfile proprio (quando e dele ou
+# escrever_site_caddy <dominio> [trocar] [porta]: grava o site do Prumo da Locadora no Caddyfile proprio (quando e dele ou
 # padrao) ou em conf.d/dgclaw.caddy (quando o Caddyfile tem sites de outros). Nao valida nem recarrega.
 # Arquivo que ja existe e foi personalizado (diferente do que o instalador gera) nao e tocado: avisa o
 # que acrescentar. Com "trocar" (dgclaw dominio), o arquivo personalizado vira copia ao lado e o bloco gerado entra no lugar.
@@ -593,7 +593,7 @@ escrever_site_caddy() {
     CADDY_SITE_MUDOU=0
     CADDY_SITE_ARQUIVO=""
     CADDY_SITE_COPIA=""
-    if [ ! -f "$cf" ] || grep -q '^# DG Claw' "$cf" || caddyfile_e_padrao "$cf"; then
+    if [ ! -f "$cf" ] || grep -qE '^# (Prumo da Locadora|DG Claw)' "$cf" || caddyfile_e_padrao "$cf"; then
         alvo="$cf"
     else
         # Ja existe um Caddyfile com sites de verdade: nao se sobrescreve o que e dos outros.
@@ -602,7 +602,7 @@ escrever_site_caddy() {
                 "acrescente a linha 'import conf.d/*' no topo do arquivo (fora de qualquer bloco) e rode ./install.sh de novo. Ele vai criar ${confd#"$R"} com o site do DG Claw."
         fi
         alvo="$confd"
-        info "o Caddyfile existente foi preservado; o site do DG Claw fica em ${confd#"$R"}"
+        info "o Caddyfile existente foi preservado; o site do Prumo da Locadora fica em ${confd#"$R"}"
     fi
 
     if [ -f "$alvo" ] && [ "$ENSAIO" != 1 ]; then
@@ -610,7 +610,7 @@ escrever_site_caddy() {
             return 0
         fi
         # O Caddyfile padrao do pacote (":80 { root * /usr/share/caddy ... }") nao e personalizacao: e o que
-        # o apt deixa, e o site do DG Claw o substitui (com copia para restaurar se a validacao falhar).
+        # o apt deixa, e o site do Prumo da Locadora o substitui (com copia para restaurar se a validacao falhar).
         if [ "$alvo" = "$cf" ] && caddyfile_e_padrao "$cf"; then
             :
         elif ! caddy_site_e_gerado "$alvo" "$porta"; then
@@ -621,14 +621,14 @@ escrever_site_caddy() {
                 cp -p "$alvo" "$copia" \
                     || falha "nao consegui guardar uma copia de ${alvo#"$R"} em ${copia#"$R"} antes de trocar o dominio (nada foi gravado)." \
                         "confira espaco em disco e permissao de ${R}/etc/caddy e rode de novo."
-                aviso "${alvo#"$R"} tinha personalizacoes suas; guardei uma copia em ${copia#"$R"} e gravei o site padrao do DG Claw com '$dominio'. Para levar as suas personalizacoes de volta, copie as linhas que quiser da copia para dentro do bloco do site em ${alvo#"$R"}, rode caddy validate --config ${cf#"$R"} --adapter caddyfile e sudo systemctl reload caddy."
+                aviso "${alvo#"$R"} tinha personalizacoes suas; guardei uma copia em ${copia#"$R"} e gravei o site padrao do Prumo da Locadora com '$dominio'. Para levar as suas personalizacoes de volta, copie as linhas que quiser da copia para dentro do bloco do site em ${alvo#"$R"}, rode caddy validate --config ${cf#"$R"} --adapter caddyfile e sudo systemctl reload caddy."
             else
                 # Atras de tunel o bind so no loopback e o encaminhamento do IP real (Cf-Connecting-IP) sao o que
                 # impede de alcancar a origem por fora e de forjar o IP para gastar o limite de tentativas de login
                 # do dono. Conferir isso num arquivo personalizado exigiria interpretar o Caddyfile inteiro (binds
                 # acumulam entre blocos), entao personalizado no modo tunel nunca fica valendo: o instalador para.
                 if modo_tunel; then
-                    falha "o site do DG Claw em ${alvo#"$R"} tem personalizacoes suas, e no modo tunel o instalador so aceita o site que ele mesmo gera: ele precisa garantir que o Caddy escute apenas em 127.0.0.1 e que o IP real de cada visitante (Cf-Connecting-IP) chegue ao painel, senao qualquer um alcanca o painel por fora do tunel ou bloqueia o seu login com 5 tentativas erradas." \
+                    falha "o site do Prumo da Locadora em ${alvo#"$R"} tem personalizacoes suas, e no modo tunel o instalador so aceita o site que ele mesmo gera: ele precisa garantir que o Caddy escute apenas em 127.0.0.1 e que o IP real de cada visitante (Cf-Connecting-IP) chegue ao painel, senao qualquer um alcanca o painel por fora do tunel ou bloqueia o seu login com 5 tentativas erradas." \
                         "guarde uma copia do arquivo (sudo cp ${alvo#"$R"} /root/caddy-site-antes-do-tunel), apague o original (sudo rm ${alvo#"$R"}) e rode ./install.sh de novo: ele gera o site padrao do modo tunel. Depois, se quiser, leve para dentro do bloco gerado as linhas suas que nao mexem em bind, endereco do site nem reverse_proxy, e rode caddy validate --config ${cf#"$R"} --adapter caddyfile && sudo systemctl reload caddy."
                 fi
                 aviso "${alvo#"$R"} tem personalizacoes suas e nao foi alterado, entao o site continua sem a compressao nova (a conversa e o painel ficam mais lentos no celular). Para ligar, acrescente dentro do bloco do site, antes do reverse_proxy: encode { zstd gzip match { header Content-Type text/html* header Content-Type text/css* header Content-Type text/plain* header Content-Type text/javascript* header Content-Type application/javascript* header Content-Type application/json* header Content-Type application/manifest+json* header Content-Type application/xml* header Content-Type image/svg+xml* } } (nao use 'text/*': ele comprimiria o stream da conversa, text/event-stream, e as mensagens deixariam de chegar na hora). Depois rode: caddy validate --config ${cf#"$R"} --adapter caddyfile && sudo systemctl reload caddy"
@@ -705,14 +705,14 @@ faixa_rede_exigir() {
         "use por exemplo --faixa-rede 10.91.0.0/16. Cada agente ganha uma rede /24 dentro dessa faixa, por isso ela tem que ser /16."
 }
 
-# porta_painel_reservada <porta>: se a porta e do proprio DG Claw (o runner do Admin, 4300; as faixas
+# porta_painel_reservada <porta>: se a porta e do proprio Prumo da Locadora (o runner do Admin, 4300; as faixas
 # de portas dos agentes, 4311 a 4399 de runner e 8311 a 8399 de painel; e as que o agentes.json e o
 # portas.tsv ja reservaram, inclusive de agente parado), imprime quem a reserva e sai com 0.
 # Sai com 1 (sem imprimir) se esta livre para o painel. Painel e Admin na mesma porta deixariam o
 # proxy do usuario alcancar o runner direto.
 porta_painel_reservada() {
     local p="$1"
-    if [ "$p" = 4300 ]; then printf 'o runner do Admin do DG Claw'; return 0; fi
+    if [ "$p" = 4300 ]; then printf 'o runner do Admin do Prumo da Locadora'; return 0; fi
     if [ "$p" -ge 4311 ] && [ "$p" -le 4399 ]; then printf 'a faixa de portas dos runners dos agentes (4311 a 4399)'; return 0; fi
     if [ "$p" -ge 8311 ] && [ "$p" -le 8399 ]; then printf 'a faixa de portas dos paineis dos agentes (8311 a 8399)'; return 0; fi
     if [ -f "$DG_ETC/portas.tsv" ] && awk -F'\t' -v p="$p" '$2 == p || $3 == p {f = 1} END {exit !f}' "$DG_ETC/portas.tsv"; then
@@ -725,11 +725,11 @@ porta_painel_reservada() {
     return 1
 }
 
-# porta_painel_exigir <valor> <origem>: o mesmo para a porta do DG Claw Web.
+# porta_painel_exigir <valor> <origem>: o mesmo para a porta do Prumo da Locadora Web.
 porta_painel_exigir() {
     local quem
     if porta_painel_valida "$1" && quem="$(porta_painel_reservada "$1")"; then
-        falha "a porta do painel '$1' ($2) e reservada ao DG Claw: $quem." \
+        falha "a porta do painel '$1' ($2) e reservada ao Prumo da Locadora: $quem." \
             "escolha outra porta, por exemplo --porta-painel 8300 (o padrao) ou --porta-painel 8400. Ficam reservadas a 4300, de 4311 a 4399 e de 8311 a 8399."
     fi
     porta_painel_valida "$1" && return 0
@@ -785,7 +785,7 @@ cidr_sobrepoe() {
 }
 
 # --- trechos para quem ja tem proxy (nginx, Caddy proprio, tunel Cloudflare) -----------------
-# Maior upload que o DG Claw Web aceita: DGCLAW_WEB_MAX_UPLOAD_MB (padrao 50, web/lib/config.js)
+# Maior upload que o Prumo da Locadora Web aceita: DGCLAW_WEB_MAX_UPLOAD_MB (padrao 50, web/lib/config.js)
 # mais 64 KB de folga do multipart (web/lib/uploads.js). O nginx recusa por padrao qualquer corpo
 # acima de 1 MB, entao sem client_max_body_size os anexos do chat falhariam com 413. 100m dobra o
 # padrao do Web: quem subir o limite dele para ate 100 MB nao esbarra no nginx.

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-prompt-hooks-sessao.py: hook UserPromptSubmit FIXO do DG Claw no Codex, que roda os promptHooks da
+prompt-hooks-sessao.py: hook UserPromptSubmit FIXO do Prumo da Locadora no Codex, que roda os promptHooks da
 sessao que o disparou.
 
 POR QUE EXISTE

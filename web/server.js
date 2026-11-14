@@ -885,7 +885,7 @@ function criarServidor(opcoes) {
 
   // O que só o dono deve ver não vai ao colaborador: diagnóstico técnico do runner (avisos da thread, motivo
   // de falha) e o detalhe do pedido de permissão ou pergunta de um turno que não é dele.
-  const AVISO_GENERICO = 'Não consegui carregar parte do histórico agora. Se continuar, avise o dono do DG Claw.';
+  const AVISO_GENERICO = 'Não consegui carregar parte do histórico agora. Se continuar, avise o dono do Prumo da Locadora.';
   const ehColab = (sessao) => !!sessao && sessao.papel === 'colaborador';
   const avisosPara = (sessao, avisos) => (ehColab(sessao) ? (avisos && avisos.length ? [AVISO_GENERICO] : []) : avisos);
   async function atividadePara(sessao, agente, ativ) {
@@ -897,7 +897,7 @@ function criarServidor(opcoes) {
     // O motivo do runner pode citar link ou código de login: o colaborador só fica sabendo que falta conta, sem link.
     if (copia.motivo) {
       if (copia.alerta === 'sem_login') copia.motivo = 'O agente ainda não tem uma conta de IA conectada. Você pode conectar a sua em Conectar conta, no menu.';
-      else if (copia.alerta === 'login_expirado') copia.motivo = 'O login do agente expirou, e só o dono do DG Claw reconecta. Avise o dono.';
+      else if (copia.alerta === 'login_expirado') copia.motivo = 'O login do agente expirou, e só o dono do Prumo da Locadora reconecta. Avise o dono.';
       else copia.motivo = 'O agente está sem sinal agora.';
     }
     return copia;
@@ -1069,7 +1069,7 @@ function criarServidor(opcoes) {
     const idAgora = (ativ.permissao && ativ.permissao.id) || (ativ.pergunta && ativ.pergunta.id) || null;
     if (idAgora !== toolUseId) return recusa(409, 'Essa confirmação já não é a que está pendente. Atualize a conversa.');
     if (!(await pendenciaEhDele(agente, sessao, toolUseId))) {
-      return recusa(403, 'Essa confirmação é do dono do DG Claw. Ela é de um pedido que ele fez; aguarde ou fale com ele.');
+      return recusa(403, 'Essa confirmação é do dono do Prumo da Locadora. Ela é de um pedido que ele fez; aguarde ou fale com ele.');
     }
     return false;
   }
@@ -1412,7 +1412,7 @@ function criarServidor(opcoes) {
       if (sessao.papel !== 'colaborador') { res.writeHead(302, { Location: '/', 'Cache-Control': 'no-store' }); return res.end(); }
       if (!servirArquivo(req, res, path.join(config.publicDir, 'trocar-senha.html'), 'no-store')) {
         log('erro', `A tela de trocar senha não está instalada: falta ${path.join(config.publicDir, 'trocar-senha.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de trocar senha não foi encontrado no servidor. Reinstale o DG Claw Web.');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de trocar senha não foi encontrado no servidor. Reinstale o Prumo da Locadora Web.');
       }
       return undefined;
     }
@@ -1421,7 +1421,7 @@ function criarServidor(opcoes) {
       if (!sessao) return semSessaoPagina(req, res, url);
       if (!servirArquivo(req, res, path.join(config.publicDir, 'colaboradores.html'), 'no-store')) {
         log('erro', `A tela de colaboradores não está instalada: falta ${path.join(config.publicDir, 'colaboradores.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de colaboradores não foi encontrado no servidor. Reinstale o DG Claw Web.');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de colaboradores não foi encontrado no servidor. Reinstale o Prumo da Locadora Web.');
       }
       return undefined;
     }
@@ -1468,10 +1468,10 @@ function criarServidor(opcoes) {
 
     if ((p === '/logs' || p === '/logs/') && (m === 'GET' || m === 'HEAD')) {
       if (!sessao) return semSessaoPagina(req, res, url);
-      if (!logsAutorizado(sessao)) return H.paginaErro(res, 403, 'Acesso não liberado', 'Os logs dos agentes são só do dono do DG Claw, pela tela Logs do Admin.');
+      if (!logsAutorizado(sessao)) return H.paginaErro(res, 403, 'Acesso não liberado', 'Os logs dos agentes são só do dono do Prumo da Locadora, pela tela Logs do Admin.');
       if (!servirArquivo(req, res, path.join(config.publicDir, 'logs.html'), 'no-store')) {
         log('erro', `A tela de logs não está instalada: falta ${path.join(config.publicDir, 'logs.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de logs não foi encontrado no servidor. Reinstale o DG Claw Web.');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de logs não foi encontrado no servidor. Reinstale o Prumo da Locadora Web.');
       }
       return undefined;
     }
@@ -1489,7 +1489,7 @@ function criarServidor(opcoes) {
       if (!sessao) return semSessaoPagina(req, res, url);
       if (!servirArquivo(req, res, path.join(config.publicDir, 'anonimizar.html'), 'no-store')) {
         log('erro', `A tela de anonimizar não está instalada: falta ${path.join(config.publicDir, 'anonimizar.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de anonimizar documentos não foi encontrado no servidor. Reinstale o DG Claw Web.');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de anonimizar documentos não foi encontrado no servidor. Reinstale o Prumo da Locadora Web.');
       }
       return undefined;
     }
@@ -1498,7 +1498,7 @@ function criarServidor(opcoes) {
       if (!sessao) return semSessaoPagina(req, res, url);
       if (!servirArquivo(req, res, path.join(config.publicDir, 'conectar.html'), 'no-store')) {
         log('erro', `A tela de conectar conta não está instalada: falta ${path.join(config.publicDir, 'conectar.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de conectar conta não foi encontrado no servidor. Reinstale o DG Claw Web.');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de conectar conta não foi encontrado no servidor. Reinstale o Prumo da Locadora Web.');
       }
       return undefined;
     }
@@ -1519,7 +1519,7 @@ function criarServidor(opcoes) {
       }
       if (!servirArquivo(req, res, path.join(config.publicDir, 'manual.html'), 'no-store')) {
         log('erro', `A tela do Manual não está instalada: falta ${path.join(config.publicDir, 'manual.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela do Manual não foi encontrado no servidor. Reinstale o DG Claw Web.');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela do Manual não foi encontrado no servidor. Reinstale o Prumo da Locadora Web.');
       }
       return undefined;
     }
@@ -1652,7 +1652,7 @@ module.exports = { criarServidor, proximoSeguro, filtraRespostaDaCaixa };
 if (require.main === module) {
   const s = criarServidor();
   s.ouvir().then((a) => {
-    s.log('info', `DG Claw Web escutando em http://${a.address}:${a.port} (agentes: ${s.config.agentesPath}, dados: ${s.config.dataDir}).`);
+    s.log('info', `Prumo da Locadora Web escutando em http://${a.address}:${a.port} (agentes: ${s.config.agentesPath}, dados: ${s.config.dataDir}).`);
   }).catch((e) => {
     s.log('erro', `Não consegui escutar em ${s.config.host}:${s.config.porta} (${e.code || e.message}). Veja se outra coisa usa a porta ou mude DGCLAW_WEB_PORT.`);
     process.exit(1);

@@ -232,7 +232,7 @@ criar_agente bia --nome "Bia"
 afirma "podman start dentro de systemd-run --scope" grep -Eq '^systemd-run --scope --quiet --collect --unit dgclaw-conteiner-bia-[0-9]+-[0-9]+-[0-9]+ podman start dgclaw-bia' "$STUB_LOG"
 nega "nenhum podman start solto" grep -q '^podman start dgclaw-bia' "$STUB_LOG"
 
-echo "criar: DNS publico so nos containers do DG Claw quando o DNS do servidor e privado"
+echo "criar: DNS publico so nos containers do Prumo da Locadora quando o DNS do servidor e privado"
 preparar
 mkdir -p "$DGCLAW_RAIZ/run/systemd/resolve"
 printf 'nameserver 192.168.25.6\nnameserver 127.0.0.53\n' >"$DGCLAW_RAIZ/run/systemd/resolve/resolv.conf"

@@ -13,7 +13,7 @@ Navegador do dono
 Caddy (portas 80 e 443)
       │
       ▼
-DG Claw Web (127.0.0.1:8300, ou a porta de --porta-painel)
+Prumo da Locadora Web (127.0.0.1:8300, ou a porta de --porta-painel)
       ├── conversa do Admin ──► runner do Admin ──► Claude Code ou Codex
       │                         (no servidor, como root)
       │

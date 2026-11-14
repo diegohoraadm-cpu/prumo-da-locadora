@@ -74,7 +74,7 @@
   function erroDaResposta(status, corpo) {
     const motivo = corpo && typeof corpo.erro === 'string' ? corpo.erro : '';
     if (status === 401) return 'Sua sessão venceu. Entre de novo em /login.';
-    if (status === 403) return motivo || 'Só o dono do DG Claw vê os logs.';
+    if (status === 403) return motivo || 'Só o dono do Prumo da Locadora vê os logs.';
     if (status === 429) return (motivo || 'Há outras buscas em andamento.') + ' Espere um instante e toque em Aplicar de novo.';
     if (status === 503) return (motivo || 'A lista de agentes está indisponível.') + ' Confira o registro de agentes no servidor.';
     return (motivo || 'O servidor respondeu com o erro ' + status + '.') + ' Tente de novo; se repetir, veja o log do Web (journalctl -u dgclaw-web).';
@@ -94,7 +94,7 @@
   const PASSOS = {
     agente: [
       { alvo: '#secAgente', titulo: 'Escolher o agente',
-        oque: 'A lista de todos os agentes do seu DG Claw, o Admin primeiro. A tela mostra o histórico de um por vez.',
+        oque: 'A lista de todos os agentes do seu Prumo da Locadora, o Admin primeiro. A tela mostra o histórico de um por vez.',
         como: 'A lista vem do registro de agentes do servidor. Ao trocar, a tela busca de novo as fontes e a linha do tempo daquele agente.',
         porque: 'Cada agente tem a própria casa e o próprio histórico. Você escolhe de quem quer conferir o que foi feito.' },
     ],

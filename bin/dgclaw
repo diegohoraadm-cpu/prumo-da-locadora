@@ -488,7 +488,7 @@ regravar_identidade_md() {
     [ -f "$tpl/ambiente/agente.md" ] || falha "o modelo $tpl/ambiente/agente.md nao existe." \
         "a copia do DG Claw em $APP_DIR esta incompleta; reinstale com o instalador."
     [ -f "$tpl/ambiente/topo.md" ] || falha "o modelo $tpl/ambiente/topo.md nao existe." \
-        "a copia do DG Claw em $APP_DIR esta incompleta; reinstale com o instalador."
+        "a copia do Prumo da Locadora em $APP_DIR esta incompleta; reinstale com o instalador."
     # Monta tudo antes de gravar, com &&: chamada dentro de `( ... ) || aviso` o set -e nao vale,
     # e um passo que falhasse no meio deixaria um identidade.md parcial sem aviso.
     # A regra numero 1 (responder primeiro, rapida/curta/longa) vai no TOPO: no fim, depois de um
@@ -824,7 +824,7 @@ criar_rede() {
     local faixa prefixo
     faixa="$(faixa_rede_efetiva)"
     prefixo="${faixa%.0.0/16}"
-    # O label dgclaw.v1=1 marca a rede como do DG Claw v1: o instalador usa isso para nao confundir com
+    # O label dgclaw.v1=1 marca a rede como do Prumo da Locadora v1: o instalador usa isso para nao confundir com
     # redes de outro sistema que tambem comecam com "dgclaw-" (ele checa a faixa contra elas).
     executar podman network create --disable-dns --label dgclaw.v1=1 --label "dgclaw.agente=$C_SLUG" \
         --subnet "$prefixo.$C_N.0/24" "$rede" >/dev/null
@@ -1513,7 +1513,7 @@ agente_recriar() {
     img_atual="$(podman inspect -f '{{.Image}}' "$c" 2>/dev/null || true)"
     img_nova="$(podman image inspect -f '{{.Id}}' "$DGCLAW_IMAGEM" 2>/dev/null || true)"
     if [ "$forcar" = 0 ] && [ -n "$img_nova" ] && [ "$img_atual" = "$img_nova" ]; then
-        # Mesma imagem, mas o DNS do servidor e privado e o container nasceu antes de o DG Claw dar
+        # Mesma imagem, mas o DNS do servidor e privado e o container nasceu antes de o Prumo da Locadora dar
         # DNS publico aos agentes: o podman nao troca o DNS de container existente, so recriando.
         dns_containers_calcular
         if [ "${#DNS_CONTAINER_ARGS[@]}" -gt 0 ] \
@@ -2190,7 +2190,7 @@ dominio_mostrar() {
         printf 'Modo:                    atras de proxy existente (o HTTPS e do seu nginx, Caddy ou tunel)\n'
         printf 'Porta local do painel:   127.0.0.1:%s\n' "$porta"
         if [ -n "${DGCLAW_DOMINIO:-}" ]; then
-            printf 'Para o seu proxy apontar para o DG Claw, use um destes trechos:\n'
+            printf 'Para o seu proxy apontar para o Prumo da Locadora, use um destes trechos:\n'
             imprimir_trechos_proxy "$DGCLAW_DOMINIO" "$porta"
         fi
         printf '\nPara usar outro nome: sudo dgclaw dominio trocar <nome> (grava o nome e mostra os trechos de novo; o seu proxy voce atualiza).\n'
@@ -2209,7 +2209,7 @@ dominio_trocar_proxy() {
     info "o Caddy, o DNS e o HTTPS sao do seu proxy: nao mexi em nada disso."
     dominio_gravar_env "$novo"
     ok "dominio gravado em $DG_ETC/dgclaw.env"
-    printf '\nFalta atualizar o seu proxy para o nome novo (o antigo deixa de ser o do DG Claw quando voce trocar). Use o trecho do seu caso:\n'
+    printf '\nFalta atualizar o seu proxy para o nome novo (o antigo deixa de ser o do Prumo da Locadora quando voce trocar). Use o trecho do seu caso:\n'
     imprimir_trechos_proxy "$novo" "$porta"
     printf '\nDepois que o proxy estiver apontando, o painel abre em: https://%s/\n' "$novo"
     printf 'A senha e os agentes continuam os mesmos; quem estava logado precisa entrar de novo no endereco novo.\n'
@@ -2379,7 +2379,7 @@ status_geral() {
     if modo_proxy_existente; then
         # O HTTPS e do proxy da pessoa (nginx, Caddy dela, tunel): nao e servico nosso para cobrar.
         unidades=(dgclaw-web dgclaw-admin)
-        s_ok "modo proxy existente: o HTTPS fica com o seu proxy (DG Claw Web so em 127.0.0.1:$porta_web)"
+        s_ok "modo proxy existente: o HTTPS fica com o seu proxy (Prumo da Locadora Web so em 127.0.0.1:$porta_web)"
     fi
     for u in "${unidades[@]}"; do
         if [ "$(systemctl is-active "$u" 2>/dev/null)" = active ]; then s_ok "servico $u de pe"

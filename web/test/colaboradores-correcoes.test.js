@@ -55,7 +55,7 @@ test('achado 2: envio do colaborador que só entra na fila não o torna autor da
     const fila = await x.c.post('/api/v1/agents/ana/send', { json: { text: 'só entrei na fila' } });
     assert.equal(fila.status, 200); assert.equal(fila.json.fila.motivo, 'permissao');
     const nega = await x.c.post('/api/v1/agents/ana/permissao', { json: { decisao: 'aprovar', tool_use_id: 'tu1' } });
-    assert.equal(nega.status, 403); assert.match(nega.json.erro, /Essa confirmação é do dono do DG Claw/);
+    assert.equal(nega.status, 403); assert.match(nega.json.erro, /Essa confirmação é do dono do Prumo da Locadora/);
     assert.equal(s.rAna.rec.permissoes.length, 0, 'nada pode ter chegado ao runner');
     assert.equal((await s.dono.post('/api/v1/agents/ana/permissao', { json: { decisao: 'aprovar', tool_use_id: 'tu1' } })).status, 200);
   } finally { await s.fechar(); }

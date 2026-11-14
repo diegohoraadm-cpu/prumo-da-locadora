@@ -10,7 +10,7 @@
 #   dgclaw colaborador reenviar <id-ou-email> [--json]
 #   dgclaw colaborador revogar <id-ou-email> [--json]
 #
-# Quem faz o trabalho e o DG Claw Web (a regra do convite, a senha temporaria, o e-mail e a lista ficam la). Este comando
+# Quem faz o trabalho e o Prumo da Locadora Web (a regra do convite, a senha temporaria, o e-mail e a lista ficam la). Este comando
 # fala com ele por um socket Unix local, <pasta de dados do Web>/admin.sock, que so o root abre: nao passa por senha do
 # painel nem pela internet. O corpo do pedido e montado pelo jq e vai ao curl pelo stdin, e a resposta nunca passa por
 # arquivo, porque ela traz a senha temporaria. Referencia: web/docs/COLABORADORES.md.
@@ -53,7 +53,7 @@ colab_chamar() {
         resp="$(curl -sS --max-time 40 --unix-socket "$sock" -X "$metodo" -w $'\n%{http_code}' "http://dgclaw$caminho" 2>&1)" || rc=$?
     fi
     if [ "$rc" -ne 0 ]; then
-        falha "nao consegui falar com o DG Claw Web pelo socket $sock (curl saiu com $rc: $(printf '%s' "$resp" | head -c 200 | tr '\n' ' '))." \
+        falha "nao consegui falar com o Prumo da Locadora Web pelo socket $sock (curl saiu com $rc: $(printf '%s' "$resp" | head -c 200 | tr '\n' ' '))." \
             "veja se o Web esta de pe: systemctl status dgclaw-web. Se ele acabou de ser atualizado, reinicie-o: sudo systemctl restart dgclaw-web (o socket nasce no inicio)."
     fi
     COLAB_STATUS="${resp##*$'\n'}"

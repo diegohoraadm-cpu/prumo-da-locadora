@@ -21,11 +21,11 @@ const CAMPOS_DO_LOGIN = ['estado', 'link', 'codigoDispositivo', 'mensagem'];
 const EM_ANDAMENTO = new Set(['aguardando_link', 'aguardando_codigo', 'aguardando_navegador']);
 const usaChaveDeApi = (auth) => /^(api|token)$/i.test(String(auth || ''));
 
-const MSG_OCUPADO = 'Outra pessoa está conectando a conta deste agente agora. Espere ela terminar (no máximo 15 minutos) ou avise o dono do DG Claw.';
+const MSG_OCUPADO = 'Outra pessoa está conectando a conta deste agente agora. Espere ela terminar (no máximo 15 minutos) ou avise o dono do Prumo da Locadora.';
 const MSG_DONO_OCUPADO = (email) => `O colaborador ${email} está conectando a conta deste agente agora. Espere ele terminar ou toque em Cancelar para tomar a vez.`;
 const MSG_SEM_RESERVA = 'Você não tem um login em andamento neste agente. Toque em "Gerar link de login" primeiro.';
 const MSG_JA_CONECTADO = 'Este agente já está conectado. Nada foi enviado.';
-const MSG_EXPIRADO = 'A conta deste agente expirou e só o dono do DG Claw reconecta. Peça ao dono para reconectar em Conectar conta.';
+const MSG_EXPIRADO = 'A conta deste agente expirou e só o dono do Prumo da Locadora reconecta. Peça ao dono para reconectar em Conectar conta.';
 const MSG_CHAVE_API = 'Este agente usa chave de API, não conta de assinatura. Não há conta para conectar.';
 
 function criarContaColaborador({ dataDir, login, log, agora, escreveArquivo }) {
@@ -171,12 +171,12 @@ function criarContaColaborador({ dataDir, login, log, agora, escreveArquivo }) {
   }
 
   function recusaPorSituacao(s) {
-    if (s.atualizar) return erro(503, 'O programa deste agente ainda é de uma versão antiga e, por segurança, não deixa o colaborador conectar a conta. Avise o dono do DG Claw para atualizar (comando "dgclaw atualizar", que recria o agente com a versão nova).');
+    if (s.atualizar) return erro(503, 'O programa deste agente ainda é de uma versão antiga e, por segurança, não deixa o colaborador conectar a conta. Avise o dono do Prumo da Locadora para atualizar (comando "dgclaw atualizar", que recria o agente com a versão nova).');
     switch (s.tipo) {
       case 'conectado': return erro(409, MSG_JA_CONECTADO);
       case 'expirado': return erro(403, MSG_EXPIRADO);
       case 'chave_api': return erro(409, MSG_CHAVE_API);
-      default: return erro(503, `Não consegui confirmar que este agente está sem conta (${s.motivo || 'sem resposta clara do agente'}), então não deixo conectar agora. Tente de novo em instantes; se continuar, avise o dono do DG Claw.`);
+      default: return erro(503, `Não consegui confirmar que este agente está sem conta (${s.motivo || 'sem resposta clara do agente'}), então não deixo conectar agora. Tente de novo em instantes; se continuar, avise o dono do Prumo da Locadora.`);
     }
   }
 
@@ -210,10 +210,10 @@ function criarContaColaborador({ dataDir, login, log, agora, escreveArquivo }) {
   /** Grava a tentativa do colaborador antes de o login começar. Devolve null ou o erro 503. */
   async function gravaPendente(agente, q, provedor) {
     const inst = instanciaDe(agente);
-    if (!inst) return erro(503, 'Não consegui identificar esta instância do agente para registrar a tentativa de login, então não iniciei. Avise o dono do DG Claw.');
+    if (!inst) return erro(503, 'Não consegui identificar esta instância do agente para registrar a tentativa de login, então não iniciei. Avise o dono do Prumo da Locadora.');
     try { await grava({ [kPend(agente.slug)]: { instancia: inst, por: 'colaborador', colaborador_id: q.id, email: q.email, em: relogio(), pendente: true, provedor } }); return null; } catch (e) {
       log('erro', `Não registrei a tentativa de login de ${q.email} no agente ${agente.slug} (${e.message}); o login não foi iniciado.`);
-      return erro(503, `Não consegui registrar a tentativa de login (${e.message}), então não iniciei. Avise o dono do DG Claw (disco ou permissão da pasta de dados do Web).`);
+      return erro(503, `Não consegui registrar a tentativa de login (${e.message}), então não iniciei. Avise o dono do Prumo da Locadora (disco ou permissão da pasta de dados do Web).`);
     }
   }
   /** A tentativa deste colaborador terminou sem conta: apaga o rastro (sem falhar a operação se não der). */
@@ -417,7 +417,7 @@ function criarContaColaborador({ dataDir, login, log, agora, escreveArquivo }) {
     const q = quem(sessao);
     return emFila(agente.slug, async () => {
       const r = reservaViva(agente.slug);
-      if (q.tipo === 'colaborador' && !mesma(r, q)) return erro(403, 'Você só pode cancelar o login que você mesmo começou. Se for de outra pessoa, avise o dono do DG Claw.');
+      if (q.tipo === 'colaborador' && !mesma(r, q)) return erro(403, 'Você só pode cancelar o login que você mesmo começou. Se for de outra pessoa, avise o dono do Prumo da Locadora.');
       const { res } = await cancelaEReconcilia(agente, r && r.tipo === 'colaborador' ? r.id : null);
       if (res.status < 300) reservas.delete(agente.slug);
       return filtraResultado(res, q);

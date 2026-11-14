@@ -149,7 +149,7 @@ test('login expirado: o colaborador nunca reconecta, nem a conta que ele mesmo c
     const g = await x.c.get(LOGIN);
     assert.equal(g.json.so_dono, true); assert.equal(g.json.precisa_login, false);
     const p = await x.c.post(LOGIN, { json: {} });
-    assert.equal(p.status, 403); assert.match(p.json.erro, /só o dono do DG Claw reconecta/);
+    assert.equal(p.status, 403); assert.match(p.json.erro, /só o dono do Prumo da Locadora reconecta/);
     assert.equal(s.rAna.rec.loginPosts, 0);
   });
   await comColab({}, async (s, x) => {
@@ -162,7 +162,7 @@ test('login expirado: o colaborador nunca reconecta, nem a conta que ele mesmo c
     muda(s, Object.assign({}, EXPIRADO, { login: { estado: 'nenhum' } }));
     // credencial presente, mesmo vencida e com autoria dele: só o dono reconecta
     const p = await x.c.post(LOGIN, { json: {} });
-    assert.equal(p.status, 403, p.texto); assert.match(p.json.erro, /só o dono do DG Claw reconecta.*Conectar conta/);
+    assert.equal(p.status, 403, p.texto); assert.match(p.json.erro, /só o dono do Prumo da Locadora reconecta.*Conectar conta/);
     assert.equal(s.rAna.rec.loginPosts, 1, 'só o login original chegou ao runner');
   });
 });

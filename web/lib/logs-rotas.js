@@ -92,7 +92,7 @@ function criarLogsRotas({ registro, log, agora, orcamento, arquivoDocs, leitor: 
     let texto;
     try { texto = await fs.promises.readFile(docsPath, 'utf8'); } catch (e) {
       log('erro', `Logs: não li ${docsPath} (${e.code || e.message}).`);
-      return H.erroJson(res, 500, 'A documentação dos logs não está instalada neste servidor. Reinstale o DG Claw Web.');
+      return H.erroJson(res, 500, 'A documentação dos logs não está instalada neste servidor. Reinstale o Prumo da Locadora Web.');
     }
     res.writeHead(200, { 'Content-Type': 'text/markdown; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
     res.end(texto);
@@ -140,7 +140,7 @@ function criarLogsRotas({ registro, log, agora, orcamento, arquivoDocs, leitor: 
     if (p !== BASE && !p.startsWith(`${BASE}/`)) return false;
     if (!sessao) { H.erroJson(res, 401, 'Você precisa entrar para ver os logs. Faça login em /login.'); return true; }
     if (!autorizado(sessao)) {
-      H.erroJson(res, 403, 'Os logs dos agentes são só do dono do DG Claw, pela tela Logs do Admin. Agentes e colaboradores não usam esta rota.');
+      H.erroJson(res, 403, 'Os logs dos agentes são só do dono do Prumo da Locadora, pela tela Logs do Admin. Agentes e colaboradores não usam esta rota.');
       return true;
     }
     if (req.method !== 'GET') { H.erroJson(res, 405, `Use GET em ${p}. Os logs são só de leitura.`); return true; }

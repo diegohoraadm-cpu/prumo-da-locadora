@@ -45,7 +45,7 @@
 
 set -euo pipefail
 
-# Mesma regra de DNS dos containers do DG Claw (bin/dgclaw, criar_container): a sonda tem de
+# Mesma regra de DNS dos containers do Prumo da Locadora (bin/dgclaw, criar_container): a sonda tem de
 # nascer com o mesmo DNS que os agentes, senao o teste mede um ambiente diferente.
 # shellcheck source=lib/dns-containers.sh
 . "$(dirname "${BASH_SOURCE[0]}")/../lib/dns-containers.sh"

@@ -88,7 +88,7 @@ caso_proxy_com_caddy_ja_instalado_nao_mexe_nele() {
     EXTRA_ENV=("DGCLAW_STUB_INSTALADOS=caddy")
     afirma "a instalacao termina com sucesso" proxy_basico
     afirma "o Caddyfile dele ficou intacto" grep -q '^loja.exemplo.com {' "$RAIZ/etc/caddy/Caddyfile"
-    afirma "e sem nenhuma linha nossa" igual 0 "$(grep -c 'DG Claw' "$RAIZ/etc/caddy/Caddyfile")"
+    afirma "e sem nenhuma linha nossa" igual 0 "$(grep -c 'Prumo da Locadora' "$RAIZ/etc/caddy/Caddyfile")"
     nega "nenhum systemctl de caddy" grep -qE '^systemctl .*caddy' "$STUB_LOG"
     limpar_cenario
 }
@@ -130,7 +130,7 @@ caso_proxy_reexecucao_sem_a_flag_mantem_o_modo_e_sem_proxy_existente_volta_ao_no
     : >"$STUB_LOG"
     afirma "--sem-proxy-existente volta ao normal" instalar "$PAINEL_PW" --usuario maria --provedor claude --sem-proxy-existente
     afirma "modo gravado como 0" grep -qx 'DGCLAW_PROXY_EXISTENTE=0' "$env"
-    afirma "Caddyfile do DG Claw escrito com a porta do painel" tem "$RAIZ/etc/caddy/Caddyfile" "reverse_proxy 127.0.0.1:8400"
+    afirma "Caddyfile do Prumo da Locadora escrito com a porta do painel" tem "$RAIZ/etc/caddy/Caddyfile" "reverse_proxy 127.0.0.1:8400"
     afirma "Caddyfile com o dominio" tem "$RAIZ/etc/caddy/Caddyfile" "painel.exemplo.com.br {"
     afirma "ufw voltou a ser configurado" tem "$STUB_LOG" "ufw allow 80/tcp"
     afirma "mensagem final de volta ao normal" tem "$SAIDA" "instalado e configurado em https://painel.exemplo.com.br"
@@ -187,7 +187,7 @@ caso_trocar_a_porta_do_painel_regrava_o_conf_d_e_preserva_o_outro_site() {
     printf 'import conf.d/*\n\noutro.exemplo.com {\n\trespond "oi"\n}\n' >"$RAIZ/etc/caddy/Caddyfile"
     afirma "instala com a porta padrao" instalar "$PAINEL_PW" --usuario maria --provedor claude --dominio painel.exemplo.com.br
     local site="$RAIZ/etc/caddy/conf.d/dgclaw.caddy"
-    afirma "site do DG Claw em conf.d na 8300" tem "$site" "reverse_proxy 127.0.0.1:8300"
+    afirma "site do Prumo da Locadora em conf.d na 8300" tem "$site" "reverse_proxy 127.0.0.1:8300"
     afirma "reinstala com --porta-painel 8400" instalar "$PAINEL_PW" --usuario maria --provedor claude --porta-painel 8400
     afirma "conf.d passou a apontar para 8400" tem "$site" "reverse_proxy 127.0.0.1:8400"
     afirma "o site de outra pessoa sobreviveu" tem "$RAIZ/etc/caddy/Caddyfile" 'respond "oi"'
@@ -217,7 +217,7 @@ caso_porta_do_painel_reservada_do_dgclaw_e_recusada() {
     for porta in 4300 4311 4399 8311 8399; do
         novo_cenario
         nega "porta $porta recusada" instalacao_basica --dominio painel.exemplo.com.br --porta-painel "$porta"
-        afirma "porta $porta: diz que e reservada" tem "$SAIDA" "e reservada ao DG Claw"
+        afirma "porta $porta: diz que e reservada" tem "$SAIDA" "e reservada ao Prumo da Locadora"
         afirma "porta $porta: sugere outra" tem "$SAIDA" "--porta-painel 8400"
         afirma "porta $porta: nada criado" vazio "$RAIZ"
         limpar_cenario
@@ -573,7 +573,7 @@ caso_firewall_remove_saltos_de_faixa_antiga_sem_tocar_nas_regras_dos_outros() {
     novo_cenario
     mkdir -p "$RAIZ/etc/dgclaw"; printf 'DGCLAW_FAIXA_REDE=10.89.0.0/16\n' >"$RAIZ/etc/dgclaw/dgclaw.env"
     afirma "aplica na faixa antiga" rodar_firewall_falso
-    # Outra pessoa tem regras proprias na INPUT, uma delas com -s, que nao saltam para o DG Claw.
+    # Outra pessoa tem regras proprias na INPUT, uma delas com -s, que nao saltam para o Prumo da Locadora.
     # O iptables falso guarda em ordem: poe as dela no topo e uma de cerca de OUTRO sistema.
     printf '|INPUT| -s 10.200.0.0/16 -j ACCEPT\n|INPUT| -p tcp --dport 22 -j ACCEPT\n' >>"$TMP/estado/ipt-regras"
     printf 'DGCLAW_FAIXA_REDE=10.91.0.0/16\n' >"$RAIZ/etc/dgclaw/dgclaw.env"

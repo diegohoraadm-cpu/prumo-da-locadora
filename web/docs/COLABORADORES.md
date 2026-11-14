@@ -106,9 +106,9 @@ sudo dgclaw colaborador reenviar <id-ou-email> [--json]
 sudo dgclaw colaborador revogar <id-ou-email> [--json]
 ```
 
-`criar` e `reenviar` imprimem o texto do convite pronto para copiar (endereço, login e a senha temporária, que vale 7 dias). O Admin nunca é compartilhado. O link usa o domínio do DG Claw (`DGCLAW_DOMINIO` do `dgclaw.env`); sem domínio, o link é o endereço local, só abre no servidor, e o comando avisa.
+`criar` e `reenviar` imprimem o texto do convite pronto para copiar (endereço, login e a senha temporária, que vale 7 dias). O Admin nunca é compartilhado. O link usa o domínio do Prumo da Locadora (`DGCLAW_DOMINIO` do `dgclaw.env`); sem domínio, o link é o endereço local, só abre no servidor, e o comando avisa.
 
-O comando fala com o painel por um socket local, `admin.sock`, na pasta de dados do Web (veja "Socket do servidor" abaixo). Se ele disser que não consegue falar com o Web, confira `systemctl status dgclaw-web`; depois de atualizar o DG Claw, o Web precisa ser reiniciado (`sudo systemctl restart dgclaw-web`) para o socket existir.
+O comando fala com o painel por um socket local, `admin.sock`, na pasta de dados do Web (veja "Socket do servidor" abaixo). Se ele disser que não consegue falar com o Web, confira `systemctl status dgclaw-web`; depois de atualizar o Prumo da Locadora, o Web precisa ser reiniciado (`sudo systemctl restart dgclaw-web`) para o socket existir.
 
 ---
 

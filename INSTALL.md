@@ -105,8 +105,8 @@ opção, o Admin faz a preparação quando você cria o primeiro agente, e a esp
 | `--dominio <nome>` | Endereço próprio do painel (padrão: um endereço gratuito, escolhido sozinho). |
 | `--provedor claude\|codex` | Com qual assinatura o Admin trabalha (padrão: o que estiver logado no servidor). |
 | `--proxy-existente` | Para servidor que já tem nginx, Caddy ou túnel nas portas 80 e 443. Exige `--dominio`. Fica valendo nas próximas execuções. |
-| `--sem-proxy-existente` | Volta ao modo normal (Caddy do DG Claw) numa nova execução. |
-| `--porta-painel <N>` | Porta local do DG Claw Web, de 1024 a 65535 (padrão 8300). |
+| `--sem-proxy-existente` | Volta ao modo normal (Caddy do Prumo da Locadora) numa nova execução. |
+| `--porta-painel <N>` | Porta local do Prumo da Locadora Web, de 1024 a 65535 (padrão 8300). |
 | `--faixa-rede <A.B.0.0/16>` | Faixa de IPs das redes dos agentes (padrão 10.89.0.0/16). Não muda depois que há agentes criados. |
 | `--senha-stdin`, `--novo-primeiro-acesso` | Senha pela entrada padrão, ou um link de primeiro acesso novo. |
 | `--ensaio` | Mostra o que faria, sem mudar nada. |
@@ -127,15 +127,15 @@ O que muda nesse modo:
 - **O HTTPS é do seu proxy.** O instalador não instala nem configura o Caddy (se ele já existe, não é
   tocado) e não mexe no ufw: nenhuma regra nova, nada ligado. As portas 80 e 443 ocupadas viram só um
   aviso.
-- **O DG Claw Web escuta somente em `127.0.0.1:8300`.** Para outra porta, use `--porta-painel 8400`. Se a
+- **O Prumo da Locadora Web escuta somente em `127.0.0.1:8300`.** Para outra porta, use `--porta-painel 8400`. Se a
   porta estiver em uso por outro programa, o instalador para e pede outra.
 - **O domínio é obrigatório.** O nginx ou o túnel precisa de um nome para responder, e os endereços
-  gratuitos (sslip.io, hstgr.cloud) só funcionam apontando para o Caddy do DG Claw.
+  gratuitos (sslip.io, hstgr.cloud) só funcionam apontando para o Caddy do Prumo da Locadora.
 - **No fim, o instalador imprime os trechos prontos para copiar:** o bloco `server` do nginx (com limite
   de upload, WebSocket e respostas em streaming) e as linhas do `ingress` do túnel da Cloudflare, mais o
   comando do DNS. Para o nginx: salve em `/etc/nginx/sites-available/dgclaw`, ligue com um link em
   `sites-enabled`, rode `nginx -t && systemctl reload nginx` e peça o HTTPS com `certbot --nginx -d <dominio>`.
-- **O link de primeiro acesso só abre depois que o proxy estiver apontando** para o DG Claw, e vale 30
+- **O link de primeiro acesso só abre depois que o proxy estiver apontando** para o Prumo da Locadora, e vale 30
   minutos. Se expirar, `sudo dgclaw primeiro-acesso` gera outro.
 - **O modo fica guardado** (`DGCLAW_PROXY_EXISTENTE=1` no `dgclaw.env`), então rodar o instalador de novo
   e `sudo dgclaw atualizar` continuam atrás do seu proxy sem repetir a opção. Para voltar ao Caddy do DG
@@ -153,7 +153,7 @@ Por isso o instalador confere as redes do podman e as rotas da máquina antes de
 e recusa uma faixa que já esteja ocupada, dizendo qual rede ou rota está no caminho.
 
 Para quem já tem podman ou docker, a sugestão é `--faixa-rede 10.91.0.0/16` (a 10.89 é a que as
-instalações existentes do DG Claw usam). A faixa precisa ser um `/16` privado: `10.x.0.0/16`,
+instalações existentes do Prumo da Locadora usam). A faixa precisa ser um `/16` privado: `10.x.0.0/16`,
 `172.16.0.0/16` até `172.31.0.0/16` ou `192.168.0.0/16`. Ela fica guardada em `DGCLAW_FAIXA_REDE` no
 `dgclaw.env`. Com agentes já criados, o instalador não troca a faixa em silêncio: trocar exige recriar a
 rede de cada agente, então ele para e explica.

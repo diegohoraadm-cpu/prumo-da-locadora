@@ -17,6 +17,12 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 ### Alterado
 
+- Perguntas mais fáceis de responder no celular: cada pergunta fica sozinha no seu item (`A1- Aplico
+  o reajuste?`), com `O que muda:` e `Sem resposta:` (o default) em linhas próprias logo abaixo, e a
+  última linha `PRECISO DE VOCÊ:` só lista as respostas (`A1 sim/não · B1 sim/não?`). Antes a pergunta
+  ficava só na última linha, longe do item a que se referia. Vale para agentes novos; quem já tem o
+  agente instalado pode pedir a ele para adotar o formato.
+
 - Você conversa só com o seu agente principal. Os outros agentes passam a ser a equipe dele: saem
   da lista de conversas e aparecem na aba **Equipe** da Mesa, com nome, papel e o que estão fazendo.
   Para ter um agente novo, peça ao principal; ele decide se basta uma sessão paralela ou se precisa

@@ -14,6 +14,7 @@ cab = [str(c).strip() if c is not None else "" for c in linhas[i]]
 docs = []
 for l in linhas[i + 1:]:
     d = {cab[k]: ("" if l[k] is None else str(l[k]).strip()) for k in range(len(cab)) if cab[k]}
+    # aceita SGL-NNN (código atual) e SG-NNN (nome antigo): [A-Z]{2,5} cobre os dois
     if re.match(r"^[A-Z]{2,5}-\d+", d.get(c_cod, "")):
         docs.append(d)
 for d in docs:

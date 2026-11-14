@@ -1,10 +1,10 @@
 ---
-name: guardiao-do-sg
-description: Guarda o ÍNDICE do sistema de gestão do dono (lista mestra de documentos) e cuida das cópias datadas desses documentos. Monta e mantém memory/sg-indice.md a partir da lista mestra que o dono mandar; dá nome a um documento recebido e diz em qual pasta ele vai; responde "qual versão vale" e "onde está o documento X"; avisa quando uma cópia passa de 30 dias; cria os lembretes do registro da semana, do encontro do mês e da próxima revisão de um documento; prepara o texto do registro para o dono colar no sistema onde o original vive. Use SEMPRE que o dono falar de sistema de gestão, SG, lista mestra, código de documento, procedimento, rotina, registro semanal, reunião do mês, "qual versão vale", "onde está o procedimento", "onde guardo este documento", "monta meu registro da semana", "ative o guardião do SG", e quando chegar um recado [LEMBRETE] cujo texto comece por "SG:". NÃO use para calcular nada que o sistema do dono calcula nem para preencher telas de outro sistema.
+name: guardiao-do-sgl
+description: Guarda o ÍNDICE do sistema de gestão do dono (lista mestra de documentos) e cuida das cópias datadas desses documentos. Monta e mantém memory/sgl-indice.md a partir da lista mestra que o dono mandar; dá nome a um documento recebido e diz em qual pasta ele vai; responde "qual versão vale" e "onde está o documento X"; avisa quando uma cópia passa de 30 dias; cria os lembretes do registro da semana, do encontro do mês e da próxima revisão de um documento; prepara o texto do registro para o dono colar no sistema onde o original vive. Use SEMPRE que o dono falar de sistema de gestão, SGL, lista mestra, código de documento, procedimento, rotina, registro semanal, reunião do mês, "qual versão vale", "onde está o procedimento", "onde guardo este documento", "monta meu registro da semana", "ative o guardião do SGL", e quando chegar um recado [LEMBRETE] cujo texto comece por "SGL:". NÃO use para calcular nada que o sistema do dono calcula nem para preencher telas de outro sistema.
 user-invocable: true
 ---
 
-# /dgclaw:guardiao-do-sg, o índice do sistema de gestão do dono
+# /dgclaw:guardiao-do-sgl, o índice do sistema de gestão do dono
 
 O dono tem um sistema de gestão: uma lista mestra de documentos (procedimentos, rotinas, registros) e um
 lugar onde o original de cada um vive (um sistema na internet, uma pasta, um caderno). Você guarda só o
@@ -25,9 +25,9 @@ datadas** na pasta de documentos dele. A regra que vale em toda resposta desta h
 - **Não grava na pasta do Drive por conta própria.** Você diz o nome e a pasta; o dono salva. Só grave
   pelo conector se o dono pedir com todas as letras, e confira abrindo o arquivo depois.
 
-## Primeira vez: as perguntas da configuração (`memory/sg-config.md`)
+## Primeira vez: as perguntas da configuração (`memory/sgl-config.md`)
 
-Antes de montar o índice, confira se `memory/sg-config.md` existe. Se não existir, faça as perguntas
+Antes de montar o índice, confira se `memory/sgl-config.md` existe. Se não existir, faça as perguntas
 abaixo. Se o dono mandar um arquivo de configuração pronto (o curso ou a consultoria dele pode ter um),
 leia, mostre em 5 linhas o que entendeu e grave depois do "ok" dele.
 
@@ -43,10 +43,10 @@ leia, mostre em 5 linhas o que entendeu e grave depois do "ok" dele.
 5. **Registro da semana:** que dia e hora? **Encontro do mês:** que dia (ex.: 1º dia útil, dia 5)?
    Sem resposta: segunda às 8h e 1º dia útil às 8h, e diga que dá para mudar.
 
-`memory/sg-config.md` guarda as respostas, uma por linha, com a data. A configuração nova substitui a
+`memory/sgl-config.md` guarda as respostas, uma por linha, com a data. A configuração nova substitui a
 antiga: nunca deixe as duas.
 
-## O arquivo do índice: `memory/sg-indice.md`
+## O arquivo do índice: `memory/sgl-indice.md`
 
 ```markdown
 # Índice do sistema de gestão
@@ -77,7 +77,7 @@ Campo vazio leva `—`. "Dado pessoal" é só `sim` ou `não`.
 2. Leia a planilha com o leitor desta habilidade, passando os nomes de coluna que estão na configuração:
 
    ```bash
-   python3 .dgclaw/plugin/skills/guardiao-do-sg/scripts/ler_lista.py "$ARQUIVO" \
+   python3 .dgclaw/plugin/skills/guardiao-do-sgl/scripts/ler_lista.py "$ARQUIVO" \
      "Código" "Título" "Área" "Status" \
      "Código interno" 'DOC-0?(\d+)' "Parte {n}"
    ```
@@ -127,24 +127,24 @@ pelo nome; passou disso, diga quantos são os outros.
 
 ## 5. Lembretes
 
-Use a habilidade `lembretes` (`dgclaw-api POST /api/v1/lembretes`). Todo texto começa por `SG:`.
+Use a habilidade `lembretes` (`dgclaw-api POST /api/v1/lembretes`). Todo texto começa por `SGL:`.
 
 1. **Registro da semana**, no dia e hora da configuração:
 
    ```bash
-   dgclaw-api POST /api/v1/lembretes '{"titulo":"SG","texto":"SG: registro da semana","regra":{"tipo":"semanal","dias":["seg"],"hora":"08:00"}}'
+   dgclaw-api POST /api/v1/lembretes '{"titulo":"SGL","texto":"SGL: registro da semana","regra":{"tipo":"semanal","dias":["seg"],"hora":"08:00"}}'
    ```
 
 2. **Encontro do mês.** Não há regra mensal, e "a cada 30 dias" escorrega. Crie um `unico` para cada um
    dos próximos 3 meses, no dia da configuração (1º dia útil = segunda a sexta; feriado o dono ajusta):
 
    ```bash
-   dgclaw-api POST /api/v1/lembretes '{"titulo":"SG","texto":"SG: encontro do mês e registro","regra":{"tipo":"unico","data":"2026-12-01","hora":"08:00"}}'
+   dgclaw-api POST /api/v1/lembretes '{"titulo":"SGL","texto":"SGL: encontro do mês e registro","regra":{"tipo":"unico","data":"2026-12-01","hora":"08:00"}}'
    ```
 
 3. **Próxima revisão de um documento:** um `unico` na data que o dono disser, 8h se ele não disser a
-   hora, com o texto `SG: revisar DOC-0xx`.
-4. **Quando chegar `[LEMBRETE] envio 1` com texto que começa por `SG:`:** avise o dono como manda a
+   hora, com o texto `SGL: revisar DOC-0xx`.
+4. **Quando chegar `[LEMBRETE] envio 1` com texto que começa por `SGL:`:** avise o dono como manda a
    habilidade `lembretes`. Se for o da semana, faça também a conferência das cópias (seção 4) e rode
    `dgclaw-api GET "/api/v1/lembretes?estado=ativo"`: restando menos de 2 do encontro do mês, crie o
    próximo. Nos envios seguintes, só o aviso.

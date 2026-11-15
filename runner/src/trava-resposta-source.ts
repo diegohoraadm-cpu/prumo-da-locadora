@@ -256,7 +256,7 @@ try {
     }
   }
 } catch (err) {
-  registrar("erro", "exceção inesperada: " + diagnostico(err), "o turno passou sem conferência; avisar quem mantém o DG Claw se repetir");
+  registrar("erro", "exceção inesperada: " + diagnostico(err), "o turno passou sem conferência; avisar quem mantém o Prumo da Locadora se repetir");
 }
 process.exit(0);
 `;

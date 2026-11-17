@@ -58,10 +58,30 @@ echo "instrucoes: sem marcador sobrando"
 for f in templates/CLAUDE.md.tmpl templates/AGENTS.md.tmpl templates/admin/CLAUDE.md templates/admin/AGENTS.md; do
     if grep -nE '<!-- /?so|\{\{SKILL:' "$REPO/$f" >/dev/null; then mal "$f ainda tem marcador do gerador"; else ok "$f limpo"; fi
 done
-if grep -q '/dgclaw:' "$REPO/templates/AGENTS.md.tmpl"; then
-    mal "AGENTS.md.tmpl chama skill por /dgclaw:nome (no Codex a skill e chamada pelo nome)"
-else ok "AGENTS.md.tmpl nao usa /dgclaw:nome"; fi
-if grep -q '/dgclaw:' "$REPO/templates/CLAUDE.md.tmpl"; then ok "CLAUDE.md.tmpl mantem /dgclaw:nome"; else mal "CLAUDE.md.tmpl perdeu o /dgclaw:nome"; fi
+# "[:]" evita o prefixo antigo escrito por extenso neste arquivo (o aceite F4.5 conta toda ocorrencia).
+# Nenhum plugin "dgclaw" existe: as skills ligadas ao agente ficam em ~/.claude/skills e atendem por /nome.
+if grep -q '/dgclaw[:]' "$REPO/templates/AGENTS.md.tmpl"; then
+    mal "AGENTS.md.tmpl chama skill pelo prefixo antigo (no Codex a skill e chamada pelo nome)"
+else ok "AGENTS.md.tmpl sem o prefixo antigo de skill"; fi
+if grep -q '/dgclaw[:]' "$REPO/templates/CLAUDE.md.tmpl"; then
+    mal "CLAUDE.md.tmpl ainda chama skill pelo prefixo antigo (a skill ligada atende por /nome)"
+else ok "CLAUDE.md.tmpl sem o prefixo antigo de skill"; fi
+if grep -qF '`/agenda`' "$REPO/templates/CLAUDE.md.tmpl"; then ok "CLAUDE.md.tmpl chama a skill ligada por /agenda"; else mal "CLAUDE.md.tmpl perdeu o /agenda"; fi
+
+echo "instrucoes: skill que nao e ligada ao agente vira o caminho do roteiro, nos dois motores"
+for s in connect tela mesa; do
+    for f in templates/CLAUDE.md.tmpl templates/AGENTS.md.tmpl; do
+        if grep -qF "/opt/dgclaw/app/skills/$s/SKILL.md" "$REPO/$f"; then ok "$f aponta o roteiro de $s"; else mal "$f nao aponta /opt/dgclaw/app/skills/$s/SKILL.md"; fi
+    done
+done
+echo "instrucoes: o agente nao cita nome interno ao dono; o Admin escreve sudo prumo ao dono"
+for f in templates/CLAUDE.md.tmpl templates/AGENTS.md.tmpl; do
+    if grep -qF 'Nunca cite ao dono nomes internos do sistema' "$REPO/$f"; then ok "$f tem a regra dos nomes internos"; else mal "$f sem a regra dos nomes internos"; fi
+done
+for f in templates/admin/CLAUDE.md templates/admin/AGENTS.md templates/ambiente/admin.md; do
+    if grep -qF 'Ao dono, escreva o comando como `sudo prumo …` (é o mesmo `dgclaw`); para executar, use `dgclaw`.' "$REPO/$f"; then ok "$f manda escrever sudo prumo ao dono"; else mal "$f sem a regra do sudo prumo ao dono"; fi
+done
+if grep -qF 'dgclaw colaborador criar' "$REPO/templates/admin/CLAUDE.md"; then ok "Admin ainda executa o comando de criar colaborador"; else mal "Admin perdeu o comando de criar colaborador"; fi
 
 echo "instrucoes: o gerador recusa marcador mal formado"
 tmp="$(mktemp -d)"
@@ -73,7 +93,7 @@ printf 'um\n<!-- so:claude -->\nsó claude {{SKILL:mesa}}\n<!-- /so -->\n<!-- so
 for f in aberto solto meio aninhado; do
     if bash "$GERADOR" --stdout "$tmp/$f.tmpl" claude >/dev/null 2>&1; then mal "gerador aceitou o marcador '$f'"; else ok "gerador recusou o marcador '$f'"; fi
 done
-esperado_claude=$'um\nsó claude /dgclaw:mesa\nfim'
+esperado_claude=$'um\nsó claude /mesa\nfim'
 esperado_codex=$'um\nsó codex mesa\nfim'
 if [ "$(bash "$GERADOR" --stdout "$tmp/bom.tmpl" claude)" = "$esperado_claude" ]; then ok "bloco e skill do Claude"; else mal "saida do Claude errada"; fi
 if [ "$(bash "$GERADOR" --stdout "$tmp/bom.tmpl" codex)" = "$esperado_codex" ]; then ok "bloco e skill do Codex"; else mal "saida do Codex errada"; fi

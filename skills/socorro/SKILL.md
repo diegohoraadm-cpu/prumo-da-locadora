@@ -45,9 +45,10 @@ resolve na tela, e o Cofre é só olhar o painel:
   **Entrar com a senha** na tela travada. Se a pessoa esqueceu a senha, `sudo prumo senha`.
 - **"Um agente ficou de fora da atualização"** (manual 3.2.1): na primeira atualização para a 1.0.5 a
   tela termina com "Atualizacao INCOMPLETA" e uma linha FALHOU por agente. É esperado nesta versão. Leia
-  o aviso da 1.0.5 e confira o que há a perder rodando `sudo dgclaw agente recriar <nome do agente>`
-  **sem** o `--forcar` (veja abaixo). Diga ao dono o que o `--forcar` perde (só o que foi instalado à
-  mão dentro da caixa; as rotinas padrão voltam ao padrão) e, com o sim dele, rode
+  o aviso da 1.0.5. Para conferir o que há a perder, o `recriar` sem `--forcar` (veja abaixo) pode TROCAR
+  a caixa, então só rode com o "posso?" do dono: "vou conferir o que se perderia ao trocar a caixa dele;
+  se não houver nada só dentro dela, o comando já troca". Diga ao dono o que a troca perde (só o que foi
+  instalado à mão dentro da caixa; as rotinas padrão voltam ao padrão) e, com o sim dele, rode
   `sudo dgclaw agente recriar <nome do agente> --forcar`.
 - **"Onde fica o Cofre?"** (manual 3.1.3): no menu da conversa (ícone de três traços), grupo
   **Segurança**, item **Cofre (chaves)**, que só o dono vê; no painel do agente, a aba **Cofre**, que o
@@ -58,27 +59,36 @@ Os comandos `sudo prumo ...` (entrar no painel) o dono digita no terminal do ser
 não sabe chegar lá, peça o acesso a quem instalou; não invente outro caminho.
 
 Agente sem container (`ausente`): `agente iniciar` não funciona. Antes, confirme que o container não existe
-de verdade: o `dgclaw agente listar` também mostra `ausente` quando o `podman inspect` falha por qualquer
-motivo. Rode `podman ps -a --format '{{.Names}}'`: tem de sair sem erro e sem `dgclaw-<nome do agente>`.
-Se o podman der erro, não é agente ausente: não use o `--forcar`, pare e entregue a saída a quem cuida do
-servidor. Confirmado, a receita é uma só, com o sim do dono:
+de verdade, porque o `dgclaw agente listar` também mostra `ausente` quando o `podman inspect` falha por
+qualquer motivo (`estado_container`, bin/dgclaw). Rode `sudo podman container exists dgclaw-<nome do agente>`
+e olhe o código de saída (`echo $?`): 0 é "existe" (não é ausente), 1 é "não existe" (ausente de verdade) e
+qualquer outro valor é erro do podman. Com erro, não é agente ausente: não use o `--forcar`, pare e entregue
+a saída a quem cuida do servidor. Com 1, a receita é uma só, com o sim do dono:
 `sudo dgclaw agente recriar <nome do agente> --forcar` (manual 3.2.1). Como não existe caixa, não há
 lista nem nada a perder. Para conferir, veja se
 `/var/lib/dgclaw/agentes/<nome do agente>/home/.dgclaw/unidades-padrao.sha256` passou a existir
 (`sudo ls -l` nesse caminho); o `dgclaw status` não prova isso.
 
-No caso do agente de fora da atualização, a conferência de verdade é o `recriar` **sem** o `--forcar`:
-`sudo dgclaw agente recriar <nome do agente>`. Sem o `--forcar` ele não apaga nada e faz uma de três
-coisas: mostra a lista do que existe só dentro da caixa (a lista completa fica também em
-`perdido-no-recriar-<data>.txt`, na casa do agente); diz que não conseguiu conferir, e por quê, e para
-com "nada foi mexido" (caixa em `stopping`, `podman exec` que falha); ou confere que não há nada só
-dentro da caixa e então troca. Quem decide é o que o comando disse na tela. **Não conclua nada pelo
-arquivo não existir:** ele só é gravado quando a conferência funcionou e achou algo. Para ler um arquivo
-que existe, use sempre o `sh -c` (a pasta é fechada para o usuário comum, e o `*` seria expandido antes
-do `sudo`): `sudo sh -c 'cat /var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-*.txt'`. Se
+No caso do agente de fora da atualização, o `recriar` SEM `--forcar` não é uma conferência inofensiva: ele
+pode trocar a caixa. Só o rode com o "posso?" do dono (Passo 3). Quem decide é o que ele disse na tela:
+1. Mostra a lista do que existe só dentro da caixa e para (a lista completa fica também em
+   `perdido-no-recriar-<data>.txt`, na casa do agente).
+2. Diz que não conseguiu conferir, e por quê, e para com "nada foi mexido" (inventário falhou, ou caixa
+   em `stopping`).
+3. Comprova que não há nada só dentro da caixa e TROCA a caixa de verdade: para, remove e recria o
+   container, e as rotinas padrão voltam ao padrão.
+4. Caixa `exited`, `created` ou `ausente`: diz só "deixei como está" e sai, sem inventário. Nada foi
+   conferido. Em `exited` ou `created`, ligue com `sudo dgclaw agente iniciar <nome do agente>` e repita, ou
+   adie; em `ausente`, a guarda do podman acima.
+5. A imagem já é a atual: "nada a recriar" e sai, sem inventário. Nada foi conferido e nada foi trocado.
+
+**Não apareceu lista não significa "nada a perder"**: nos casos 2, 4 e 5 ninguém conferiu, e o arquivo
+`perdido-no-recriar-<data>.txt` só é gravado quando a conferência funcionou e achou algo. Para ler um
+arquivo que existe, use sempre o `sh -c` (a pasta é fechada para o usuário comum, e o `*` seria expandido
+antes do `sudo`): `sudo sh -c 'cat /var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-*.txt'`. Se
 o comando disse que não conseguiu conferir, não use o `--forcar` ainda: diga ao dono e, se ele quiser
 guardar algo, peça que copie para a casa do agente antes. Na dúvida, adie: o agente segue funcionando
-na versão anterior. A rotina padrão que o dono desligou volta a rodar com o `--forcar`.
+na versão anterior. A rotina padrão que o dono desligou volta a rodar quando a caixa é trocada.
 
 Agente que ficou parado logo depois de criado (`created`) agora liga sozinho: o instalador liga no fim
 da instalação e da atualização, e a Sentinela tenta uma vez a cada 6 horas. Só se ele continuar

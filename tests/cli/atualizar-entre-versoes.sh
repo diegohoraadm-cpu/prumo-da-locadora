@@ -167,7 +167,7 @@ de_fora_ligados() {
     done
     echo "$n"
 }
-TEM_C4=nao; git -C "$REPO" show "$CAND:install.sh" | grep -q '/usr/local/bin/prumo' && TEM_C4=sim
+TEM_C4=nao; git -C "$REPO" show "$CAND:install.sh" | grep -q 'criar_atalho_prumo' && TEM_C4=sim
 
 # --- 3. primeira atualizacao: o atualizar.sh ANTIGO, o instalador e o recriar NOVOS ----------------------------
 echo imagem-v2 >"$STUB_ESTADO/imagem-id"   # a imagem "mudou"

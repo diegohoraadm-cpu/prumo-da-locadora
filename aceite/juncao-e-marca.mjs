@@ -51,7 +51,7 @@
 //   R1 prumo_igual_dgclaw=sim|nao|na      "na" só enquanto o install.sh não cria /usr/local/bin/prumo (lote C4)
 //   R1 segunda_resultado=INCOMPLETA|concluida
 //   R1 segunda_de_fora=<n>
-// Enquanto o C4 não estiver no candidato (detectado por "/usr/local/bin/prumo" no install.sh), o agente em
+// Enquanto o C4 não estiver no candidato (detectado por `criar_atalho_prumo` no install.sh), o agente em
 // created fica created e não entra na conta de "de fora"; com o C4, ele é ligado pelo install.sh novo ANTES
 // do recriar e fica de fora como os outros.
 import { execFileSync, spawnSync } from 'node:child_process';
@@ -352,7 +352,7 @@ function blocoR1() {
   if (sujo) info('atenção: há mudança não commitada; o teste instala o COMMIT candidato, não a árvore de trabalho');
   const blob = git(['rev-parse', `${ANTERIOR}:lib/atualizar.sh`]).trim();
   const versao = (ler('VERSION') || '').trim();
-  const temPrumo = (ler('install.sh') || '').includes('/usr/local/bin/prumo');
+  const temPrumo = (ler('install.sh') || '').includes('criar_atalho_prumo');
   const ch = rodarTeste(['bash', f, ANTERIOR, candidato], `${f} ${ANTERIOR.slice(0, 7)} ${candidato.slice(0, 7)}`, 30 * 60000);
   const deFora = temPrumo ? '4' : '3';
   confereChaves(ch, {

@@ -296,6 +296,8 @@ atualizar_checar_vida() {
             ATU_AGENTES_FALHOS+=" $slug"
             continue
         fi
+        # So o `created` (nunca subiu) e ligado aqui; `exited` pode ter sido desligado de proposito.
+        if [ "$estado" = created ] && "$DGCLAW_BIN_REAL" agente iniciar "$slug"; then estado="$(estado_container "$slug")"; fi
         if [ "$estado" != running ]; then
             aviso "agente $slug: container $estado (ele ja nao estava ligado ou nao subiu). Ligue com: dgclaw agente iniciar $slug"
             continue

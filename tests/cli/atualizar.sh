@@ -454,6 +454,19 @@ dgclaw atualizar --sem-baixar --ok-do-dono >"$TMP/o11.txt" 2>&1; rc=$?
 igual "sai com 0" "0" "$rc"
 afirma "avisa que usou o HEAD do clone" grep -q 'uso o HEAD do clone' "$TMP/o11.txt"
 
+echo "fim da atualizacao: agente created e ligado, agente exited fica como esta"
+echo created >"$STUB_ESTADO/c-dgclaw-ana"; echo exited >"$STUB_ESTADO/c-dgclaw-beto"
+echo imagem-v11 >"$STUB_ESTADO/imagem-id"
+: >"$STUB_LOG"
+parecer_segura --sem-baixar
+dgclaw atualizar --sem-baixar --ok-do-dono >"$TMP/o11c.txt" 2>&1
+afirma "o agente created foi ligado" grep -qx running "$STUB_ESTADO/c-dgclaw-ana"
+afirma "o log mostra o start do created" grep -q '^podman start dgclaw-ana' "$STUB_LOG"
+afirma "o agente exited continua exited" grep -qx exited "$STUB_ESTADO/c-dgclaw-beto"
+nega "o exited nunca recebe start" grep -q '^podman start dgclaw-beto' "$STUB_LOG"
+afirma "o exited so ganha o aviso de como ligar" grep -q 'agente beto: container exited.*dgclaw agente iniciar beto' "$TMP/o11c.txt"
+echo running >"$STUB_ESTADO/c-dgclaw-ana"; echo running >"$STUB_ESTADO/c-dgclaw-beto"
+
 echo "analise do uso: o relatorio cruza rotinas e scripts dos agentes com o que a versao nova muda"
 PARECER="$LIB/web/atualizacao/parecer.json"
 git -C "$TRAB" pull -q --rebase origin main 2>/dev/null || true

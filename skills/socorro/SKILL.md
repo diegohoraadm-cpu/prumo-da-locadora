@@ -45,9 +45,10 @@ resolve na tela, e o Cofre é só olhar o painel:
   **Entrar com a senha** na tela travada. Se a pessoa esqueceu a senha, `sudo prumo senha`.
 - **"Um agente ficou de fora da atualização"** (manual 3.2.1): na primeira atualização para a 1.0.5 a
   tela termina com "Atualizacao INCOMPLETA" e uma linha FALHOU por agente. É esperado nesta versão. Leia
-  o aviso da 1.0.5 e a lista `perdido-no-recriar-*.txt` do agente, diga ao dono o que o `--forcar`
-  perde (só o que foi instalado à mão dentro da caixa; as rotinas padrão voltam ao padrão) e, com o
-  sim dele, rode `sudo dgclaw agente recriar <nome do agente> --forcar`.
+  o aviso da 1.0.5 e confira o que há a perder rodando `sudo dgclaw agente recriar <nome do agente>`
+  **sem** o `--forcar` (veja abaixo). Diga ao dono o que o `--forcar` perde (só o que foi instalado à
+  mão dentro da caixa; as rotinas padrão voltam ao padrão) e, com o sim dele, rode
+  `sudo dgclaw agente recriar <nome do agente> --forcar`.
 - **"Onde fica o Cofre?"** (manual 3.1.3): no menu da conversa (ícone de três traços), grupo
   **Segurança**, item **Cofre (chaves)**, que só o dono vê; no painel do agente, a aba **Cofre**, que o
   colaborador vê mas não consegue abrir.
@@ -62,11 +63,18 @@ lista nem nada a perder. Para conferir, veja se
 `/var/lib/dgclaw/agentes/<nome do agente>/home/.dgclaw/unidades-padrao.sha256` passou a existir
 (`sudo ls -l` nesse caminho); o `dgclaw status` não prova isso.
 
-No caso do agente de fora da atualização, a lista se lê assim, sempre com o `sh -c` (a pasta é fechada
-para o usuário comum, e o `*` seria expandido antes do `sudo`):
-`sudo sh -c 'ls /var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-*.txt'`. Aparece o nome do
-arquivo: há algo a perder, leia com `sudo sh -c 'cat ...'`. "No such file": nada a perder. A rotina
-padrão que o dono desligou volta a rodar.
+No caso do agente de fora da atualização, a conferência de verdade é o `recriar` **sem** o `--forcar`:
+`sudo dgclaw agente recriar <nome do agente>`. Sem o `--forcar` ele não apaga nada e faz uma de três
+coisas: mostra a lista do que existe só dentro da caixa (a lista completa fica também em
+`perdido-no-recriar-<data>.txt`, na casa do agente); diz que não conseguiu conferir, e por quê, e para
+com "nada foi mexido" (caixa em `stopping`, `podman exec` que falha); ou confere que não há nada só
+dentro da caixa e então troca. Quem decide é o que o comando disse na tela. **Não conclua nada pelo
+arquivo não existir:** ele só é gravado quando a conferência funcionou e achou algo. Para ler um arquivo
+que existe, use sempre o `sh -c` (a pasta é fechada para o usuário comum, e o `*` seria expandido antes
+do `sudo`): `sudo sh -c 'cat /var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-*.txt'`. Se
+o comando disse que não conseguiu conferir, não use o `--forcar` ainda: diga ao dono e, se ele quiser
+guardar algo, peça que copie para a casa do agente antes. Na dúvida, adie: o agente segue funcionando
+na versão anterior. A rotina padrão que o dono desligou volta a rodar com o `--forcar`.
 
 Agente que ficou parado logo depois de criado (`created`) agora liga sozinho: o instalador liga no fim
 da instalação e da atualização, e a Sentinela tenta uma vez a cada 6 horas. Só se ele continuar

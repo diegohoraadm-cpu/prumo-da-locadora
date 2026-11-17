@@ -31,7 +31,7 @@ export function argsDePermissao(modo: CtxMotor["config"]["permissionMode"]): str
 }
 
 /** O comando de login muda de casa para casa (na jaula do Bunker era um script em
- *  /srv; no DG Claw é o botão "Entrar com a assinatura" do painel). Quem instala
+ *  /srv; no Prumo da Locadora é o botão "Entrar com a assinatura" do painel). Quem instala
  *  diz qual é por RUNNER_LOGIN_HINT; {host} vira o hostname, que dentro de um
  *  container é o nome DELE, e não o slug do agente. */
 export function dicaDeLogin(): string {

@@ -1,8 +1,8 @@
-# bin/dgclaw: a linha de comando do DG Claw
+# bin/dgclaw: a linha de comando do Prumo da Locadora
 
 `dgclaw` cria e cuida dos agentes (cada um numa maquina propria, em container), da
 imagem deles, da senha do painel e responde "esta tudo de pe?". Quem chama: o Admin, o
-DG Claw Web e a pessoa no terminal.
+Prumo da Locadora Web e a pessoa no terminal.
 
 ## Por que bash
 
@@ -16,17 +16,17 @@ logica mais pesada chama um script Node do app (como a geracao do hash da senha)
 
 | Comando | O que faz |
 |---|---|
-| `dgclaw agente criar <slug> --nome "<Nome>" [opcoes]` | cria um agente (faixa de uid, portas, casa, identidade, segredos, rede, container, firewall, rotinas, registro). Idempotente: rodar de novo continua de onde parou |
-| `dgclaw agente listar [--json]` | agentes, estado do container e saude do runner |
-| `dgclaw agente parar\|iniciar\|reiniciar <slug>` | `reiniciar` reinicia so o runner por dentro (e o que o cofre pede) |
-| `dgclaw agente reparar <slug>` | refaz so a parte de dentro (rotinas, runner, painel, plugin do Telegram) |
-| `dgclaw agente cofre <slug> guardar\|revogar\|listar\|aplicar [NOME] [opcoes]` | chaves de API do agente. O valor vem SEMPRE pelo STDIN. Sai 0 (deu certo), 1 (recusa, com o motivo) ou 2 (uso errado) |
-| `dgclaw agente tela-senha <slug>` | troca a senha da Tela do agente (VNC); a nova senha vem pelo STDIN, de 6 a 8 caracteres ASCII. Quem grava o rfbauth e `panel/bin/tela-senha.js`; o x11vnc religa sozinho. O `agente criar` ja gera uma senha aleatoria por agente e a mostra uma vez no fim (ver `docs/TELA-DO-AGENTE.md`) |
-| `dgclaw agente remover <slug> [--sim]` | tira do ar e MOVE a casa para `/var/lib/dgclaw/aposentados/`. Nunca apaga; a faixa de uid fica queimada |
-| `dgclaw imagem status` | pronta, construindo ou falhou (com a cauda do log) |
-| `dgclaw imagem construir [--agora]` | constroi a imagem em segundo plano, ou aqui com `--agora` |
-| `dgclaw senha trocar` | nova senha do painel pelo STDIN (minimo 12 caracteres) |
-| `dgclaw status` | tudo de pe? Sai com erro se algo essencial caiu |
+| `prumo agente criar <slug> --nome "<Nome>" [opcoes]` | cria um agente (faixa de uid, portas, casa, identidade, segredos, rede, container, firewall, rotinas, registro). Idempotente: rodar de novo continua de onde parou |
+| `prumo agente listar [--json]` | agentes, estado do container e saude do runner |
+| `prumo agente parar\|iniciar\|reiniciar <slug>` | `reiniciar` reinicia so o runner por dentro (e o que o cofre pede) |
+| `prumo agente reparar <slug>` | refaz so a parte de dentro (rotinas, runner, painel, plugin do Telegram) |
+| `prumo agente cofre <slug> guardar\|revogar\|listar\|aplicar [NOME] [opcoes]` | chaves de API do agente. O valor vem SEMPRE pelo STDIN. Sai 0 (deu certo), 1 (recusa, com o motivo) ou 2 (uso errado) |
+| `prumo agente tela-senha <slug>` | troca a senha da Tela do agente (VNC); a nova senha vem pelo STDIN, de 6 a 8 caracteres ASCII. Quem grava o rfbauth e `panel/bin/tela-senha.js`; o x11vnc religa sozinho. O `agente criar` ja gera uma senha aleatoria por agente e a mostra uma vez no fim (ver `docs/TELA-DO-AGENTE.md`) |
+| `prumo agente remover <slug> [--sim]` | tira do ar e MOVE a casa para `/var/lib/dgclaw/aposentados/`. Nunca apaga; a faixa de uid fica queimada |
+| `prumo imagem status` | pronta, construindo ou falhou (com a cauda do log) |
+| `prumo imagem construir [--agora]` | constroi a imagem em segundo plano, ou aqui com `--agora` |
+| `prumo senha trocar` | nova senha do painel pelo STDIN (minimo 12 caracteres) |
+| `prumo status` | tudo de pe? Sai com erro se algo essencial caiu |
 
 `--ensaio` (antes ou depois do subcomando) mostra o que faria sem mudar nada.
 `--ajuda` mostra exemplos de cada comando.

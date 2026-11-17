@@ -24,7 +24,7 @@ def rodar_comando_de_host(cmd_tmpl: str, text: str, path=None, dry_run: bool = F
 
     Existe porque em host sem TIOCSTI, sem tmux e sem Bunker o plugin fica sem nenhuma
     alavanca sobre a sessao viva, mas o supervisor local costuma ter uma (ex.: o
-    agent-runner do DG Claw expoe POST /api/agents/<id>/input, que escreve direto no PTY
+    agent-runner do Prumo da Locadora expoe POST /api/agents/<id>/input, que escreve direto no PTY
     de que ele e dono). Slash-command digitado no PTY EXECUTA; mensagem de canal chega
     como texto e nao executa. Por isso o transporte de host destrava o modo inject.
 

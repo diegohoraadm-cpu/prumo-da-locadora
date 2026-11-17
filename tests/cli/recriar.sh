@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# `dgclaw agente recriar`: a troca do container nao pode travar num container preso em "stopping".
+# `prumo agente recriar`: a troca do container nao pode travar num container preso em "stopping".
 # Cobre: parada com espera, "stopping" que passa sozinho, "stopping" para sempre (rm -f so do
 # container), volume do podman (nao usa -f), estados exited/ausente com --forcar, e a mensagem de
 # erro que diz a verdade sobre o que foi ou nao removido.

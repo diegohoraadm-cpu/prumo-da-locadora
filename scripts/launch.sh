@@ -1,11 +1,11 @@
 #!/bin/bash
-# launch.sh — Sobe a sessao longeva do assistente DG Claw.
+# launch.sh — Sobe a sessao longeva do assistente Prumo da Locadora.
 #
 # Chamado pelo servico systemd dgclaw-<slug>.service. Le a config do assistente
 # em <workspace>/.dgclaw/config.sh, monta a identidade e da exec no `claude`.
 #
 # DOIS CANAIS, E SO UM E OBRIGATORIO:
-#   - o PAINEL (DG Chat) e o canal padrao e esta sempre ligado. A pessoa escreve
+#   - o PAINEL (chat do painel) e o canal padrao e esta sempre ligado. A pessoa escreve
 #     na aba Conversa, o texto e datilografado nesta sessao pelo _lib/inject.py,
 #     e o agente responde pela tool `mcp__dgchat__reply`, servida pelo servidor
 #     MCP que este script fia aqui embaixo. Ver docs/CANAL-DG-CHAT.md.
@@ -24,7 +24,7 @@
 #   DGCLAW_CLAUDE_CONFIG_DIR   (config dir onde o plugin telegram esta instalado;
 #                               vazio = usa o default ~/.claude)
 #   DGCHAT_URL                 (base do agents-server, quando o agente vive num
-#                               card da plataforma; vazio = DG Claw sozinho)
+#                               card da plataforma; vazio = Prumo da Locadora sozinho)
 #
 # NB: rodar sob systemd exige PTY (use o ExecStart com `script`, ver
 # install-service.sh) e, como root, IS_SANDBOX=1 (setado aqui automaticamente).
@@ -149,7 +149,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 cd "$DGCLAW_WORKSPACE" || exit 1
 
-# --- O canal do painel (DG Chat) -------------------------------------------
+# --- O canal do painel (chat do painel) -------------------------------------------
 # O servidor MCP que da ao agente as tools `reply` e `send_file`. Sem ele o
 # agente RECEBE a mensagem escrita no painel e nao tem como responder: o
 # thread_log.py so conta como fala dele o que sai por uma tool de envio, entao a
@@ -194,7 +194,7 @@ EOF
     MCP_ARGS=(--mcp-config "$DGCHAT_MCP_CONFIG")
     export DGCHAT_AGENT="$DGCLAW_SLUG"
     export DGCHAT_OUTBOUND="$DGCHAT_DIR/outbound.jsonl"
-    # DGCHAT_URL fica como veio da config: vazio (DG Claw sozinho) e o normal, e
+    # DGCHAT_URL fica como veio da config: vazio (Prumo da Locadora sozinho) e o normal, e
     # e o que faz a tool responder "entregue" em vez de prometer reconexao de
     # janela que nao existe. Ver docs/CANAL-DG-CHAT.md.
 fi

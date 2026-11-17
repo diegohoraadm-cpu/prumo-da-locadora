@@ -5,11 +5,11 @@
 # (falha, ok, info, aviso, executar, escrever_arquivo, exigir_ferramentas, s_ok, s_aviso, agora_ms...).
 # shellcheck disable=SC2154
 #
-#   dgclaw suporte ligar --chave '<linha ssh>' [--dias N]   grava a chave com prazo no authorized_keys do root
-#   dgclaw suporte desligar [--derrubar-sessoes]             tira as chaves; lista as sessoes de root abertas; com a opcao, encerra as outras
-#   dgclaw suporte status                                    lista as chaves, ate quando valem e as vencidas
-#   dgclaw suporte limpar                                    tira so as vencidas (o timer diario chama este)
-#   dgclaw status                                            uma linha "suporte: ..." (suporte_status_linha)
+#   prumo suporte ligar --chave '<linha ssh>' [--dias N]   grava a chave com prazo no authorized_keys do root
+#   prumo suporte desligar [--derrubar-sessoes]             tira as chaves; lista as sessoes de root abertas; com a opcao, encerra as outras
+#   prumo suporte status                                    lista as chaves, ate quando valem e as vencidas
+#   prumo suporte limpar                                    tira so as vencidas (o timer diario chama este)
+#   prumo status                                            uma linha "suporte: ..." (suporte_status_linha)
 #
 # Cada linha nossa leva `expiry-time="AAAAMMDDHHMMZ"` (o sshd recusa a chave sozinho depois do prazo,
 # mesmo se ninguem limpar) e termina com o marcador `dgclaw-suporte:<id>:<AAAAMMDDHHMM>` (UTC). So linhas com
@@ -150,7 +150,7 @@ suporte_travar() {
     if [ "$ENSAIO" = 1 ] || [ "${SUP_TRAVADO:-0}" = 1 ]; then return 0; fi
     install -d -m 700 "$R/root/.ssh"
     exec 9>"$R/root/.ssh/.dgclaw-suporte.lock"
-    flock -w 30 9 || falha "outro 'dgclaw suporte' segurou a trava por mais de 30 s." \
+    flock -w 30 9 || falha "outro 'prumo suporte' segurou a trava por mais de 30 s." \
         "espere ele terminar (ou veja systemctl status dgclaw-suporte-limpar.service) e rode de novo."
     SUP_TRAVADO=1
 }
@@ -544,7 +544,7 @@ suporte_config_mais_nova_que_carregada() {
     last="$minimo"
     if [ "$last" -le 0 ]; then
         falha "nao consegui saber desde quando o sshd carregou a configuracao, entao nao posso garantir que ela e a do disco." \
-            "rode: sudo dgclaw suporte desligar (ele recarrega o sshd e anota a hora), ou recarregue: sudo systemctl reload ssh."
+            "rode: sudo prumo suporte desligar (ele recarrega o sshd e anota a hora), ou recarregue: sudo systemctl reload ssh."
     fi
     # Camada principal: a arvore atual (caminhos e sha256) tem de ser igual a da ultima recarga confirmada. Pega arquivo
     # apagado, acrescentado ou alterado com a data forjada, que a checagem de mtime abaixo nao ve.
@@ -554,18 +554,18 @@ suporte_config_mais_nova_que_carregada() {
         guardado_m="$(cat "$(suporte_manifesto_arquivo)")"
         if [ "$atual_m" != "$guardado_m" ]; then
             falha "a configuracao do sshd mudou desde a ultima recarga confirmada (algum arquivo foi acrescentado, apagado ou alterado), entao o que esta no disco pode nao ser o que vale." \
-                "rode sudo dgclaw suporte desligar de novo (ele valida e recarrega o sshd e anota a arvore de configuracao) ou recarregue o ssh: sudo systemctl reload ssh. A recarga nao derruba as sessoes abertas."
+                "rode sudo prumo suporte desligar de novo (ele valida e recarrega o sshd e anota a arvore de configuracao) ou recarregue o ssh: sudo systemctl reload ssh. A recarga nao derruba as sessoes abertas."
         fi
     elif [ "$ENSAIO" != 1 ]; then
         falha "nao ha registro de uma recarga confirmada do sshd (a arvore de configuracao conferida), entao nao posso garantir que o que esta no disco e o que ele carregou." \
-            "rode sudo dgclaw suporte desligar (ele valida e recarrega o sshd e anota a arvore de configuracao), ou recarregue o ssh: sudo systemctl reload ssh."
+            "rode sudo prumo suporte desligar (ele valida e recarrega o sshd e anota a arvore de configuracao), ou recarregue o ssh: sudo systemctl reload ssh."
     fi
     for f in ${SUP_CFG_VISITADOS[@]+"${SUP_CFG_VISITADOS[@]}"}; do
         m="$(stat -c %Y "$f" 2>/dev/null || true)"
         if [[ ! "$m" =~ ^[0-9]+$ ]]; then falha "nao consegui ler a data de $(suporte_seguro "$f")." "confira com: ls -l $(suporte_seguro "$f")."; fi
         if [ "$m" -gt "$last" ]; then
             falha "a configuracao do sshd mudou depois de carregada ($(suporte_seguro "$f") e mais novo que o sshd em execucao), entao o que esta no disco pode nao ser o que vale." \
-                "rode sudo dgclaw suporte desligar de novo (ele valida e recarrega o sshd) ou recarregue o ssh: sudo systemctl reload ssh. A recarga nao derruba as sessoes abertas."
+                "rode sudo prumo suporte desligar de novo (ele valida e recarrega o sshd) ou recarregue o ssh: sudo systemctl reload ssh. A recarga nao derruba as sessoes abertas."
         fi
     done
 }
@@ -844,10 +844,10 @@ suporte_avisar_perm() {
     local onde
     if [ "$1" -eq 1 ]; then
         for onde in "${SUP_PERM_ONDE[@]}"; do
-            aviso "a chave do suporte (${onde%% em *}) segue aceita pelo sshd como acesso permanente em ${onde#* em }. NAO esta desligado: tire essa linha de la na mao e rode de novo: sudo dgclaw suporte status"
+            aviso "a chave do suporte (${onde%% em *}) segue aceita pelo sshd como acesso permanente em ${onde#* em }. NAO esta desligado: tire essa linha de la na mao e rode de novo: sudo prumo suporte status"
         done
     else
-        aviso "a chave do suporte ja saiu da linha marcada, mas NAO consegui confirmar que nao ha outra autorizacao para ela (${SUP_PERM_ERRO}). Nao posso dizer que o acesso esta desligado. Resolva isso e rode de novo: sudo dgclaw suporte status"
+        aviso "a chave do suporte ja saiu da linha marcada, mas NAO consegui confirmar que nao ha outra autorizacao para ela (${SUP_PERM_ERRO}). Nao posso dizer que o acesso esta desligado. Resolva isso e rode de novo: sudo prumo suporte status"
     fi
 }
 
@@ -866,14 +866,14 @@ suporte_ligar() {
     local chave="" dias="$SUPORTE_DIAS_PADRAO" linha novo="" conteudo="" atual agora fim fim_s ja=0 fp_l
     while [ $# -gt 0 ]; do
         case "$1" in
-            --chave) [ $# -ge 2 ] || falha "falta o valor de --chave." "use: sudo dgclaw suporte ligar --chave 'ssh-ed25519 AAAA...' --dias 7"
+            --chave) [ $# -ge 2 ] || falha "falta o valor de --chave." "use: sudo prumo suporte ligar --chave 'ssh-ed25519 AAAA...' --dias 7"
                      chave="$2"; shift 2 ;;
             --dias)  [ $# -ge 2 ] || falha "falta o valor de --dias." "use: --dias 7 (de 1 a $SUPORTE_DIAS_MAXIMO)"
                      dias="$2"; shift 2 ;;
-            *) falha "a opcao '$1' nao existe em 'suporte ligar'." "use: sudo dgclaw suporte ligar --chave 'ssh-ed25519 AAAA...' --dias 7" ;;
+            *) falha "a opcao '$1' nao existe em 'suporte ligar'." "use: sudo prumo suporte ligar --chave 'ssh-ed25519 AAAA...' --dias 7" ;;
         esac
     done
-    [ -n "$chave" ] || falha "falta a chave do suporte." "use: sudo dgclaw suporte ligar --chave 'ssh-ed25519 AAAA...' --dias 7"
+    [ -n "$chave" ] || falha "falta a chave do suporte." "use: sudo prumo suporte ligar --chave 'ssh-ed25519 AAAA...' --dias 7"
     # Regex antes de qualquer aritmetica: numero gigante estouraria o [ -gt ] e o $(( )) em silencio.
     if [[ ! "$dias" =~ ^([1-9]|[12][0-9]|30)$ ]]; then
         falha "--dias deve ser um numero de 1 a $SUPORTE_DIAS_MAXIMO (veio: ${dias:0:20})." \
@@ -920,7 +920,7 @@ suporte_ligar() {
     suporte_estado_remover "$SUP_FP"   # cadastrada de novo: volta a ser temporaria gerenciada
     suporte_registrar_tolerante ligar "fp=$SUP_FP id=$SUP_ID dias=$dias ate=$fim$([ "$ja" = 1 ] && echo ' renovada=sim')"
     ok "acesso do suporte ligado ate $(suporte_fmt_data "$fim") ($dias dia(s)). Chave $SUP_FP, id $SUP_ID."
-    info "Depois do prazo o servidor recusa a chave sozinho. Para tirar antes: sudo dgclaw suporte desligar"
+    info "Depois do prazo o servidor recusa a chave sozinho. Para tirar antes: sudo prumo suporte desligar"
     info "Lembrete: o 'suporte desligar' revoga so as chaves gerenciadas pelo suporte, nao senhas nem outras chaves. A senha de root que o cliente passou tem de ser trocada logo depois de testar o acesso por chave, antes de qualquer ajuste."
 }
 
@@ -1102,7 +1102,7 @@ suporte_derrubar_outras() {
     SUP_ENCERRADAS="$n"
 }
 
-# suporte_alerta_arquivo: marca que uma chave venceu com sessao de root aberta (o dgclaw status le).
+# suporte_alerta_arquivo: marca que uma chave venceu com sessao de root aberta (o prumo status le).
 suporte_alerta_arquivo() { printf '%s' "$(sup_dir_estado)/alerta-sessoes"; }
 suporte_revogadas_log() { printf '%s' "$(sup_dir_estado)/revogadas.log"; }
 
@@ -1111,7 +1111,7 @@ suporte_desligar() {
     for a in "$@"; do
         case "$a" in
             --derrubar-sessoes) derrubar=1 ;;
-            *) falha "a opcao '$a' nao existe em 'suporte desligar'." "use: sudo dgclaw suporte desligar [--derrubar-sessoes]" ;;
+            *) falha "a opcao '$a' nao existe em 'suporte desligar'." "use: sudo prumo suporte desligar [--derrubar-sessoes]" ;;
         esac
     done
     suporte_remover todas
@@ -1139,7 +1139,7 @@ suporte_desligar() {
         if [ "$ENSAIO" != 1 ]; then
             install -d -m 700 "$(sup_dir_estado)"; : >"$(suporte_alerta_arquivo)"; chmod 600 "$(suporte_alerta_arquivo)"
         fi
-        aviso "nao consegui verificar as sessoes de root abertas ($SUP_SES_ERRO). As novas entradas com a chave do suporte estao bloqueadas, mas NAO posso dizer que o acesso esta desligado: pode haver sessao aberta. Confira com: who -u ; derrube com sudo pkill -KILL -t <tty, ex. pts/1>. Depois rode de novo: sudo dgclaw suporte status"
+        aviso "nao consegui verificar as sessoes de root abertas ($SUP_SES_ERRO). As novas entradas com a chave do suporte estao bloqueadas, mas NAO posso dizer que o acesso esta desligado: pode haver sessao aberta. Confira com: who -u ; derrube com sudo pkill -KILL -t <tty, ex. pts/1>. Depois rode de novo: sudo prumo suporte status"
         return 1
     fi
     if [ "$derrubar" = 1 ]; then
@@ -1161,12 +1161,12 @@ suporte_desligar() {
         fi
     fi
     if [ "$SUP_OUTRAS" -gt 0 ]; then
-        # Pendencia: o dgclaw status so volta a dizer "desligado" depois que nao houver mais sessao de root aberta.
+        # Pendencia: o prumo status so volta a dizer "desligado" depois que nao houver mais sessao de root aberta.
         if [ "$ENSAIO" != 1 ]; then
             install -d -m 700 "$(sup_dir_estado)"
             : >"$(suporte_alerta_arquivo)"; chmod 600 "$(suporte_alerta_arquivo)"
         fi
-        aviso "as novas entradas com a chave do suporte estao bloqueadas, mas ainda ha $SUP_OUTRAS sessao(oes) de root aberta(s) (lista acima): o acesso NAO esta totalmente desligado. Para encerrar TODAS as sessoes SSH de root, menos a sua: sudo dgclaw suporte desligar --derrubar-sessoes"
+        aviso "as novas entradas com a chave do suporte estao bloqueadas, mas ainda ha $SUP_OUTRAS sessao(oes) de root aberta(s) (lista acima): o acesso NAO esta totalmente desligado. Para encerrar TODAS as sessoes SSH de root, menos a sua: sudo prumo suporte desligar --derrubar-sessoes"
         return "$perm"
     fi
     if [ "${#SUP_SES_PEER[@]}" -gt 0 ]; then
@@ -1175,7 +1175,7 @@ suporte_desligar() {
             install -d -m 700 "$(sup_dir_estado)"
             : >"$(suporte_alerta_arquivo)"; chmod 600 "$(suporte_alerta_arquivo)"
         fi
-        aviso "as novas entradas com a chave do suporte estao bloqueadas, mas ainda ha ${#SUP_SES_PEER[@]} sessao(oes) de root aberta(s), so a sua (lista acima), e ela pode ser a do suporte: o acesso NAO esta confirmado como encerrado. O alerta some sozinho no proximo 'sudo dgclaw suporte status' depois que todas as sessoes de root, a sua inclusive, forem fechadas."
+        aviso "as novas entradas com a chave do suporte estao bloqueadas, mas ainda ha ${#SUP_SES_PEER[@]} sessao(oes) de root aberta(s), so a sua (lista acima), e ela pode ser a do suporte: o acesso NAO esta confirmado como encerrado. O alerta some sozinho no proximo 'sudo prumo suporte status' depois que todas as sessoes de root, a sua inclusive, forem fechadas."
         return "$perm"
     fi
     if [ "$perm" -ne 0 ]; then return "$perm"; fi
@@ -1219,7 +1219,7 @@ suporte_registrar_revogadas() {
 }
 
 suporte_limpar() {
-    [ $# -eq 0 ] || falha "'suporte limpar' nao tem opcoes (veio: $*)." "use: sudo dgclaw suporte limpar"
+    [ $# -eq 0 ] || falha "'suporte limpar' nao tem opcoes (veio: $*)." "use: sudo prumo suporte limpar"
     local rc=0
     suporte_remover vencidas
     if [ "$SUP_REMOVIDAS" -gt 0 ]; then
@@ -1231,7 +1231,7 @@ suporte_limpar() {
 }
 
 suporte_status() {
-    [ $# -eq 0 ] || falha "'suporte status' nao tem opcoes (veio: $*)." "use: sudo dgclaw suporte status"
+    [ $# -eq 0 ] || falha "'suporte status' nao tem opcoes (veio: $*)." "use: sudo prumo suporte status"
     local linha atual agora fim fim_s ativas=0 vencidas=0 fp historico perm=0 fps
     suporte_travar   # ler, conferir e gravar o estado pendente e o alerta e uma transacao so
     agora="$(suporte_agora_s)"
@@ -1276,11 +1276,11 @@ suporte_status() {
         printf 'suporte: desligado\n'
     fi
     if [ "$vencidas" -gt 0 ]; then
-        printf 'As vencidas ja nao entram (o servidor recusa), mas ainda estao no arquivo. Para remover: sudo dgclaw suporte limpar\n'
+        printf 'As vencidas ja nao entram (o servidor recusa), mas ainda estao no arquivo. Para remover: sudo prumo suporte limpar\n'
     fi
     suporte_mostrar_sessoes
     if [ "$SUP_OUTRAS" -gt 0 ]; then
-        printf 'Para encerrar todas as sessoes SSH de root, menos a sua: sudo dgclaw suporte desligar --derrubar-sessoes\n'
+        printf 'Para encerrar todas as sessoes SSH de root, menos a sua: sudo prumo suporte desligar --derrubar-sessoes\n'
     elif [ "$SUP_VERIF_FALHOU" = 1 ]; then
         if [ "$ENSAIO" != 1 ]; then
             install -d -m 700 "$(sup_dir_estado)"; : >"$(suporte_alerta_arquivo)"; chmod 600 "$(suporte_alerta_arquivo)"
@@ -1300,7 +1300,7 @@ suporte_main() {
         desligar) suporte_desligar "$@" ;;
         status) suporte_status "$@" ;;
         limpar) suporte_limpar "$@" ;;
-        *) falha "o subcomando 'suporte ${sub}' nao existe." "use: dgclaw suporte ligar|desligar|status|limpar (veja: dgclaw --ajuda)" ;;
+        *) falha "o subcomando 'suporte ${sub}' nao existe." "use: prumo suporte ligar|desligar|status|limpar (veja: prumo --ajuda)" ;;
     esac
 }
 
@@ -1309,26 +1309,26 @@ suporte_main() {
 suporte_linha_historico() {
     local fps="$1" perm=0
     if ! suporte_listar_sessoes; then
-        s_aviso "suporte: chave revogada ou vencida, acesso ainda nao confirmado como encerrado (nao consegui verificar as sessoes de root: $SUP_SES_ERRO), veja sudo dgclaw suporte status"
+        s_aviso "suporte: chave revogada ou vencida, acesso ainda nao confirmado como encerrado (nao consegui verificar as sessoes de root: $SUP_SES_ERRO), veja sudo prumo suporte status"
         return 10
     fi
     suporte_contar_outras
     # shellcheck disable=SC2086 # fingerprints nao tem espaco
     if [ -n "$fps" ]; then suporte_conferir_fps $fps || perm=$?; fi
     if [ "$SUP_N_TOTAL" -gt 0 ]; then
-        s_aviso "suporte: chave revogada ou vencida, acesso ainda nao confirmado como encerrado ($SUP_N_TOTAL sessao(oes) de root abertas), veja sudo dgclaw suporte status"
+        s_aviso "suporte: chave revogada ou vencida, acesso ainda nao confirmado como encerrado ($SUP_N_TOTAL sessao(oes) de root abertas), veja sudo prumo suporte status"
         return 10
     fi
     if [ "$perm" -ne 0 ]; then
         suporte_marcar_pendencia
-        s_aviso "suporte: NAO esta desligado, a chave do suporte segue aceita pelo sshd ou nao consegui confirmar que nao (${SUP_PERM_ONDE[*]:-$SUP_PERM_ERRO}), veja sudo dgclaw suporte status"
+        s_aviso "suporte: NAO esta desligado, a chave do suporte segue aceita pelo sshd ou nao consegui confirmar que nao (${SUP_PERM_ONDE[*]:-$SUP_PERM_ERRO}), veja sudo prumo suporte status"
         return 10
     fi
     if [ "$ENSAIO" != 1 ]; then rm -f "$(suporte_alerta_arquivo)"; fi
     return 0
 }
 
-# suporte_linha_corpo: a linha "suporte: ..." do `dgclaw status`. Nunca derruba o status.
+# suporte_linha_corpo: a linha "suporte: ..." do `prumo status`. Nunca derruba o status.
 suporte_linha_corpo() {
     local linha agora fim fim_s maior="" vencidas=0 conteudo
     agora="$(suporte_agora_s)"
@@ -1347,7 +1347,7 @@ suporte_linha_corpo() {
         fi
     done <<<"$conteudo"
     if [ -n "$maior" ]; then
-        s_aviso "suporte: ligado ate $(suporte_fmt_data "$maior") (para tirar agora: sudo dgclaw suporte desligar)"
+        s_aviso "suporte: ligado ate $(suporte_fmt_data "$maior") (para tirar agora: sudo prumo suporte desligar)"
         return 0
     fi
     # Sem chave nossa valendo: antes de dizer o estado, consulta as sessoes de root (chave vencida antes do timer,
@@ -1359,21 +1359,21 @@ suporte_linha_corpo() {
         if [ "$rc" -ne 0 ]; then return 0; fi
     fi
     if [ "$vencidas" -gt 0 ]; then
-        s_aviso "suporte: desligado, mas $vencidas chave(s) vencida(s) ainda no arquivo (remova com: sudo dgclaw suporte limpar)"
+        s_aviso "suporte: desligado, mas $vencidas chave(s) vencida(s) ainda no arquivo (remova com: sudo prumo suporte limpar)"
     else
         s_ok "suporte: desligado"
     fi
 }
 
 # suporte_status_linha: pega a trava ANTES de ler authorized_keys, alerta e estado (nada que decida o resultado vem de
-# antes dela), mas so espera 3 s: o dgclaw status nao pode pendurar. Sem pasta de .ssh nem de estado, nao ha o que proteger.
+# antes dela), mas so espera 3 s: o prumo status nao pode pendurar. Sem pasta de .ssh nem de estado, nao ha o que proteger.
 suporte_status_linha() {
     local lfd=""
     if [ "$ENSAIO" != 1 ] && [ "${SUP_TRAVADO:-0}" != 1 ] && { [ -d "$R/root/.ssh" ] || [ -d "$(sup_dir_estado)" ]; }; then
         install -d -m 700 "$R/root/.ssh"
         if ! exec {lfd}>"$R/root/.ssh/.dgclaw-suporte.lock" || ! flock -w 3 "$lfd"; then
             if [ -n "$lfd" ]; then exec {lfd}>&-; fi
-            s_aviso "suporte: nao consegui conferir (outra operacao do suporte em andamento), rode de novo daqui a pouco: sudo dgclaw suporte status"
+            s_aviso "suporte: nao consegui conferir (outra operacao do suporte em andamento), rode de novo daqui a pouco: sudo prumo suporte status"
             return 0
         fi
     fi

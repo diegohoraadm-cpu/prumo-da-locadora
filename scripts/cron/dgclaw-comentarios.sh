@@ -1,5 +1,5 @@
 #!/bin/bash
-# dgclaw-comentarios.sh — Cron de COMENTARIOS no Instagram (DG Claw).
+# dgclaw-comentarios.sh — Cron de COMENTARIOS no Instagram (Prumo da Locadora).
 #
 # Cron generico de comentarios da persona. O maior risco aqui e prompt injection
 # vinda dos comentarios: o preambulo anti-injection (untrusted.py) entra ANTES do

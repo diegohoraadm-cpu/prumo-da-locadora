@@ -1,5 +1,5 @@
 #!/bin/bash
-# install-ig-timers.sh — Cria/remove os timers systemd do PODER INSTAGRAM (DG Claw).
+# install-ig-timers.sh — Cria/remove os timers systemd do PODER INSTAGRAM (Prumo da Locadora).
 #
 # Deriva os horarios do `schedule` do instagram.json (default 8h/13h/19h). Cria:
 #   dgclaw-<slug>-post-8h.timer    OnCalendar 08:00   -> dgclaw-post.sh ... 8h
@@ -175,7 +175,7 @@ EOF
 
 {
     echo "[Unit]"
-    echo "Description=DG Claw Instagram comentarios (timer): ${SLUG}"
+    echo "Description=Prumo da Locadora Instagram comentarios (timer): ${SLUG}"
     echo
     echo "[Timer]"
     for oc in "${COMMENT_ONCALENDAR[@]}"; do

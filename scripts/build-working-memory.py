@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-build-working-memory.py (DG Claw) — regenera a working-memory.md viva do agente.
+build-working-memory.py (Prumo da Locadora) — regenera a working-memory.md viva do agente.
 
 Escreve em $DGCLAW_WORKSPACE/working-memory.md (a RAIZ do workspace), que e o arquivo que
 entra no inicio de cada sessao e depois de cada compactacao. E por aqui que o "agora" do
@@ -537,7 +537,7 @@ def _ha_quanto(dt):
 
 
 def build_agora(eventos):
-    """'## Agora': o instante em que a sessao comeca. NEUTRO de proposito (o DG Alive
+    """'## Agora': o instante em que a sessao comeca. NEUTRO de proposito (a extensão de emoções
     acrescenta humor e energia pelo gancho hooks/working-memory.py)."""
     now = agora()
     body = [f"- **Agora:** {DIAS_PT[now.weekday()]}, {now.strftime('%d/%m/%Y %H:%M')}"]

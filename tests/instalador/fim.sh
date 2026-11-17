@@ -72,7 +72,7 @@ caso_fim_atalho_prumo_igual_ao_dgclaw() {
     local p="$RAIZ/usr/local/bin/prumo"
     afirma "prumo e um arquivo comum executavel (nao um link)" bash -c "[ -f '$p' ] && [ ! -L '$p' ] && [ -x '$p' ]"
     afirma "prumo faz exec do dgclaw" tem "$p" "exec $RAIZ/usr/local/bin/dgclaw \"\$@\""
-    igual "$(env DGCLAW_STUB_LOG="$STUB_LOG" "$p" versao)" "$(env DGCLAW_STUB_LOG="$STUB_LOG" "$RAIZ/usr/local/bin/dgclaw" versao)" || { echo "      FALHOU: prumo versao difere de dgclaw versao"; FALHAS=$((FALHAS + 1)); }
+    igual "$(env DGCLAW_STUB_LOG="$STUB_LOG" "$p" versao)" "$(env DGCLAW_STUB_LOG="$STUB_LOG" "$RAIZ/usr/local/bin/dgclaw" versao)" || { echo "      FALHOU: prumo versao difere de prumo versao"; FALHAS=$((FALHAS + 1)); }
     igual "$(env DGCLAW_STUB_LOG="$STUB_LOG" "$p" versao)" "versao-falsa" || { echo "      FALHOU: prumo versao nao rodou o dgclaw"; FALHAS=$((FALHAS + 1)); }
     afirma "o atalho nasce antes de o Admin ser ligado" bash -c "a=\$(grep -n 'comando prumo' '$SAIDA' | head -1 | cut -d: -f1); b=\$(grep -n 'Ligando o Admin' '$SAIDA' | head -1 | cut -d: -f1); [ -n \"\$a\" ] && [ -n \"\$b\" ] && [ \"\$a\" -lt \"\$b\" ]"
     afirma "reinstalar nao reclama do proprio atalho" instalacao_basica

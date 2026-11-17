@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# `dgclaw atualizar --checar`, `dgclaw atualizar --aviso ligar|desligar` e a linha "atualizacao:" do
-# `dgclaw status`. Raiz falsa e stubs como os outros testes da CLI; o GitHub e o Admin sao o
+# `prumo atualizar --checar`, `prumo atualizar --aviso ligar|desligar` e a linha "atualizacao:" do
+# `prumo status`. Raiz falsa e stubs como os outros testes da CLI; o GitHub e o Admin sao o
 # servidor falso de tests/aviso-atualizacao (um servidor http local), e a checagem e a de verdade.
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh

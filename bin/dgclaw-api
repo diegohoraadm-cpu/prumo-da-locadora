@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dgclaw-api: o agente chama a API do DG Claw Web pela "caixa". Roda DENTRO do container.
+# dgclaw-api: o agente chama a API do Prumo da Locadora Web pela "caixa". Roda DENTRO do container.
 # O container nao alcanca o host, entao o pedido vai como arquivo para ~/.dgclaw/caixa/entrada; o Web
 # (que enxerga a casa do agente) executa a rota e devolve a resposta em ~/.dgclaw/caixa/saida.
 # Contrato completo: docs/CAIXA-DO-AGENTE.md (no Web: GET /api/v1/caixa/docs.md).
@@ -25,7 +25,7 @@
 #   1  erro de uso (metodo, rota fora de /api/v1/, JSON invalido, arquivo ilegivel, pedido grande demais)
 #   2  o Web nao respondeu dentro da espera (fora do ar ou reiniciando); o pedido e retirado da entrada
 #   3  a caixa nao esta disponivel (pasta ausente ou sem permissao): peca ao dono para rodar
-#      "sudo dgclaw agente reparar <slug>"
+#      "sudo prumo agente reparar <slug>"
 #   4  resposta 4xx (pedido errado: leia o "erro")
 #   5  resposta 5xx (problema do lado do Web: leia o "erro") ou resposta que nao deu para entender
 set -euo pipefail
@@ -72,7 +72,7 @@ else CODIGO=3 die "a variavel HOME nao esta definida, entao nao sei onde fica a 
 fi
 ENTRADA="$BASE/entrada"; SAIDA="$BASE/saida"
 mkdir -p "$ENTRADA" "$SAIDA" 2>/dev/null \
-  || CODIGO=3 die "nao consegui preparar a caixa em $BASE (pasta ausente ou sem permissao). Peca ao dono para rodar 'sudo dgclaw agente reparar <slug>'."
+  || CODIGO=3 die "nao consegui preparar a caixa em $BASE (pasta ausente ou sem permissao). Peca ao dono para rodar 'sudo prumo agente reparar <slug>'."
 # so endurece a permissao: se o chmod falhar, a caixa ainda funciona e o pedido segue
 chmod 700 "$ENTRADA" "$SAIDA" 2>/dev/null || true
 
@@ -125,7 +125,7 @@ if [ ! -f "$RESPOSTA" ]; then
 fi
 
 # --- le, apaga e imprime ------------------------------------------------------------
-TEXTO="$(cat -- "$RESPOSTA")" || CODIGO=3 die "nao consegui ler a resposta em $RESPOSTA. Peca ao dono para rodar 'sudo dgclaw agente reparar <slug>'."
+TEXTO="$(cat -- "$RESPOSTA")" || CODIGO=3 die "nao consegui ler a resposta em $RESPOSTA. Peca ao dono para rodar 'sudo prumo agente reparar <slug>'."
 rm -f "$RESPOSTA"
 # jq falhar aqui quer dizer resposta fora do formato: STATUS fica vazio e a linha seguinte explica o erro
 STATUS="$(printf '%s' "$TEXTO" | jq -r 'if (.status | type) == "number" then .status else empty end' 2>/dev/null || true)"

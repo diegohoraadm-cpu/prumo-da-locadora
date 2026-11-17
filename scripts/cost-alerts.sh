@@ -1,9 +1,9 @@
 #!/bin/bash
-# cost-alerts.sh (DG Claw) — alerta o dono quando o gasto Anthropic da persona
+# cost-alerts.sh (Prumo da Locadora) — alerta o dono quando o gasto Anthropic da persona
 # atravessa thresholds do orcamento mensal (50/75/90/100%) OU quando uma execucao
 # individual passa de um teto. Notifica SEMPRE via scripts/notify-owner.sh.
 #
-# Tudo parametrizado por env do contrato DG Claw. ZERO hardcode de persona/paths.
+# Tudo parametrizado por env do contrato Prumo da Locadora. ZERO hardcode de persona/paths.
 #
 # Env:
 #   DGCLAW_WORKSPACE        (obrigatorio na pratica) — raiz do workspace da persona.

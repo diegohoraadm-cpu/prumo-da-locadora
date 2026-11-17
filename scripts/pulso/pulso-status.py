@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""pulso-status.py (DG Claw) — calcula o ESTADO de cada componente esperado hoje.
+"""pulso-status.py (Prumo da Locadora) — calcula o ESTADO de cada componente esperado hoje.
 
 Combina pulso-discover.py (o que deveria rodar) com 3 camadas de sinal:
   1. ledger  (preciso)  — DGCLAW_PULSO_DIR/<data>.jsonl (carimbo do pulso_auto)

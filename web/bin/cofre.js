@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict';
-// Cofre dos agentes pela linha de comando, no servidor (host). É o que "dgclaw agente cofre" chama.
+// Cofre dos agentes pela linha de comando, no servidor (host). É o que "prumo agente cofre" chama.
 //
 //   node web/bin/cofre.js guardar <agente> NOME [--provedor id] [--aplicar] [--quem texto] [--json]   (valor pelo stdin)
 //   node web/bin/cofre.js revogar <agente> NOME [--quem texto] [--json]

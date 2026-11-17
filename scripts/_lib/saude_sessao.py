@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""saude_sessao.py (DG Claw) — O agente esta respondendo NORMALMENTE? Se nao, por que?
+"""saude_sessao.py (Prumo da Locadora) — O agente esta respondendo NORMALMENTE? Se nao, por que?
 
 POR QUE ESTE ARQUIVO EXISTE (30/09/2026)
-  A agente de referência, agente irma do DG Claw, ficou 56 minutos muda. O mantenedor mandou um audio
+  A agente de referência, agente irma do Prumo da Locadora, ficou 56 minutos muda. O mantenedor mandou um audio
   sobre um assunto que o filtro de seguranca da Anthropic leu como ciberataque, a
   resposta dela foi cortada no meio ("Ouvi os dois audios. Vou por part") e a sessao
   congelou. Ninguem percebeu: o vigia que existia so olhava erro de API, e o corte do
   filtro NAO e erro de API. Pior: reiniciar nao resolvia, porque a retomada mandou ela
   reler a conversa morta, o texto voltou ao contexto e o filtro cortou de novo.
 
-  Ate aqui, todo sinal de "esta vivo" do DG Claw media o PROCESSO: tem terminal? o
+  Ate aqui, todo sinal de "esta vivo" do Prumo da Locadora media o PROCESSO: tem terminal? o
   card esta de pe? Um processo de pe que so devolve recusa esta, para quem fala com
   ele, tao fora do ar quanto um processo morto. Este modulo mede a outra coisa: a
   RESPOSTA. Le o fim do transcript da sessao viva, acha o ultimo turno do assistente
@@ -723,7 +723,7 @@ def _diagnosticar(slug, jsonl, agora, checar_vida, vivo, interno):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Saude da resposta do agente DG Claw.")
+    ap = argparse.ArgumentParser(description="Saude da resposta do agente Prumo da Locadora.")
     ap.add_argument("--json", action="store_true", help="saida JSON (contrato)")
     ap.add_argument("--jsonl", help="transcript a analisar (default: o da sessao viva)")
     ap.add_argument("--slug", default=None)

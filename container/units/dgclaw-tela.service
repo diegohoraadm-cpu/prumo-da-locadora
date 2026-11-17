@@ -1,5 +1,5 @@
 [Unit]
-Description=DG Claw Tela do agente (Xvfb + gerenciador de janelas)
+Description=Prumo da Locadora Tela do agente (Xvfb + gerenciador de janelas)
 # Estas quatro unidades "dgclaw-tela*" so sao HABILITADAS na imagem com navegador
 # (COM_NAVEGADOR=1). Ver o Containerfile e docs/TELA-DO-AGENTE.md.
 

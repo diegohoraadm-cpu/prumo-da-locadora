@@ -52,7 +52,7 @@ cd "$DGCLAW_WORKSPACE" || exit 1
 source "$PLUGIN/scripts/_lib/pulso-lib.sh" 2>/dev/null && pulso_auto heartbeat
 
 # --- 1. sempre: ganchos das extensoes + refresh do "Agora" (barato, sem Claude) ---
-# Cada extensao instalada pode ter um hooks/heartbeat.sh (o DG Alive usa pra envelhecer as
+# Cada extensao instalada pode ter um hooks/heartbeat.sh (a extensão de emoções usa pra envelhecer as
 # emocoes). Falha de extensao vai pro log e nao interrompe o batimento do nucleo.
 EXT_DIR="$DGCLAW_WORKSPACE/.dgclaw/ext"
 if [ -d "$EXT_DIR" ]; then

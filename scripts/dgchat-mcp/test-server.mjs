@@ -1,11 +1,11 @@
-// test-server.mjs - Bancada do servidor MCP do DG Chat.
+// test-server.mjs - Bancada do servidor MCP do chat do painel.
 //
 // Fala JSON-RPC no stdio do server.mjs de verdade, em subprocesso, do jeito que o
 // Claude Code fala. Nada de importar funcao solta: o que quebra num servidor de
 // stdio quase nunca e a logica, e sim o enquadramento (linha partida, ruido no
 // stdin, notificacao sem id) e o texto que volta pro agente.
 //
-// O caso que da nome a esta bancada e o 8: no modo "transcript" (DG Claw sozinho,
+// O caso que da nome a esta bancada e o 8: no modo "transcript" (Prumo da Locadora sozinho,
 // que e a VPS da aluna) a entrega JA ACONTECEU quando a tool foi chamada, porque a
 // chamada fica no transcript e o painel le de la. Se o registro de entrega falhar,
 // responder "NAO ENTREGUEI" faria o agente repetir uma mensagem que chegou. Foi
@@ -436,4 +436,4 @@ if (falhas) {
   console.error(`${falhas} verificacao(oes) falharam.`);
   process.exit(1);
 }
-console.log('Bancada do canal DG Chat: tudo verde.');
+console.log('Bancada do canal do chat do painel: tudo verde.');

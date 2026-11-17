@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""embedder.py (DG Claw) — quem transforma texto em vetor para a memoria semantica.
+"""embedder.py (Prumo da Locadora) — quem transforma texto em vetor para a memoria semantica.
 
 POR QUE EXISTE (05/10/2026). Ate aqui a memoria semantica so funcionava com GEMINI_API_KEY,
-e sem ela ficava desligada sem aviso nenhum. O DG Claw da Imersao tem que vir com todos os
+e sem ela ficava desligada sem aviso nenhum. O Prumo da Locadora da Imersao tem que vir com todos os
 poderes sem o aluno abrir conta nem pagar servico novo. Entao o padrao virou um modelo
 LOCAL e gratuito, o EmbeddingGemma 300M (Google, GGUF Q8_0, 333 MB) rodando no llama.cpp
 da propria VPS. Nada sai da maquina. O Gemini continua como opcao.
@@ -297,7 +297,7 @@ def _main(argv):
             return 1
         t0 = time.time()
         try:
-            v = emb.embed_query("teste da memoria semantica do DG Claw")
+            v = emb.embed_query("teste da memoria semantica do Prumo da Locadora")
         except EmbedError as e:
             print(f"memoria semantica NAO funcionou: {e}")
             return 1

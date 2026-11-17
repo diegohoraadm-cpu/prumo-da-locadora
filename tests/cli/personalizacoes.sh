@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# `dgclaw atualizar` com personalizacoes do programa (branch `personalizacoes` + registro).
+# `prumo atualizar` com personalizacoes do programa (branch `personalizacoes` + registro).
 #
 # Mesmo molde do atualizar.sh: raiz falsa, install.sh de verdade, "GitHub" local (repo bare),
 # stubs. Cenarios: sem personalizacao; personalizacao que nao cruza (reaplica por cima);

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""memory_search_fast.py (DG Claw) — versao sub-2s do memory_search pro hook DM Channels.
+"""memory_search_fast.py (Prumo da Locadora) — versao sub-2s do memory_search pro hook DM Channels.
 
 Versao GENERALIZADA: sem acoplamento a vault externo (eco-ambiente fora da persona):
 busca SO no chunks.db da PROPRIA persona. Sem hardcode de paths de workspace.
@@ -31,7 +31,7 @@ Stderr: erros silenciosos (DM precisa continuar mesmo se hook falhar).
 Uso CLI (chamado pelo hook UserPromptSubmit, com timeout duro ~3s):
   echo '{"input":"texto da msg"}' | memory_search_fast.py
 
-Envs (contrato DG Claw):
+Envs (contrato Prumo da Locadora):
   DGCLAW_EMBED_PROVIDER   auto | local | gemini | off (ver embedder.py)
   DGCLAW_WORKSPACE        raiz do workspace da persona (<ws>)
   DGCLAW_MEMORY_INDEX_DIR dir do indice (default "<ws>/.dgclaw/memory_index")

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dgclaw usuario e o final de dgclaw senha: usuario e endereco do painel, nunca senha nem hash.
+# prumo usuario e o final de prumo senha: usuario e endereco do painel, nunca senha nem hash.
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh
 . "$(dirname "$0")/_comum.sh"

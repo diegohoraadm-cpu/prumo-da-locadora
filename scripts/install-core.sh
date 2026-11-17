@@ -1,5 +1,5 @@
 #!/bin/bash
-# install-core.sh — Mecanica da instalacao do DG Claw servidor (a parte nao-conversacional).
+# install-core.sh — Mecanica da instalacao do Prumo da Locadora servidor (a parte nao-conversacional).
 #
 # O wizard /dgclaw:setup conduz a entrevista com o dono e escreve o conteudo rico
 # (IDENTITY.md, PERSONALITY.md, MEMORY.md). Este script faz o trabalho mecanico em volta:
@@ -41,8 +41,8 @@ iso_now() { date -u '+%Y-%m-%dT%H:%M:%SZ'; }
 date_now() { date '+%Y-%m-%d'; }
 
 # archetype_dirs [workspace]: lista os diretorios onde pode haver perfil pronto (arquetipo),
-# um por linha. O nucleo do DG Claw nao traz arquetipo de fabrica: quem traz e uma extensao
-# (o DG Alive traz influencer e infra). Entao procuramos, nesta ordem: os templates da copia
+# um por linha. O nucleo do Prumo da Locadora nao traz arquetipo de fabrica: quem traz e uma extensao
+# (a extensão de emoções traz influencer e infra). Entao procuramos, nesta ordem: os templates da copia
 # estavel, os do plugin, e o diretorio archetypes/ de cada extensao instalada.
 archetype_dirs() {
     local ws="${1:-}" d
@@ -287,7 +287,7 @@ cmd_seed_persona() {
             echo "seed-persona: nao achei o perfil pronto '$archetype'." >&2
             echo "  procurei em: $(archetype_dirs "$ws" | tr '\n' ' ')" >&2
             echo "  perfis disponiveis: $(cmd_list_archetypes_names "$ws" | tr '\n' ' ')" >&2
-            echo "  (o nucleo do DG Claw nao traz perfil de fabrica; quem traz e uma extensao, como o DG Alive)" >&2
+            echo "  (o nucleo do Prumo da Locadora nao traz perfil de fabrica; quem traz e uma extensao, como a extensão de emoções)" >&2
             exit 1
         fi
         # numeros sugeridos viram os defaults (sobrescreviveis pelas flags explicitas).
@@ -397,7 +397,7 @@ PY
         subst "$ADIR/ETHICS.md.tmpl" "$ws/ETHICS.md"
     fi
 
-    # Extensoes instaladas semeiam os proprios arquivos (o DG Alive semeia o estado emocional,
+    # Extensoes instaladas semeiam os proprios arquivos (a extensão de emoções semeia o estado emocional,
     # os gatilhos, as opinioes e o SOUL.md). Sem extensao, nada disso existe e o agente roda
     # igual. O perfil escolhido vai junto, pra extensao aplicar a parte dela do perfil.
     local extdir="$ws/.dgclaw/ext" e seed
@@ -445,8 +445,8 @@ cmd_list_archetypes() {
     )
     [ -n "$saida" ] && printf '%s\n' "$saida"
     if [ -z "$saida" ]; then
-        echo "nenhum perfil pronto instalado. O nucleo do DG Claw nao traz nenhum de fabrica:" >&2
-        echo "quem traz perfil e uma extensao (o DG Alive traz 'influencer' e 'infra'). Sem perfil," >&2
+        echo "nenhum perfil pronto instalado. O nucleo do Prumo da Locadora nao traz nenhum de fabrica:" >&2
+        echo "quem traz perfil e uma extensao (a extensão de emoções traz 'influencer' e 'infra'). Sem perfil," >&2
         echo "o wizard segue normalmente e a personalidade sai toda da entrevista." >&2
         exit 1
     fi
@@ -469,7 +469,7 @@ cmd_status() {
         done < <(find "$AL/ext" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)
     fi
     # sem `|| true` o status sairia com codigo 1 quando HA extensao, e quem chama pensaria que falhou
-    [ "$n" = "0" ] && echo "extensoes: nenhuma (o agente roda igual; o DG Alive acrescenta a vida emocional)" || true
+    [ "$n" = "0" ] && echo "extensoes: nenhuma (o agente roda igual; a extensão de emoções acrescenta a vida emocional)" || true
 }
 
 case "$CMD" in

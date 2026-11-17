@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# pulso-report.sh (DG Claw) — manda pro dono (via notify-owner.sh) o pulso do dia.
+# pulso-report.sh (Prumo da Locadora) — manda pro dono (via notify-owner.sh) o pulso do dia.
 #
 #   pulso-report.sh <config.sh> report   -> resumo agendado (3x/dia): % + contagem +
 #                                           lista de problemas.

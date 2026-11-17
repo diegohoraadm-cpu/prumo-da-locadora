@@ -3,7 +3,7 @@
 //
 // Por quê: as travas do dono (sem Bash, sem enviar arquivo, escrita só em certas pastas) ficam na política
 // administrada local do Claude Code. Uma conta Team/Enterprise do claude.ai recebe política remota que
-// SUBSTITUI a local, inclusive os ganchos. O `dgclaw agente restricoes` confere a conta na hora de aplicar,
+// SUBSTITUI a local, inclusive os ganchos. O `prumo agente restricoes` confere a conta na hora de aplicar,
 // mas o login pelo painel acontece depois, então a mesma regra roda aqui: depois de cada login concluído
 // e antes de abrir ou retomar cada sessão. A regra é a mesma de `_restricoes_classificar_conta` e de
 // REMOTA_JS em lib/restricoes.sh (lá é a conferência da CLI; aqui, a do runner). Mexeu em uma, mexa na outra.
@@ -29,7 +29,7 @@ function descreve(v: unknown): string {
 /** Mesmas regras de restricoes_validar em lib/restricoes.sh (menos a combinação, que é da CLI). Devolve o motivo ou null. */
 function esquemaInvalido(r: Record<string, unknown>): string | null {
   const como = (campo: string, quer: string, v: unknown) =>
-    `"${campo}" precisa ser ${quer}, mas recebi ${descreve(v)}. O dono do servidor corrige com: dgclaw agente restricoes <nome-do-agente>`;
+    `"${campo}" precisa ser ${quer}, mas recebi ${descreve(v)}. O dono do servidor corrige com: prumo agente restricoes <nome-do-agente>`;
   if (r.versao !== 1) return como("versao", "1", r.versao);
   for (const campo of ["sem_bash", "sem_enviar_arquivo"]) {
     const v = r[campo];
@@ -141,7 +141,7 @@ export type ResultadoDaConferencia = { ok: true } | { ok: false; mensagem: strin
 
 const COMO_RESOLVER =
   "conectar ao agente uma conta pessoal (Pro ou Max) ou uma chave de API no lugar da conta da organização, pelo painel; " +
-  "ou desligar as restrições: dgclaw agente restricoes <nome-do-agente> --sem-bash nao --sem-enviar-arquivo nao --escrita-livre";
+  "ou desligar as restrições: prumo agente restricoes <nome-do-agente> --sem-bash nao --sem-enviar-arquivo nao --escrita-livre";
 
 /**
  * Conferência do runner. Sem restrição ativa, não muda nada. Com restrição (ou restricoes.json ilegível), a
@@ -154,7 +154,7 @@ export async function conferirContaComRestricoes(env: Record<string, string>, cw
     return {
       ok: false,
       mensagem: `Não consegui conferir as restrições do agente: ${lida.erro}. Por segurança a sessão não abriu.`,
-      comoResolver: "o dono do servidor confere o arquivo com: jq . /var/lib/dgclaw/agentes/<nome-do-agente>/runner/restricoes.json , ou refaz as restrições com: dgclaw agente restricoes <nome-do-agente>",
+      comoResolver: "o dono do servidor confere o arquivo com: jq . /var/lib/dgclaw/agentes/<nome-do-agente>/runner/restricoes.json , ou refaz as restrições com: prumo agente restricoes <nome-do-agente>",
     };
   }
   const pasta = env.CLAUDE_CONFIG_DIR?.trim() || path.join(env.HOME?.trim() || process.env.HOME || "/home/agente", ".claude");

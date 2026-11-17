@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ig-publish.py (DG Claw) — Publica no Instagram via Graph API. Generico.
+"""ig-publish.py (Prumo da Locadora) — Publica no Instagram via Graph API. Generico.
 
 ZERO id hardcoded: a conta IG, o token e os parametros vem dos argumentos /
 do instagram.json. Usa apenas stdlib + requests (ja comum no projeto).
@@ -165,7 +165,7 @@ def validate(token):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Publica no Instagram via Graph API (DG Claw).")
+    ap = argparse.ArgumentParser(description="Publica no Instagram via Graph API (Prumo da Locadora).")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     p1 = sub.add_parser("publish-image")

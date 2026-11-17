@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # A secao "Onde voce esta e o que voce consegue fazer" que entra no prompt de todo agente
-# (templates/ambiente/) e o comando `dgclaw agente identidade` que a regrava.
+# (templates/ambiente/) e o comando `prumo agente identidade` que a regrava.
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh
 . "$(dirname "$0")/../cli/_comum.sh"
@@ -40,7 +40,7 @@ afirma "admin.md manda usar dgclaw colaborador criar" grep -qF 'dgclaw colaborad
 afirma "a skill criar-agente oferece o acesso na entrega" grep -qF 'dgclaw colaborador criar' "$REPO/skills/criar-agente/SKILL.md"
 nega "a skill criar-agente sem travessao nem en dash" grep -q $'—\|–' "$REPO/skills/criar-agente/SKILL.md"
 
-echo "ambiente: dgclaw agente identidade"
+echo "ambiente: prumo agente identidade"
 criar_agente ana --nome "Ana" --dono "Marta"
 ID="$DGCLAW_RAIZ/var/lib/dgclaw/agentes/ana/home/.plataforma/identidade.md"
 AG="$DGCLAW_RAIZ/var/lib/dgclaw/agentes/ana/home/AGENT.md"

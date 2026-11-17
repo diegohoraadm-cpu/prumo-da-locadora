@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# pulso-lib.sh (DG Claw) — registro no ledger do Pulso (camada de PRECISAO) p/ crons .sh.
+# pulso-lib.sh (Prumo da Locadora) — registro no ledger do Pulso (camada de PRECISAO) p/ crons .sh.
 #
 # ZERO path hardcoded de maquina/agente. O ledger vai pra
 # DGCLAW_PULSO_DIR (default <ws>/.dgclaw/logs/pulso), derivado de DGCLAW_WORKSPACE.

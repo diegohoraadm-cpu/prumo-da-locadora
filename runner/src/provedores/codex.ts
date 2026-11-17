@@ -1,6 +1,6 @@
 // O motor do Codex CLI (OpenAI).
 //
-// Porta, para o runner do DG Claw, do que o Bunker faz em `codex-cli.ts`. O que o
+// Porta, para o runner do Prumo da Locadora, do que o Bunker faz em `codex-cli.ts`. O que o
 // Codex tem de diferente do Claude Code, e que este arquivo absorve:
 //   - o id da sessão não pode ser pré-fixado: é DESCOBERTO no rollout depois do spawn;
 //   - retomar é subcomando (`codex resume <uuid>`), não flag;

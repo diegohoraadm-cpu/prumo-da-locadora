@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# `dgclaw suporte ligar|desligar|status|limpar` e a linha "suporte:" do `dgclaw status`.
+# `prumo suporte ligar|desligar|status|limpar` e a linha "suporte:" do `prumo status`.
 # Raiz falsa (DGCLAW_RAIZ) e o relogio fixo por DGCLAW_AGORA_MS: o authorized_keys de verdade nunca e tocado.
 # As chaves sao geradas aqui com o ssh-keygen real; o `ssh -V` e o stub de tests/cli/stubs.
 set -uo pipefail
@@ -654,7 +654,7 @@ else
     afirma "sshd de verdade honra o Include entre aspas (o caso e real)" bash -c '/usr/sbin/sshd -T -f "$1" -C user=root,host=localhost,addr=203.0.113.5 | grep -qx "authorizedkeysfile .ssh/suporte-permanente"' _ "$TMP/real.conf"
 fi
 
-echo "--trava: status e a linha do dgclaw status esperam a mesma trava"
+echo "--trava: status e a linha do prumo status esperam a mesma trava"
 LOCK="$DGCLAW_RAIZ/root/.ssh/.dgclaw-suporte.lock"
 printf '%s\n' "$ALHEIA1" >"$ARQ"; rm -f "$ALERTA"
 dgclaw suporte ligar --chave "$CHAVE" >/dev/null 2>&1
@@ -733,7 +733,7 @@ igual "e continua sem anunciar desligado (chave segue no authorized_keys2): sai 
 rmdir "$LOGSUP"; mv "$TMP/suporte.log.guardado" "$LOGSUP"
 rm -f "$ARQ2"; dgclaw suporte status >/dev/null 2>&1; rm -f "$ALERTA"
 
-echo "--a linha do dgclaw status le tudo depois da trava (renovacao entre a primeira leitura e a trava)"
+echo "--a linha do prumo status le tudo depois da trava (renovacao entre a primeira leitura e a trava)"
 printf '%s\n' "$ALHEIA1" >"$ARQ"; : >"$PEND"; rm -f "$ALERTA"
 printf 'expiry-time="%sZ" ssh-ed25519 %s dgclaw-suporte:cafe0003:%s\n' "$VENCIDA_FIM" "$BLOB" "$VENCIDA_FIM" >>"$ARQ"
 flock -x "$LOCK" sleep 2 & LOCKPID=$!

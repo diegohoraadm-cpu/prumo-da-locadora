@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""search-follower.py (DG Claw) — Busca/cria/atualiza seguidor por ID ou username.
+"""search-follower.py (Prumo da Locadora) — Busca/cria/atualiza seguidor por ID ou username.
 
 Versao GENERICA (nada de persona hardcoded). A API do Instagram as vezes retorna
 so o ID (perfis privados) — este script reconcilia ID <-> username e mantem os

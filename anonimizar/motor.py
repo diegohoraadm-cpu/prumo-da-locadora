@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Motor de anonimização de documentos do DG Claw (contrato em anonimizar/CONTRATO.md).
+"""Motor de anonimização de documentos do Prumo da Locadora (contrato em anonimizar/CONTRATO.md).
 
 Subcomandos:
   servir                       protocolo de linhas JSON no stdin/stdout (é o que o painel usa)

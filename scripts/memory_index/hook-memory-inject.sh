@@ -1,5 +1,5 @@
 #!/bin/bash
-# hook-memory-inject.sh — UserPromptSubmit hook do DG Claw: "eco do passado" numa DM.
+# hook-memory-inject.sh — UserPromptSubmit hook do Prumo da Locadora: "eco do passado" numa DM.
 #
 # Numa DM da pessoa virtual (sessao --channels viva), ANTES de ela responder, este hook
 # roda a busca semantica na memoria DA PROPRIA persona e, se algo do passado bater com a

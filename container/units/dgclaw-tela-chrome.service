@@ -1,5 +1,5 @@
 [Unit]
-Description=DG Claw Tela do agente (navegador de verdade, com janela e CDP local)
+Description=Prumo da Locadora Tela do agente (navegador de verdade, com janela e CDP local)
 After=dgclaw-tela.service
 Requires=dgclaw-tela.service
 

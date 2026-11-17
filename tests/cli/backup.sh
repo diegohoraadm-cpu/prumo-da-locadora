@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# `dgclaw backup`, `dgclaw backup listar` e `dgclaw restaurar`, numa raiz falsa com podman de mentira.
+# `prumo backup`, `prumo backup listar` e `prumo restaurar`, numa raiz falsa com podman de mentira.
 #
 # Cobre: o backup cria pasta datada com MANIFESTO (versao e commit) e tars que abrem; listar mostra;
 # nunca apaga; restaurar recusa backup de outra versao sem --mesmo-assim; restaurar faz o backup

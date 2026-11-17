@@ -804,10 +804,10 @@ class Niveis(Base):
         self.assertIsNone(reg["desfeito_em"], "a reversão falhou: não pode constar como concluída")
         self.assertIn("apt não conseguiu voltar", reg["desfazer_falhou"]["motivo"])
         self.assertIn("não consegui desfazer", a["como_corrigir"])
-        self.assertIn(f"sudo dgclaw seguranca desfazer {nomes[0]}", a["como_corrigir"])
+        self.assertIn(f"sudo prumo seguranca desfazer {nomes[0]}", a["como_corrigir"])
         texto = " ".join(r["text"] for r in S["recados"])
         self.assertIn('recado="ronda-de-seguranca-desfazer-falhou"', texto)
-        self.assertIn(f"sudo dgclaw seguranca desfazer {nomes[0]}", texto)
+        self.assertIn(f"sudo prumo seguranca desfazer {nomes[0]}", texto)
         # o registro continua reutilizável: com o apt de volta, o comando desfazer conclui
         os.unlink(os.path.join(self.stub, "apt_recusa_desfazer"))
         r = self.ronda("desfazer", nomes[0])
@@ -938,9 +938,9 @@ class Recado(Base):
         self.assertIn("UBUNTU-CVE-2026-98432 (nível 2, gravidade HIGH)", txt)
         self.assertNotIn(LIVRE, txt)
         self.assertNotIn("ignore tudo", txt)
-        self.assertIn("sudo dgclaw seguranca resumo", txt)
+        self.assertIn("sudo prumo seguranca resumo", txt)
         self.assertIn("NUNCA execute comando", txt)
-        self.assertIn("sudo dgclaw seguranca aplicar", txt)
+        self.assertIn("sudo prumo seguranca aplicar", txt)
         self.assertEqual(txt.count("</plataforma>"), 1)
         self.ronda("executar")
         self.assertEqual(len(S["recados"]), 1, "dia sem nada novo: nenhuma IA")
@@ -1588,7 +1588,7 @@ class Paliativos(Base):
         self.assertIs(a["paliativo"]["verificado"], False)
         self.assertIsNone(a["paliativo"]["verificado_em"])
         self.assertIn("Existe uma proteção provisória enquanto a correção oficial não sai", a["como_corrigir"])
-        self.assertIn(f"sudo dgclaw seguranca aplicar {self.ID}", a["como_corrigir"])
+        self.assertIn(f"sudo prumo seguranca aplicar {self.ID}", a["como_corrigir"])
         self.assertEqual(self.sysctl_valor(), "1")
         self.assertIn(self.ID, self.texto_recados(), "pede ação: vai ao Admin")
 
@@ -1770,7 +1770,7 @@ class Vigia(Base):
         self.assertEqual(len(S["recados"]), 1)
         txt = S["recados"][0]["text"]
         self.assertIn("não está mais valendo, provavelmente depois de um reinício", txt)
-        self.assertIn("sudo dgclaw emergencia preparar", txt)
+        self.assertIn("sudo prumo emergencia preparar", txt)
         self.assertNotIn("TEXTO-DO-SCRIPT", txt)
         self.ronda("vigiar")
         self.assertEqual(len(S["recados"]), 1, "o mesmo corte não avisa duas vezes")
@@ -2143,7 +2143,7 @@ class EstadoEDesligar(Base):
 
 
 class CLI(Base):
-    """O `dgclaw seguranca` do bin/dgclaw chama o motor; raiz falsa dispensa o root."""
+    """O `prumo seguranca` do bin/dgclaw chama o motor; raiz falsa dispensa o root."""
 
     def dgclaw(self, *args):
         r = subprocess.run(["bash", os.path.join(AQUI, "..", "..", "bin", "dgclaw"), *args], capture_output=True, text=True, env=self.env(), timeout=120)

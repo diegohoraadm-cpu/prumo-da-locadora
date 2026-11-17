@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # lib/reiniciar-admin.sh <resumo> <log> <arquivo do token>
 #
-# Rodado pelo systemd-run, uns segundos depois de `dgclaw atualizar` terminar (ver
+# Rodado pelo systemd-run, uns segundos depois de `prumo atualizar` terminar (ver
 # atualizar_agendar_reinicio_do_admin em lib/atualizar.sh). Como o Admin pode ser quem disparou a
 # atualizacao, reiniciar o servico dele mata a sessao no meio e o dono nunca recebia o resultado.
 # Este roteiro cobre isso: reinicia o Admin, espera ele responder e MANDA UMA MENSAGEM a ele

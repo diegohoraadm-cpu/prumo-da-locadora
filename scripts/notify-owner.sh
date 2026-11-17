@@ -6,7 +6,7 @@
 #
 # POR QUE ELE MUDOU (01/10/2026, vistoria P0-2). Ate aqui o unico transporte era o bot
 # do Telegram, e o script abortava quando TELEGRAM_STATE_DIR nao existia. Na jaula o
-# canal do dono e o DG Chat (o painel da plataforma), nao o Telegram: TODO aviso de
+# canal do dono e o chat do painel (o painel da plataforma), nao o Telegram: TODO aviso de
 # todo cron caia no vazio, e como o curl nao tinha -f e os chamadores jogavam a saida
 # fora, ninguem soube. Um agente passou uma semana mudo por login vencido e o dono
 # nao recebeu um aviso sequer.
@@ -21,7 +21,7 @@
 #                          do agente sem Telegram que conversa pelo app DG Telegram (Lara,
 #                          Marina e Luna, 02/10/2026): sem isto todo aviso de cron dela caia
 #                          no vazio. So conta como entregue com HTTP 2xx.
-#   4. DG Chat da plataforma  uma linha no outbound.jsonl do canal, no MESMO formato que a
+#   4. chat do painel da plataforma  uma linha no outbound.jsonl do canal, no MESMO formato que a
 #                          tool de resposta do agente grava. Quem entrega e o carteiro do
 #                          runner (DGCHAT_ENTREGA=disco), que le esse arquivo e manda para a
 #                          janela do dono. So e usado quando esse carteiro existe: num DG
@@ -103,7 +103,7 @@ if [ -n "${TELEGRAM_STATE_DIR:-}" ]; then
 fi
 
 # ── avisos ao dono RETIDOS de proposito (DGCLAW_AVISOS_RETIDOS=1) ──
-# Segura so os caminhos do DG Chat (3 e 4), que no agente de cliente caem na conversa do
+# Segura so os caminhos do chat do painel (3 e 4), que no agente de cliente caem na conversa do
 # cliente. Nome proprio de proposito: DGCHAT_ENTREGA tambem e lida pela tool com que o
 # AGENTE responde (dgchat-mcp), e la qualquer valor fora de "disco" vira "nao entreguei"
 # e laco de repeticao. Aviso retido conta como NAO entregue, com o motivo dito.
@@ -130,7 +130,7 @@ if [ -z "$RETIDO" ] && [ -n "${DGCHAT_URL:-}" ]; then
     FALHAS+=("ponte $URL: respondeu ${CODE:-sem resposta} (a ponte do app esta no ar?)")
 fi
 
-# ── 4. DG Chat da plataforma (o carteiro do runner entrega o outbound) ──
+# ── 4. chat do painel da plataforma (o carteiro do runner entrega o outbound) ──
 OUTBOUND="${DGCHAT_OUTBOUND:-}"
 [ -z "$OUTBOUND" ] && [ -d "$WS/.plataforma/dgchat" ] && OUTBOUND="$WS/.plataforma/dgchat/outbound.jsonl"
 ENTREGA="${DGCHAT_ENTREGA:-}"

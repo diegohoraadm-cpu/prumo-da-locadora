@@ -1,5 +1,5 @@
 #!/bin/bash
-# install-service.sh — Cria e sobe o servico systemd do assistente DG Claw.
+# install-service.sh — Cria e sobe o servico systemd do assistente Prumo da Locadora.
 #
 # Uso:  sudo bash install-service.sh <config.sh> [<launch.sh>]
 #

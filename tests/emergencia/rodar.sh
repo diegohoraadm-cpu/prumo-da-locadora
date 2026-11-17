@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Testes do lib/emergencia.sh (dgclaw emergencia): sem root, sem mexer na máquina.
+# Testes do lib/emergencia.sh (prumo emergencia): sem root, sem mexer na máquina.
 # Usa uma raiz falsa (DGCLAW_RAIZ) e comandos de mentira no PATH que só registram as chamadas
 # (inclusive o conteúdo do arquivo nft que o corte carrega).
 # shellcheck disable=SC2016,SC2015
@@ -325,7 +325,7 @@ echo 'COISA=1' >>"$EMERGENCIA_CONF"
 roda estado
 contem "chave desconhecida" "$SAIDA" "chave desconhecida 'COISA'"
 
-echo "12. dgclaw emergencia chama o mesmo script"
+echo "12. prumo emergencia chama o mesmo script"
 monta_ambiente; liga_tailscale
 RC=0; SAIDA="$("$BIN" emergencia estado 2>&1)" || RC=$?
 confere "exit 0" "0" "$RC"

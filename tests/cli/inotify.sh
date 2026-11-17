@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Folga de inotify: o aviso no `dgclaw status` e a explicacao quando o container sai com 255.
+# Folga de inotify: o aviso no `prumo status` e a explicacao quando o container sai com 255.
 # O /proc e falso (DGCLAW_RAIZ/proc): pastas de processo com `status` e `fd/` com links.
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh

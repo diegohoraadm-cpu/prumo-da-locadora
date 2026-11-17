@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# A versao instalada: `dgclaw status` (primeira linha), `dgclaw versao`, `dgclaw --version`, e a
+# A versao instalada: `prumo status` (primeira linha), `prumo versao`, `prumo --version`, e a
 # garantia de que o arquivo VERSION, o panel/package.json e o runner/package.json dizem a mesma coisa.
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh

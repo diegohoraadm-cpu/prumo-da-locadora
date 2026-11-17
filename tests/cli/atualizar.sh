@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# `dgclaw atualizar`: a atualizacao nao pode perder nem mudar nada que e do dono.
+# `prumo atualizar`: a atualizacao nao pode perder nem mudar nada que e do dono.
 #
 # Monta, numa raiz falsa, uma instalacao de verdade (o install.sh real, rodando de um clone git
 # real com um "GitHub" local), cria dois agentes e enche tudo de dados de aluno: chaves no

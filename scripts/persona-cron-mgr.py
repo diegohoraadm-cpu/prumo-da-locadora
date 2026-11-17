@@ -497,7 +497,7 @@ def install_units(c, name: str, calendar: str | None, every: str | None, poke: s
     usuario, home = usuario_da_rotina(c)
     svc.write_text(
         "[Unit]\n"
-        f"Description=DG Claw self-cron '{name}': {c['slug']}\n\n"
+        f"Description=Prumo da Locadora self-cron '{name}': {c['slug']}\n\n"
         "[Service]\n"
         "Type=simple\n"
         f"User={usuario}\n"
@@ -518,7 +518,7 @@ def install_units(c, name: str, calendar: str | None, every: str | None, poke: s
         encoding="utf-8",
     )
 
-    timer = ["[Unit]", f"Description=DG Claw self-cron '{name}' (timer): {c['slug']}", "", "[Timer]"]
+    timer = ["[Unit]", f"Description=Prumo da Locadora self-cron '{name}' (timer): {c['slug']}", "", "[Timer]"]
     if calendar:
         timer.append(f"OnCalendar={calendar}")
         # Sem isto o systemd pode atrasar ate 1 min (AccuracySec padrao), e "daqui a 2 minutos"

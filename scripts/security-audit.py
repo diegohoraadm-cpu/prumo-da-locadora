@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""security-audit.py — Auditoria forense deterministica do agente DG Claw.
+"""security-audit.py — Auditoria forense deterministica do agente Prumo da Locadora.
 
 Generalizacao do security-audit interno: ZERO dado pessoal, tudo parametrizado por
 env DGCLAW_*, e a LISTA de arquivos/servicos a monitorar e DESCOBERTA dinamicamente

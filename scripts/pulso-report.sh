@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# pulso-report.sh (DG Claw) — manda pro dono (via notify-owner.sh) o pulso do dia.
+# pulso-report.sh (Prumo da Locadora) — manda pro dono (via notify-owner.sh) o pulso do dia.
 #
 # Generalizacao do pulso-report do ClaudeClaw: notifica SEMPRE via notify-owner.sh
 # (nunca telegram_notify hardcoded) e le o ledger de DGCLAW_PULSO_DIR.

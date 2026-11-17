@@ -1,5 +1,5 @@
 [Unit]
-Description=DG Claw Tela do agente (observa o arquivo da senha do VNC)
+Description=Prumo da Locadora Tela do agente (observa o arquivo da senha do VNC)
 
 [Path]
 # PathChanged cobre as duas coisas que importam: a troca de senha pelo painel (vale na

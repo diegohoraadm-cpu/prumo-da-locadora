@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dgclaw dominio: troca do dominio do painel.
+# prumo dominio: troca do dominio do painel.
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh
 . "$(dirname "$0")/_comum.sh"

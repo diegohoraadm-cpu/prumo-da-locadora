@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""panel.py — Mini painel web do DG Claw pra ver/editar a memoria.
+"""panel.py — Mini painel web do Prumo da Locadora pra ver/editar a memoria.
 
 Sem dependencias (so Python padrao). Mostra MEMORY.md, working-memory.md e as
 notas em memory/*.md em caixas de texto editaveis. Salvar grava DIRETO no
@@ -24,7 +24,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 WS = Path(os.environ.get("DGCLAW_WORKSPACE", ".")).expanduser().resolve()
-NAME = os.environ.get("DGCLAW_NAME", "DG Claw")
+NAME = os.environ.get("DGCLAW_NAME", "Prumo da Locadora")
 PORT = int(os.environ.get("DGCLAW_PANEL_PORT", "8200"))
 TOKEN = os.environ.get("DGCLAW_PANEL_TOKEN", "")
 
@@ -161,7 +161,7 @@ def main():
         srv = DualStackServer(("::", PORT), H)
     except OSError:
         srv = ThreadingHTTPServer(("0.0.0.0", PORT), H)  # fallback so-IPv4
-    print(f"painel DG Claw na porta {PORT} (IPv4+IPv6)  (workspace: {WS})")
+    print(f"painel Prumo da Locadora na porta {PORT} (IPv4+IPv6)  (workspace: {WS})")
     srv.serve_forever()
 
 

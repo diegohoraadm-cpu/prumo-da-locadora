@@ -2,7 +2,7 @@
 
 > Copiado do `apps/agent-runner` do DG AI Bunker em 12/10/2026 (retrato de 09/10, o que roda em
 > produção). As seções sobre provisionar a partir de um card do Bunker e sobre o `agents-server`
-> descrevem a origem; no DG Claw quem provisiona é o `dgclaw agente criar` (ver `docs/`).
+> descrevem a origem; no Prumo da Locadora quem provisiona é o `prumo agente criar` (ver `docs/`).
 
 
 O processo que **é** um agente entregue. Um por agente, com unidade systemd
@@ -20,7 +20,7 @@ de uma coisa que não é dele.
 2. **Depois do restart o cofre volta trancado**, e com ele trancado toda a rota
    `/api/agents` responde `VAULT_LOCKED`: nenhum agente sobe, e só o dono
    destranca, com a senha mestra, quando aparecer.
-3. **O DG Claw é um produto**, e ele tem que rodar na VPS do cliente, onde não
+3. **O Prumo da Locadora é um produto**, e ele tem que rodar na VPS do cliente, onde não
    existe Bunker nenhum para hospedar card.
 
 O corte do cofre por lista (`AgentConfig.cofre`, commit `bfb08d9`) resolveu o
@@ -33,7 +33,7 @@ WebSocket que o `bunker-server` fala, no subconjunto que um agente entregue usa.
 
 ```
 agents-server (:4013) ─┐
-painel DG Claw (:830x) ─┼─→ http://127.0.0.1:<porta do agente>  ─→  PTY do claude
+painel Prumo da Locadora (:830x) ─┼─→ http://127.0.0.1:<porta do agente>  ─→  PTY do claude
 rotinas (inject.py)   ─┘         (este processo)
 ```
 
@@ -384,7 +384,7 @@ Quatro coisas que não podem ser trocadas por engano:
   `Restart=always` não ajudaria: quem está de pé é o runner, não o PTY.
 - **O transcript de uma sessão nova demora a ser descarregado no disco.** Nos
   primeiros minutos, `--resume` daquela sessão ainda falha. É o caso acima.
-- **`409 NO_PTY` não pode virar 503.** O painel do DG Claw separa "não alcancei a
+- **`409 NO_PTY` não pode virar 503.** O painel do Prumo da Locadora separa "não alcancei a
   plataforma" de "o terminal caiu", e só o segundo mostra o botão de acordar.
   Responder o código errado esconde o botão exatamente quando ele é necessário.
 - **O `snapshot` do watcher do agents-server é tratado como lista COMPLETA.** Por

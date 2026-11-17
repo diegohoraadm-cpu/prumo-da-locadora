@@ -1,9 +1,9 @@
 #!/bin/bash
 # ext-event.sh — Avisa as extensoes instaladas que aconteceu alguma coisa.
 #
-# O nucleo do DG Claw nao sabe o que e emocao, nem precisa saber. Ele so anuncia fatos
+# O nucleo do Prumo da Locadora nao sabe o que e emocao, nem precisa saber. Ele so anuncia fatos
 # ("postei", "o post falhou", "chegou um comentario hostil") e quem quiser reagir reage.
-# A extensao DG Alive escuta esses fatos pra mexer no humor; outra extensao pode escutar
+# A extensao de emocoes escuta esses fatos pra mexer no humor; outra extensao pode escutar
 # os mesmos fatos pra outra coisa. Sem extensao instalada, isto e um no-op silencioso.
 #
 # Uso:  bash ext-event.sh <evento> [json-opcional]

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dgclaw instalacao-remota: troca a senha por uma forte, so o hash vai para o disco, reinicia o painel
+# prumo instalacao-remota: troca a senha por uma forte, so o hash vai para o disco, reinicia o painel
 # e imprime a mensagem de entrega uma vez. Raiz falsa, hash e systemctl de mentira.
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh

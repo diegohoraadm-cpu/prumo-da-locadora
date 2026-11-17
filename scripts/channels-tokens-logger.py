@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""channels-tokens-logger.py (DG Claw) — extrai custo da sessao viva (channels).
+"""channels-tokens-logger.py (Prumo da Locadora) — extrai custo da sessao viva (channels).
 
 Le os transcripts .jsonl da sessao viva da persona (a mesma sessao --channels que
 serve o canal) e, pra cada assistant message NOVA (controle por uuid), grava 1 entry
 no log de tokens com o schema unificado lido pelo painel (aba CUSTOS).
 
-Tudo parametrizado por env do contrato DG Claw. ZERO hardcode de persona/paths.
+Tudo parametrizado por env do contrato Prumo da Locadora. ZERO hardcode de persona/paths.
 
 Env:
   DGCLAW_WORKSPACE        (obrigatorio na pratica) — raiz do workspace da persona.

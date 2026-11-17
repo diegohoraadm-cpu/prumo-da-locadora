@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # scripts/revisao-adversarial.sh <numero-do-pr> [--so-preparar]
 #
-# Prepara (e, sem --so-preparar, roda) a revisão adversarial de segurança do Codex num PR do DG Claw.
+# Prepara (e, sem --so-preparar, roda) a revisão adversarial de segurança do Codex num PR do Prumo da Locadora.
 # Roteiro completo: docs/REVISAO-ADVERSARIAL.md.
 #
 # Por que este script existe em vez de um comando de uma linha:
@@ -28,7 +28,7 @@ validar_sha() {
 preparar() {
     local pr="$1" repo base head dir roteiro texto
     repo="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)" \
-        || falha "não achei o repositório a partir de $(dirname "${BASH_SOURCE[0]}")." "rode o script de dentro de um clone do DG Claw."
+        || falha "não achei o repositório a partir de $(dirname "${BASH_SOURCE[0]}")." "rode o script de dentro de um clone do Prumo da Locadora."
 
     git -C "$repo" fetch --quiet --no-tags origin \
         "+refs/heads/main:refs/dgclaw-revisao/base" \

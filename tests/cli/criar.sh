@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# `dgclaw agente criar`: faixa de uid, portas, agentes.json, segredos, podman create.
+# `prumo agente criar`: faixa de uid, portas, agentes.json, segredos, podman create.
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh
 . "$(dirname "$0")/_comum.sh"

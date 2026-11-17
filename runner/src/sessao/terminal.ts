@@ -55,9 +55,9 @@ export function aoReceberDados(s: Sessao, dados: string, mascara: MascaraDeFluxo
 export function pararNoDialogoDeBypass(s: Sessao): void {
   const mensagem =
     "O Claude Code abriu o aviso do modo Bypass Permissions e ficou esperando resposta. " +
-    "O DG Claw não responde esse aviso sozinho (o Enter escolheria \"No, exit\" e o Claude sairia). " +
+    "O Prumo da Locadora não responde esse aviso sozinho (o Enter escolheria \"No, exit\" e o Claude sairia). " +
     "O que fazer: acrescentar \"skipDangerousModePermissionPrompt\": true ao settings.json do HOME do " +
-    "motor (~/.claude/settings.json) ou atualizar o DG Claw, e reiniciar o agente.";
+    "motor (~/.claude/settings.json) ou atualizar o Prumo da Locadora, e reiniciar o agente.";
   s.mudar({ status: "errored", error: mensagem, statusReason: "runner:dialogo-bypass" });
   log.erro(
     s.a("pty"),

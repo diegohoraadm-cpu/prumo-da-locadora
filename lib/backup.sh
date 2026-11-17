@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# lib/backup.sh: o backup conferido do DG Claw. Serve a tres comandos:
-#   dgclaw backup [--sem-casas] [--simular]      backup manual, em /var/backups/dgclaw/<data>-manual
-#   dgclaw backup listar                         lista os backups que existem
-#   dgclaw restaurar <backup> [--simular] [--mesmo-assim]
-# e ao `dgclaw atualizar` (lib/atualizar.sh), que faz o mesmo backup antes de mexer em qualquer coisa
+# lib/backup.sh: o backup conferido do Prumo da Locadora. Serve a tres comandos:
+#   prumo backup [--sem-casas] [--simular]      backup manual, em /var/backups/dgclaw/<data>-manual
+#   prumo backup listar                         lista os backups que existem
+#   prumo restaurar <backup> [--simular] [--mesmo-assim]
+# e ao `prumo atualizar` (lib/atualizar.sh), que faz o mesmo backup antes de mexer em qualquer coisa
 # e usa o proprio atualizar_backup daqui.
 #
 # Carregado com `source` pelo bin/dgclaw, nunca executado. Usa as funcoes dele e da lib/comum.sh
@@ -21,8 +21,8 @@
 #                                   quando o dono pede. Quem implementar retencao nunca apaga o mais
 #                                   recente nem um backup com motivo antes-de-restaurar ou
 #                                   antes-de-voltar
-#   depois_de_restaurar <pasta>     roda no fim de um `dgclaw restaurar` que deu certo
-#   depois_de_atualizar <resultado> roda no fim de um `dgclaw atualizar`; o resultado e "concluida",
+#   depois_de_restaurar <pasta>     roda no fim de um `prumo restaurar` que deu certo
+#   depois_de_atualizar <resultado> roda no fim de um `prumo atualizar`; o resultado e "concluida",
 #                                   "incompleta" ou "voltou-sozinho"
 #
 # O que este arquivo NUNCA faz: apagar backup, `git reset --hard`, `git clean` ou apagar pasta de agente.
@@ -93,7 +93,7 @@ atualizar_backup() {
     chmod 700 "$DG_BACKUPS" "$dest"
 
     # config.tar.gz: /etc/dgclaw inteiro (chaves, hash da senha, agentes.json, tokens).
-    [ -d "$DG_ETC" ] || falha "nao existe $DG_ETC; o DG Claw nao parece instalado." "instale primeiro: sudo ./install.sh --usuario <nome>"
+    [ -d "$DG_ETC" ] || falha "nao existe $DG_ETC; o Prumo da Locadora nao parece instalado." "instale primeiro: sudo ./install.sh --usuario <nome>"
     _tar_backup "$dest/config.tar.gz" "$(_rel "$DG_ETC")"
 
     # admin.tar.gz: a pasta do Admin (CLAUDE.md, AGENTS.md, uploads, skills).
@@ -118,7 +118,7 @@ atualizar_backup() {
         fi
     fi
 
-    # extras.tar.gz: o que uma edicao que estende o DG Claw quiser guardar junto (ver o topo).
+    # extras.tar.gz: o que uma edicao que estende o Prumo da Locadora quiser guardar junto (ver o topo).
     while IFS= read -r f; do
         if [ -e "$f" ]; then extras+=("$(_rel "$f")"); fi
     done < <(backup_caminhos_extras)
@@ -134,7 +134,7 @@ atualizar_backup() {
     if [ -n "$ATU_REPO" ]; then ramo="$(_git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"; fi
 
     {
-        printf 'MANIFESTO do backup do DG Claw\n'
+        printf 'MANIFESTO do backup do Prumo da Locadora\n'
         printf 'criado_em=%s\n' "$(date '+%Y-%m-%d %H:%M:%S %z')"
         printf 'motivo=%s\n' "$motivo"
         printf 'repo=%s\n' "$ATU_REPO"
@@ -151,7 +151,7 @@ atualizar_backup() {
     } >"$dest/MANIFESTO.txt"
     chmod 600 "$dest/MANIFESTO.txt"
     ok "backup conferido em $dest ($(du -sh "$dest" | cut -f1))"
-    info "ele guarda as chaves e o hash da senha: so o root le (pasta 700). Para voltar: sudo dgclaw restaurar $dest (mesma versao) ou sudo dgclaw atualizar --voltar $dest (volta tambem o codigo)"
+    info "ele guarda as chaves e o hash da senha: so o root le (pasta 700). Para voltar: sudo prumo restaurar $dest (mesma versao) ou sudo prumo atualizar --voltar $dest (volta tambem o codigo)"
     backup_aplicar_retencao "$DG_BACKUPS"
 }
 
@@ -178,19 +178,19 @@ atualizar_hashes_do_manifesto() {
     done
 }
 
-# backup_conferir_pasta <pasta>: a pasta e um backup do DG Claw e todo tar dele abre. Sai da CLI
+# backup_conferir_pasta <pasta>: a pasta e um backup do Prumo da Locadora e todo tar dele abre. Sai da CLI
 # com a explicacao se nao for. Imprime o caminho absoluto da pasta.
 backup_conferir_pasta() {
     local b="$1" t
     if [ ! -d "$b" ] || [ ! -f "$b/MANIFESTO.txt" ] || [ ! -f "$b/config.tar.gz" ]; then
-        falha "'$b' nao parece um backup do DG Claw (falta a pasta, o MANIFESTO.txt ou o config.tar.gz)." \
-              "veja os backups que existem: sudo dgclaw backup listar"
+        falha "'$b' nao parece um backup do Prumo da Locadora (falta a pasta, o MANIFESTO.txt ou o config.tar.gz)." \
+              "veja os backups que existem: sudo prumo backup listar"
     fi
     b="$(cd "$b" && pwd)"
     for t in "$b"/*.tar.gz; do
         tar -tzf "$t" >/dev/null 2>&1 \
             || falha "o arquivo $t do backup nao abre (esta corrompido ou incompleto). Nada foi mudado." \
-                     "use outro backup (sudo dgclaw backup listar) ou, se este e o unico, copie-o para fora do servidor antes de mexer: tar -tzf $t mostra o erro."
+                     "use outro backup (sudo prumo backup listar) ou, se este e o unico, copie-o para fora do servidor antes de mexer: tar -tzf $t mostra o erro."
     done
     printf '%s' "$b"
 }
@@ -206,7 +206,7 @@ backup_agentes_novos() {
     printf '%s' "$novos"
 }
 
-# --- dgclaw backup ----------------------------------------------------------------------------------
+# --- prumo backup ----------------------------------------------------------------------------------
 
 backup_main() {
     local sem_homes=0 a
@@ -216,13 +216,13 @@ backup_main() {
         case "$a" in
             --sem-casas) sem_homes=1 ;;
             --simular) ENSAIO=1 ;;
-            *) falha "a opcao '$a' nao existe em 'backup'." "use: sudo dgclaw backup [--sem-casas] [--simular]  ou  sudo dgclaw backup listar" ;;
+            *) falha "a opcao '$a' nao existe em 'backup'." "use: sudo prumo backup [--sem-casas] [--simular]  ou  sudo prumo backup listar" ;;
         esac
         shift
     done
     exigir_ferramentas jq tar sha256sum
     carregar_env_dgclaw
-    [ -f "$DG_ETC/dgclaw.env" ] || falha "o DG Claw nao parece instalado aqui: falta $DG_ETC/dgclaw.env." "instale primeiro: sudo ./install.sh --usuario <nome>"
+    [ -f "$DG_ETC/dgclaw.env" ] || falha "o Prumo da Locadora nao parece instalado aqui: falta $DG_ETC/dgclaw.env." "instale primeiro: sudo ./install.sh --usuario <nome>"
     if [ "$ENSAIO" = 1 ]; then printf 'SIMULACAO: nada sera mudado; so mostro o que seria feito.\n'; fi
     if [ "$sem_homes" = 1 ]; then aviso "--sem-casas: as casas dos agentes (memoria e conversas) NAO entram no backup."; fi
 
@@ -234,15 +234,15 @@ backup_main() {
     printf '\nBackup pronto.\n'
     printf '  Pasta:      %s\n' "$dest"
     printf '  Tamanho:    %s\n' "$(du -sh "$dest" | cut -f1)"
-    printf '  Para voltar: sudo dgclaw restaurar %s\n' "$dest"
+    printf '  Para voltar: sudo prumo restaurar %s\n' "$dest"
     printf '  Ele guarda chaves e senhas: copie para fora do servidor so por canal seguro (scp ou rsync, ver docs/BACKUP.md).\n'
 }
 
 # backup_listar: uma linha por backup, do mais antigo ao mais novo.
 backup_listar() {
-    [ $# -eq 0 ] || falha "'backup listar' nao tem opcoes (recebi: $*)." "use: sudo dgclaw backup listar"
+    [ $# -eq 0 ] || falha "'backup listar' nao tem opcoes (recebi: $*)." "use: sudo prumo backup listar"
     if [ ! -d "$DG_BACKUPS" ] || [ -z "$(find "$DG_BACKUPS" -mindepth 1 -maxdepth 1 -type d -print -quit)" ]; then
-        printf 'Ainda nao ha backups em %s. Para fazer um: sudo dgclaw backup\n' "$DG_BACKUPS"
+        printf 'Ainda nao ha backups em %s. Para fazer um: sudo prumo backup\n' "$DG_BACKUPS"
         return 0
     fi
     local d m tam casas
@@ -258,10 +258,10 @@ backup_listar() {
         printf '%-34s %-19s %-18s %-12s %-8s %s\n' "$(basename "$d")" "$(_env_de "$m" criado_em | cut -c1-19)" \
             "$(_env_de "$m" motivo)" "$(_env_de "$m" versao)" "$tam" "${casas:--}"
     done < <(find "$DG_BACKUPS" -mindepth 1 -maxdepth 1 -type d | sort)
-    printf '\nPara voltar a um deles: sudo dgclaw restaurar %s/<pasta>\n' "$DG_BACKUPS"
+    printf '\nPara voltar a um deles: sudo prumo restaurar %s/<pasta>\n' "$DG_BACKUPS"
 }
 
-# --- dgclaw restaurar ---------------------------------------------------------------------------------
+# --- prumo restaurar ---------------------------------------------------------------------------------
 
 # _restaurar_extrair <tar> <rotulo> <backup agora>: extrai por cima, sem apagar o que for mais novo.
 _restaurar_extrair() {
@@ -298,15 +298,15 @@ restaurar_main() {
         case "$a" in
             --simular) ENSAIO=1 ;;
             --mesmo-assim) mesmo_assim=1 ;;
-            -*) falha "a opcao '$a' nao existe em 'restaurar'." "use: sudo dgclaw restaurar <pasta-do-backup> [--simular] [--mesmo-assim]" ;;
-            *) [ -z "$pasta" ] || falha "recebi duas pastas ('$pasta' e '$a') e so restauro uma por vez." "use: sudo dgclaw restaurar <pasta-do-backup>"; pasta="$a" ;;
+            -*) falha "a opcao '$a' nao existe em 'restaurar'." "use: sudo prumo restaurar <pasta-do-backup> [--simular] [--mesmo-assim]" ;;
+            *) [ -z "$pasta" ] || falha "recebi duas pastas ('$pasta' e '$a') e so restauro uma por vez." "use: sudo prumo restaurar <pasta-do-backup>"; pasta="$a" ;;
         esac
         shift
     done
-    [ -n "$pasta" ] || falha "faltou dizer qual backup restaurar." "veja os que existem com 'sudo dgclaw backup listar' e rode: sudo dgclaw restaurar /var/backups/dgclaw/<pasta>"
+    [ -n "$pasta" ] || falha "faltou dizer qual backup restaurar." "veja os que existem com 'sudo prumo backup listar' e rode: sudo prumo restaurar /var/backups/dgclaw/<pasta>"
     exigir_ferramentas jq tar sha256sum podman
     carregar_env_dgclaw
-    [ -f "$DG_ETC/dgclaw.env" ] || falha "o DG Claw nao parece instalado aqui: falta $DG_ETC/dgclaw.env." "instale primeiro: sudo ./install.sh --usuario <nome>"
+    [ -f "$DG_ETC/dgclaw.env" ] || falha "o Prumo da Locadora nao parece instalado aqui: falta $DG_ETC/dgclaw.env." "instale primeiro: sudo ./install.sh --usuario <nome>"
     if [ "$ENSAIO" = 1 ]; then printf 'SIMULACAO: nada sera mudado; so mostro o que seria feito.\n'; fi
 
     passo "Conferindo o backup $pasta"
@@ -316,15 +316,15 @@ restaurar_main() {
     versao_backup="$(_env_de "$b/MANIFESTO.txt" versao)"
     versao_atual="${DGCLAW_VERSAO:-desconhecida}"
     if [ "$versao_backup" != "$versao_atual" ] && [ "$mesmo_assim" != 1 ]; then
-        falha "o backup e da versao '${versao_backup:-desconhecida}' e o DG Claw instalado e '$versao_atual'. Restaurar so os dados e a configuracao de uma versao no codigo de outra pode deixar o sistema inconsistente. Nada foi mudado." \
-              "para voltar codigo e dados juntos: sudo dgclaw atualizar --voltar $b. Se tem certeza de que quer so os dados e a configuracao: sudo dgclaw restaurar $b --mesmo-assim"
+        falha "o backup e da versao '${versao_backup:-desconhecida}' e o Prumo da Locadora instalado e '$versao_atual'. Restaurar so os dados e a configuracao de uma versao no codigo de outra pode deixar o sistema inconsistente. Nada foi mudado." \
+              "para voltar codigo e dados juntos: sudo prumo atualizar --voltar $b. Se tem certeza de que quer so os dados e a configuracao: sudo prumo restaurar $b --mesmo-assim"
     fi
     if [ "$versao_backup" != "$versao_atual" ]; then aviso "versao do backup ($versao_backup) diferente da instalada ($versao_atual); sigo por causa do --mesmo-assim."; fi
 
     novos="$(backup_agentes_novos "$b/MANIFESTO.txt")"
     if [ -n "$novos" ] && [ "$mesmo_assim" != 1 ]; then
         falha "estes agentes foram criados DEPOIS desse backup:$novos. Restaurar o agentes.json do backup os tiraria do painel (as pastas deles ficam, mas eles somem da lista). Nada foi mudado." \
-              "se quer restaurar mesmo assim: sudo dgclaw restaurar $b --mesmo-assim. Se nao, escolha um backup mais recente: sudo dgclaw backup listar"
+              "se quer restaurar mesmo assim: sudo prumo restaurar $b --mesmo-assim. Se nao, escolha um backup mais recente: sudo prumo backup listar"
     fi
 
     while IFS= read -r slug; do
@@ -374,13 +374,13 @@ restaurar_main() {
     passo "Reiniciando o Admin (por ultimo)"
     if [ "$RES_PROBLEMAS" -gt 0 ]; then
         aviso "a conferencia acusou $RES_PROBLEMAS problema(s); deixo o Admin como esta, para voce nao perder o chat enquanto resolve."
-        printf '\nRestaurei, mas com %s problema(s) (linhas FALHOU acima). O estado de antes esta em %s: sudo dgclaw restaurar %s desfaz.\n' "$RES_PROBLEMAS" "$antes" "$antes" >&2
+        printf '\nRestaurei, mas com %s problema(s) (linhas FALHOU acima). O estado de antes esta em %s: sudo prumo restaurar %s desfaz.\n' "$RES_PROBLEMAS" "$antes" "$antes" >&2
         return 1
     fi
     atualizar_agendar_reinicio_do_admin "$resumo_arq" "$log_arq"
     depois_de_restaurar "$b"
     printf '\nRestaurado o backup %s.\n' "$b"
     printf '  Backup do estado de antes: %s\n' "$antes"
-    printf '  Para desfazer: sudo dgclaw restaurar %s\n' "$antes"
+    printf '  Para desfazer: sudo prumo restaurar %s\n' "$antes"
     printf '  O Admin reinicia em alguns segundos. O painel (dgclaw-web) so le o web.env ao subir: se ele mostrar valores antigos, rode sudo systemctl restart dgclaw-web de fora do chat.\n'
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-powers.py (DG Claw) — CRUD do catalogo de poderes (powers.json).
+powers.py (Prumo da Locadora) — CRUD do catalogo de poderes (powers.json).
 
 powers.json e a fonte da verdade lida por DOIS consumidores:
   - os crons (checam `enabled` antes de mexer em qualquer coisa de um poder)

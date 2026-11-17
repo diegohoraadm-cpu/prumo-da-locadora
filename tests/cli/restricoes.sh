@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# `dgclaw agente restricoes` e a aplicacao das restricoes (lib/restricoes.sh).
+# `prumo agente restricoes` e a aplicacao das restricoes (lib/restricoes.sh).
 # O ponto: a restricao do dono sobrevive a criar de novo, reparar, recriar e atualizar, sem apagar
 # nada que e do aluno, e um arquivo estragado PARA em vez de soltar a trava. O gancho de escrita
 # (scripts/escrita-restrita-hook.mjs) tem a bateria dele no fim.

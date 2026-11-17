@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh: instala o DG Claw v1 no servidor (o "host").
+# install.sh: instala o Prumo da Locadora v1 no servidor (o "host").
 #
 #   sudo ./install.sh --usuario <nome> [--dominio <dominio>] [--provedor claude|codex]
 #                     [--proxy-existente | --sem-proxy-existente] [--porta-painel <N>]
@@ -17,11 +17,11 @@
 #   1. confere a maquina (Ubuntu, root, memoria, disco, portas 80 e 443) e a faixa de rede dos agentes
 #   2. instala os pacotes (podman, Caddy, Node 22, git, jq, ufw...)
 #   3. escolhe o endereco (dominio) do painel
-#   4. copia o DG Claw para /opt/dgclaw/app
+#   4. copia o Prumo da Locadora para /opt/dgclaw/app
 #   5. configura o Caddy (HTTPS automatico)
 #   6. configura o firewall (ufw para fora, cerca de rede para os containers)
 #   7. guarda o usuario e o HASH da senha do painel
-#   8. liga o DG Claw Web
+#   8. liga o Prumo da Locadora Web
 #   9. liga o Admin, o agente de sistema que cria os outros agentes
 #  10. manda construir a imagem dos agentes, em segundo plano
 #  11. testa de ponta a ponta e da o primeiro boot ao Admin
@@ -30,7 +30,7 @@
 # O instalador nao instala nem configura Caddy e nao mexe no ufw; o Prumo da Locadora Web escuta so em
 # 127.0.0.1:<porta do painel> e, no fim, o instalador imprime o trecho para colar no seu proxy.
 # O modo e a porta ficam no dgclaw.env (DGCLAW_PROXY_EXISTENTE, DGCLAW_PORTA_PAINEL) e valem nas
-# proximas execucoes e em `dgclaw atualizar`; --sem-proxy-existente volta ao modo normal.
+# proximas execucoes e em `prumo atualizar`; --sem-proxy-existente volta ao modo normal.
 # --faixa-rede muda a faixa de IPs das redes dos agentes (padrao 10.89.0.0/16) para quem ja tem
 # podman ou docker usando essa faixa; fica em DGCLAW_FAIXA_REDE e nao muda com agentes criados.
 #
@@ -110,7 +110,7 @@ Instala o Prumo da Locadora neste servidor: painel com HTTPS, Admin e a base par
 
 Senha do painel: o padrao e nao informar nenhuma. No fim, o instalador mostra um link de
 primeiro acesso (uso unico, vale 30 minutos): voce abre, cadastra a senha no navegador e ja
-entra no painel. Se o link expirar, gere outro com: sudo dgclaw primeiro-acesso
+entra no painel. Se o link expirar, gere outro com: sudo prumo primeiro-acesso
 Se preferir definir a senha aqui (minimo 12 caracteres), ela entra pelo STDIN, nunca na linha
 de comando, e nunca e mostrada de volta:
   - num terminal, o script pergunta (Enter pula e gera o link);
@@ -458,7 +458,7 @@ agente_registrado() {
 }
 
 # rede_e_nossa <nome> <label dgclaw.v1>: a rede do podman e do Prumo da Locadora v1? Sim se tem o label
-# dgclaw.v1=1 (o que o dgclaw agente criar poe), se e a sonda do teste de isolamento, ou se e
+# dgclaw.v1=1 (o que o prumo agente criar poe), se e a sonda do teste de isolamento, ou se e
 # exatamente dgclaw-<slug> de um agente do agentes.json (redes criadas antes do label). Outro sistema
 # pode ter redes que tambem comecam com "dgclaw-" (dgclaw-net-*): essas NAO sao nossas e entram na
 # checagem de conflito como qualquer outra.
@@ -483,7 +483,7 @@ checar_faixa_rede() {
 
     if agentes_existem && [ "$anterior" != "$FAIXA_REDE" ]; then
         falha "os agentes que ja existem estao na faixa $anterior e voce pediu $FAIXA_REDE." \
-            "trocar a faixa exige recriar a rede de cada agente, e eu nao faco isso em silencio. Rode de novo sem --faixa-rede (ou com --faixa-rede $anterior). Se precisa mesmo da faixa nova, remova os agentes antes (sudo dgclaw agente remover <agente> guarda a casa em /var/lib/dgclaw/aposentados/) e instale de novo."
+            "trocar a faixa exige recriar a rede de cada agente, e eu nao faco isso em silencio. Rode de novo sem --faixa-rede (ou com --faixa-rede $anterior). Se precisa mesmo da faixa nova, remova os agentes antes (sudo prumo agente remover <agente> guarda a casa em /var/lib/dgclaw/aposentados/) e instale de novo."
     fi
 
     if command -v podman >/dev/null 2>&1; then
@@ -519,7 +519,7 @@ checar_faixa_rede() {
 
     if [ -n "$fora_dg" ]; then
         falha "ja existem redes de agentes do Prumo da Locadora fora da faixa $FAIXA_REDE:$fora_dg" \
-            "trocar a faixa exige recriar os agentes, e eu nao faco isso em silencio. Rode de novo sem --faixa-rede (ou com a faixa em que eles estao), ou remova os agentes antes (sudo dgclaw agente remover <agente>)."
+            "trocar a faixa exige recriar os agentes, e eu nao faco isso em silencio. Rode de novo sem --faixa-rede (ou com a faixa em que eles estao), ou remova os agentes antes (sudo prumo agente remover <agente>)."
     fi
 
     if command -v ip >/dev/null 2>&1; then
@@ -825,7 +825,7 @@ migrar_tabela_netavark() {
         info "apaguei a tabela inet netavark, que sobrou do modo nftables; o netavark recria as regras em iptables."
         return 0
     fi
-    aviso "existe a tabela inet netavark (regras antigas do netavark em nftables) e estes containers nao estao parados:$ocupados. Por isso nao apaguei a tabela, e os containers podem continuar sem internet ate a troca. Para trocar: (1) pare cada agente com: sudo dgclaw agente parar <slug>${slugs:+ (agentes aqui:$slugs)}; (2) rode sudo ./install.sh de novo; (3) ligue de novo com: sudo dgclaw agente iniciar <slug>.${outros:+ Os containers que nao sao do Prumo da Locadora tambem precisam estar parados para a tabela sair.}"
+    aviso "existe a tabela inet netavark (regras antigas do netavark em nftables) e estes containers nao estao parados:$ocupados. Por isso nao apaguei a tabela, e os containers podem continuar sem internet ate a troca. Para trocar: (1) pare cada agente com: sudo prumo agente parar <slug>${slugs:+ (agentes aqui:$slugs)}; (2) rode sudo ./install.sh de novo; (3) ligue de novo com: sudo prumo agente iniciar <slug>.${outros:+ Os containers que nao sao do Prumo da Locadora tambem precisam estar parados para a tabela sair.}"
 }
 
 # instalar_ffmpeg: o painel gera a miniatura de video e de foto com o ffmpeg do servidor. E so a previa,
@@ -950,7 +950,7 @@ detectar_provedor() {
 # Admin editou direto la some. Antes dele, guardar_app_alterado compara o app com o commit que foi
 # instalado e, se achar diferenca (ou nao tiver como comparar), guarda uma copia em
 # $DG_ADMIN/personalizacoes-migracao/<data>/ e deixa o marcador PENDENTE para o Admin levantar o que
-# era personalizacao (dgclaw personalizacoes levantar). Se nao conseguir gravar a copia, PARA antes
+# era personalizacao (prumo personalizacoes levantar). Se nao conseguir gravar a copia, PARA antes
 # do rsync: nada e sobrescrito.
 
 # _migracao_base: imprime o commit instalado antes (existente no clone), ou nada.
@@ -1165,7 +1165,7 @@ guardar_app_alterado() {
             falha "nao consegui gravar a copia de seguranca do programa em ${pasta#"$R"} (passo que falhou: ${passo_erro:-desconhecido}; disco cheio ou sem permissao), e o programa instalado difere do oficial ou nao deu para comparar." \
                   "libere espaco ou corrija a permissao de ${dir_mig#"$R"} (df -h; ls -ld ${dir_mig#"$R"}) e rode ./install.sh de novo. Nada foi sobrescrito: parei antes de copiar o programa novo."
         fi
-        aviso "o programa instalado em ${DG_APP#"$R"} nao era igual ao oficial ($motivo). Guardei uma copia em ${pasta#"$R"} antes de atualizar; o Admin deve levantar o que era personalizacao: dgclaw personalizacoes levantar"
+        aviso "o programa instalado em ${DG_APP#"$R"} nao era igual ao oficial ($motivo). Guardei uma copia em ${pasta#"$R"} antes de atualizar; o Admin deve levantar o que era personalizacao: prumo personalizacoes levantar"
     fi
     if [ -n "$tmp" ]; then rm -rf "$tmp"; fi
     (
@@ -1279,14 +1279,14 @@ gravar_dgclaw_env() {
 }
 
 # registrar_clone: guarda onde esta o clone do repositorio (DGCLAW_REPO) e qual commit foi
-# instalado (DGCLAW_COMMIT). E assim que `dgclaw atualizar` acha o clone sem perguntar nada.
+# instalado (DGCLAW_COMMIT). E assim que `prumo atualizar` acha o clone sem perguntar nada.
 # Caminho com espaco ou caractere estranho nao e gravado: o dgclaw.env e lido com `source`.
 registrar_clone() {
     local commit=""
     if [[ "$SCRIPT_DIR" =~ ^[A-Za-z0-9._/+-]+$ ]]; then
         gravar_dgclaw_env DGCLAW_REPO "$SCRIPT_DIR"
     else
-        aviso "o clone esta em '$SCRIPT_DIR', que tem espaco ou caractere especial no nome, e eu nao gravo esse caminho. Para atualizar depois, use: dgclaw atualizar --repo '$SCRIPT_DIR'"
+        aviso "o clone esta em '$SCRIPT_DIR', que tem espaco ou caractere especial no nome, e eu nao gravo esse caminho. Para atualizar depois, use: prumo atualizar --repo '$SCRIPT_DIR'"
     fi
     # Sem git (instalou de um zip) o commit simplesmente nao existe; nao e erro.
     commit="$(git_do_clone "$SCRIPT_DIR" rev-parse HEAD 2>/dev/null)" || commit=""
@@ -1851,7 +1851,7 @@ FIM
     if [ "$desligar" = 0 ]; then
         executar systemctl daemon-reload
         executar systemctl disable --now dgclaw-checar-atualizacao.timer
-        info "aviso de nova versao instalado, mas desligado (DGCLAW_AVISO_ATUALIZACAO=0 no dgclaw.env). Para ligar: dgclaw atualizar --aviso ligar"
+        info "aviso de nova versao instalado, mas desligado (DGCLAW_AVISO_ATUALIZACAO=0 no dgclaw.env). Para ligar: prumo atualizar --aviso ligar"
         return 0
     fi
     ligar_unidade dgclaw-checar-atualizacao.timer
@@ -1862,7 +1862,7 @@ FIM
 # --- 9c. sentinela ----------------------------------------------------------------
 # configurar_sentinela: a SENTINELA (docs/EMERGENCIA.md, secao 2.4). Um timer de 10 min roda
 # bin/dgclaw-sentinela como root: confere cada agente, tenta uma vez o reparo seguro e avisa o dono.
-# Instalacao antiga ganha a Sentinela no proximo `dgclaw atualizar`, que roda este instalador.
+# Instalacao antiga ganha a Sentinela no proximo `prumo atualizar`, que roda este instalador.
 configurar_sentinela() {
     local p_app="${DG_APP#"$R"}"
     cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-sentinela.service" 644
@@ -1886,7 +1886,7 @@ OnUnitActiveSec=10min
 [Install]
 WantedBy=timers.target
 FIM
-    # Sem `restart`: a unidade le o script a cada rodada, e reiniciar o timer no meio do `dgclaw atualizar`
+    # Sem `restart`: a unidade le o script a cada rodada, e reiniciar o timer no meio do `prumo atualizar`
     # dispararia uma rodada com os containers sendo trocados (a propria Sentinela tambem se segura pela marca).
     executar systemctl daemon-reload
     executar systemctl enable dgclaw-sentinela.timer
@@ -1894,7 +1894,7 @@ FIM
 }
 
 # --- 9e. limpeza diaria das chaves do suporte ---------------------------------------
-# configurar_suporte_limpar: um timer diario roda `dgclaw suporte limpar`, que tira do authorized_keys do
+# configurar_suporte_limpar: um timer diario roda `prumo suporte limpar`, que tira do authorized_keys do
 # root as chaves do suporte que ja venceram (docs/PROJETO-DE-CLIENTE.md). O sshd ja recusa a chave vencida
 # sozinho (expiry-time); o timer so tira a linha morta do arquivo. Nao liga acesso nenhum: sem chave do
 # suporte no arquivo ele nao faz nada. ProtectHome fica desligado porque o arquivo mora em /root/.ssh.
@@ -2001,11 +2001,11 @@ FIM
 #   dgclaw-ronda-vigia.timer     de hora em hora: confere se a rodada agendada terminou e, se nao, roda de novo uma vez
 #   dgclaw-ronda-inventario.timer a cada 3 dias refaz o inventario personalizado (o app atualizado tambem o refaz)
 #   dgclaw-seguranca-pedidos.path o painel (que nao e root) deixa pedidos em web/seguranca/pedidos; o root os executa
-#   dgclaw-emergencia-estado.timer a cada 10 min regrava o estado do botao de emergencia (`dgclaw emergencia estado`)
+#   dgclaw-emergencia-estado.timer a cada 10 min regrava o estado do botao de emergencia (`prumo emergencia estado`)
 # A ronda e root porque precisa ler dpkg/ss e, nos casos do catalogo fechado (seguranca/acoes-permitidas.json), aplicar
 # a acao. Por isso o endurecimento e o possivel: ProtectSystem=strict so no inventario, que nao aplica nada; nas outras
 # unidades o apt, o nft e o sysctl precisam escrever em /usr, /etc e /proc/sys. Roda tanto na instalacao quanto na
-# atualizacao (o `dgclaw atualizar` roda o instalador de novo). Quem desliga e a linha DGCLAW_RONDA_SEGURANCA=0 do
+# atualizacao (o `prumo atualizar` roda o instalador de novo). Quem desliga e a linha DGCLAW_RONDA_SEGURANCA=0 do
 # dgclaw.env: o instalador a respeita e NUNCA a reescreve nem a cria (sem a linha, a ronda fica ligada).
 # ronda_servidor_pequeno: verdadeiro quando a ronda deve rodar no modo economico. Mesma regra do ronda.py (modo_economico):
 # DGCLAW_RONDA_ECONOMICA=1 forca, =0 desliga; sem ela, MemTotal ate 4,5 GiB. DGCLAW_MEMINFO troca o /proc/meminfo nos testes.
@@ -2270,7 +2270,7 @@ ExecStart=/bin/bash -c 'exec podman build --http-proxy=false --ignorefile /opt/d
 FIM
     executar systemctl daemon-reload
     if [ "$SEM_IMAGEM" = 1 ]; then
-        info "preparacao adiada para criar seu primeiro agente pelo Admin. Comando tecnico: dgclaw imagem construir"
+        info "preparacao adiada para criar seu primeiro agente pelo Admin. Comando tecnico: prumo imagem construir"
         return 0
     fi
     if imagem_pronta; then
@@ -2279,7 +2279,7 @@ FIM
         ok "a imagem ja esta sendo construida (acompanhe: tail -f /var/log/dgclaw/imagem.log)"
     else
         executar systemctl start --no-block dgclaw-imagem.service
-        info "a construcao leva alguns minutos e roda sozinha. Acompanhe com: dgclaw imagem status"
+        info "a construcao leva alguns minutos e roda sozinha. Acompanhe com: prumo imagem status"
     fi
 }
 
@@ -2333,7 +2333,7 @@ testar_fim() {
             executar bash "$DG_APP/scripts/teste-isolamento.sh"
             ok "teste de isolamento passou"
         else
-            info "a imagem ainda esta sendo construida; o teste de isolamento roda sozinho no primeiro 'dgclaw agente criar'."
+            info "a imagem ainda esta sendo construida; o teste de isolamento roda sozinho no primeiro 'prumo agente criar'."
         fi
     elif [ "$SEM_IMAGEM" != 1 ]; then
         aviso "scripts/teste-isolamento.sh ainda nao existe neste repositorio; o teste de isolamento nao rodou."
@@ -2401,7 +2401,7 @@ mensagem_final() {
             printf '   Esse link só abre depois que o seu proxy estiver apontando para o Prumo da Locadora, e vale 30 min.\n'
         fi
         printf '   Abra o link de primeiro acesso, cadastre sua senha e você já entra no chat do Admin.\n'
-        printf '   Se o link expirar, gere outro com: sudo dgclaw primeiro-acesso\n\n'
+        printf '   Se o link expirar, gere outro com: sudo prumo primeiro-acesso\n\n'
         PRIMEIRO_ACESSO_TOKEN=""
     elif [ "$SENHA_NOVA" = 1 ]; then
         printf '   Senha:    a que você definiu agora\n\n'
@@ -2417,13 +2417,13 @@ mensagem_final() {
 
 # --- 9b. identidade dos agentes ---------------------------------------------------
 # Agente criado antes da secao "Onde voce esta e o que voce consegue fazer" nao a tem. Regrava
-# o identidade.md de cada agente (dgclaw agente identidade): so o arquivo, nada e reiniciado,
+# o identidade.md de cada agente (prumo agente identidade): so o arquivo, nada e reiniciado,
 # vale na proxima sessao. Falha de um agente vira aviso e o instalador segue.
 atualizar_identidades() {
     passo "Atualizando a identidade dos agentes"
     local cli="$DG_APP/bin/dgclaw" slug n=0 rc
     if [ "$ENSAIO" = 1 ]; then
-        info "[ensaio] rodaria 'dgclaw agente identidade <slug>' para cada agente do agentes.json"
+        info "[ensaio] rodaria 'prumo agente identidade <slug>' para cada agente do agentes.json"
         return 0
     fi
     if ! tem_jq || [ ! -s "$DG_AGENTES_JSON" ] || [ ! -x "$cli" ]; then
@@ -2436,7 +2436,7 @@ atualizar_identidades() {
         rc=0
         "$cli" agente identidade "$slug" >/dev/null 2>"$DG_LOG/identidade-$slug.err" || rc=$?
         if [ "$rc" -ne 0 ]; then
-            aviso "nao consegui regravar a identidade do agente $slug (codigo $rc; detalhes em $DG_LOG/identidade-$slug.err). O agente segue funcionando com a identidade antiga. Para refazer: dgclaw agente identidade $slug"
+            aviso "nao consegui regravar a identidade do agente $slug (codigo $rc; detalhes em $DG_LOG/identidade-$slug.err). O agente segue funcionando com a identidade antiga. Para refazer: prumo agente identidade $slug"
         else
             rm -f "$DG_LOG/identidade-$slug.err"
         fi
@@ -2487,7 +2487,7 @@ fim_agentes() {
                 ok "agente $slug estava criado e parado; liguei"
                 estado=running
             else
-                aviso "nao consegui ligar o agente $slug. Ligue com: sudo dgclaw agente iniciar $slug"
+                aviso "nao consegui ligar o agente $slug. Ligue com: sudo prumo agente iniciar $slug"
             fi
         fi
         # O `recriar` (sem --forcar) so para por falta de manifesto no agente ligado (ou preso em stopping);
@@ -2502,18 +2502,18 @@ fim_agentes() {
         printf '   Na etapa seguinte da atualizacao eles vao aparecer como FALHOU e a tela vai terminar com "Atualizacao INCOMPLETA".\n'
         printf '   Isso e esperado nesta versao. Os agentes seguem funcionando na versao anterior; a casa, a memoria, o cofre e as conversas nao sao tocados.\n'
         printf '   Para passar cada um para a versao nova (um por vez):\n'
-        for slug in $sem; do printf '      sudo dgclaw agente recriar %s --forcar\n' "$slug"; done
+        for slug in $sem; do printf '      sudo prumo agente recriar %s --forcar\n' "$slug"; done
         printf '   O --forcar troca a caixa do agente pela da versao nova e perde o que foi instalado so dentro dela (programas instalados a mao, por exemplo);\n'
         printf '   as rotinas padrao voltam ao padrao (se voce editou ou desligou alguma, ela se perde).\n'
         printf '   A lista do que se perderia fica em %s/agentes/<nome do agente>/perdido-no-recriar-<data>.txt (a atualizacao a grava na etapa seguinte; leia antes do --forcar).\n' "${DG_LIB#"$R"}"
     fi
     if [ -n "$desl" ]; then
         printf '   Estes agentes estao desligados e ficam como estao; a atualizacao nao os liga, nao os troca e nao os lista como FALHOU:%s\n' "$desl"
-        printf '   Quando quiser usar um deles, ligue com: sudo dgclaw agente iniciar <nome do agente>. Na atualizacao SEGUINTE a esta, depois de ligado, ele passa pela mesma etapa dos outros (FALHOU e --forcar).\n'
+        printf '   Quando quiser usar um deles, ligue com: sudo prumo agente iniciar <nome do agente>. Na atualizacao SEGUINTE a esta, depois de ligado, ele passa pela mesma etapa dos outros (FALHOU e --forcar).\n'
     fi
     if [ -n "$aus" ]; then
         printf '   Estes agentes estao sem container (a caixa deles nao existe mais) e a atualizacao nao os cria nem os lista como FALHOU:%s\n' "$aus"
-        printf '   O "agente iniciar" nao funciona sem container. Para criar a caixa de novo, rode, um por vez: sudo dgclaw agente recriar <nome do agente> --forcar\n'
+        printf '   O "agente iniciar" nao funciona sem container. Para criar a caixa de novo, rode, um por vez: sudo prumo agente recriar <nome do agente> --forcar\n'
         printf '   Como a caixa nao existe, nao ha nada dentro dela para perder; a casa, a memoria e o cofre do agente nao sao tocados.\n'
     fi
 }
@@ -2524,8 +2524,8 @@ primeiro_backup() {
     [ ! -d "$R/var/backups/dgclaw" ] || [ -z "$(find "$R/var/backups/dgclaw" -mindepth 1 -maxdepth 1 -type d -print -quit)" ] || return 0
     passo "Fazendo o primeiro backup"
     "$DG_APP/bin/dgclaw" backup >"$DG_LOG/primeiro-backup.log" 2>&1 \
-        && ok "primeiro backup feito (veja: sudo dgclaw backup listar)" \
-        || aviso "nao consegui fazer o primeiro backup (detalhes em $DG_LOG/primeiro-backup.log). Faca depois: sudo dgclaw backup"
+        && ok "primeiro backup feito (veja: sudo prumo backup listar)" \
+        || aviso "nao consegui fazer o primeiro backup (detalhes em $DG_LOG/primeiro-backup.log). Faca depois: sudo prumo backup"
 }
 
 # --- main -----------------------------------------------------------------------

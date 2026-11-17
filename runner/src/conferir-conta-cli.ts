@@ -44,7 +44,7 @@ async function main(): Promise<number> {
   } catch (err) {
     process.stderr.write(
       `${rotulo}: RECUSADA. Há restrições ativas e não consegui conferir a conta ou a lista de ferramentas negadas (${err instanceof Error ? err.message : err}). ` +
-        `O que fazer: o dono do servidor confere o agente com: dgclaw agente restricoes <nome-do-agente>\n`,
+        `O que fazer: o dono do servidor confere o agente com: prumo agente restricoes <nome-do-agente>\n`,
     );
     return 1;
   }

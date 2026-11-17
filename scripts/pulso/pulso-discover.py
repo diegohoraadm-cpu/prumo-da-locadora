@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""pulso-discover.py (DG Claw) — descobre AUTOMATICAMENTE o que deve rodar hoje.
+"""pulso-discover.py (Prumo da Locadora) — descobre AUTOMATICAMENTE o que deve rodar hoje.
 
 NADA de nomes/paths de um agente especifico (white-label). A lista de
 componentes monitorados e DESCOBERTA dinamicamente de TRES

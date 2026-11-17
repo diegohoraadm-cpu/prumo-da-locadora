@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""poke_ledger.py — Recibo deterministico de poke (ACK) pro DG Claw.
+"""poke_ledger.py — Recibo deterministico de poke (ACK) pro Prumo da Locadora.
 
 PROBLEMA: a injecao de poke na sessao viva (reflection/heartbeat/audit/...) e
 fire-and-forget. O inject.py so confirma que CONSEGUIU digitar no /dev/pts, NAO

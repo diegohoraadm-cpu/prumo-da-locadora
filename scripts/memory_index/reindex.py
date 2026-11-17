@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""reindex.py (DG Claw) — Indexador semantico do corpus de memorias DA PROPRIA persona.
+"""reindex.py (Prumo da Locadora) — Indexador semantico do corpus de memorias DA PROPRIA persona.
 
-Indexador generico do plugin DG Claw. Tudo parametrizado por env
+Indexador generico do plugin Prumo da Locadora. Tudo parametrizado por env
 (DGCLAW_*), sem hardcode de persona/paths. As fontes indexadas sao APENAS a
 memoria da propria persona dentro do workspace (NENHUM vault externo).
 
@@ -37,7 +37,7 @@ Fontes indexadas (memoria da propria persona, todas opcionais):
   - <ws>/memory/*.json          (relationships/opinions/triggers/etc, serializados)
   - <ws>/data/diary.jsonl       (uma "pagina textual" por entrada)
 
-Env (contrato DG Claw):
+Env (contrato Prumo da Locadora):
   DGCLAW_WORKSPACE        (obrigatorio na pratica) — raiz do workspace da persona
   DGCLAW_SLUG             (opcional)               — slug da persona (so p/ logs)
   DGCLAW_MEMORY_INDEX_DIR (opcional)               — default <ws>/.dgclaw/memory_index
@@ -293,7 +293,7 @@ def set_meta(conn, key, value):
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(description="Indexador semantico da memoria da persona (DG Claw)")
+    parser = argparse.ArgumentParser(description="Indexador semantico da memoria da persona (Prumo da Locadora)")
     parser.add_argument("--full", action="store_true", help="Reindexar tudo (apaga db)")
     parser.add_argument("--dry-run", action="store_true", help="Listar chunks que seriam (re)indexados sem embeddar")
     args = parser.parse_args()

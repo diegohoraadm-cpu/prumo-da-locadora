@@ -3,7 +3,7 @@
 avisos.py: hook do DG Claw pro QUADRO DE AVISOS DA EQUIPE (versao sem DG Telegram, 17/10/2026).
 
 O QUE FAZ
-  Os agentes da equipe (e o dono, pela tela /avisos do DG Claw Web) postam avisos de 1 ou 2
+  Os agentes da equipe (e o dono, pela tela /avisos do Prumo da Locadora Web) postam avisos de 1 ou 2
   linhas: decisao, preferencia, entrega, aprendizado, referencia, pedido, resumo do dia. O Web
   regrava, na casa de cada agente, o retrato LOCAL .dgclaw/retratos/avisos.json com o que
   aquele agente pode ler. Este hook le esse arquivo (sem rede, sem chave) e traz pra sessao

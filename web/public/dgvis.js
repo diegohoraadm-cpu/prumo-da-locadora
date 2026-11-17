@@ -505,7 +505,7 @@
   function perguntar(texto, el) {
     texto = Str(texto == null ? '' : texto);
     if (!el || el.nodeType !== 1) el = null;
-    if (!emb) { if (el) pEstado(el, 'erro', 'só funciona dentro do DG Telegram', 3000); return -1; }
+    if (!emb) { if (el) pEstado(el, 'erro', 'só funciona dentro da conversa', 3000); return -1; }
     if (!texto.trim()) { if (el) pEstado(el, 'erro', ROT_ERRO.vazio, 4000); return -1; }
     var id = ++perguntaSeq;
     pedidos[id] = { el: el };

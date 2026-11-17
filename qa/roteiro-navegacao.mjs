@@ -188,7 +188,7 @@ async function aguardaAssentar(page) {
   const noPainel = /\/p\/[^/]+\//.test(page.url());
   const achou = await page.waitForSelector('#cabecalho #nomeAgente', { timeout: noPainel ? 8000 : 20000 }).then(() => true, () => false);
   if (!achou) return false;
-  await page.waitForFunction(() => { const n = document.querySelector('#nomeAgente'); return n && n.textContent.trim() && n.textContent.trim() !== 'DG Claw' && document.querySelector('#mlTabs .ml-tab.ativo'); }, null, { timeout: 20000 }).catch(() => {});
+  await page.waitForFunction(() => { const n = document.querySelector('#nomeAgente'); return n && n.textContent.trim() && n.textContent.trim() !== 'Prumo da Locadora' && document.querySelector('#mlTabs .ml-tab.ativo'); }, null, { timeout: 20000 }).catch(() => {});
   await page.waitForLoadState('networkidle', { timeout: 8000 }).catch(() => {});
   await dormir(700);
   return true;

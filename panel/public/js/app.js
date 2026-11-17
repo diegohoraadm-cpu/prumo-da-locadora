@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════
-// DG ALIVE - Painel - Main Application
+// PRUMO DA LOCADORA - Painel - Main Application
 // ═══════════════════════════════════════════════
 
 // BASE já existe neste escopo: api.js declara `const BASE` no topo e carrega ANTES
@@ -2029,7 +2029,7 @@ async function refreshOverview() {
   // Update footer
   document.getElementById('ft-posts').textContent = (data.postsToday || 0) + '/3';
   document.getElementById('ft-pending').textContent = data.pendingComments || 0;
-  // SEM O DG ALIVE INSTALADO, HUMOR NÃO É ZERO: É NÃO MEDIDO.
+  // SEM A EXTENSÃO DE EMOÇÕES INSTALADA, HUMOR NÃO É ZERO: É NÃO MEDIDO.
   //
   // Estes dois vinham com "0%" fixo em todo agente sem a extensão de emoções, o
   // que é o mesmo defeito do "Posts 0/3": afirmar um número sobre uma coisa que
@@ -2447,7 +2447,7 @@ async function initPowers() {
         tab.insertBefore(lock, tab.firstChild);
       }
       const label = POWER_LABELS[power] || power;
-      tab.title = `Instale o poder ${label} (/dgclaw:powers install ${power})`;
+      tab.title = `Instale o poder ${label} (peça ao agente para instalar o poder ${power})`;
     }
   });
 }

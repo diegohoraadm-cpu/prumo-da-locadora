@@ -45,7 +45,7 @@ function listExtensions(extDir, legacyAlive) {
   return nomes.sort();
 }
 
-/** Atalho: a extensao de emocoes (extensão de emoções) esta instalada? */
+/** Atalho: a extensao de emocoes esta instalada? */
 function hasAlive(extDir, legacyAlive) {
   return listExtensions(extDir, legacyAlive).includes('alive');
 }

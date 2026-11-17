@@ -70,7 +70,7 @@ igual() {
     else mal "$desc (esperado '$esperado', veio '$obtido')"; fi
 }
 
-# marcar_settings_alheio <slug>: poe no settings.json do agente uma linha que o DG Claw nao controla
+# marcar_settings_alheio <slug>: poe no settings.json do agente uma linha que o Prumo da Locadora nao controla
 # (outra chave de hooks e uma chave solta). Depois de qualquer comando, ela tem de continuar la.
 marcar_settings_alheio() {
     local st="$LIB/agentes/$1/home/.claude/settings.json"

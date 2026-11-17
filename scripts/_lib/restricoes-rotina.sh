@@ -38,7 +38,7 @@ restricoes_conferir_rotina() {
         return 1
     fi
     if [ ! -f "$cli" ]; then
-        _restricoes_rotina_recusa "O agente tem restricoes ($arq), mas nao achei o conferidor da conta em $cli. O que fazer: atualizar o DG Claw e recriar o agente (dgclaw atualizar)."
+        _restricoes_rotina_recusa "O agente tem restricoes ($arq), mas nao achei o conferidor da conta em $cli. O que fazer: atualizar o Prumo da Locadora e recriar o agente (dgclaw atualizar)."
         return 1
     fi
     err="$(mktemp)" || { _restricoes_rotina_recusa "Nao consegui criar um arquivo temporario para a conferencia da conta. O que fazer: conferir o espaco em disco e a permissao de /tmp."; return 1; }

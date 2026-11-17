@@ -114,7 +114,7 @@ echo imagem-v9 >"$STUB_ESTADO/imagem-id"
 CASA_RITA="$LIB/agentes/rita"
 sem_troca() { ! grep -q '^podman \(stop\|rm\|create\) ' "$STUB_LOG"; }
 
-# 1) so ruido (tmp, logs, apt, unidades do proprio DG Claw): nao perde nada, recria sem --forcar
+# 1) so ruido (tmp, logs, apt, unidades do proprio Prumo da Locadora): nao perde nada, recria sem --forcar
 cat >"$STUB_ESTADO/diff-dgclaw-rita" <<'EOF'
 C /tmp
 A /tmp/lixo.txt

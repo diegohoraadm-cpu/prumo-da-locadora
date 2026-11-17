@@ -47,7 +47,7 @@ const INTERNOS_PASTAS = ['memory'];
 //    rotinas em Python (heartbeat, reflexao, consolidacao) chamam script por caminho ou usam `-I`, entao
 //    modulo com nome da stdlib na casa nao e importado; package.json e tsconfig.json so mudam a
 //    resolucao do arquivo que o Bun executa, e esse fica no plugin (de root), nao na casa;
-//  - na raiz da casa, os arquivos de identidade que o DG Claw regrava (AGENT.md e afins).
+//  - na raiz da casa, os arquivos de identidade que o Prumo da Locadora regrava (AGENT.md e afins).
 const PROTEGIDOS_NOMES = new Set(['claude.md', 'claude.local.md', 'agents.md', 'skill.md', 'bunfig.toml']);
 const PROTEGIDOS_RAIZ = new Set(['agent.md', 'personality.md', 'identity.md', 'ethics.md', 'creator.md', 'laws.md']);
 

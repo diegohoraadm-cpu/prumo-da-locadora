@@ -359,7 +359,7 @@ porta_painel_e_nossa() {
 }
 
 # apt-get update que falha (tipicamente um repositorio de terceiro fora do ar ou sem chave valida,
-# alheio ao DG Claw) nao derruba a instalacao: vira aviso. Quem decide se falta algo e o
+# alheio ao Prumo da Locadora) nao derruba a instalacao: vira aviso. Quem decide se falta algo e o
 # apt-get install seguinte, que aborta com a mensagem dele se o pacote realmente nao existe.
 atualizar_indice_apt() {
     if [ "$ENSAIO" = 1 ]; then
@@ -370,7 +370,7 @@ atualizar_indice_apt() {
     printf '\n$ apt-get update\n' >>"$LOG_INSTALAR"
     apt-get update </dev/null >>"$LOG_INSTALAR" 2>&1 || rc=$?
     if [ "$rc" -ne 0 ]; then
-        aviso "o 'apt-get update' terminou com codigo $rc (algum repositorio do servidor, que nao e do DG Claw, falhou). Sigo com a instalacao; se faltar algum pacote, o proximo passo avisa. Detalhes em ${LOG_INSTALAR#"$R"}."
+        aviso "o 'apt-get update' terminou com codigo $rc (algum repositorio do servidor, que nao e do Prumo da Locadora, falhou). Sigo com a instalacao; se faltar algum pacote, o proximo passo avisa. Detalhes em ${LOG_INSTALAR#"$R"}."
     fi
 }
 
@@ -735,7 +735,7 @@ instalar_pacotes() {
     if [ "$precisa_node" = 1 ] && [ "$ENSAIO" != 1 ]; then
         major="$(node -v 2>/dev/null | sed -n 's/^v\([0-9]*\)\..*/\1/p')" || major=""
         if [ "${major:-0}" -lt 22 ]; then
-            falha "depois de instalar os pacotes, o Node do servidor continua na versao ${major:-ausente}, e o DG Claw precisa da 22 ou mais. O mais provavel e o 'apt-get update' ter falhado para o repositorio do NodeSource (veja o aviso acima e ${LOG_INSTALAR#"$R"})." \
+            falha "depois de instalar os pacotes, o Node do servidor continua na versao ${major:-ausente}, e o Prumo da Locadora precisa da 22 ou mais. O mais provavel e o 'apt-get update' ter falhado para o repositorio do NodeSource (veja o aviso acima e ${LOG_INSTALAR#"$R"})." \
                   "confira a internet e o repositorio (cat /etc/apt/sources.list.d/nodesource.list; apt-get update); depois rode ./install.sh de novo, e seguro repetir."
         fi
     fi

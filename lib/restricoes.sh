@@ -351,8 +351,8 @@ _restricoes_conferir_suporte() {
     RESTRICOES_REMOTA="$(timeout 10 podman exec --user agente "$c" node -e "$REMOTA_JS" /home/agente/.claude/remote-settings.json 2>/dev/null | head -n 1)" || RESTRICOES_REMOTA=""
     case "$RESTRICOES_REMOTA" in sem|com|duvida) ;; *) RESTRICOES_REMOTA=duvida ;; esac
     case "$RESTRICOES_REMOTA" in
-        com) RESTRICOES_SUPORTE_MOTIVO="a conta de IA conectada tem politica administrada remota (/home/agente/.claude/remote-settings.json), que substitui a configuracao do DG Claw" ;;
-        duvida) RESTRICOES_SUPORTE_MOTIVO="nao consegui ler com seguranca /home/agente/.claude/remote-settings.json (link, arquivo estranho, grande demais, JSON invalido ou prazo estourado), entao nao sei se a conta de IA conectada tem politica administrada remota, que substituiria a configuracao do DG Claw" ;;
+        com) RESTRICOES_SUPORTE_MOTIVO="a conta de IA conectada tem politica administrada remota (/home/agente/.claude/remote-settings.json), que substitui a configuracao do Prumo da Locadora" ;;
+        duvida) RESTRICOES_SUPORTE_MOTIVO="nao consegui ler com seguranca /home/agente/.claude/remote-settings.json (link, arquivo estranho, grande demais, JSON invalido ou prazo estourado), entao nao sei se a conta de IA conectada tem politica administrada remota, que substituiria a configuracao do Prumo da Locadora" ;;
     esac
     case "$RESTRICOES_REMOTA" in com|duvida) RESTRICOES_SUPORTE_CAUSA=remota; return 1 ;; esac
     # O cache so mostra o momento: uma conta Team/Enterprise sem politica hoje recebe uma depois (o Claude Code busca a
@@ -360,8 +360,8 @@ _restricoes_conferir_suporte() {
     # reprova mesmo com o cache limpo.
     RESTRICOES_CONTA="$(_restricoes_classificar_conta "$c")"
     case "$RESTRICOES_CONTA" in
-        com) RESTRICOES_SUPORTE_MOTIVO="a conta de IA conectada e de uma organizacao Team/Enterprise do claude.ai, que pode receber politica administrada remota a qualquer momento, e ela substitui a configuracao do DG Claw" ;;
-        duvida) RESTRICOES_SUPORTE_MOTIVO="nao consegui confirmar qual e a conta de IA conectada (claude auth status), entao nao sei se ela e de uma organizacao Team/Enterprise do claude.ai, que pode receber politica administrada remota a qualquer momento e substituiria a configuracao do DG Claw" ;;
+        com) RESTRICOES_SUPORTE_MOTIVO="a conta de IA conectada e de uma organizacao Team/Enterprise do claude.ai, que pode receber politica administrada remota a qualquer momento, e ela substitui a configuracao do Prumo da Locadora" ;;
+        duvida) RESTRICOES_SUPORTE_MOTIVO="nao consegui confirmar qual e a conta de IA conectada (claude auth status), entao nao sei se ela e de uma organizacao Team/Enterprise do claude.ai, que pode receber politica administrada remota a qualquer momento e substituiria a configuracao do Prumo da Locadora" ;;
     esac
     case "$RESTRICOES_CONTA" in com|duvida) RESTRICOES_SUPORTE_CAUSA=remota; RESTRICOES_REMOTA="$RESTRICOES_CONTA"; return 1 ;; esac
     return 0
@@ -555,7 +555,7 @@ _aplicar_restricoes_sem_trava() {
         return 0
     fi
     deny_json="$(_restricoes_derivar_deny "$sem_bash" "$sem_env")" \
-        || falha "o jq nao conseguiu montar a lista de ferramentas negadas do agente $slug." "isto e um erro do DG Claw; abra uma issue com a saida acima."
+        || falha "o jq nao conseguiu montar a lista de ferramentas negadas do agente $slug." "isto e um erro do Prumo da Locadora; abra uma issue com a saida acima."
 
     # --- monta o runner.json novo (na memoria) ---
     if [ "$runner_novo" = 0 ] && [ -f "$rj" ]; then base="$(cat "$rj")"; fi
@@ -590,7 +590,7 @@ _aplicar_restricoes_sem_trava() {
     ativo=false
     if [ "$sem_bash" = true ] || [ "$sem_env" = true ] || [ "$pastas" != null ]; then ativo=true; fi
     novo_ms="$(_restricoes_derivar_ms "$deny_json" "$ativo")" \
-        || falha "o jq nao conseguiu montar o managed-settings.json do agente $slug." "isto e um erro do DG Claw; abra uma issue com a saida acima."
+        || falha "o jq nao conseguiu montar o managed-settings.json do agente $slug." "isto e um erro do Prumo da Locadora; abra uma issue com a saida acima."
 
     [ "$(podman inspect -f '{{.State.Status}}' "$c" 2>/dev/null || true)" = running ] && rodando=1
     # --- grava: configuracao administrada primeiro, para o runner nunca subir sem a trava ---
@@ -939,7 +939,7 @@ restricoes_mostrar() {
     local marcador txt estado=parado esperado="" codex_em="" motivo="" pend_linhas=() nome cmd rotulo quem_liga
     printf '\nRestricoes do agente %s\n' "$slug"
     if [ ! -e "$rs" ]; then
-        printf '  Nenhuma restricao definida (o agente faz tudo o que o DG Claw permite).\n'
+        printf '  Nenhuma restricao definida (o agente faz tudo o que o Prumo da Locadora permite).\n'
         printf '  Para travar: dgclaw agente restricoes %s --sem-bash sim --sem-enviar-arquivo sim --escrita-so-em pasta1,pasta2\n' "$slug"
         return 0
     fi

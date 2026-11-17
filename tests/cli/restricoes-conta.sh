@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Restricoes: conta de organizacao Team/Enterprise reprova mesmo sem politica no cache (o Claude Code busca a politica
-# de hora em hora e ela substituiria a configuracao do DG Claw), e a consulta nunca anuncia TRAVADO numa restricao que
+# de hora em hora e ela substituiria a configuracao do Prumo da Locadora), e a consulta nunca anuncia TRAVADO numa restricao que
 # nao foi aplicada (docs/RESTRICOES-DO-AGENTE.md).
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh

@@ -164,7 +164,7 @@ export async function conferirContaComRestricoes(env: Record<string, string>, cw
       ok: false,
       mensagem:
         remota === "com"
-          ? "As restrições do agente não valem com a conta de IA conectada: ela tem política administrada remota, que substitui a configuração do DG Claw. Por segurança a sessão não abriu."
+          ? "As restrições do agente não valem com a conta de IA conectada: ela tem política administrada remota, que substitui a configuração do Prumo da Locadora. Por segurança a sessão não abriu."
           : "Não consegui ler com segurança a política administrada remota da conta de IA conectada, então não sei se as restrições do agente valem. Por segurança a sessão não abriu.",
       comoResolver: COMO_RESOLVER,
     };
@@ -175,8 +175,8 @@ export async function conferirContaComRestricoes(env: Record<string, string>, cw
     ok: false,
     mensagem:
       conta === "com"
-        ? "As restrições do agente não valem com a conta de IA conectada: ela é de uma organização Team/Enterprise do claude.ai, que pode receber política administrada remota a qualquer momento, e ela substitui a configuração do DG Claw. Por segurança a sessão não abriu."
-        : "Não consegui confirmar qual é a conta de IA conectada (claude auth status), então não sei se ela é de uma organização Team/Enterprise do claude.ai, que substituiria a configuração do DG Claw. Por segurança a sessão não abriu.",
+        ? "As restrições do agente não valem com a conta de IA conectada: ela é de uma organização Team/Enterprise do claude.ai, que pode receber política administrada remota a qualquer momento, e ela substitui a configuração do Prumo da Locadora. Por segurança a sessão não abriu."
+        : "Não consegui confirmar qual é a conta de IA conectada (claude auth status), então não sei se ela é de uma organização Team/Enterprise do claude.ai, que substituiria a configuração do Prumo da Locadora. Por segurança a sessão não abriu.",
     comoResolver: COMO_RESOLVER,
   };
 }

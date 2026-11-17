@@ -560,9 +560,10 @@ async function blocoF4() {
 
   // 3. Exceções de lógica vivas: o trecho continua no arquivo (uma edição à mão não pode sumir com ele).
   const LOGICA_SEM_PREFIXO = new Set(['lib/comum.sh', 'seguranca/ronda/ronda.py', 'web/public/ronda-comum.js']);
-  const logicas = excs.filter((e) => (/^logica:/.test(e.motivo) || LOGICA_SEM_PREFIXO.has(e.arquivo)) && !e.arquivo.endsWith('/') && doLote(e.arquivo));
+  // executa: (QA-M4, 17/11) = texto que só o Admin lê e executa e fica "dgclaw"; o trecho presente prova que a linha não virou "prumo".
+  const logicas = excs.filter((e) => (/^(logica|executa):/.test(e.motivo) || LOGICA_SEM_PREFIXO.has(e.arquivo)) && !e.arquivo.endsWith('/') && doLote(e.arquivo));
   const mortas = logicas.filter((e) => { const s = ler(e.arquivo); return s === null || (e.trecho !== '*' && !e.trecho.startsWith('secao:') && !s.includes(e.trecho)); }).map((e) => `${e.arquivo}: trecho ${JSON.stringify(e.trecho)} não está no arquivo`);
-  criterio(mortas.length === 0, `F4.3 exceções de lógica com o trecho presente: ${logicas.length - mortas.length} de ${logicas.length}`, mortas);
+  criterio(mortas.length === 0, `F4.3 exceções de lógica e de execução (logica:, executa:) com o trecho presente: ${logicas.length - mortas.length} de ${logicas.length}`, mortas);
 
   // 4. Comando: texto ao dono diz `prumo`; o que é executado segue `dgclaw`.
   // Mesma regra do aplicar.mjs (inclusive o sufixo * de web/test/diagnostico*).

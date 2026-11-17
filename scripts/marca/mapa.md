@@ -8,18 +8,18 @@ Gerado sem escrever nada. Ocorrencia = um achado da regra; "troca" so acontece e
 | --- | ---: | ---: | ---: | ---: | ---: |
 | M1 | 73 | 199 | 75 | 22 | 1 |
 | M3 | 39 | 97 | 8 | 49 | 0 |
-| M4 | 160 | 841 | 86 | 84 | 871 |
+| M4 | 160 | 822 | 108 | 83 | 869 |
 | M5 | 91 | 551 | 165 | 21 | 11 |
 | sem-lote | 0 | 0 | 40 | 0 | 0 |
-| **total** | 363 | 1688 | 374 | 176 | 883 |
+| **total** | 363 | 1669 | 396 | 175 | 881 |
 
 Por regra (todos os lotes):
 
 | Regra | Trocaria | Excecao | Manual |
 | --- | ---: | ---: | ---: |
 | barra | 17 | 8 | 68 |
-| comando | 940 | 176 | 48 |
-| frase | 731 | 97 | 55 |
+| comando | 921 | 197 | 48 |
+| frase | 731 | 98 | 54 |
 | sem-regra | 0 | 93 | 5 |
 
 Manual, por motivo:
@@ -35,7 +35,7 @@ Manual, por motivo:
 | fora-de-contexto | 42 |
 | sem-regra | 5 |
 | sudo-fora-de-zona | 35 |
-| tipo-nao-coberto | 25 |
+| tipo-nao-coberto | 24 |
 
 Arquivos sem lote no plano (o Teia atribui a um lote):
 
@@ -54,8 +54,8 @@ Regra do plano: skill ligada vira `/x`; skill que existe mas nao e ligada, reesc
 | CHANGELOG.md | `/dgclaw:setup` (linha 1175) | M5 | fica por excecao |
 | aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 182) | sem-lote | fica por excecao |
 | aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 479) | sem-lote | fica por excecao |
-| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 609) | sem-lote | fica por excecao |
-| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 618) | sem-lote | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 610) | sem-lote | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 619) | sem-lote | fica por excecao |
 | docs/MEMORIA-SEMANTICA.md | `/dgclaw:setup` (linha 27) | M5 | sair (a skill nao existe) |
 | docs/MEMORIA-SEMANTICA.md | `/dgclaw:doctor` (linha 69) | M5 | reescrever a mao (skill existe, nao e ligada ao agente) |
 | docs/MESA-DE-TAREFAS.md | `/dgclaw:mesa` (linha 29) | M5 | reescrever a mao (skill existe, nao e ligada ao agente) |
@@ -217,7 +217,7 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 | tests/instalador/ronda-seguranca.sh | 1 | 0 | 0 |
 | tests/instrucoes/rodar.sh | 5 | 0 | 7 |
 | tests/rodar.sh | 3 | 3 | 0 |
-| tests/ronda/test_ronda.py | 12 | 7 | 5 |
+| tests/ronda/test_ronda.py | 12 | 5 | 5 |
 | tests/tela/rodar.sh | 1 | 0 | 0 |
 | web/test/auth.test.js | 1 | 0 | 1 |
 | web/test/casca.test.js | 1 | 0 | 0 |
@@ -318,7 +318,7 @@ Total: 1024 linhas em 79 arquivos de teste.
 | tests/instrucoes/rodar.sh | fora-de-contexto | 64 | `/dgclaw:nome` |
 | tests/instrucoes/rodar.sh | fora-de-contexto | 76 | `/dgclaw:mesa` |
 
-### M4 (84)
+### M4 (83)
 
 | Arquivo | Motivo | Linha | Trecho |
 | --- | --- | ---: | --- |
@@ -329,7 +329,6 @@ Total: 1024 linhas em 79 arquivos de teste.
 | bin/test/dgclaw-mesa.test.sh | sudo-fora-de-zona | 207 | `dgclaw` |
 | container/Containerfile | tipo-nao-coberto | 1 | `DG Claw` |
 | container/Containerfile | tipo-nao-coberto | 37 | `DG Claw` |
-| container/Containerfile | tipo-nao-coberto | 50 | `DG Claw` |
 | container/Containerfile | tipo-nao-coberto | 104 | `dgclaw` |
 | container/Containerfile | tipo-nao-coberto | 109 | `dgclaw` |
 | container/Containerfile | tipo-nao-coberto | 115 | `dgclaw` |
@@ -467,7 +466,7 @@ Total: 1024 linhas em 79 arquivos de teste.
 | tests/cli/versao.sh | lib/versao.sh | comando | 3 / 12 | 5 / 0 |
 | tests/instalador/aviso-atualizacao.sh | lib/aviso-atualizacao.sh | comando | 0 / 2 | 18 / 0 |
 | tests/instalador/ronda-seguranca.sh | lib/ronda-seguranca.sh | comando | 0 / 1 | 20 / 0 |
-| tests/ronda/test_ronda.py | seguranca/ronda/ronda.py | comando | 7 / 5 | 39 / 0 |
+| tests/ronda/test_ronda.py | seguranca/ronda/ronda.py | comando | 5 / 7 | 26 / 13 |
 | web/test/auth.test.js | web/lib/auth.js | comando | 0 / 1 | 1 / 0 |
 | web/test/colaboradores.test.js | web/lib/colaboradores.js | comando | 0 / 1 | 1 / 0 |
 | web/test/email.test.js | web/lib/email.js | frase | 3 / 1 | 2 / 0 |

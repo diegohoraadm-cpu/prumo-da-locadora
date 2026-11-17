@@ -186,7 +186,7 @@ function linhaDeAmbiente(nome, valor) {
 /**
  * A validação inteira de uma chave que vai ser guardada, sem tocar em disco.
  *
- * Existe separada para que o painel (`guardar` abaixo) e o DG Claw Web, que na v1 é
+ * Existe separada para que o painel (`guardar` abaixo) e o Prumo da Locadora Web, que na v1 é
  * quem grava no host, recusem EXATAMENTE as mesmas coisas, com as mesmas frases.
  * Duas cópias desta régua divergem no primeiro ajuste. `extras` é o conjunto de
  * nomes liberados à mão por quem administra a máquina (`cofreNomesExtras`).

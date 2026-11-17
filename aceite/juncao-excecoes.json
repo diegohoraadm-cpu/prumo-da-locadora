@@ -1,0 +1,243 @@
+{
+  "original_ausentes": [
+    {
+      "arquivo": "README.md",
+      "linha": "- **Projeto de cliente**: o DG Claw oficial na VPS do cliente, com acesso temporário do suporte por chave SSH ([docs/PROJETO-DE-CLIENTE.md](docs/PROJETO-DE-CLIENTE.md)).",
+      "motivo": "README e o nosso (regra do plano F1, J3); a linha do original nao entra nele. docs/PROJETO-DE-CLIENTE.md entra como veio e E linkado pelo manual (docs/manual/referencia-admin.md:71-74, 4 linhas de dgclaw suporte); texto do time DG, pendente de decisao (aceitar ate o M5 ou neutralizar os links)"
+    },
+    {
+      "arquivo": "panel/public/index.html",
+      "linha": "<button class=\"tab\" data-tab=\"identity\"><span class=\"ico\"><svg class=\"ds-ico\" aria-hidden=\"true\"><use href=\"/ds/icones.svg#i-id\"/></svg></span>Identidade</button>",
+      "motivo": "a aba continua com o rotulo \"Quem sou\" (PR painel-quem-sou); o original a chama de Identidade; o resto do botao (icone SVG) e o do original"
+    },
+    {
+      "arquivo": "web/lib/marca.js",
+      "linha": "return { nome: 'DG Claw', nome_curto: 'DG Claw', slogan: '', titulo_login: 'Entre para falar com os seus agentes.', logo_tem_nome: false, tema: 'claro' };",
+      "motivo": "marca de fabrica de reserva do Prumo da Locadora: nome e nome_curto nossos (plano F1, J1)"
+    },
+    {
+      "arquivo": "web/marca-padrao.json",
+      "linha": "\"nome_curto\": \"DG Claw\",",
+      "motivo": "marca de fabrica do Prumo da Locadora: nome_curto \"Prumo\" (plano F1, J1)"
+    },
+    {
+      "arquivo": "web/marca-padrao.json",
+      "linha": "\"slogan\": \"Seus agentes, no seu servidor.\",",
+      "motivo": "slogan de fabrica nosso, o mesmo do README (plano F1, J1)"
+    },
+    {
+      "arquivo": "web/test/marca.test.js",
+      "linha": "assert.equal(lg.texto, '<meta name=\"marca-nome\" content=\"DG Claw\"><p>Seus agentes, no seu servidor.</p>');",
+      "motivo": "teste da marca de fabrica espera o slogan nosso (plano F1, J1)"
+    },
+    {
+      "arquivo": "tests/cli/rodar.sh",
+      "linha": "for t in \"$AQUI\"/versao.sh \"$AQUI\"/backup.sh \"$AQUI\"/criar.sh \"$AQUI\"/validacao.sh \"$AQUI\"/gestao.sh \"$AQUI\"/cofre.sh \"$AQUI\"/chave-api.sh \"$AQUI\"/tela.sh \"$AQUI\"/tela-diagnostico.sh \"$AQUI\"/inotify.sh \"$AQUI\"/dominio.sh \"$AQUI\"/proxy.sh \"$AQUI\"/api.sh \"$AQUI\"/recriar.sh \"$AQUI\"/atualizar.sh \"$AQUI\"/aviso-atualizacao.sh \"$AQUI\"/personalizacoes.sh \"$AQUI\"/instalacao-remota.sh \"$AQUI\"/restricoes.sh \"$AQUI\"/restricoes-suporte.sh \"$AQUI\"/restricoes-consulta.sh \"$AQUI\"/restricoes-conta.sh \"$AQUI\"/restricoes-ligar.sh \"$AQUI\"/restricoes-gancho.sh \"$AQUI\"/restricoes-rotinas.sh \"$AQUI\"/rotinas-seguras.sh \"$AQUI\"/suporte.sh \"$AQUI\"/grupo-diario.sh \"$AQUI\"/colaborador.sh; do",
+      "motivo": "o lote C2 (3e3d355) acrescentou \"$AQUI\"/usuario.sh no fim desta linha para a suite rodar o teste novo do comando dgclaw usuario; todos os arquivos que o original lista nela continuam, na mesma ordem, so ha um a mais no fim"
+    },
+    {
+      "arquivo": "runner/src/sessao-parar.test.ts",
+      "linha": "assert.match(s.estado.error ?? \"\", /dgclaw agente reiniciar/);",
+      "motivo": "o runner/src/sessao/ciclo.ts:524 passou a dizer ao dono 'prumo agente reiniciar' (texto de erro, nunca executado; lote M4 da marca); a asserção espera o texto novo exato"
+    },
+    {
+      "arquivo": "tests/cli/restricoes-suporte.sh",
+      "linha": "dgclaw ${cmd#dgclaw } >\"$TMP/m-cmd.txt\" 2>&1",
+      "motivo": "o teste extrai da mensagem os comandos citados ao dono, que agora vêm como 'prumo agente ...'; tira o prefixo 'prumo ' e continua executando o 'dgclaw' (lote M4 da marca)"
+    },
+    {
+      "arquivo": "tests/cli/restricoes-suporte.sh",
+      "linha": "cmds=\"$(grep -oE 'dgclaw agente (reiniciar|iniciar|restricoes) ana( --[a-z-]+( (sim|nao))?)*' \"$TMP/m-$caso.txt\" | sort -u)\"",
+      "motivo": "a extracao aceita os dois nomes, (prumo|dgclaw), para o teste nao ignorar em silencio uma mensagem que volte a citar dgclaw (QA-M4, B1)"
+    },
+    {
+      "arquivo": "CHANGELOG.md",
+      "linha": "arquivos que a versão nova muda ou remove e com os comandos do `dgclaw` que saíram ou mudaram de nome. Cada",
+      "motivo": "linha de item novo do CHANGELOG vindo do original (nenhum aluno viu): reescrita à mão no M5, `dgclaw` virou `prumo` (decisão 4 do plano de marca)"
+    },
+    {
+      "arquivo": "CHANGELOG.md",
+      "linha": "- **Guia de projeto de cliente** (`docs/PROJETO-DE-CLIENTE.md`): o padrão de instalar o DG Claw oficial completo na VPS do próprio cliente, o passo a passo com o acesso temporário do suporte, a comparação com as outras formas de acesso e o checklist de onboarding e entrega.",
+      "motivo": "item novo do CHANGELOG vindo do original: \"DG Claw oficial\" virou \"Prumo da Locadora\" (decisão 4 do plano de marca)"
+    },
+    {
+      "arquivo": "CHANGELOG.md",
+      "linha": "- **Acesso temporário do suporte DG: `dgclaw suporte`.** Quando o time DG precisa ajustar a sua instalação,",
+      "motivo": "item novo do CHANGELOG vindo do original: \"suporte DG\" e \"time DG\" viraram \"suporte\" e \"equipe de suporte\"; `dgclaw suporte` virou `prumo suporte`"
+    },
+    {
+      "arquivo": "docs/PROJETO-DE-CLIENTE.md",
+      "linha": "Este guia é para o time DG que monta um agente para um cliente. Ele diz qual é o padrão, o passo a passo, por",
+      "motivo": "\"time DG\" vira \"a equipe\" (decisão 2 do plano de marca): o guia é de quem monta o agente do cliente, não do time do autor original"
+    },
+    {
+      "arquivo": "CHANGELOG.md",
+      "linha": "você libera uma chave SSH nossa com prazo (`sudo dgclaw suporte ligar --chave '<linha>' --dias 7`, de 1 a 30",
+      "motivo": "item novo do CHANGELOG vindo do original (nenhum aluno viu): \"nossa\" trocado por \"da equipe do Prumo da Locadora\" para não ser lido como do dono (QA do M5, B5)"
+    },
+    {
+      "arquivo": "docs/ATUALIZAR.md",
+      "linha": "`/opt/dgclaw/app/...` e comandos `dgclaw ...`): uma rotina que só diz \"faça o resumo do dia\" não aparece,",
+      "motivo": "rodada 2 do M5 (QA A2): o coletor lib/uso-coletor.sh só reconhece \"dgclaw <comando>\"; a frase agora diz que \"prumo ...\" não é reconhecido"
+    },
+    {
+      "arquivo": "docs/ATUALIZAR.md",
+      "linha": "e aí vale o seu julgamento. Para ver o texto de uma rotina, abra a casa do agente, não o relatório.",
+      "motivo": "rodada 2 do M5 (QA A2): continuação da frase do coletor de uso, reescrita junto com a linha anterior"
+    }
+  ],
+  "nossas_ausentes": [
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "- Abre, mas pede senha e não aceita: a senha do painel se troca com",
+      "motivo": "reescrito pelo PR 12 (1c7992d), trazido no J0: capitulo \"nao consegue entrar no painel\""
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "`sudo dgclaw senha` (a senha é digitada no terminal, sem aparecer; nunca a escreva no chat). Se a pessoa",
+      "motivo": "reescrito pelo PR 12 (1c7992d), trazido no J0"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "nunca chegou a cadastrar a senha ou o link expirou, `sudo dgclaw primeiro-acesso` gera um link novo.",
+      "motivo": "reescrito pelo PR 12 (1c7992d), trazido no J0"
+    },
+    {
+      "arquivo": "panel/public/index.html",
+      "linha": "<button class=\"tab\" data-tab=\"identity\"><span class=\"ico\">◈</span>Quem sou</button>",
+      "motivo": "o #104 troca o icone de texto por SVG; a aba segue \"Quem sou\" (linha equivalente esta no resultado)"
+    },
+    {
+      "arquivo": "templates/admin/instrucoes-admin.md.tmpl",
+      "linha": "Cada Prumo da Locadora é usado de um jeito e pode guardar informações sensíveis, então antes de instalar qualquer",
+      "motivo": "paragrafo reescrito pelo #76 (parecer obrigatorio antes de atualizar); texto do original vence, com o nosso nome"
+    },
+    {
+      "arquivo": "web/public/avisos.js",
+      "linha": "como: 'Os agentes postam pela caixa deles. Você posta aqui. O Prumo da Locadora guarda o aviso e regrava o quadro na casa de cada agente que pode vê-lo.',",
+      "motivo": "o original tirou o nome do texto (\"O sistema guarda o aviso\"); segue o original"
+    },
+    {
+      "arquivo": "web/public/casca.js",
+      "linha": "if (!ag) ag = { id: erro ? slug : '', nome: 'Prumo da Locadora', cor: '#2f9e5e', avatar: 'P' };",
+      "motivo": "o #104 troca o nome fixo por NOME, que vem da marca configuravel (de fabrica, Prumo da Locadora)"
+    },
+    {
+      "arquivo": "web/public/login.html",
+      "linha": "<div class=\"marca\"><span class=\"emoji\" aria-hidden=\"true\">⚙️</span><h1>Prumo da Locadora</h1></div>",
+      "motivo": "o #104 troca o cabecalho do login por logo + {{MARCA_NOME}} (de fabrica, Prumo da Locadora)"
+    },
+    {
+      "arquivo": "web/public/primeiro-acesso.html",
+      "linha": "<div class=\"marca\"><span class=\"emoji\" aria-hidden=\"true\">⚙️</span><h1>Primeiro acesso</h1></div>",
+      "motivo": "o #104 troca o cabecalho por logo + {{MARCA_NOME}} (de fabrica, Prumo da Locadora)"
+    },
+    {
+      "arquivo": "bin/dgclaw-sentinela",
+      "linha": "#   parado     o container nao esta de pe                      (sem reparo: pode ter sido desligado de proposito)",
+      "motivo": "o lote C3 (30a3cca) reescreveu este comentario do cabecalho em duas linhas: agora diz que so o container em \"created\" ganha um agente iniciar (marca de 6 h) e que \"exited\" segue sem reparo; o significado antigo (nao desligar nada de proposito) continua na segunda linha"
+    },
+    {
+      "arquivo": "bin/dgclaw-sentinela",
+      "linha": "parado) echo \"O agente $NOME está desligado. Se não foi você, peça ao Admin no painel: \\\"ligue o agente $NOME de novo\\\".\" ;;",
+      "motivo": "o lote C3 (30a3cca) acrescentou ao fim da frase do aviso de parado o comando do servidor \"sudo prumo agente iniciar $SLUG\"; o resto da frase, ate o pedido ao Admin, e igual; a linha nova esta no resultado"
+    },
+    {
+      "arquivo": "bin/test/dgclaw-sentinela.test.sh",
+      "linha": "[ -e \"$T/conserta\" ] && { printf '{\"ok\":true,\"agente\":{\"status\":\"idle\",\"ptyVivo\":true},\"sessionId\":\"s1\",\"ultimaSaidaEm\":null}' >\"$SAUDE\"; touch \"$T/bun-vivo\"; }",
+      "motivo": "o lote C3 (30a3cca) mudou a linha \"conserta\" do dgclaw falso do teste para tambem gravar \"running\" no estado do container, senao o teste do created que sobe nao enxerga a subida; o que ela ja fazia (saude e bun vivo) continua na linha nova"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "- `CONTAINER` em `exited` ou `ausente`: com o \"posso?\", `dgclaw agente iniciar $SLUG`. Isso",
+      "motivo": "a rodada 2 do C5 (QA e Esquadro de 17/11) separou o agente \"ausente\" do \"exited\" na secao 3.2: iniciar nao funciona sem container, e a receita unica (recriar --forcar, secao 3.2.1) substituiu a de \"agente criar\"; o texto dessa linha foi reescrito em bullets separados"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "liga o container de novo e reaplica o firewall. Se o container está `ausente` e a casa",
+      "motivo": "a rodada 2 do C5 (QA e Esquadro de 17/11) separou o agente \"ausente\" do \"exited\" na secao 3.2: iniciar nao funciona sem container, e a receita unica (recriar --forcar, secao 3.2.1) substituiu a de \"agente criar\"; o texto dessa linha foi reescrito em bullets separados"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "existe, não recrie sozinho: diga ao dono o que viu e peça a decisão (recriar é",
+      "motivo": "a rodada 2 do C5 (QA e Esquadro de 17/11) separou o agente \"ausente\" do \"exited\" na secao 3.2: iniciar nao funciona sem container, e a receita unica (recriar --forcar, secao 3.2.1) substituiu a de \"agente criar\"; o texto dessa linha foi reescrito em bullets separados"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "`dgclaw agente criar $SLUG ...` com os mesmos dados, e rodar de novo continua de onde parou).",
+      "motivo": "a rodada 2 do C5 (QA e Esquadro de 17/11) separou o agente \"ausente\" do \"exited\" na secao 3.2: iniciar nao funciona sem container, e a receita unica (recriar --forcar, secao 3.2.1) substituiu a de \"agente criar\"; o texto dessa linha foi reescrito em bullets separados"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "próprio agente. Container desligado e login vencido só geram aviso, porque o conserto depende do",
+      "motivo": "a rodada 2 do C5 dividiu o paragrafo da Sentinela (secao 2.4) em paragrafos curtos, a pedido do Esquadro, e acrescentou a excecao do \"created\"; as frases desta linha continuam la, so quebradas em outras linhas (a do container desligado ganhou a marca exited)"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "dono; se o erro continua na conversa depois do reinício, o aviso pede ao dono uma mensagem nova. O mesmo problema do mesmo agente só volta a ser tratado depois de 6 horas,",
+      "motivo": "a rodada 2 do C5 dividiu o paragrafo da Sentinela (secao 2.4) em paragrafos curtos, a pedido do Esquadro, e acrescentou a excecao do \"created\"; as frases desta linha continuam la, so quebradas em outras linhas (a do container desligado ganhou a marca exited)"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "mesmo que ele melhore no meio. Durante o `sudo dgclaw atualizar` ela não confere nada.",
+      "motivo": "a rodada 2 do C5 dividiu o paragrafo da Sentinela (secao 2.4) em paragrafos curtos, a pedido do Esquadro, e acrescentou a excecao do \"created\"; as frases desta linha continuam la, so quebradas em outras linhas (a do container desligado ganhou a marca exited)"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "`dgclaw agente reparar $SLUG` refaz só a parte de dentro (tarefas agendadas, runner e painel) e",
+      "motivo": "o acerto final do C5 (Esquadro, 17/11) trocou nesta linha o \"$SLUG\" e o comando sem sudo por \"sudo dgclaw ... <nome do agente>\", a convencao unica da secao 3.2 para o texto que vai ao dono; o resto da linha e igual"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "instalador grava `/etc/sysctl.d/90-dgclaw-inotify.conf`) e rode `dgclaw agente iniciar $SLUG`.",
+      "motivo": "o acerto final do C5 (Esquadro, 17/11) trocou nesta linha o \"$SLUG\" e o comando sem sudo por \"sudo dgclaw ... <nome do agente>\", a convencao unica da secao 3.2 para o texto que vai ao dono; o resto da linha e igual"
+    },
+    {
+      "arquivo": "web/public/seguranca.js",
+      "linha": "oque: 'Os avisos sobre falhas em ferramentas que o seu sistema usa, conferidos e aprovados pela equipe do DG Claw (o projeto de origem) e publicados aqui quando a correção já está no Prumo da Locadora. Cada um mostra a data, a gravidade, o link da fonte oficial e o que muda quando você corrige.',",
+      "motivo": "a troca por regra uniu os dois nomes (equipe do DG Claw (o projeto de origem) ... no Prumo da Locadora) e a frase perdeu o sentido; reescrita a mao para 'equipe do projeto de origem' (M1, rodada 2)"
+    },
+    {
+      "arquivo": "skills/guardiao-do-sgl/SKILL.md",
+      "linha": "# /dgclaw:guardiao-do-sgl, o índice do sistema de gestão do dono",
+      "motivo": "marca M3 (decisão 11 do plano): nenhum plugin dgclaw existe, a skill não é ligada ao agente e o título perde o prefixo morto; o campo name do cabeçalho não mudou"
+    },
+    {
+      "arquivo": "templates/LAWS.md.tmpl",
+      "linha": "*Leis imutaveis — geradas por Prumo da Locadora no /dgclaw:awaken*",
+      "motivo": "marca M3 (decisão 11): a skill awaken não existe em lugar nenhum do repositório; a referência sai e a frase fica sem ela"
+    },
+    {
+      "arquivo": "templates/MEMORY.md.tmpl",
+      "linha": "<!-- MEMORY.md — ESQUELETO biografico de {{NOME}}. Gerado por Prumo da Locadora no /dgclaw:awaken.",
+      "motivo": "marca M3 (decisão 11): a skill awaken não existe em lugar nenhum do repositório; a referência sai e a frase fica sem ela"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "Dentro do container não existem `podman`, `dgclaw` nem `sudo`. Traduza assim:",
+      "motivo": "acrescentei \"(nem o `prumo`)\": o manual usa `prumo` nos exemplos e dentro do container nenhum dos dois comandos existe"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "uma versão antiga do `dgclaw`) e o modo de segurança não vai funcionar por aqui: use o botão",
+      "motivo": "\"versão antiga do `dgclaw`\" fala do programa, e o manual chama o programa de Prumo da Locadora"
+    },
+    {
+      "arquivo": "docs/MESA-DE-TAREFAS.md",
+      "linha": "(`templates/CLAUDE.md.tmpl`; o agente Codex le o mesmo arquivo, mandado pelo `templates/AGENTS.md.tmpl`) e na skill `mesa`",
+      "motivo": "a frase perdeu o \"(`/dgclaw:mesa`)\": nome que não existe, a skill é chamada por `/mesa` (F4.5 do plano de marca)"
+    },
+    {
+      "arquivo": "docs/manual/personalizar.md",
+      "linha": "Você pode pedir mudanças na base do Prumo da Locadora, como uma nova forma de gerar agentes, um ajuste no comando `dgclaw`, no",
+      "motivo": "manual do dono: \"ajuste no comando `dgclaw`\" virou \"`prumo`\" (decisão do dono: limpar o dg* até no manual)"
+    }
+  ],
+  "emergencia_novas": [
+    {
+      "arquivo": "skills/doctor/SKILL.md",
+      "linha": "use o menu Socorro do painel: ele carrega o `docs/EMERGENCIA.md` e conduz o",
+      "motivo": "marca M3 (decisão 11): linha que já citava o EMERGENCIA.md como socorro; só a chamada da skill socorro por barra virou o menu Socorro do painel, que abre essa mesma skill"
+    }
+  ]
+}

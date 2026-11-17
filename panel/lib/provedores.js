@@ -268,11 +268,11 @@ module.exports = function registrarRotasDeProvedor(router, { CONFIG, cofre, serv
       const variavel = modo.variavel || null;
       const corpoRunner = { provedor: escolha.provedor, auth: escolha.auth, modelo: escolha.modelo };
 
-      // Modo "host" (v1): quem guarda a chave e reinicia é o DG Claw Web. Recusa ANTES de
+      // Modo "host" (v1): quem guarda a chave e reinicia é o Prumo da Locadora Web. Recusa ANTES de
       // falar com o runner, para a escolha não ficar gravada sem a chave e sem o reinício.
       if (variavel && cofre.modoHost) {
         const h = cofre.recusaDoHost();
-        console.error(`[provedor] POST /api/provedor: este agente guarda chave pelo DG Claw Web; recusei com 409 (entrada: ${limpar(JSON.stringify(entrada), chave)})`);
+        console.error(`[provedor] POST /api/provedor: este agente guarda chave pelo Prumo da Locadora Web; recusei com 409 (entrada: ${limpar(JSON.stringify(entrada), chave)})`);
         return res.status(h.status).json({ error: h.erro, howToFix: h.howToFix });
       }
 

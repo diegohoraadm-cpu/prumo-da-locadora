@@ -35,7 +35,7 @@ touch "$STUB_ESTADO/inativo-dgclaw-tela-vnc"
 tela ana
 igual "sai com 1" "1" "$?"
 afirma "diz que a senha nao foi definida" grep -q "FALTA .*senha da Tela ainda nao foi definida" "$TMP/t.txt"
-afirma "diz o comando tela-senha" grep -q "dgclaw agente tela-senha ana" "$TMP/t.txt"
+afirma "diz o comando tela-senha" grep -q "prumo agente tela-senha ana" "$TMP/t.txt"
 nega "nao acusa o VNC parado quando a causa e a senha" grep -q "VNC (dgclaw-tela-vnc.service) esta parado" "$TMP/t.txt"
 mv "$TMP/vnc.senha.guardada" "$V"
 
@@ -58,18 +58,18 @@ echo "agente tela: imagem sem a Tela"
 touch "$STUB_ESTADO/sem-tela"
 tela ana
 igual "sai com 1" "1" "$?"
-afirma "diz que a imagem nao tem a Tela e como recriar" grep -q "dgclaw agente recriar ana --forcar" "$TMP/t.txt"
+afirma "diz que a imagem nao tem a Tela e como recriar" grep -q "prumo agente recriar ana --forcar" "$TMP/t.txt"
 rm -f "$STUB_ESTADO/sem-tela"
 
 echo "agente tela: casos de erro"
 echo exited >"$STUB_ESTADO/c-dgclaw-ana"
 tela ana
 igual "agente desligado: sai com 2" "2" "$?"
-afirma "diz como ligar" grep -q "dgclaw agente iniciar ana" "$TMP/t.txt"
+afirma "diz como ligar" grep -q "prumo agente iniciar ana" "$TMP/t.txt"
 echo running >"$STUB_ESTADO/c-dgclaw-ana"
 tela fantasma
 igual "agente desconhecido: sai com 1" "1" "$?"
-afirma "o erro diz o que fazer" grep -q "dgclaw agente listar" "$TMP/t.txt"
+afirma "o erro diz o que fazer" grep -q "prumo agente listar" "$TMP/t.txt"
 tela
 igual "sem slug: sai com 1" "1" "$?"
 
@@ -80,7 +80,7 @@ echo imagem-v9 >"$STUB_ESTADO/imagem-id"
 dgclaw agente recriar ana >"$TMP/rec.txt" 2>&1
 igual "recriar sai com 0" "0" "$?"
 afirma "avisa que a senha da Tela nao foi definida" grep -q "senha da Tela do agente ana ainda nao foi definida" "$TMP/rec.txt"
-afirma "diz como definir (painel e comando)" bash -c "grep -q 'aba Tela do painel' '$TMP/rec.txt' && grep -q 'dgclaw agente tela-senha ana' '$TMP/rec.txt'"
+afirma "diz como definir (painel e comando)" bash -c "grep -q 'aba Tela do painel' '$TMP/rec.txt' && grep -q 'prumo agente tela-senha ana' '$TMP/rec.txt'"
 nega "nao criou senha escondida" test -e "$V"
 igual "o gravador de senha nao foi chamado" "0" "$(wc -c <"$STUB_ESTADO/tela-senhas-recebidas" | tr -d ' ')"
 dgclaw agente reparar ana >"$TMP/rep.txt" 2>&1

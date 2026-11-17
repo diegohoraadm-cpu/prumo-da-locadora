@@ -5,9 +5,9 @@
 # (falha, ok, info, aviso, executar, definir_linha_env, exigir_ferramentas, s_ok, s_aviso...).
 # shellcheck disable=SC2154
 #
-#   dgclaw atualizar --checar              roda a checagem agora (so le o GitHub; nao baixa nem instala nada)
-#   dgclaw atualizar --aviso ligar|desligar troca a linha DGCLAW_AVISO_ATUALIZACAO do dgclaw.env e liga/desliga o timer
-#   dgclaw status                           uma linha "atualizacao: ..." (aviso_atualizacao_status)
+#   prumo atualizar --checar              roda a checagem agora (so le o GitHub; nao baixa nem instala nada)
+#   prumo atualizar --aviso ligar|desligar troca a linha DGCLAW_AVISO_ATUALIZACAO do dgclaw.env e liga/desliga o timer
+#   prumo status                           uma linha "atualizacao: ..." (aviso_atualizacao_status)
 
 AVISO_UNIDADE_TIMER="dgclaw-checar-atualizacao.timer"
 AVISO_UNIDADE_SERVICO="dgclaw-checar-atualizacao.service"
@@ -41,7 +41,7 @@ aviso_checar() {
     fi
     exigir_ferramentas node flock
     [ -f "$script" ] || falha "nao achei $script, entao nao ha como checar." \
-        "reinstale o DG Claw (sudo ./install.sh --usuario <nome>); o instalador copia esse arquivo."
+        "reinstale o Prumo da Locadora (sudo ./install.sh --usuario <nome>); o instalador copia esse arquivo."
     aviso_com_trava node "$script" || rc=$?
     return "$rc"
 }
@@ -53,7 +53,7 @@ aviso_confere_estado() {
     atual="$(jq -r '.desligado' "$arq" 2>/dev/null)" || atual=""
     [ "$atual" = "$esperado" ] && return 0
     falha "a linha do dgclaw.env e o timer ja foram trocados, mas o estado gravado em $arq ainda nao diz desligado=$esperado (veio: ${atual:-ilegivel})." \
-        "rode de novo: sudo dgclaw atualizar --aviso $([ "$esperado" = true ] && echo desligar || echo ligar). Se repetir, veja /var/log/dgclaw/checar-atualizacao.log."
+        "rode de novo: sudo prumo atualizar --aviso $([ "$esperado" = true ] && echo desligar || echo ligar). Se repetir, veja /var/log/dgclaw/checar-atualizacao.log."
 }
 
 # aviso_definir <ligar|desligar>: troca SO a linha DGCLAW_AVISO_ATUALIZACAO (as outras ficam como estao),
@@ -66,28 +66,28 @@ aviso_definir() {
     case "$acao" in
         ligar) valor=1 ;;
         desligar) valor=0 ;;
-        *) falha "'--aviso $acao' nao existe." "use: dgclaw atualizar --aviso ligar   ou   dgclaw atualizar --aviso desligar" ;;
+        *) falha "'--aviso $acao' nao existe." "use: prumo atualizar --aviso ligar   ou   prumo atualizar --aviso desligar" ;;
     esac
-    [ -f "$DG_ETC/dgclaw.env" ] || falha "o DG Claw nao parece instalado aqui: falta $DG_ETC/dgclaw.env." \
+    [ -f "$DG_ETC/dgclaw.env" ] || falha "o Prumo da Locadora nao parece instalado aqui: falta $DG_ETC/dgclaw.env." \
         "instale primeiro: sudo ./install.sh --usuario <nome>"
     exigir_ferramentas jq
     definir_linha_env "$DG_ETC/dgclaw.env" DGCLAW_AVISO_ATUALIZACAO "$valor"
     if [ ! -f "$DG_UNITS/$AVISO_UNIDADE_TIMER" ]; then
-        aviso "gravei DGCLAW_AVISO_ATUALIZACAO=$valor, mas o timer do aviso ainda nao esta instalado neste servidor. Rode sudo dgclaw atualizar (ou sudo ./install.sh) uma vez e ele passa a obedecer essa linha."
+        aviso "gravei DGCLAW_AVISO_ATUALIZACAO=$valor, mas o timer do aviso ainda nao esta instalado neste servidor. Rode sudo prumo atualizar (ou sudo ./install.sh) uma vez e ele passa a obedecer essa linha."
         return 0
     fi
     if [ "$acao" = ligar ]; then
         executar systemctl enable --now "$AVISO_UNIDADE_TIMER"
         aviso_checar || aviso "o aviso foi ligado, mas a checagem de agora falhou (veja a mensagem acima). O timer tenta de novo sozinho."
         aviso_confere_estado false
-        ok "aviso de nova versao ligado: confere a cada 6 horas. Ver o resultado: dgclaw status"
+        ok "aviso de nova versao ligado: confere a cada 6 horas. Ver o resultado: prumo status"
     else
         executar systemctl disable --now "$AVISO_UNIDADE_TIMER"
         executar systemctl stop "$AVISO_UNIDADE_SERVICO"
         # Sem rede: com a linha em 0 a checagem so grava "desligado", e a faixa do painel some na hora.
         aviso_checar || aviso "a checagem que grava o estado 'desligado' saiu com erro (veja acima)."
         aviso_confere_estado true
-        ok "aviso de nova versao desligado: o servidor nao consulta mais o GitHub. Para ligar: dgclaw atualizar --aviso ligar"
+        ok "aviso de nova versao desligado: o servidor nao consulta mais o GitHub. Para ligar: prumo atualizar --aviso ligar"
     fi
 }
 
@@ -100,32 +100,32 @@ aviso_atualizacao_main() {
     set -- ${args[@]+"${args[@]}"}
     case "${1:-}" in
         --checar)
-            [ $# -eq 1 ] || falha "'--checar' so aceita --simular junto (veio: $*)." "use: dgclaw atualizar --checar"
+            [ $# -eq 1 ] || falha "'--checar' so aceita --simular junto (veio: $*)." "use: prumo atualizar --checar"
             aviso_checar ;;
         --aviso)
-            [ $# -eq 2 ] || falha "'--aviso' precisa de ligar ou desligar." "use: dgclaw atualizar --aviso ligar   ou   dgclaw atualizar --aviso desligar"
+            [ $# -eq 2 ] || falha "'--aviso' precisa de ligar ou desligar." "use: prumo atualizar --aviso ligar   ou   prumo atualizar --aviso desligar"
             aviso_definir "$2" ;;
-        *) falha "opcao do aviso desconhecida: ${1:-}" "veja as opcoes com: dgclaw --ajuda" ;;
+        *) falha "opcao do aviso desconhecida: ${1:-}" "veja as opcoes com: prumo --ajuda" ;;
     esac
 }
 
-# aviso_atualizacao_status: a linha "atualizacao: ..." do `dgclaw status`. Nunca derruba o status:
+# aviso_atualizacao_status: a linha "atualizacao: ..." do `prumo status`. Nunca derruba o status:
 # problema para ler o estado vira aviso, nao falha (o aviso de versao nao e essencial).
 aviso_atualizacao_status() {
     local arq="$DG_LIB/web/atualizacao/estado.json" saida disp motivo erro de para
     # O status ja carregou o dgclaw.env com `source`, que tira as aspas do valor.
     if [ "${DGCLAW_AVISO_ATUALIZACAO:-1}" = 0 ]; then
-        s_ok "atualizacao: aviso desligado (para ligar: sudo dgclaw atualizar --aviso ligar)"
+        s_ok "atualizacao: aviso desligado (para ligar: sudo prumo atualizar --aviso ligar)"
         return 0
     fi
     if [ ! -f "$arq" ]; then
-        s_ok "atualizacao: ainda nao verificado (a primeira checagem sai logo depois da instalacao; para ver agora: sudo dgclaw atualizar --checar)"
+        s_ok "atualizacao: ainda nao verificado (a primeira checagem sai logo depois da instalacao; para ver agora: sudo prumo atualizar --checar)"
         return 0
     fi
     if ! saida="$(jq -r '[(.disponivel // false), (.motivo // "-"), (.erro.motivo // "-"),
                           (.instalado.versao // (.instalado.commit // "?" | .[0:7])),
                           (.publicado.versao // (.publicado.commit // "?" | .[0:7]))] | @tsv' "$arq" 2>&1)"; then
-        s_aviso "atualizacao: nao consegui ler $arq ($(printf '%s' "$saida" | head -n 1 | aviso_limpa)). Refaca com: sudo dgclaw atualizar --checar"
+        s_aviso "atualizacao: nao consegui ler $arq ($(printf '%s' "$saida" | head -n 1 | aviso_limpa)). Refaca com: sudo prumo atualizar --checar"
         return 0
     fi
     # "-" marca campo vazio: o read junta tabs seguidos e deslocaria os campos.
@@ -134,7 +134,7 @@ aviso_atualizacao_status() {
     [ "$erro" != "-" ] || erro=""
     de="$(printf '%s' "$de" | aviso_limpa)"; para="$(printf '%s' "$para" | aviso_limpa)"
     if [ "$disp" = true ]; then
-        s_aviso "atualizacao: versao nova disponivel ($de → $para), rode: sudo dgclaw atualizar"
+        s_aviso "atualizacao: versao nova disponivel ($de → $para), rode: sudo prumo atualizar"
     elif [ -n "$motivo" ]; then
         case "$motivo" in
             instalacao-fora-do-github) s_ok "atualizacao: sem como comparar (esta instalacao veio de um commit que nao esta no GitHub oficial)" ;;

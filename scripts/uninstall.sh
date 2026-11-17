@@ -1,5 +1,5 @@
 #!/bin/bash
-# uninstall.sh: tira um agente DG Claw do ar (modo servidor).
+# uninstall.sh: tira um agente Prumo da Locadora do ar (modo servidor).
 #
 # Uso:
 #   bash uninstall.sh <.dgclaw/config.sh | workspace> [--purge] [--yes]
@@ -52,7 +52,7 @@ SLUG="${DGCLAW_SLUG:-}"
 [ -n "$SLUG" ] || SLUG="$(basename "$WS")"
 NOME="${DGCLAW_NAME:-$SLUG}"
 
-echo "== DG Claw uninstall: agente '$NOME' ($SLUG) em $WS =="
+echo "== Prumo da Locadora uninstall: agente '$NOME' ($SLUG) em $WS =="
 if [ "$PURGE" = "1" ]; then
     echo "   modo: PURGE. Tira do ar e move identidade, memoria e dados pra uma pasta de backup."
 else
@@ -150,7 +150,7 @@ fi
 echo
 echo "== pronto. O agente '$NOME' esta fora do ar. =="
 if [ "$PURGE" = "0" ]; then
-    echo "   Pra trazer de volta: rode /dgclaw:setup apontando pro mesmo workspace ($WS)."
+    echo "   O workspace ($WS) foi preservado."
     echo "   Os dados continuam la, entao ele volta com a memoria e a personalidade que tinha."
 fi
 echo "   O usuario do sistema (se houver um dedicado) NAO foi removido, de proposito."

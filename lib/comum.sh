@@ -67,13 +67,14 @@ falha() {
 # $R/run/systemd/system) cai no podman direto. Nas duas chamadas o descritor 8 (a trava da faixa de
 # rede, ver trava_faixa_pegar) e fechado: e por aqui que todo container de agente nasce, e o conmon,
 # que vive ate o container parar, herdaria o descritor e seguraria a trava.
+# O 9>&- fecha a trava das restricoes (lib/restricoes.sh) pelo mesmo motivo.
 podman_em_escopo() {
     local slug="$1"; shift
     if command -v systemd-run >/dev/null 2>&1 && [ -d "$R/run/systemd/system" ]; then
         executar systemd-run --scope --quiet --collect \
-            --unit "dgclaw-conteiner-$slug-$(date +%s)-$$-$RANDOM" podman "$@" 8>&-
+            --unit "dgclaw-conteiner-$slug-$(date +%s)-$$-$RANDOM" podman "$@" 8>&- 9>&-
     else
-        executar podman "$@" 8>&-
+        executar podman "$@" 8>&- 9>&-
     fi
 }
 
@@ -183,7 +184,7 @@ garantir_gancho_runner() {
     [ -f "$alvo" ] || return 0
     if ! jq -e '(.config | type) == "object" and ((.config.promptHooks // []) | type) == "array"' "$alvo" >/dev/null 2>&1; then
         falha "o runner.json $alvo nao e um JSON valido com \"config\" e, se houver, \"promptHooks\" como lista; nao mexi nele." \
-            "confira com: jq . $alvo (corrija o JSON ou, se nao tiver nada seu, apague o arquivo e rode: dgclaw agente reparar $slug)."
+            "confira com: jq . $alvo (corrija o JSON ou, se nao tiver nada seu, apague o arquivo e rode: prumo agente reparar $slug)."
     fi
     if jq -e --arg g "$gancho" '(.config.promptHooks // []) | index($g) != null' "$alvo" >/dev/null; then
         return 0
@@ -196,7 +197,7 @@ garantir_gancho_runner() {
         || falha "o jq nao conseguiu acrescentar o gancho em $alvo." "confira se o arquivo e um JSON valido (jq . $alvo) e rode de novo."
     printf '%s\n' "$novo" | escrever_arquivo "$alvo" 444 0:0
     ok "gancho $rotulo acrescentado ao runner.json"
-    info "ele entra quando o runner reiniciar: dgclaw agente reiniciar $slug"
+    info "ele entra quando o runner reiniciar: prumo agente reiniciar $slug"
 }
 
 # garantir_gancho_foco <runner.json> [slug]
@@ -254,7 +255,7 @@ com_trava() {
     if [ "$ENSAIO" = 1 ]; then "$@"; return; fi
     mkdir -p "$(dirname "$DG_TRAVA")"
     (
-        flock -w 30 9 || falha "outro comando do DG Claw esta segurando $DG_TRAVA ha mais de 30 segundos." \
+        flock -w 30 9 || falha "outro comando do Prumo da Locadora esta segurando $DG_TRAVA ha mais de 30 segundos." \
             "espere ele terminar e rode de novo. Se nada estiver rodando, confira com: fuser $DG_TRAVA"
         "$@"
     ) 9>"$DG_TRAVA"
@@ -345,7 +346,7 @@ carregar_env_dgclaw() {
     DGCLAW_IMAGEM="${DGCLAW_IMAGEM:-$DG_IMAGEM_PADRAO}"
 }
 
-# --- dominio e Caddy (usados pelo install.sh e por `dgclaw dominio`) ------------------
+# --- dominio e Caddy (usados pelo install.sh e por `prumo dominio`) ------------------
 # ip_publico: o IP publico desta maquina (imprime so ele); falha se nenhum servico responder.
 ip_publico() {
     local url ip
@@ -505,8 +506,8 @@ CADDY_TIPOS_COMPRIMIDOS=(
 bloco_caddy() {
     local tipo modo="${2:-}" porta="${3:-$DG_PORTA_PAINEL_PADRAO}"
     if [ -z "$modo" ]; then if modo_tunel; then modo=tunel; else modo=publico; fi; fi
-    printf '# Prumo da Locadora: gerado pelo install.sh. Se voce editar este arquivo, o instalador e o dgclaw atualizar\n'
-    printf '# deixam a sua versao como esta (so o dgclaw dominio troca o nome do site).\n'
+    printf '# Prumo da Locadora: gerado pelo install.sh. Se voce editar este arquivo, o instalador e o prumo atualizar\n'
+    printf '# deixam a sua versao como esta (so o prumo dominio troca o nome do site).\n'
     printf '%s {\n' "$1"
     if [ "$modo" = tunel ]; then
         # Sem IP publico o Let's Encrypt nao valida o nome: certificado da CA local do Caddy, e o
@@ -587,7 +588,7 @@ caddy_restaurar_site() {
 # escrever_site_caddy <dominio> [trocar] [porta]: grava o site do Prumo da Locadora no Caddyfile proprio (quando e dele ou
 # padrao) ou em conf.d/dgclaw.caddy (quando o Caddyfile tem sites de outros). Nao valida nem recarrega.
 # Arquivo que ja existe e foi personalizado (diferente do que o instalador gera) nao e tocado: avisa o
-# que acrescentar. Com "trocar" (dgclaw dominio), o arquivo personalizado vira copia ao lado e o bloco gerado entra no lugar.
+# que acrescentar. Com "trocar" (prumo dominio), o arquivo personalizado vira copia ao lado e o bloco gerado entra no lugar.
 escrever_site_caddy() {
     local copia dominio="$1" modo="${2:-}" porta="${3:-$DG_PORTA_PAINEL_PADRAO}" cf="$R/etc/caddy/Caddyfile" confd="$R/etc/caddy/conf.d/dgclaw.caddy" alvo
     CADDY_SITE_MUDOU=0
@@ -598,8 +599,8 @@ escrever_site_caddy() {
     else
         # Ja existe um Caddyfile com sites de verdade: nao se sobrescreve o que e dos outros.
         if ! grep -Eq '^[[:space:]]*import[[:space:]]+.*conf\.d/\*' "$cf"; then
-            falha "o Caddyfile em ${cf#"$R"} ja tem outros sites e nao importa a pasta conf.d, entao nao tenho onde colocar o do DG Claw sem mexer no seu." \
-                "acrescente a linha 'import conf.d/*' no topo do arquivo (fora de qualquer bloco) e rode ./install.sh de novo. Ele vai criar ${confd#"$R"} com o site do DG Claw."
+            falha "o Caddyfile em ${cf#"$R"} ja tem outros sites e nao importa a pasta conf.d, entao nao tenho onde colocar o do Prumo da Locadora sem mexer no seu." \
+                "acrescente a linha 'import conf.d/*' no topo do arquivo (fora de qualquer bloco) e rode ./install.sh de novo. Ele vai criar ${confd#"$R"} com o site do Prumo da Locadora."
         fi
         alvo="$confd"
         info "o Caddyfile existente foi preservado; o site do Prumo da Locadora fica em ${confd#"$R"}"
@@ -615,7 +616,7 @@ escrever_site_caddy() {
             :
         elif ! caddy_site_e_gerado "$alvo" "$porta"; then
             if [ "$modo" = trocar ]; then
-                # dgclaw dominio: o arquivo editado vira copia ao lado e o bloco gerado entra no lugar. A copia fica
+                # prumo dominio: o arquivo editado vira copia ao lado e o bloco gerado entra no lugar. A copia fica
                 # em /etc/caddy (nunca em conf.d/, que o Caddyfile importa e duplicaria o site).
                 copia="$R/etc/caddy/$(basename "$alvo").antes-dominio-$(date +%Y%m%d-%H%M%S)"
                 cp -p "$alvo" "$copia" \
@@ -849,10 +850,25 @@ FIM
 }
 
 # imprimir_trechos_proxy <dominio> <porta>: os dois trechos, com titulo, para a mensagem final do
-# instalador e para o `dgclaw dominio`.
+# instalador e para o `prumo dominio`.
 imprimir_trechos_proxy() {
     printf '\n   --- Se o seu proxy e o nginx ---\n\n'
     trecho_proxy_nginx "$1" "$2" | sed 's/^/   /'
     printf '\n   --- Se voce usa um tunel da Cloudflare ---\n\n'
     trecho_proxy_cloudflare "$1" "$2" | sed 's/^/   /'
+}
+
+# --- o atalho `prumo` (so leitura) ---------------------------------------------------------------
+# Conteudo exato do atalho que o install.sh grava: uma fonte so, usada por ele e por prumo_alheio.
+atalho_prumo_conteudo() { printf '#!/bin/sh\nexec %s/dgclaw "$@"\n' "$DG_BIN"; }
+
+# prumo_alheio: verdadeiro so quando o dono alcanca um `prumo` (no PATH em uso) que NAO e o nosso atalho.
+# Sem nenhum `prumo` no PATH e falso: a ausencia nao e perigosa (da "comando nao encontrado" e ha o dgclaw).
+prumo_alheio() {
+    local achado
+    achado="$(command -v prumo 2>/dev/null)" || return 1
+    [ -n "$achado" ] || return 1
+    [ ! -L "$DG_BIN/prumo" ] && [ "$achado" = "$DG_BIN/prumo" ] \
+        && [ "$(cat "$DG_BIN/prumo" 2>/dev/null)" = "$(atalho_prumo_conteudo)" ] && return 1
+    return 0
 }

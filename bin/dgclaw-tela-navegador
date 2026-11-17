@@ -34,7 +34,7 @@ if [ -z "$bin" ] || [ ! -x "$bin" ]; then
     {
         echo "dgclaw-tela-navegador: nao achei nenhum navegador para a Tela."
         echo "  Procurei google-chrome-stable no PATH e o Chromium do Playwright em ${PLAYWRIGHT_BROWSERS_PATH:-/opt/playwright}/chromium-*/chrome-linux*/chrome."
-        echo "  O que fazer: peca a quem administra o DG Claw para reconstruir a imagem (dgclaw imagem construir --agora) e recriar este agente (dgclaw agente recriar <slug>)."
+        echo "  O que fazer: peca a quem administra o Prumo da Locadora para reconstruir a imagem (prumo imagem construir --agora) e recriar este agente (prumo agente recriar <slug>)."
     } >&2
     # 78 = configuracao ausente; a unidade nao fica reiniciando em laco por isso.
     exit 78

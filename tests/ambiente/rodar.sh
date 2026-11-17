@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # A secao "Onde voce esta e o que voce consegue fazer" que entra no prompt de todo agente
-# (templates/ambiente/) e o comando `dgclaw agente identidade` que a regrava.
+# (templates/ambiente/) e o comando `prumo agente identidade` que a regrava.
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh
 . "$(dirname "$0")/../cli/_comum.sh"
@@ -40,7 +40,7 @@ afirma "admin.md manda usar dgclaw colaborador criar" grep -qF 'dgclaw colaborad
 afirma "a skill criar-agente oferece o acesso na entrega" grep -qF 'dgclaw colaborador criar' "$REPO/skills/criar-agente/SKILL.md"
 nega "a skill criar-agente sem travessao nem en dash" grep -q $'—\|–' "$REPO/skills/criar-agente/SKILL.md"
 
-echo "ambiente: dgclaw agente identidade"
+echo "ambiente: prumo agente identidade"
 criar_agente ana --nome "Ana" --dono "Marta"
 ID="$DGCLAW_RAIZ/var/lib/dgclaw/agentes/ana/home/.plataforma/identidade.md"
 AG="$DGCLAW_RAIZ/var/lib/dgclaw/agentes/ana/home/AGENT.md"
@@ -53,14 +53,14 @@ nega "identidade sem campo {{...}} sobrando" grep -q '{{' "$ID"
 # Agente antigo: identidade sem a secao.
 grep -vF "$MARCA" "$ID" >"$TMP/velha.md" && cp "$TMP/velha.md" "$ID"
 dgclaw status >"$TMP/status.txt" 2>&1
-afirma "status avisa quando falta a secao" grep -q 'dgclaw agente identidade ana' "$TMP/status.txt"
+afirma "status avisa quando falta a secao" grep -q 'prumo agente identidade ana' "$TMP/status.txt"
 
 dgclaw agente identidade ana >"$TMP/o.txt" 2>&1
 igual "identidade sai com 0" "0" "$?"
 afirma "a saida diz que nada foi reiniciado" grep -q 'nada foi reiniciado' "$TMP/o.txt"
 afirma "a secao voltou" grep -qxF "$MARCA" "$ID"
 dgclaw status >"$TMP/status.txt" 2>&1
-nega "status calado depois de regravar" grep -q 'dgclaw agente identidade ana' "$TMP/status.txt"
+nega "status calado depois de regravar" grep -q 'prumo agente identidade ana' "$TMP/status.txt"
 
 h1="$(sha256sum "$ID" | cut -d' ' -f1)"
 dgclaw agente identidade ana >/dev/null 2>&1

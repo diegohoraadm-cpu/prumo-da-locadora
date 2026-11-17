@@ -6,7 +6,7 @@
 # --channels viva do agente (a mesma que serve o bot Telegram, subida pelo dgclaw-<slug>.service).
 # A persona executa na assinatura flat do dono. build-wm continua python puro (sem Claude).
 #
-# Timers (rodam como root, igual ao servico principal do DG Claw):
+# Timers (rodam como root, igual ao servico principal do Prumo da Locadora):
 #   dgclaw-<slug>-reflection  23:30  reflexao noturna  -> injeta poke na sessao viva
 #   dgclaw-<slug>-audit       23:50  auditoria          -> checks deterministicos + poke semantico
 #   dgclaw-<slug>-build-wm     7:00  rebuild da working-memory (python puro, sem Claude)
@@ -19,10 +19,10 @@
 # acrescentam uma linha sem reescrever a logica de geracao.
 #
 # Notas de integracao:
-#   - root + IS_SANDBOX=1: vem do config.sh do DG Claw (herdado pelo config.sh do Alive).
+#   - root + IS_SANDBOX=1: vem do config.sh do Prumo da Locadora (herdado pelo config.sh do Alive).
 #   - SEM PTY: estes sao oneshot e NAO chamam claude diretamente (injetam na sessao viva, que
 #     ja roda sob `script`/PTY pelo dgclaw-<slug>.service). So o canal precisa de PTY.
-#   - CLAUDE_CONFIG_DIR: o config.sh do DG Claw ja faz `unset` -> usa o ~/.claude logado.
+#   - CLAUDE_CONFIG_DIR: o config.sh do Prumo da Locadora ja faz `unset` -> usa o ~/.claude logado.
 #   - Paths estaveis: apontam pra $WS/.dgclaw/plugin/scripts (a pasta do plugin instalado some).
 #   - TZ=America/Sao_Paulo no .service: senao OnCalendar usa UTC e os horarios saem errados.
 #
@@ -109,7 +109,7 @@ if [ "${DGCLAW_AUTO_RECOVERY:-on}" != "off" ]; then
     )
     echo "==> auto-recovery LIGADO (DGCLAW_AUTO_RECOVERY=${DGCLAW_AUTO_RECOVERY:-on}): incluindo timers watchdog (5min) + auto-compact (30min)"
 else
-    echo "==> auto-recovery DESLIGADO (DGCLAW_AUTO_RECOVERY=off): NAO instalo watchdog/auto-compact (da pra religar depois pelo /dgclaw:setup)"
+    echo "==> auto-recovery DESLIGADO (DGCLAW_AUTO_RECOVERY=off): NAO instalo watchdog/auto-compact (da pra religar depois com: sudo prumo agente reparar $SLUG)"
 fi
 
 # Helper: gera um par service(oneshot)+timer
@@ -117,7 +117,7 @@ make_unit() {
     local name="$1" desc="$2" exec="$3" cal="$4" active="$5"
     cat > "/etc/systemd/system/dgclaw-${SLUG}-${name}.service" <<EOF
 [Unit]
-Description=DG Claw ${desc}: ${SLUG}
+Description=Prumo da Locadora ${desc}: ${SLUG}
 
 [Service]
 Type=oneshot
@@ -132,7 +132,7 @@ EOF
 
     {
         echo "[Unit]"
-        echo "Description=DG Claw ${desc} (timer): ${SLUG}"
+        echo "Description=Prumo da Locadora ${desc} (timer): ${SLUG}"
         echo
         echo "[Timer]"
         [ -n "$cal" ]    && echo "OnCalendar=${cal}"
@@ -174,7 +174,7 @@ done
 make_monitor_unit() {
     cat > "/etc/systemd/system/dgclaw-${SLUG}-monitor.service" <<UNIT
 [Unit]
-Description=DG Claw modo monitor dos cards: ${SLUG}
+Description=Prumo da Locadora modo monitor dos cards: ${SLUG}
 
 [Service]
 Type=oneshot
@@ -189,7 +189,7 @@ ExecStart=/bin/bash -c 'set -a; source "${ABS_CONFIG}"; set +a; exec "${PLUGIN}/
 UNIT
     {
         echo "[Unit]"
-        echo "Description=DG Claw modo monitor dos cards (timer): ${SLUG}"
+        echo "Description=Prumo da Locadora modo monitor dos cards (timer): ${SLUG}"
         echo
         echo "[Timer]"
         echo "OnUnitActiveSec=5min"
@@ -212,12 +212,12 @@ echo "==> timers de vida instalados e ativos:"
 # So exibicao: se a listagem falhar, os timers ja foram habilitados acima.
 systemctl list-timers "dgclaw-${SLUG}-*" --no-pager 2>/dev/null | head -10 || true
 
-# Desativa a consolidacao simples do DG Claw, se existir (a reflexao do Alive ja consolida).
+# Desativa a consolidacao simples do Prumo da Locadora, se existir (a reflexao do Alive ja consolida).
 if systemctl list-unit-files "dgclaw-${SLUG}-consolidate.timer" >/dev/null 2>&1; then
     if systemctl is-enabled --quiet "dgclaw-${SLUG}-consolidate.timer" 2>/dev/null; then
         systemctl disable --now "dgclaw-${SLUG}-consolidate.timer" \
             || echo "aviso: nao consegui desativar dgclaw-${SLUG}-consolidate.timer; ele continua rodando junto com a reflexao. Rode: systemctl disable --now dgclaw-${SLUG}-consolidate.timer" >&2
-        echo "==> consolidacao simples do DG Claw (dgclaw-${SLUG}-consolidate.timer) desativada"
+        echo "==> consolidacao simples do Prumo da Locadora (dgclaw-${SLUG}-consolidate.timer) desativada"
         echo "    (a reflexao noturna do Alive assume a consolidacao, de forma mais rica)"
     fi
 fi

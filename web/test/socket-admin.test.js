@@ -1,5 +1,5 @@
 'use strict';
-// Socket de administração do host (<dataDir>/admin.sock): o `dgclaw colaborador` convida sem passar por senha do painel.
+// Socket de administração do host (<dataDir>/admin.sock): o `prumo colaborador` convida sem passar por senha do painel.
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');

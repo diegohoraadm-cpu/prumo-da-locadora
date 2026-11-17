@@ -4,7 +4,7 @@ description: Monta e mantém o "Modo foco", a lista curta do que o dono quer fec
 user-invocable: true
 ---
 
-# /dgclaw:foco: a lista do que importa agora
+# /foco: a lista do que importa agora
 
 O Modo foco é uma lista curta, **sua e do dono**: você monta, ele tica na tela. Cada agente
 tem a própria lista. Ela aparece sozinha ao lado da conversa (no celular, numa faixa no topo).

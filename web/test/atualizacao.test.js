@@ -117,7 +117,7 @@ test('estado ilegível: 500 com o motivo e o que fazer', async () => {
     assert.equal(r.status, 500);
     assert.equal(r.json.ok, false);
     assert.match(r.json.erro, /corrompido/);
-    assert.match(r.json.erro, /dgclaw atualizar --checar/);
+    assert.match(r.json.erro, /prumo atualizar --checar/);
     gravaEstado(w, '[1,2]');
     r = await w.c.get('/api/v1/atualizacao');
     assert.equal(r.status, 500);

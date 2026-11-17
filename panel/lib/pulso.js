@@ -1,4 +1,4 @@
-// pulso.js — Leitor do PULSO (saude operacional) do agente DG Claw.
+// pulso.js — Leitor do PULSO (saude operacional) do agente Prumo da Locadora.
 //
 // Fonte UNICA = scripts/pulso-status.py (descobre os componentes dinamicamente
 // de powers.json + timers/servicos systemd, e cruza com o ledger de pulso).
@@ -30,7 +30,7 @@ function buildPulso(config, serverDir) {
    *
    * POR QUE ISTO EXISTE. O pulso-status.py descobre o servico do canal por
    * DGCLAW_SERVICE, e cai num `dgclaw-<slug>.service` quando ela nao vem. Esse
-   * default vale para o DG Claw classico; num agente de runner a unidade se
+   * default vale para o Prumo da Locadora classico; num agente de runner a unidade se
    * chama `dgclaw-agent-<slug>.service`, e o default aponta para um nome que o
    * systemd nunca ouviu falar.
    *

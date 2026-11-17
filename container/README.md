@@ -1,7 +1,7 @@
 # Imagem do agente (container)
 
 Imagem `localhost/dgclaw-agente`: uma "VPS pequena" para cada agente (systemd, cron, sudo), com as
-ferramentas que os agentes de verdade usam, o runner e o plugin DG Claw já dentro.
+ferramentas que os agentes de verdade usam, o runner e o plugin Prumo da Locadora já dentro.
 
 ## O que tem na imagem e por quê
 
@@ -13,7 +13,7 @@ A lista nasceu do levantamento do que os agentes já em produção chamam no dia
 | Locale pt_BR e en_US, fuso `America/Sao_Paulo` | Datas e acentos certos; alguns scripts pedem en_US. |
 | Node 22 (NodeSource, com chave) | Roda o runner, o painel e as ferramentas globais. |
 | Claude Code, Codex CLI | Os dois provedores do agente, com versão fixada por `ARG`. A credencial não vem na imagem. |
-| Bun | O plugin oficial do Telegram roda em Bun. O plugin em si não vai na imagem (a casa `/home/agente` é montada do host e esconderia a instalação); quem instala é o `dgclaw agente criar`. |
+| Bun | O plugin oficial do Telegram roda em Bun. O plugin em si não vai na imagem (a casa `/home/agente` é montada do host e esconderia a instalação); quem instala é o `prumo agente criar`. |
 | ffmpeg, poppler-utils | Áudio de voz, vídeo, quadros de conferência e PDFs recebidos. |
 | fonts-liberation, fonts-noto-color-emoji, fontconfig | Imagens, PDFs e capturas de tela saem sem quadradinhos. |
 | gh (repositório oficial, com chave) | Push e pull request. |
@@ -62,11 +62,11 @@ estão no PATH e que há um navegador (`google-chrome-stable` em amd64, o Chromi
 arquiteturas); se faltar um, a imagem não sai.
 
 **Como ligar numa instalação existente.** O `install.sh` constrói com `COM_NAVEGADOR=1`, então a
-imagem nova já traz a Tela. Um agente criado antes ganha a Tela com `dgclaw agente recriar <slug>` e
-uma primeira senha (pela aba Tela do painel ou por `dgclaw agente tela-senha <slug>`). Os passos
+imagem nova já traz a Tela. Um agente criado antes ganha a Tela com `prumo agente recriar <slug>` e
+uma primeira senha (pela aba Tela do painel ou por `prumo agente tela-senha <slug>`). Os passos
 completos estão em `docs/TELA-DO-AGENTE.md`.
 
-Estágios: `runner-build` (compila o runner), `base` (a máquina inteira, sem o código do DG Claw) e
+Estágios: `runner-build` (compila o runner), `base` (a máquina inteira, sem o código do Prumo da Locadora) e
 `final` (o padrão). `--target base` constrói sem precisar do `runner/`.
 
 Se o build rodar atrás de proxy no host, o proxy do ambiente aponta para `127.0.0.1` do host e some
@@ -97,7 +97,7 @@ fluxbox), `dgclaw-tela-vnc.service` (só sobe com `/home/agente/.dgclaw/tela/vnc
 `.service`, que reinicia o VNC quando a senha muda. A arquitetura, a senha e a segurança estão em
 `docs/TELA-DO-AGENTE.md`.
 
-**Memória.** O Chrome pede RAM, e o `--memory 2g` que o `dgclaw agente criar` aplica pode apertar
+**Memória.** O Chrome pede RAM, e o `--memory 2g` que o `prumo agente criar` aplica pode apertar
 com a Tela ligada mais o runner, o painel e o Claude Code. Para um agente com Tela, **3g** é um ponto
 de partida mais seguro. O `criar` ainda não tem opção de memória; o padrão de 2g não mudou. Para subir
 um agente com Tela agora: `podman update --memory 3g dgclaw-<slug>` depois de criado, e meça o uso real
@@ -117,7 +117,7 @@ Ficam em `container/units/` e são copiadas para `/etc/systemd/system/` com `sys
 - `dgclaw-painel.service`: usuário `agente`, roda `node server.js` em `/opt/dgclaw/app/panel`, porta 8300.
   Lê `/run/dgclaw/config/painel.env`; sem esse arquivo, não sobe. `Restart=always`, `RestartSec=3`.
 
-## Montagens que o `dgclaw agente criar` faz
+## Montagens que o `prumo agente criar` faz
 
 | Dentro do container | Vem de | Modo |
 | --- | --- | --- |

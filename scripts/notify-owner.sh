@@ -6,7 +6,7 @@
 #
 # POR QUE ELE MUDOU (01/10/2026, vistoria P0-2). Ate aqui o unico transporte era o bot
 # do Telegram, e o script abortava quando TELEGRAM_STATE_DIR nao existia. Na jaula o
-# canal do dono e o DG Chat (o painel da plataforma), nao o Telegram: TODO aviso de
+# canal do dono e o chat do painel (o painel da plataforma), nao o Telegram: TODO aviso de
 # todo cron caia no vazio, e como o curl nao tinha -f e os chamadores jogavam a saida
 # fora, ninguem soube. Um agente passou uma semana mudo por login vencido e o dono
 # nao recebeu um aviso sequer.
@@ -21,7 +21,7 @@
 #                          do agente sem Telegram que conversa pelo app DG Telegram (Lara,
 #                          Marina e Luna, 02/10/2026): sem isto todo aviso de cron dela caia
 #                          no vazio. So conta como entregue com HTTP 2xx.
-#   4. DG Chat da plataforma  uma linha no outbound.jsonl do canal, no MESMO formato que a
+#   4. chat do painel da plataforma  uma linha no outbound.jsonl do canal, no MESMO formato que a
 #                          tool de resposta do agente grava. Quem entrega e o carteiro do
 #                          runner (DGCHAT_ENTREGA=disco), que le esse arquivo e manda para a
 #                          janela do dono. So e usado quando esse carteiro existe: num DG
@@ -54,7 +54,7 @@ FALHAS=()
 # Corte por caractere, e nao por byte: o `cut -c` do GNU corta byte, e um acento no
 # limite virava lixo no log.
 # so enfeita o registro: se o python falhar, a linha do log sai sem o trecho da mensagem
-CURTO="$(printf '%s' "$MSG" | tr '\n' ' ' | python3 -c 'import sys; print(sys.stdin.read()[:80])' 2>/dev/null)"
+CURTO="$(printf '%s' "$MSG" | tr '\n' ' ' | python3 -I -c 'import sys; print(sys.stdin.read()[:80])' 2>/dev/null)"
 
 # ── 1. comando do host ──
 if [ -n "${DGCLAW_NOTIFY_CMD:-}" ]; then
@@ -76,7 +76,7 @@ if [ -n "${TELEGRAM_STATE_DIR:-}" ]; then
     TOKEN=$(grep -E '^TELEGRAM_BOT_TOKEN=' "$ENV_FILE" 2>/dev/null | head -1 | cut -d= -f2-)
     CHAT="${DGCLAW_OWNER_TELEGRAM_ID:-}"
     if [ -z "$CHAT" ] && [ -f "$ACCESS" ]; then
-        CHAT=$(ACCESS="$ACCESS" python3 -c "import json,os;d=json.load(open(os.environ['ACCESS']));a=d.get('allowFrom',[]);print(a[0] if a else '')" 2>/dev/null)
+        CHAT=$(ACCESS="$ACCESS" python3 -I -c "import json,os;d=json.load(open(os.environ['ACCESS']));a=d.get('allowFrom',[]);print(a[0] if a else '')" 2>/dev/null)
     fi
     if [ -z "$TOKEN" ]; then
         FALHAS+=("telegram: token nao encontrado em $ENV_FILE")
@@ -103,21 +103,21 @@ if [ -n "${TELEGRAM_STATE_DIR:-}" ]; then
 fi
 
 # ── avisos ao dono RETIDOS de proposito (DGCLAW_AVISOS_RETIDOS=1) ──
-# Segura so os caminhos do DG Chat (3 e 4), que no agente de cliente caem na conversa do
+# Segura so os caminhos do chat do painel (3 e 4), que no agente de cliente caem na conversa do
 # cliente. Nome proprio de proposito: DGCHAT_ENTREGA tambem e lida pela tool com que o
 # AGENTE responde (dgchat-mcp), e la qualquer valor fora de "disco" vira "nao entreguei"
 # e laco de repeticao. Aviso retido conta como NAO entregue, com o motivo dito.
 RETIDO=""
 if [ "${DGCLAW_AVISOS_RETIDOS:-0}" = "1" ]; then
     RETIDO=1
-    FALHAS+=("dg chat: avisos ao dono retidos de proposito (DGCLAW_AVISOS_RETIDOS=1 no config.sh; para liberar, apague essa linha)")
+    FALHAS+=("chat do painel: avisos ao dono retidos de proposito (DGCLAW_AVISOS_RETIDOS=1 no config.sh; para liberar, apague essa linha)")
 fi
 
 # ── 3. ponte HTTP do app (DGCHAT_URL) ──
 if [ -z "$RETIDO" ] && [ -n "${DGCHAT_URL:-}" ]; then
     CHAT_ID="${DGCLAW_CHAT_ID:-c_${DGCLAW_SLUG:-agente}}"
     URL="${DGCHAT_URL%/}/api/dgchat/reply"
-    BODY=$(MSG="$MSG" AGENTE="${DGCHAT_AGENT:-${DGCLAW_SLUG:-agente}}" CHAT_ID="$CHAT_ID" python3 -c \
+    BODY=$(MSG="$MSG" AGENTE="${DGCHAT_AGENT:-${DGCLAW_SLUG:-agente}}" CHAT_ID="$CHAT_ID" python3 -I -c \
         'import json,os;print(json.dumps({"agent":os.environ["AGENTE"],"chat":os.environ["CHAT_ID"],"text":os.environ["MSG"],"format":"plain"}))')
     # sem resposta, o CODE fica vazio e a falha sai em FALHAS como "sem resposta"
     CODE=$(curl -sS --max-time 20 -o /dev/null -w '%{http_code}' -X POST \
@@ -130,14 +130,14 @@ if [ -z "$RETIDO" ] && [ -n "${DGCHAT_URL:-}" ]; then
     FALHAS+=("ponte $URL: respondeu ${CODE:-sem resposta} (a ponte do app esta no ar?)")
 fi
 
-# ── 4. DG Chat da plataforma (o carteiro do runner entrega o outbound) ──
+# ── 4. chat do painel da plataforma (o carteiro do runner entrega o outbound) ──
 OUTBOUND="${DGCHAT_OUTBOUND:-}"
 [ -z "$OUTBOUND" ] && [ -d "$WS/.plataforma/dgchat" ] && OUTBOUND="$WS/.plataforma/dgchat/outbound.jsonl"
 ENTREGA="${DGCHAT_ENTREGA:-}"
 [ -z "$ENTREGA" ] && [ -d "$WS/.plataforma/dgchat" ] && ENTREGA="disco"
 if [ -z "$RETIDO" ] && [ -n "$OUTBOUND" ] && [ "$ENTREGA" = "disco" ]; then
     CHAT_ID="${DGCLAW_CHAT_ID:-c_${DGCLAW_SLUG:-agente}}"
-    if MSG="$MSG" OUTBOUND="$OUTBOUND" CHAT_ID="$CHAT_ID" AGENTE="${DGCHAT_AGENT:-${DGCLAW_SLUG:-agente}}" python3 - <<'PY'
+    if MSG="$MSG" OUTBOUND="$OUTBOUND" CHAT_ID="$CHAT_ID" AGENTE="${DGCHAT_AGENT:-${DGCLAW_SLUG:-agente}}" python3 -I - <<'PY'
 import json, os, sys
 from datetime import datetime, timezone
 # A MESMA forma que a tool de resposta grava (scripts/dgchat-mcp/server.mjs), com a
@@ -158,15 +158,15 @@ except OSError as e:
     sys.exit(1)
 PY
     then
-        registrar "entregue ao carteiro do DG Chat ($CHAT_ID): $CURTO"
+        registrar "entregue ao carteiro do chat do painel ($CHAT_ID): $CURTO"
         echo "entregue: canal do painel ($CHAT_ID)"
         exit 0
     fi
-    FALHAS+=("dg chat: nao consegui gravar em $OUTBOUND")
+    FALHAS+=("chat do painel: nao consegui gravar em $OUTBOUND")
 fi
 
 if [ ${#FALHAS[@]} -eq 0 ]; then
-    FALHAS+=("nenhum canal configurado: sem DGCLAW_NOTIFY_CMD, sem TELEGRAM_STATE_DIR, sem DGCHAT_URL e sem o canal DG Chat da plataforma")
+    FALHAS+=("nenhum canal configurado: sem DGCLAW_NOTIFY_CMD, sem TELEGRAM_STATE_DIR, sem DGCHAT_URL e sem o canal do chat do painel da plataforma")
 fi
 for f in "${FALHAS[@]}"; do echo "notify-owner: NAO entregue: $f" >&2; done
 registrar "NAO ENTREGUE ($(IFS='; '; echo "${FALHAS[*]}")): $CURTO"

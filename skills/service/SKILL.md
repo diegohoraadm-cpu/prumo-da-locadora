@@ -1,12 +1,12 @@
 ---
 name: service
-description: Liga, desliga, reinicia, mostra status e logs do servico do assistente DG Claw. Use quando o usuario pedir pra "ligar/desligar o assistente", "reiniciar o bot", "ver os logs", "ver se esta rodando", ou checar o status do servico dgclaw.
+description: Liga, desliga, reinicia, mostra status e logs do servico do assistente Prumo da Locadora. Use quando o usuario pedir pra "ligar/desligar o assistente", "reiniciar o bot", "ver os logs", "ver se esta rodando", ou checar o status do servico dgclaw.
 user-invocable: true
 ---
 
-# /dgclaw:service — Controle do servico do assistente
+# service — Controle do servico do assistente
 
-Gerencia o servico systemd `dgclaw-<slug>` de um assistente DG Claw.
+Gerencia o servico systemd `dgclaw-<slug>` de um assistente Prumo da Locadora.
 
 ## Descobrir os assistentes instalados
 

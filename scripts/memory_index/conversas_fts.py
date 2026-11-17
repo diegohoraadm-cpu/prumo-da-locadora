@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""conversas_fts.py (DG Claw) — busca em conversas antigas e na memoria, sem chave nenhuma.
+"""conversas_fts.py (Prumo da Locadora) — busca em conversas antigas e na memoria, sem chave nenhuma.
 
 POR QUE EXISTE (01/10/2026)
-  A memoria "semantica" do DG Claw depende de GEMINI_API_KEY, que o wizard nunca pede.
+  A memoria "semantica" do Prumo da Locadora depende de GEMINI_API_KEY, que o wizard nunca pede.
   Resultado: ela vem desligada de fabrica e o dono nem sabe. O mantenedor: "essa experiencia
   ja esta ruim". Esta busca e o piso que funciona sempre: um indice SQLite FTS5 (do Python
   padrao, sem instalar nada, sem rede, sem custo) sobre

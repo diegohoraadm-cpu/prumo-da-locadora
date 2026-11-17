@@ -12,9 +12,9 @@ const SENHA_MIN = 10;
 const SENHA_MAX = 128;
 const JANELA_SENHA_MS = 15 * 60 * 1000;
 const MAX_FALHAS_SENHA = 5;
-const SO_DONO = 'Convidar e gerenciar colaboradores é só do dono do DG Claw, pelo painel.';
+const SO_DONO = 'Convidar e gerenciar colaboradores é só do dono do Prumo da Locadora, pelo painel.';
 
-function criarColaboradoresRotas({ colaboradores, auth, registro, email, config, log, aoDerrubar, agora, conta }) {
+function criarColaboradoresRotas({ colaboradores, auth, registro, email, config, log, aoDerrubar, aoRevogar, agora, conta }) {
   const relogio = agora || (() => Date.now());
   // Erros da senha atual na troca de senha: 5 em 15 min por colaborador e por IP.
   const falhasDeSenha = new Map();
@@ -30,7 +30,12 @@ function criarColaboradoresRotas({ colaboradores, auth, registro, email, config,
   };
   const registraFalha = (chaves) => { const t = relogio(); for (const k of chaves) falhasDeSenha.set(k, [...(falhasDeSenha.get(k) || []), t]); };
   /** Derruba as sessões do colaborador e fecha as conexões abertas dele (o stream da conversa). */
-  const derruba = (id) => { auth.encerraDoColaborador(id); if (aoDerrubar) aoDerrubar(id); };
+  const derruba = (id) => {
+    const r = auth.encerraDoColaborador(id);
+    if (aoDerrubar) aoDerrubar(id);
+    if (!r.gravou) log('erro', `As sessões do colaborador ${id} caíram na memória, mas o disco não aceitou regravar o registro de sessões. O acesso já está revogado ou trocado (a conferência olha o registro dele a cada pedido), então nenhuma sessão antiga vale; confira o espaço em ${config.dataDir}.`);
+    return r.gravou;
+  };
 
   const fmtData = (ms) => new Intl.DateTimeFormat('pt-BR', { timeZone: config.tz, day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(ms));
 
@@ -38,7 +43,7 @@ function criarColaboradoresRotas({ colaboradores, auth, registro, email, config,
     return [
       `Olá${nomePessoa ? ', ' + nomePessoa : ''}!`,
       '',
-      `${quem} convidou você para conversar com o agente ${nomeAgente} no DG Claw.`,
+      `${quem} convidou você para conversar com o agente ${nomeAgente} no Prumo da Locadora.`,
       '',
       `Endereço: ${link}`,
       `Login: ${usuario}`,
@@ -69,7 +74,7 @@ function criarColaboradoresRotas({ colaboradores, auth, registro, email, config,
     if (extra) return { base: extra, aviso: null };
     return {
       base: `http://127.0.0.1:${config.porta}`,
-      aviso: 'Este Prumo da Locadora não tem domínio configurado, então o link do convite é o endereço local e só abre no próprio servidor. Configure um domínio (sudo dgclaw dominio trocar <nome>) ou passe o endereço de acesso à pessoa.',
+      aviso: 'Este Prumo da Locadora não tem domínio configurado, então o link do convite é o endereço local e só abre no próprio servidor. Configure um domínio (sudo prumo dominio trocar <nome>) ou passe o endereço de acesso à pessoa.',
     };
   }
 
@@ -84,7 +89,7 @@ function criarColaboradoresRotas({ colaboradores, auth, registro, email, config,
     const texto = textoDoConvite({
       quem: sessao.usuario, nomeAgente, nomePessoa: registroColab.nome, link, usuario: registroColab.email, senha, expira: registroColab.temporaria_expira,
     });
-    const envio = await email.enviar({ para: registroColab.email, assunto: `Convite para conversar com o agente ${nomeAgente} no DG Claw`, texto });
+    const envio = await email.enviar({ para: registroColab.email, assunto: `Convite para conversar com o agente ${nomeAgente} no Prumo da Locadora`, texto });
     return {
       link, usuario: registroColab.email, senha_temporaria: senha, expira: registroColab.temporaria_expira,
       email_enviado: envio.enviado === true, email_motivo: envio.enviado ? null : envio.motivo, texto,
@@ -134,13 +139,13 @@ function criarColaboradoresRotas({ colaboradores, auth, registro, email, config,
           if (ag.tipo === 'admin') { H.erroJson(res, 400, 'O Admin nunca pode ser compartilhado: ele mexe no servidor inteiro. Convide para um agente de trabalho.'); return true; }
           const mail = colaboradores.normalizaEmail(corpo.email);
           if (mail === String(auth.usuario || '').trim().toLowerCase()) {
-            H.erroJson(res, 400, 'Esse e-mail é o do próprio dono do DG Claw (o usuário do login). Informe o e-mail do colaborador.');
+            H.erroJson(res, 400, 'Esse e-mail é o do próprio dono do Prumo da Locadora (o usuário do login). Informe o e-mail do colaborador.');
             return true;
           }
           const instancia = instanciaDe(ag);
           if (!instancia) {
             log('erro', `Convite para ${slug} recusado: não consegui identificar a instância do agente (sem "instancia" no registro e a casa ${ag.home_host || '(sem home_host)'} não pôde ser lida).`);
-            H.erroJson(res, 500, `Não consegui identificar esta instância do agente ${slug} (casa ausente ou ilegível), e o convite precisa dela para não valer num agente recriado com o mesmo nome. Rode "dgclaw agente reparar ${slug}" e convide de novo.`);
+            H.erroJson(res, 500, `Não consegui identificar esta instância do agente ${slug} (casa ausente ou ilegível), e o convite precisa dela para não valer num agente recriado com o mesmo nome. Rode "prumo agente reparar ${slug}" e convide de novo.`);
             return true;
           }
           // Convite de um agente que foi removido e recriado com o mesmo nome não vale e não pode barrar o novo.
@@ -176,13 +181,16 @@ function criarColaboradoresRotas({ colaboradores, auth, registro, email, config,
         }
         if (m === 'DELETE') {
           const r = await colaboradores.revogar(id);
-          derruba(id);
+          const gravou = derruba(id);
+          if (aoRevogar) await aoRevogar(id);
           log('info', `Acesso de ${r.email} ao agente ${r.agente} revogado (por ${sessao.usuario}).`);
           const contas = conta ? conta.contasDe(id).map((x) => x.agente) : [];
           const enc = conta ? await conta.encerraPendencias(id, (slug) => registro.obter(slug)) : { avisos: [], agentes: [] };
           for (const a of enc.agentes) if (!contas.includes(a)) contas.push(a);
           if (contas.length) log('aviso', `${r.email} conectou, ou deixou em andamento, a conta de IA do agente ${contas.join(', ')} e ela pode continuar conectada depois da revogação. Se quiser, entre com a sua conta em Conectar conta para trocar.`);
-          H.enviaJson(res, 200, { ok: true, colaborador: r, contas_de_ia: contas, avisos: enc.avisos });
+          const resposta = { ok: true, colaborador: r, contas_de_ia: contas, avisos: enc.avisos };
+          if (!gravou) resposta.aviso = 'O acesso foi revogado e nenhuma sessão antiga vale, mas o disco não aceitou regravar o registro de sessões. Libere espaço no servidor e avise o Admin.';
+          H.enviaJson(res, 200, resposta);
           return true;
         }
         H.erroJson(res, 405, 'Use DELETE para revogar o acesso, ou POST em /reenviar.');
@@ -205,7 +213,7 @@ function criarColaboradoresRotas({ colaboradores, auth, registro, email, config,
   /** POST /api/v1/eu/senha: o colaborador escolhe a senha dele. */
   async function trocarSenha(req, res, sessao) {
     if (sessao.papel !== 'colaborador') {
-      H.erroJson(res, 403, 'A senha do dono não se troca por aqui. No servidor, rode: sudo dgclaw senha');
+      H.erroJson(res, 403, 'A senha do dono não se troca por aqui. No servidor, rode: sudo prumo senha');
       return;
     }
     let corpo;
@@ -224,12 +232,12 @@ function criarColaboradoresRotas({ colaboradores, auth, registro, email, config,
       return;
     }
     const c = colaboradores.obter(sessao.colaborador_id);
-    if (!c || c.revogado_em) { H.erroJson(res, 401, 'Seu acesso não vale mais. Peça ao dono do DG Claw um convite novo.'); return; }
+    if (!c || c.revogado_em) { H.erroJson(res, 401, 'Seu acesso não vale mais. Peça ao dono do Prumo da Locadora um convite novo.'); return; }
     if ((c.senha_versao || 1) !== sessao.senha_versao) {
       H.erroJson(res, 409, 'Sua senha ou seu convite mudou enquanto você trocava a senha (o dono pode ter mandado um convite novo). Entre de novo com a senha mais recente.');
       return;
     }
-    if (c.trocar_senha && Number(c.temporaria_expira) < relogio()) { H.erroJson(res, 401, 'A senha temporária venceu. Peça ao dono do DG Claw um convite novo.'); return; }
+    if (c.trocar_senha && Number(c.temporaria_expira) < relogio()) { H.erroJson(res, 401, 'A senha temporária venceu. Peça ao dono do Prumo da Locadora um convite novo.'); return; }
     // O que este pedido viu: a gravação só passa se isso ainda for verdade no momento de gravar (ver definirSenha).
     const esperado = { versao: sessao.senha_versao, hash: c.hash, trocar_senha: !!c.trocar_senha };
     const chaves = [`colab:${c.id}`, `ip:${H.ipDoPedido(req, config.proxiesConfiaveis)}`];

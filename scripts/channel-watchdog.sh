@@ -1,5 +1,5 @@
 #!/bin/bash
-# channel-watchdog.sh — Vigia de runtime do canal Telegram do DG Claw.
+# channel-watchdog.sh — Vigia de runtime do canal Telegram do Prumo da Locadora.
 #
 # Licao do incidente de 05/06/2026: o systemd reportava o service `active`, mas o
 # poller do Telegram (`bun ... server.ts`) morria por baixo e o bot ficava MUDO por
@@ -7,7 +7,7 @@
 # watchdog cobre o RUNTIME: roda a cada 2 min (via timer systemd) e, se o canal caiu
 # com o service ainda ativo, reinicia o service e avisa o dono.
 #
-# Notificacao: usa o notify-owner.sh do DG Claw se existir (manda pelo bot do dono);
+# Notificacao: usa o notify-owner.sh do Prumo da Locadora se existir (manda pelo bot do dono);
 # senao cai num fallback inline pela Bot API (token do state-dir + allowFrom[0]).
 #
 # Uso:  bash channel-watchdog.sh <config.sh>
@@ -43,7 +43,7 @@ NOW=$(date +%s)
 
 log() { echo "$(date '+%Y-%m-%dT%H:%M:%S%z') $*" >> "$LOGF" 2>/dev/null || echo "aviso: nao consegui gravar em $LOGF; mensagem perdida: $*" >&2; }
 
-notify() { # avisa o dono; tenta notify-owner.sh do DG Claw, senao Bot API inline
+notify() { # avisa o dono; tenta notify-owner.sh do Prumo da Locadora, senao Bot API inline
     local msg="$1"
     local NO="$WS/.dgclaw/plugin/scripts/notify-owner.sh"
     if [ -x "$NO" ] || [ -f "$NO" ]; then
@@ -61,7 +61,7 @@ notify() { # avisa o dono; tenta notify-owner.sh do DG Claw, senao Bot API inlin
     fi
     chat="${DGCLAW_OWNER_TELEGRAM_ID:-}"
     if [ -z "$chat" ] && [ -f "$STATE_DIR/access.json" ]; then
-        chat=$(ACCESS="$STATE_DIR/access.json" python3 -c "import json,os;d=json.load(open(os.environ['ACCESS']));a=d.get('allowFrom',[]);print(a[0] if a else '')" 2>>"$LOGF")
+        chat=$(ACCESS="$STATE_DIR/access.json" python3 -I -c "import json,os;d=json.load(open(os.environ['ACCESS']));a=d.get('allowFrom',[]);print(a[0] if a else '')" 2>>"$LOGF")
     fi
     if [ -z "$chat" ]; then
         log "aviso ao dono nao enviado: nao achei o chat dele (defina DGCLAW_OWNER_TELEGRAM_ID ou confira o allowFrom de $STATE_DIR/access.json)"

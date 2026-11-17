@@ -18,7 +18,7 @@ Enquanto o item não chega, não prometa a um cliente. Para saber o que existe h
 
 Hoje só o dono convida colaborador, pela tela de colaboradores (menu do agente, "Convidar colaborador"), porque as
 rotas de convite aceitam apenas a sessão do dono no navegador. A frente em andamento prevê que o Admin também
-consiga convidar, por um comando do servidor chamado `dgclaw colaborador`, com as ações de criar, listar, reenviar o
+consiga convidar, por um comando do servidor chamado `prumo colaborador`, com as ações de criar, listar, reenviar o
 convite e revogar o acesso.
 
 O que não muda: o colaborador continua com acesso a um agente só, nunca ao Admin, e continua sem o cofre, as chaves

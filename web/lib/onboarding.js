@@ -37,7 +37,7 @@ const FIXOS = {
 // Marco seguinte de cada fase fixa (a imagem e a criação calculam o seu pelo passo).
 const PROXIMOS = { enviando: FIXOS.solicitado[0], solicitado: FAIXA_IMAGEM[1], login: FIXOS.testando[0], testando: FIXOS.pronto[0], pronto: 100 };
 const ETAPA_IMAGEM = 'Preparando a imagem dos agentes (só na primeira vez, pode levar de 5 a 15 minutos)';
-// Ordem e títulos de `dgclaw agente criar` (bin/dgclaw). O texto do log vem sem acento.
+// Ordem e títulos de `prumo agente criar` (bin/dgclaw). O texto do log vem sem acento.
 const ETAPAS = [
   [/^Reservando a faixa/i, 'Reservando um espaço para o agente'],
   [/^Montando a casa/i, 'Preparando a casa do agente'],
@@ -126,13 +126,14 @@ function estadoSystemd(unidade, log) {
     });
   });
 }
+const FOLGA_MTIME_MS = 100;
 function loja(dataDir) {
   const dir = path.join(dataDir, 'onboarding');
   function arquivo(id) { if (!RX_ID.test(id || '')) throw erro('Pedido inválido. Abra o Admin e tente novamente.'); return path.join(dir, id + '.json'); }
   function ler(id) { try { return JSON.parse(fs.readFileSync(arquivo(id), 'utf8')); } catch (e) { if (e.code === 'ENOENT') return null; throw e; } }
   // Foto dos pedidos na memória: só relê do disco quando a pasta mudou (a gravação é por rename,
   // que muda o mtime da pasta) ou quando este próprio servidor grava.
-  let foto = null; // { assinatura, lista }
+  let foto = null; // { assinatura, lista, tirada }
   function gravar(p) {
     foto = null;
     fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
@@ -145,13 +146,16 @@ function loja(dataDir) {
     return p;
   }
   function todos() {
-    let assinatura;
-    try { const st = fs.statSync(dir); assinatura = `${st.ino}:${st.mtimeMs}`; } catch (e) { foto = null; if (e.code === 'ENOENT') return []; throw e; }
-    if (foto && foto.assinatura === assinatura) return structuredClone(foto.lista);
+    let assinatura, st;
+    try { st = fs.statSync(dir); assinatura = `${st.ino}:${st.mtimeMs}`; } catch (e) { foto = null; if (e.code === 'ENOENT') return []; throw e; }
+    // Só confia na foto se ela foi tirada bem depois da última mudança da pasta: o mtime anda em tiques de alguns
+    // milissegundos, e uma gravação no mesmo tique da foto não mudaria a assinatura (a foto ficaria velha).
+    if (foto && foto.assinatura === assinatura && foto.tirada - st.mtimeMs > FOLGA_MTIME_MS) return structuredClone(foto.lista);
+    const tirada = Date.now();
     let nomes;
     try { nomes = fs.readdirSync(dir); } catch (e) { foto = null; if (e.code === 'ENOENT') return []; throw e; }
     const lista = nomes.filter(f => /^[a-f0-9]{32}\.json$/.test(f)).map(f => ler(f.slice(0, -5))).filter(Boolean).sort((a,b) => b.criado.localeCompare(a.criado));
-    foto = { assinatura, lista };
+    foto = { assinatura, lista, tirada };
     return structuredClone(lista);
   }
   function ultimo() { return todos()[0] || null; }
@@ -196,7 +200,7 @@ function criarOnboarding({ config, registro, conversa, midia, log = () => {}, im
       } else if (falhou && fase === 'solicitado') {
         const im = lerImagem(lerFim(logImagem, log));
         [pct, etapa] = FIXOS.solicitado;
-        erroImg = { motivo: 'A construção da imagem dos agentes falhou.' + (im.uteis.length ? ' Últimas linhas do registro: ' + im.uteis.join(' | ') : ''), oQueFazer: 'Peça ao Admin para rodar dgclaw imagem construir de novo.' };
+        erroImg = { motivo: 'A construção da imagem dos agentes falhou.' + (im.uteis.length ? ' Últimas linhas do registro: ' + im.uteis.join(' | ') : ''), oQueFazer: 'Peça ao Admin para rodar prumo imagem construir de novo.' };
       } else [pct, etapa] = FIXOS.solicitado;
     } else [pct, etapa] = FIXOS[fase] || FIXOS.solicitado;
     pct = Math.max(pct, maximos.get(p.id) || 0);

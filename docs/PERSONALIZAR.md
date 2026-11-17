@@ -12,6 +12,9 @@ para ela sobreviver. O Admin lê este documento antes de mexer em qualquer coisa
 > mexer no programa convém ler a seção "A arquitetura em uma página", logo abaixo, para a mudança respeitar
 > o núcleo do Prumo da Locadora.
 
+> **Travar um agente (tirar o Bash, o envio de arquivos ou limitar onde ele grava)** não é personalização
+> de código: tem comando próprio, que sobrevive às atualizações. Veja [RESTRICOES-DO-AGENTE.md](RESTRICOES-DO-AGENTE.md).
+
 ## A arquitetura em uma página
 
 Pense em lugares diferentes, cada um com a sua regra.
@@ -23,6 +26,7 @@ Pense em lugares diferentes, cada um com a sua regra.
 | `/opt/dgclaw/admin` | A casa do Admin: instruções dele, habilidades próprias, registro das suas personalizações | Preservada |
 | `/var/lib/dgclaw/agentes/<nome>/home` | A casa de cada agente: memória, identidade, personalidade, rotinas, habilidades | Preservada |
 | `/etc/dgclaw` | Configurações e segredos (senha do painel, chaves, lista de agentes) | Preservada |
+| `/etc/dgclaw/marca` | A marca da sua empresa: `marca.json`, logo, favicon, ícone do app e fontes | Preservada, o instalador nunca a recria nem a esvazia |
 
 O ponto central: o instalador copia o clone para `/opt/dgclaw/app` com `rsync -a --delete`, que deixa a
 pasta de destino idêntica à de origem e apaga o que não estiver lá. Se alguém editar um arquivo direto em
@@ -55,11 +59,12 @@ direto, sem o procedimento da branch.
 | Uma habilidade nova para o Admin | `/opt/dgclaw/admin/.claude/skills/<nome>/SKILL.md`, com um nome que não seja de nenhuma habilidade de fábrica | "Admin, cria uma habilidade que me manda todo dia um resumo da saúde do servidor" |
 | Uma habilidade nova para um agente | `~/.claude/skills/<nome>` dentro da casa dele | "Cria uma habilidade para a Bia montar o relatório de vendas do jeito que eu gosto" |
 | Mudar o jeito do Admin trabalhar | `CLAUDE.md` ou `AGENTS.md` em `/opt/dgclaw/admin` | "Admin, daqui para frente sempre me avise antes de reiniciar um agente" |
-| Identidade e personalidade de um agente | `AGENT.md` na casa dele; o dono edita pela aba Quem sou do painel do agente, e o Admin regrava a identidade (`dgclaw agente identidade <nome>`) para valer na próxima sessão | "Deixa a Bia mais direta e menos formal" |
+| Identidade e personalidade de um agente | `AGENT.md` na casa dele; o dono edita pela aba Quem sou do painel do agente, e o Admin regrava a identidade (`prumo agente identidade <nome>`) para valer na próxima sessão | "Deixa a Bia mais direta e menos formal" |
 | Rotinas de um agente | Pelo próprio agente (ficam na casa, em `.dgclaw/self-crons.json`) | "Todo dia útil às 8h, a Bia me manda a agenda" |
 | Chaves de voz, limites de envio, fuso, endereços permitidos | `/etc/dgclaw/web.env` (a linha certa, sem apagar as outras) | "Admin, liga o microfone com a minha chave do Groq" |
 | Configuração de um agente (assinatura, conexões, memória, arquivos) | Painel do próprio agente, em `/p/<nome>/` | "Conecta o Telegram da Bia" |
 | Chaves de serviços externos | Cofre do agente, pelo painel dele | "Guarda esta chave da minha agenda no cofre da Bia" |
+| Nome, logo, favicon, cores e fontes | `/etc/dgclaw/marca/marca.json` e os arquivos ao lado dele (veja [WHITE-LABEL.md](WHITE-LABEL.md)) | "Admin, troca o nome para Acme Bot e deixa os botões vermelhos" |
 
 Algumas observações que evitam surpresa:
 
@@ -79,7 +84,7 @@ Algumas observações que evitam surpresa:
   completa está em `web/lib/config.js`. Mexa linha a linha: o arquivo também guarda a senha do painel.
 - **Habilidades do agente que vêm de fábrica** (agenda, lembretes, memória e outras) são links para o
   programa. Uma habilidade sua, com outro nome na pasta `~/.claude/skills` do agente, não é tocada.
-- **Não existe, por enquanto, um lugar para CSS, botões ou itens de menu próprios.** Veja o fim deste guia.
+- **Nome, logo, favicon, cores e fontes têm um lugar próprio:** a pasta `/etc/dgclaw/marca/`, descrita em [WHITE-LABEL.md](WHITE-LABEL.md). Para botões e itens de menu novos, ainda não existe uma pasta de extensão; veja o fim deste guia.
 
 ## O que a atualização troca
 
@@ -103,7 +108,7 @@ sua. Em outubro de 2026, as mais mexidas foram:
 Quanto menor e mais isolada a mudança, menor a chance de conflito. Um arquivo novo quase nunca esbarra em
 nada. Um ajuste no meio de `conversa.js` esbarra com frequência.
 
-## Mudanças na base do DG Claw: pode, com aviso
+## Mudanças na base do Prumo da Locadora: pode, com aviso
 
 Você pode pedir mudanças no nível do sistema, por exemplo uma nova forma de gerar agentes ou um ajuste no
 comando `dgclaw`, no instalador (`install.sh` e a pasta `lib/`) ou no `runner/`. Essas peças sabem refazer
@@ -111,7 +116,7 @@ tudo na ordem certa, com backup, então uma mudança nelas tem mais chance de at
 
 O combinado é este:
 
-1. O Admin avisa, em linguagem simples, que o pedido mexe na base do DG Claw e pode dar problema nas
+1. O Admin avisa, em linguagem simples, que o pedido mexe na base do Prumo da Locadora e pode dar problema nas
    próximas atualizações.
 2. Se você mantiver o pedido, o Admin faz a mudança, na branch `personalizacoes`, como qualquer outra
    personalização.
@@ -161,7 +166,7 @@ git -C <clone> add web/public/conversa.js web/public/conversa.css
 git -C <clone> commit -m "Personalizacao: botao Resumo do dia na conversa"
 
 # 4. Colocar no ar, usando o que está no clone (sem baixar nada)
-sudo dgclaw atualizar --sem-baixar --ok-do-dono --segundo-plano
+sudo prumo atualizar --sem-baixar --ok-do-dono --segundo-plano
 ```
 
 O passo 4 faz backup, reinstala o que está no clone, reconstrói a imagem e recria os agentes. É o
@@ -173,7 +178,7 @@ repete o "Como testar" da entrada no registro e conta o resultado a você.
 Cada mudança ganha uma entrada em `/opt/dgclaw/admin/PERSONALIZACOES.md`. Esse arquivo fica fora do
 programa (a atualização não o toca) e entra no backup `admin.tar.gz`. Na primeira personalização, o Admin
 copia o modelo de `templates/admin/PERSONALIZACOES.md` para lá. O formato é este, e o
-`dgclaw atualizar` o lê:
+`prumo atualizar` o lê:
 
 ```
 ## 2026-10-19 - Botão "Resumo do dia" na conversa
@@ -194,7 +199,7 @@ copia o modelo de `templates/admin/PERSONALIZACOES.md` para lá. O formato é es
 
 ## Quando chega uma atualização
 
-Com o clone na branch `personalizacoes`, o `dgclaw atualizar` busca a versão nova e cruza os arquivos que
+Com o clone na branch `personalizacoes`, o `prumo atualizar` busca a versão nova e cruza os arquivos que
 ela muda com os arquivos personalizados (pelo git e pelo registro). Duas situações:
 
 **Sem cruzamento.** O comando faz o backup, guarda uma cópia da sua branch em
@@ -215,8 +220,8 @@ para antes do backup, porque instalaria a versão oficial sem elas. O Admin volt
 `git switch personalizacoes`. Só se você decidir instalar sem as personalizações é que ele usa
 `--sem-personalizacoes`.
 
-Para ver o cruzamento sem mudar nada, o Admin roda `sudo dgclaw atualizar --simular` (ou
-`sudo dgclaw personalizacoes conferir`). Depois do seu sim, o ajuste segue o capítulo "Personalização
+Para ver o cruzamento sem mudar nada, o Admin roda `sudo prumo atualizar --simular` (ou
+`sudo prumo personalizacoes conferir`). Depois do seu sim, o ajuste segue o capítulo "Personalização
 que cruza com a versão nova" do `docs/ATUALIZAR.md`.
 
 ## Quem já tinha o Prumo da Locadora antes desta versão
@@ -234,7 +239,7 @@ lembradas nas conversas com o Admin.
 Na conversa seguinte, o Admin faz o levantamento:
 
 ```bash
-sudo dgclaw personalizacoes levantar
+sudo prumo personalizacoes levantar
 ```
 
 O comando junta o que foi mudado direto no programa, as alterações e os commits no clone, os stashes
@@ -247,15 +252,15 @@ personalização:
 3. reaplica na branch `personalizacoes` do jeito mais compatível, preferindo ponto de extensão ou
    arquivo novo;
 4. registra no `PERSONALIZACOES.md`;
-5. aplica com `sudo dgclaw atualizar --sem-baixar --ok-do-dono --segundo-plano` e testa;
-6. no fim, roda `sudo dgclaw personalizacoes concluir`.
+5. aplica com `sudo prumo atualizar --sem-baixar --ok-do-dono --segundo-plano` e testa;
+6. no fim, roda `sudo prumo personalizacoes concluir`.
 
 Nada é apagado: as cópias ficam na pasta da migração. Quem instalou do zero já nasce com o registro
 criado e não passa por isso. Para ver, a qualquer momento, como as suas personalizações ficam diante da
 versão nova, o Admin usa:
 
 ```bash
-sudo dgclaw personalizacoes conferir
+sudo prumo personalizacoes conferir
 ```
 
 ## Desfazer uma personalização
@@ -264,7 +269,7 @@ O Admin desfaz com `git revert`, que cria um commit novo que anula o antigo e pr
 
 ```bash
 git -C <clone> revert <commit>
-sudo dgclaw atualizar --sem-baixar --ok-do-dono --segundo-plano
+sudo prumo atualizar --sem-baixar --ok-do-dono --segundo-plano
 ```
 
 Nunca com `git reset --hard`, que apaga trabalho sem volta. Depois, a entrada no registro muda para
@@ -272,13 +277,13 @@ Nunca com `git reset --hard`, que apaga trabalho sem volta. Depois, a entrada no
 
 ## Sugestão para o futuro: um ponto de extensão para botões e CSS
 
-Isto **não está implementado**. Hoje não existe nenhuma pasta de fora do programa de onde o painel leia CSS,
-JavaScript ou itens de menu: tudo o que a tela mostra vem de `web/public/` e `panel/public/`, que a
-atualização troca. A consequência é que um botão novo ou uma cor nova exigem o caminho da branch.
+Isto **não está implementado**. Cores, fontes, nome e logo já têm a pasta `/etc/dgclaw/marca/` ([WHITE-LABEL.md](WHITE-LABEL.md)). Para
+CSS livre, JavaScript ou itens de menu, não existe pasta de fora do programa: tudo o que a tela mostra vem de
+`web/public/` e `panel/public/`, que a atualização troca. A consequência é que um botão novo exige o caminho da branch.
 
 Uma forma de resolver: o painel passaria a ler uma pasta como `/var/lib/dgclaw/web/extras/`, preservada
 na atualização, com um `extra.css` (carregado depois do estilo oficial) e um `menu.json` (itens extras do
-menu lateral, com nome, ícone e destino). Com isso, "muda a cor do botão" e "põe um atalho para a minha
-planilha no menu" virariam pedidos simples e sem risco de conflito. Seria preciso decidir o que um script
+menu lateral, com nome, ícone e destino). Com isso, "põe um atalho para a minha
+planilha no menu" e ajustes de CSS além dos tokens virariam pedidos simples e sem risco de conflito. Seria preciso decidir o que um script
 próprio poderia fazer, porque JavaScript solto na tela do painel enxerga as conversas. Até lá, vale o
 procedimento da branch.

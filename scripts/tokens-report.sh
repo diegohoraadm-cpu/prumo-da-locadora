@@ -1,8 +1,8 @@
 #!/bin/bash
-# tokens-report.sh (DG Claw) — resumo de tokens/custo da persona ao longo de N dias.
+# tokens-report.sh (Prumo da Locadora) — resumo de tokens/custo da persona ao longo de N dias.
 # Agrega TODOS os *-tokens.jsonl do logDir (schema unificado) via jq.
 #
-# Tudo parametrizado por env do contrato DG Claw. ZERO hardcode de persona/paths.
+# Tudo parametrizado por env do contrato Prumo da Locadora. ZERO hardcode de persona/paths.
 #
 # Env:
 #   DGCLAW_WORKSPACE   (obrigatorio na pratica) — raiz do workspace da persona.

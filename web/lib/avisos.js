@@ -542,7 +542,7 @@ function criarAvisos(opcoes) {
     try {
       if (p === '/api/v1/avisos/docs.md' && m === 'GET') {
         const c = caminhoDocs();
-        if (!c) return H.erroJson(res, 404, 'O documento docs/QUADRO-DE-AVISOS.md não está na instalação. Reinstale o DG Claw para recuperá-lo.'), true;
+        if (!c) return H.erroJson(res, 404, 'O documento docs/QUADRO-DE-AVISOS.md não está na instalação. Reinstale o Prumo da Locadora para recuperá-lo.'), true;
         res.writeHead(200, { 'Content-Type': 'text/markdown; charset=utf-8', 'Cache-Control': 'no-store' });
         res.end(fs.readFileSync(c, 'utf8'));
         return true;
@@ -553,7 +553,7 @@ function criarAvisos(opcoes) {
       }
       let quem;
       try { quem = quemChamou(sessao); } catch (e) {
-        H.erroJson(res, 503, `Não consegui saber quem chamou o quadro de avisos (${e.message}). Reinstale o DG Claw Web ou peça ao Admin para conferir a caixa dos agentes.`);
+        H.erroJson(res, 503, `Não consegui saber quem chamou o quadro de avisos (${e.message}). Reinstale o Prumo da Locadora Web ou peça ao Admin para conferir a caixa dos agentes.`);
         return true;
       }
       let lista;

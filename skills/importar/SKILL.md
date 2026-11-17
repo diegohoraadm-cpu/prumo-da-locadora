@@ -1,10 +1,10 @@
 ---
 name: importar
-description: Recebe na VPS a MUDANCA de um agente que rodava no computador da pessoa (DG Claw Lite), pescando o arquivo cifrado pelo proprio bot de Telegram dela, mostrando o que veio e so entao escrevendo. Ative quando a pessoa colar uma linha comecando com MUDANCA, disser "trouxe meu agente do meu computador", "importar meu agente", "recebi o arquivo da mudanca", "meu agente estava no PC e quero por aqui", ou rodar /dgclaw:importar. Trabalha junto com a skill de setup: sem agente instalado ainda, ela guarda a mudanca e manda instalar primeiro.
+description: Recebe na VPS a MUDANCA de um agente que rodava no computador da pessoa (DG Claw Lite), pescando o arquivo cifrado pelo proprio bot de Telegram dela, mostrando o que veio e so entao escrevendo. Ative quando a pessoa colar uma linha comecando com MUDANCA, disser "trouxe meu agente do meu computador", "importar meu agente", "recebi o arquivo da mudanca", "meu agente estava no PC e quero por aqui". Sem agente instalado ainda, guarda a mudanca e manda instalar primeiro.
 user-invocable: true
 ---
 
-# /dgclaw:importar, receber o agente que veio do computador
+# importar, receber o agente que veio do computador
 
 Do outro lado desta mudança, no computador da pessoa, a skill `/dgclaw-lite:mudar-pra-vps`
 empacotou o agente inteiro (a pasta mais a memória nativa que fica fora dela) num arquivo cifrado e
@@ -101,13 +101,13 @@ existir, `memoria-nativa/`.
 ## Passo 5, cada coisa no seu lugar
 
 **Ainda não existe agente nesta VPS?** Então pare aqui e diga: primeiro a instalação, depois a
-mudança. Rode `/dgclaw:setup` no modo servidor **avisando que existe uma mudança esperando em
+mudança. Peça a instalação no modo servidor **avisando que existe uma mudança esperando em
 `$ENTRADA/aberto`**. Na entrevista de identidade, em vez de inventar, leia o `CLAUDE.md` que veio de
 lá: nome, jeito de falar e valores já estão escritos, e a pessoa só confirma. Volte para cá depois
 que o agente estiver de pé.
 
 **Já existe agente?** Faça a mudança arquivo por arquivo, mostrando cada decisão. O de lá é do
-DG Claw Lite, o daqui é do DG Claw servidor, e os formatos não são iguais:
+DG Claw Lite, o daqui é do servidor do Prumo da Locadora, e os formatos não são iguais:
 
 | Veio de lá | Vai para cá | Como |
 |---|---|---|

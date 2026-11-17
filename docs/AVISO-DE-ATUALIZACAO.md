@@ -1,11 +1,19 @@
-# Aviso de versão nova do DG Claw
+# Aviso de versão nova do Prumo da Locadora
 
-Quando o repositório oficial ganha uma versão nova (um PR mergeado na `main`), o DG Claw instalado
+Quando o repositório oficial ganha uma versão nova (um PR mergeado na `main`), o Prumo da Locadora instalado
 percebe sozinho e avisa o dono: uma faixa discreta no painel ("Nova versão disponível") com o resumo
 do que mudou, e um recado ao Admin, que conta ao dono no chat e pergunta se ele quer instalar.
 
 **Nada é baixado nem instalado sem o ok do dono.** O aviso só informa. Quem atualiza continua sendo o
-`sudo dgclaw atualizar` ([ATUALIZAR.md](ATUALIZAR.md)), e o Admin só o roda depois de um sim explícito.
+`sudo prumo atualizar` ([ATUALIZAR.md](ATUALIZAR.md)), e o Admin só o roda depois de um sim explícito.
+
+**Por que é uma checagem periódica e não um webhook:** a instalação do cliente não precisa abrir porta nem ser
+cadastrada em lugar nenhum, funciona atrás de NAT, e o repositório não precisa saber quem são os clientes.
+
+**O aviso não instala, e o Admin não atualiza às cegas.** O recado ao Admin manda analisar antes: rodar
+`prumo atualizar --simular`, ler o relatório (inclusive a seção do que aquela instalação usa e o que a
+versão nova toca), contar ao dono se é segura e se vale a pena, e gravar o parecer. A instalação exige esse
+parecer ([ATUALIZAR.md](ATUALIZAR.md), "Ler o que muda antes de instalar").
 
 ## O que é consultado, e o que sai do servidor
 
@@ -41,28 +49,28 @@ recado ao Admin** (veja abaixo): o resumo existe só no painel.
 
 ## O que o dono vê
 
-- **A faixa no painel**, no alto de todas as telas, numa linha: "Nova versão do DG Claw disponível
+- **A faixa no painel**, no alto de todas as telas, numa linha: "Nova versão do Prumo da Locadora disponível
   (X → Y)". "Ver o que mudou" abre a lista, "Instalar" leva ao chat do Admin com o pedido "Quero instalar a
-  atualização do DG Claw" já escrito no campo (ele só envia) e "Agora não" esconde o aviso até sair uma
+  atualização do Prumo da Locadora" já escrito no campo (ele só envia) e "Agora não" esconde o aviso até sair uma
   versão mais nova. Rotas em `web/docs/ATUALIZACAO.md`.
 - **O recado ao Admin**, uma vez por versão publicada e com pelo menos 20 horas entre dois recados. O Admin
   roda com permissão total, então o recado tem **só texto fixo e dados já validados** (versão instalada,
   versão publicada e quantas mudanças estão à frente). Ele diz que saiu versão nova, que o resumo está na
-  faixa do painel ("Ver o que mudou"), manda contar ao dono e perguntar, proíbe rodar `dgclaw atualizar`
+  faixa do painel ("Ver o que mudou"), manda contar ao dono e perguntar, proíbe rodar `prumo atualizar`
   sem o sim explícito e proíbe ler o `estado.json` ou o CHANGELOG do GitHub para "descobrir" o que fazer.
   Vai com `injectWhenIdle`: o runner guarda o texto e só o digita quando o Admin termina o turno, sem
   intercalar com o que o dono está escrevendo. Se o Admin estiver fora do ar, o script tenta de novo na
   rodada seguinte. O token do Admin é lido do arquivo dentro do script e vai só no cabeçalho de um pedido
   para o próprio servidor (`127.0.0.1`); nunca aparece em argumento de comando nem em log.
-- **`sudo dgclaw status`**: uma linha `atualizacao: ...` (em dia, versão nova disponível, última checagem
+- **`sudo prumo status`**: uma linha `atualizacao: ...` (em dia, versão nova disponível, última checagem
   falhou, aviso desligado ou ainda não verificado).
 
 ## Comandos
 
 ```bash
-sudo dgclaw atualizar --checar            # confere agora; não baixa nem instala nada
-sudo dgclaw atualizar --aviso desligar    # nenhuma consulta ao GitHub; a faixa some
-sudo dgclaw atualizar --aviso ligar       # volta a conferir a cada 6 horas
+sudo prumo atualizar --checar            # confere agora; não baixa nem instala nada
+sudo prumo atualizar --aviso desligar    # nenhuma consulta ao GitHub; a faixa some
+sudo prumo atualizar --aviso ligar       # volta a conferir a cada 6 horas
 ```
 
 `--aviso` troca só a linha `DGCLAW_AVISO_ATUALIZACAO` do `/etc/dgclaw/dgclaw.env` e liga ou desliga o timer.
@@ -84,10 +92,10 @@ Outras linhas opcionais do `dgclaw.env`, para quem mantém um fork: `DGCLAW_AVIS
 | `/var/lib/dgclaw/web/atualizacao/descanso.json` | qual versão o dono dispensou na faixa |
 | `/var/log/dgclaw/checar-atualizacao.log` | uma linha por execução |
 | `web/lib/atualizacao.js`, `web/public/atualizacao-faixa.js` | as rotas do painel e a faixa |
-| `lib/aviso-atualizacao.sh` | `--checar`, `--aviso` e a linha do `dgclaw status` |
+| `lib/aviso-atualizacao.sh` | `--checar`, `--aviso` e a linha do `prumo status` |
 
-Duas checagens nunca rodam juntas: todas as entradas (a unidade do timer, `dgclaw atualizar --checar` e
-`dgclaw atualizar --aviso`) executam o script sob `flock` no arquivo `/var/lib/dgclaw/web/atualizacao/.trava`
+Duas checagens nunca rodam juntas: todas as entradas (a unidade do timer, `prumo atualizar --checar` e
+`prumo atualizar --aviso`) executam o script sob `flock` no arquivo `/var/lib/dgclaw/web/atualizacao/.trava`
 e esperam até 90 segundos por ela; sem conseguir, saem com erro e dizem o que fazer. O `.trava` só existe
 como alvo do `flock` e nunca é apagado. Isso também garante que dois recados para o mesmo commit não saem.
 O `dgclaw.env` é relido logo antes de gravar o estado e logo antes do recado: se o aviso foi desligado

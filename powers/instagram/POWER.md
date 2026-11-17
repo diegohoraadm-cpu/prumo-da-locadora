@@ -1,4 +1,4 @@
-# Poder: Instagram (influencer) — DG Claw
+# Poder: Instagram (influencer) — Prumo da Locadora
 
 Definicao declarativa do poder **instagram**: o que instala, como ativa e como desativa.
 Da a pessoa virtual a capacidade de **postar** (foto/reels) e **responder comentarios** no

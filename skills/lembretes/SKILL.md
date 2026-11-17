@@ -1,15 +1,15 @@
 ---
 name: lembretes
-description: Agenda lembretes para o DONO que insistem até ele confirmar (faixa na tela do DG Claw, aviso no celular e recado para você, repetidos a cada poucos minutos até ele tocar Feito ou Adiar). Use SEMPRE que o dono pedir para ser lembrado ou avisado de algo ("me lembra de...", "me avisa às 15h", "não me deixa esquecer de...", "lembrete", "me cutuca amanhã", "insiste até eu fazer", "toca um alarme", "daqui a 20 minutos me lembra"), e quando chegar o recado que começa com [LEMBRETE]. Também serve para listar, pausar e apagar lembretes. NÃO use para você mesmo fazer um trabalho num horário (resumo do dia, conferir e-mail): isso é a skill agenda.
+description: Agenda lembretes para o DONO que insistem até ele confirmar (faixa na tela do Prumo da Locadora, aviso no celular e recado para você, repetidos a cada poucos minutos até ele tocar Feito ou Adiar). Use SEMPRE que o dono pedir para ser lembrado ou avisado de algo ("me lembra de...", "me avisa às 15h", "não me deixa esquecer de...", "lembrete", "me cutuca amanhã", "insiste até eu fazer", "toca um alarme", "daqui a 20 minutos me lembra"), e quando chegar o recado que começa com [LEMBRETE]. Também serve para listar, pausar e apagar lembretes. NÃO use para você mesmo fazer um trabalho num horário (resumo do dia, conferir e-mail): isso é a skill agenda.
 user-invocable: true
 ---
 
-# /dgclaw:lembretes, avisar o dono e insistir até ele confirmar
+# /lembretes, avisar o dono e insistir até ele confirmar
 
-O dono pede "me lembra de ligar pro contador amanhã às 9h". Você agenda pela API do DG Claw Web. Na hora, o
-próprio DG Claw avisa de três jeitos ao mesmo tempo: uma faixa ⏰ no alto da conversa, um aviso no celular
+O dono pede "me lembra de ligar pro contador amanhã às 9h". Você agenda pela API do Prumo da Locadora Web. Na hora, o
+próprio Prumo da Locadora avisa de três jeitos ao mesmo tempo: uma faixa ⏰ no alto da conversa, um aviso no celular
 (se ele ativou) e um recado para você. E repete a cada 5 minutos, até 12 vezes, até ele confirmar. Quem
-insiste é o DG Claw, não você.
+insiste é o Prumo da Locadora, não você.
 
 ## Lembrete ou rotina?
 
@@ -21,7 +21,7 @@ insiste é o DG Claw, não você.
 
 Use o `dgclaw-api` (a documentação completa está em `dgclaw-api GET /api/v1/lembretes/docs.md`).
 
-**Prazo relativo ("daqui a 20 minutos", "em meia hora"): sempre `daqui_min`.** O DG Claw faz a conta da hora
+**Prazo relativo ("daqui a 20 minutos", "em meia hora"): sempre `daqui_min`.** O Prumo da Locadora faz a conta da hora
 no fuso certo. Não calcule hora na mão.
 
 ```bash
@@ -62,7 +62,7 @@ Ocorrência oc_2f8b1819_202610201430. Avise o dono pelo canal que ele usa com vo
 
 1. Se você tem um canal conectado (Telegram, WhatsApp), mande a mensagem por lá, curta, com o texto do
    lembrete. Se não tem, não responda nada: a faixa na tela e o aviso no celular já cumprem esse papel.
-2. **Não repita o aviso por conta própria.** O DG Claw já insiste; cada novo recado é o próximo aviso, e
+2. **Não repita o aviso por conta própria.** O Prumo da Locadora já insiste; cada novo recado é o próximo aviso, e
    você só age quando ele chega.
 3. Se o dono responder **"feito"**, "já fiz", "ok": `dgclaw-api POST /api/v1/lembretes/ocorrencias/<oc>/feito '{"origem":"telegram"}'`
    (troque a origem pelo canal: `whatsapp`, `chat`).
@@ -90,7 +90,7 @@ Você só enxerga os lembretes que são seus. O dono vê todos na tela Lembretes
 | 0 | deu certo | confirme ao dono |
 | 1 | erro de uso (JSON inválido, rota errada) | corrija o comando |
 | 2 | o Web não respondeu | tente de novo em 1 minuto; se repetir, avise o dono que o lembrete NÃO foi criado |
-| 3 | a caixa não está disponível | peça ao dono para rodar `sudo dgclaw agente reparar <seu-slug>` |
+| 3 | a caixa não está disponível | peça ao dono para rodar `sudo prumo agente reparar <seu-slug>` |
 | 4 | pedido recusado (400, 404, 409...) | leia o `erro` na saída e corrija |
 | 5 | problema do lado do Web (503...) | avise o dono com a frase do `erro` |
 

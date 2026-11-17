@@ -52,7 +52,7 @@ cd "$DGCLAW_WORKSPACE" || exit 1
 source "$PLUGIN/scripts/_lib/pulso-lib.sh" 2>/dev/null && pulso_auto heartbeat
 
 # --- 1. sempre: ganchos das extensoes + refresh do "Agora" (barato, sem Claude) ---
-# Cada extensao instalada pode ter um hooks/heartbeat.sh (o DG Alive usa pra envelhecer as
+# Cada extensao instalada pode ter um hooks/heartbeat.sh (a extensão de emoções usa pra envelhecer as
 # emocoes). Falha de extensao vai pro log e nao interrompe o batimento do nucleo.
 EXT_DIR="$DGCLAW_WORKSPACE/.dgclaw/ext"
 if [ -d "$EXT_DIR" ]; then
@@ -77,7 +77,7 @@ fi
 source "$PLUGIN/scripts/_lib/inject.sh"
 if ! is_session_alive "$SLUG"; then
     HORA="$(date '+%H:%M')"
-    MSG="a sessão do agente não estava no ar às ${HORA}, então o batimento não pôde conferir nem avisar nada. O que fazer: ligar o agente (no painel, ou com 'dgclaw agente iniciar ${SLUG}' no servidor) e conferir de novo no Pulso"
+    MSG="a sessão do agente não estava no ar às ${HORA}, então o batimento não pôde conferir nem avisar nada. O que fazer: ligar o agente (no painel, ou com 'prumo agente iniciar ${SLUG}' no servidor) e conferir de novo no Pulso"
     echo "[$(date '+%F %T')] heartbeat: FALHA, ${MSG}" >> "$LOG"
     declare -F pulso >/dev/null && pulso erro "$MSG"
     exit 2

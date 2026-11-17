@@ -1,10 +1,10 @@
 ---
 name: panel
-description: Sobe, reinicia, abre e explica o painel web do assistente DG Claw, nos dois modos (local no PC e servidor na VPS). Mostra memoria, status, personalidade, identidade, operacoes, custos e o fio da conversa, e acende as areas das extensoes instaladas. Use quando o usuario rodar /dgclaw:panel, pedir pra "abrir o painel", "subir o dashboard", "ver a memoria do agente", "reiniciar o painel", "qual a URL e a senha do painel", ou "fechar o painel".
+description: Sobe, reinicia, abre e explica o painel web do assistente Prumo da Locadora, nos dois modos (local no PC e servidor na VPS). Mostra memoria, status, personalidade, identidade, operacoes, custos e o fio da conversa, e acende as areas das extensoes instaladas. Use quando o usuario pedir pra "abrir o painel", "subir o dashboard", "ver a memoria do agente", "reiniciar o painel", "qual a URL e a senha do painel", ou "fechar o painel".
 user-invocable: true
 ---
 
-# /dgclaw:panel: o painel do assistente
+# panel: o painel do assistente
 
 Descubra o modo antes de qualquer coisa:
 
@@ -50,7 +50,7 @@ apagadas com um cadeado ate o poder ser acoplado.
 
 A **area emocional** (humor no cabecalho, emocoes, necessidades, pensamentos,
 opinioes) tambem aparece na tela, apagada, com um bilhete dizendo o que instalar.
-Ela acende sozinha quando a extensao DG Alive esta instalada. Nada some da tela:
+Ela acende sozinha quando a extensao de emocoes esta instalada. Nada some da tela:
 o dono ve o que existe e o que ele ainda nao tem.
 
 Descubra o agente:

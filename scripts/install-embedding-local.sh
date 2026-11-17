@@ -1,5 +1,5 @@
 #!/bin/bash
-# install-embedding-local.sh — liga a memoria semantica LOCAL do DG Claw: sem conta, sem
+# install-embedding-local.sh — liga a memoria semantica LOCAL do Prumo da Locadora: sem conta, sem
 # chave, sem custo, e nada sai da maquina.
 #
 # O QUE BAIXA (uma vez so, ~350 MB):

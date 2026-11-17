@@ -1,5 +1,5 @@
 #!/bin/bash
-# dgclaw-post.sh — Cron de POST no Instagram da pessoa virtual (DG Claw).
+# dgclaw-post.sh — Cron de POST no Instagram da pessoa virtual (Prumo da Locadora).
 #
 # Cron generico/parametrizado de post. ZERO id hardcoded:
 # tudo (workspace, conta IG, modelo, persona, voz) sai de .dgclaw/config.sh +
@@ -10,8 +10,8 @@
 #
 # Notas de integracao (mesmas dos crons de vida):
 #   - oneshot via claude --print (NAO usa PTY/`script`; so o canal precisa de pty).
-#   - root + IS_SANDBOX=1 vem do config.sh do DG Claw (claude --print como root exige).
-#   - config.sh do DG Claw ja faz `unset CLAUDE_CONFIG_DIR`.
+#   - root + IS_SANDBOX=1 vem do config.sh do Prumo da Locadora (claude --print como root exige).
+#   - config.sh do Prumo da Locadora ja faz `unset CLAUDE_CONFIG_DIR`.
 #   - notify-owner.sh no inicio e no fim; ext-event.sh post_success ao concluir.
 #   - so roda se o poder instagram estiver enabled (powers.py is-enabled).
 
@@ -56,7 +56,7 @@ fi
 # --- Modelo do post (default opus) ---
 POST_MODEL="opus"
 if [ -f "$IG_JSON" ]; then
-    POST_MODEL=$(python3 -c "import json;print(json.load(open('$IG_JSON')).get('postModel') or 'opus')" 2>>"$LOG") || {
+    POST_MODEL=$(python3 -I -c "import json;print(json.load(open('$IG_JSON')).get('postModel') or 'opus')" 2>>"$LOG") || {
         POST_MODEL="opus"
         echo "[$(date '+%F %T')] aviso: nao consegui ler postModel de $IG_JSON (JSON invalido?); usando o modelo padrao 'opus'. Corrija o arquivo para escolher outro." >> "$LOG"
     }
@@ -102,9 +102,19 @@ Avise o ${DGCLAW_OWNER:-dono} no inicio e no fim usando:
   bash $PLUGIN/scripts/notify-owner.sh \"mensagem\"
 (o cron ja mandou o aviso de inicio; mande o relatorio final por essa via).${NOTA_19H}"
 
+# Restricoes do dono: com restricao ativa, so roda se a conta de IA for compativel (a mesma regra do runner) e o
+# motor recebe as ferramentas negadas. Recusa = exit 1, sem chamar o claude.
+# shellcheck disable=SC1091
+. "$PLUGIN/scripts/_lib/restricoes-rotina.sh"
+if ! restricoes_conferir_rotina "post ${SLUG} ${HORARIO}" "$LOG"; then
+    avisar_dono "Cron de post ${HORARIO} NAO rodou: as restricoes do agente nao valem com a conta de IA conectada, confira o log ($NAME)"
+    exit 1
+fi
+
 "$CLAUDE_BIN" --print \
     --no-session-persistence \
     --permission-mode bypassPermissions \
+    "${RESTRICAO_DENY_ARGS[@]}" \
     --add-dir "$WS" \
     --model "$POST_MODEL" \
     -p "$PROMPT" >> "$LOG" 2>&1

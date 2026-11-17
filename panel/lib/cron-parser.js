@@ -1,4 +1,4 @@
-// cron-parser.js — Parser das sessões de cron (DG Claw), parametrizado.
+// cron-parser.js — Parser das sessões de cron (Prumo da Locadora), parametrizado.
 //
 // Factory: buildCronParser(config) → { CRON_SCHEDULE, getCronsForDate, parseSessionText }
 //   - CRON_SCHEDULE  = config.schedule (vazio = sem grade esperada; nada quebra)

@@ -1,5 +1,5 @@
 [Unit]
-Description=DG Claw Tela do agente (VNC, so localhost)
+Description=Prumo da Locadora Tela do agente (VNC, so localhost)
 After=dgclaw-tela.service
 Requires=dgclaw-tela.service
 # Sem o arquivo da senha esta unidade NAO sobe. Em producao o x11vnc subia mesmo sem

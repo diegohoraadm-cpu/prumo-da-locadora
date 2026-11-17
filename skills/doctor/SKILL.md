@@ -1,13 +1,13 @@
 ---
 name: doctor
-description: Diagnostica e conserta um assistente DG Claw que nao sobe, ficou mudo no Telegram, perdeu a personalidade, parou de rodar as rotinas ou esta com o painel fora do ar. Use quando o usuario rodar /dgclaw:doctor, disser que "o bot nao responde", "o servico fica reiniciando", "ele voltou a responder generico", "o painel nao abre", "deu erro na instalacao", ou quiser so conferir se esta tudo certo.
+description: Diagnostica e conserta um assistente Prumo da Locadora que nao sobe, ficou mudo no Telegram, perdeu a personalidade, parou de rodar as rotinas ou esta com o painel fora do ar. Use quando o usuario disser que "o bot nao responde", "o servico fica reiniciando", "ele voltou a responder generico", "o painel nao abre", "deu erro na instalacao", ou quiser so conferir se esta tudo certo.
 user-invocable: true
 ---
 
-# /dgclaw:doctor: diagnostico e conserto
+# doctor: diagnostico e conserto
 
 **Se a pessoa chegou com uma queixa** ("ele parou", "nao responde", "deu problema"),
-use a skill `/dgclaw:socorro`: ela carrega o `docs/EMERGENCIA.md` e conduz o
+use o menu Socorro do painel: ele carrega o `docs/EMERGENCIA.md` e conduz o
 diagnostico na ordem certa (login vencido, sobrecarga, canal, sessao travada),
 inclusive para agentes em runner ou container, que este doctor nao cobre. O doctor
 e a checagem de ponta a ponta, e o socorro usa ele no meio do caminho.
@@ -57,7 +57,7 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/detect-dgclaw.sh"
 Cada linha e `slug|workspace|config|...`. Se houver mais de um agente, pergunte
 qual. Guarde `WS` (workspace) e `CFG` (o `.dgclaw/config.sh`).
 
-Depois do primeiro `/dgclaw:setup` os scripts tambem vivem numa copia estavel em
+Depois da instalacao do agente os scripts tambem vivem numa copia estavel em
 `<WS>/.dgclaw/plugin/scripts/`, que e a que os crons usam. Prefira ela:
 
 ```bash
@@ -100,9 +100,9 @@ Ele reinicia o servico sozinho quando o conserto so vale depois do restart.
   proativo. `--fix` religa.
 - **sessao viva fora do ar:** esperado se o dono desligou o bot pra poupar. As
   rotinas simplesmente nao fazem nada, e nada quebra.
-- **camada DG Alive antiga (`.dg-alive/`):** o agente e da era anterior a fusao.
+- **camada da extensão de emoções antiga (`.dg-alive/`):** o agente e da era anterior a fusao.
   Nao tente consertar em volta disso: as duas camadas disputam os mesmos arquivos. A
-  migracao automatica do DG Alive antigo nao faz parte desta versao. Explique ao dono
+  migracao automatica da extensão de emoções antiga nao faz parte desta versao. Explique ao dono
   e combine com ele: guardar uma copia de `.dg-alive/` e seguir num workspace novo, ou
   copiar a memoria que ele quiser manter e so entao remover a pasta.
 - **busca em conversas desligada:** o "lembra quando..." cai na busca simples. O
@@ -121,18 +121,18 @@ Ele reinicia o servico sozinho quando o conserto so vale depois do restart.
   secao no fim do CLAUDE.md (com backup) e cria a secao no MEMORY.md; vale na proxima sessao.
 - **a reflexao da noite nao escreve o diario ha N dias:** o recado sai, mas a sessao
   nao executa. Quase sempre e sessao travada ou login vencido: siga o
-  `/dgclaw:socorro` (manual, secoes 3.3 e 3.6).
+  menu Socorro do painel (manual, secoes 3.3 e 3.6).
 - **mesa de tarefas:** a mesa local vem ligada de fabrica (tela /mesa no Web, comando
   dgclaw-mesa no agente). Sem dgclaw-mesa ou dgclaw-api: a imagem do agente e antiga, atualize
   e repare o agente. CLAUDE.md sem a secao "## Mesa de tarefas": `--fix` acrescenta. A linha da
-  integracao antiga com o DG Telegram e opcional; "desligada" e o normal. Detalhes em
+  integracao antiga da mesa de tarefas (app externo) e opcional; "desligada" e o normal. Detalhes em
   `docs/MESA-DE-TAREFAS.md`.
 - **quadro de avisos:** anda junto com a mesa (mesma chave). "Hook nao ligado" quer dizer que o
   agente posta mas nao le os avisos dos outros: com o plugin habilitado no Claude isso nao
   acontece; instalado a mao, siga `docs/QUADRO-DE-AVISOS.md` (secao Ligar o hook). A sessao
   pega o hook sem reiniciar; so se o log nao mostrar "injetado" depois da proxima mensagem,
   reinicie o servico num momento ocioso, perguntando ao dono antes.
-- **gancho de extensao com erro de sintaxe:** a extensao (por exemplo o DG Alive)
+- **gancho de extensao com erro de sintaxe:** a extensao (por exemplo a extensão de emoções)
   nao vai rodar aquele pedaco. O nucleo continua de pe; conserte o arquivo
   apontado ou reinstale a extensao.
 

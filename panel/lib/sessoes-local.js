@@ -1,6 +1,6 @@
 'use strict';
 /**
- * sessoes-local.js: a aba Sessões em "modo local" (mini-Bunker do DG Claw, 17/10/2026).
+ * sessoes-local.js: a aba Sessões em "modo local" (mini-Bunker do Prumo da Locadora, 17/10/2026).
  *
  * Aqui um card é uma SESSÃO PARALELA DO RUNNER do próprio agente. O painel não guarda
  * estado de sessão: pergunta ao runner (`/api/agents?todas=1`, `/input`, `/permissao`,

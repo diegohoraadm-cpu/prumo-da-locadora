@@ -1,5 +1,5 @@
 #!/bin/bash
-# doctor.sh: diagnostico e conserto de um agente DG Claw (modo servidor).
+# doctor.sh: diagnostico e conserto de um agente Prumo da Locadora (modo servidor).
 #
 # Uso:  bash doctor.sh <.dgclaw/config.sh> [--fix]
 #
@@ -62,7 +62,7 @@ TITULO(){ echo; echo "-- $1"; }
 # nada alem do que a mensagem do proprio teste ja diz (unidade ausente, arquivo ausente,
 # JSON invalido). Onde uma falha de escrita ou limpeza mudaria o diagnostico, ela vira aviso.
 
-echo "== DG Claw doctor: $NOME ($SLUG) em $WS =="
+echo "== Prumo da Locadora doctor: $NOME ($SLUG) em $WS =="
 [ "$FIX" = "1" ] && I "modo --fix: vou consertar o que der, nao so reportar."
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -82,11 +82,11 @@ fi
 
 # ─────────────────────────────────────────────────────────────────────────────
 TITULO "2. Permissoes que travam o Claude sob systemd"
-if python3 -c "import json,sys; d=json.load(open('$CFGJSON')); p=d.get('projects',{}).get('$WS',{}); sys.exit(0 if p.get('hasTrustDialogAccepted') else 1)" 2>/dev/null; then
+if python3 -I -c "import json,sys; d=json.load(open('$CFGJSON')); p=d.get('projects',{}).get('$WS',{}); sys.exit(0 if p.get('hasTrustDialogAccepted') else 1)" 2>/dev/null; then
     P "workspace marcado como confiavel"
 else
     # Traceback omitido: se a gravacao falhar, o B logo abaixo diz o arquivo e as causas provaveis.
-    if python3 - "$CFGJSON" "$WS" <<'PY' 2>/dev/null
+    if python3 -I - "$CFGJSON" "$WS" <<'PY' 2>/dev/null
 import json,sys
 path,ws=sys.argv[1],sys.argv[2]
 try: d=json.load(open(path))
@@ -102,11 +102,11 @@ PY
 fi
 
 LS="$WS/.claude/settings.local.json"
-if python3 -c "import json,sys; sys.exit(0 if json.load(open('$LS')).get('skipDangerousModePermissionPrompt') else 1)" 2>/dev/null; then
+if python3 -I -c "import json,sys; sys.exit(0 if json.load(open('$LS')).get('skipDangerousModePermissionPrompt') else 1)" 2>/dev/null; then
     P "pergunta de modo perigoso ja dispensada nas settings locais"
 else
     mkdir -p "$WS/.claude"
-    if python3 - "$LS" <<'PY' 2>/dev/null
+    if python3 -I - "$LS" <<'PY' 2>/dev/null
 import json,sys
 path=sys.argv[1]
 try: d=json.load(open(path))
@@ -209,7 +209,7 @@ fi
 # em modo headless. O que vale pro bot e o veredito do canal acima.
 
 # pareamento
-if [ -n "$STATE" ] && python3 -c "import json,sys; d=json.load(open('$STATE/access.json')); sys.exit(0 if d.get('allowFrom') else 1)" 2>/dev/null; then
+if [ -n "$STATE" ] && python3 -I -c "import json,sys; d=json.load(open('$STATE/access.json')); sys.exit(0 if d.get('allowFrom') else 1)" 2>/dev/null; then
     P "bot pareado: so o dono fala com ele"
 elif [ -n "$STATE" ]; then
     B "bot ainda nao pareado (mande uma mensagem pra ele e aprove no wizard). Sem isso qualquer um poderia conversar"
@@ -219,7 +219,7 @@ fi
 
 # ─────────────────────────────────────────────────────────────────────────────
 TITULO "4. Arquivos do agente"
-[ -f "$WS/.dgclaw/agent.json" ] && P "agent.json presente" || B "agent.json ausente (a instalacao nao chegou ao fim) -> /dgclaw:setup"
+[ -f "$WS/.dgclaw/agent.json" ] && P "agent.json presente" || B "agent.json ausente (a instalacao nao chegou ao fim)"
 [ -f "$WS/.dgclaw/config.sh" ]  && P "config.sh presente" || B "config.sh ausente"
 [ -f "$WS/.dgclaw/powers.json" ] && P "powers.json presente" || W "powers.json ausente (o catalogo de poderes some do painel)"
 [ -d "$WS/.dgclaw/plugin/scripts" ] && P "copia estavel do plugin presente" \
@@ -310,7 +310,7 @@ fi
 EMB_PY="$PLUGIN/scripts/memory_index/embedder.py"
 IDX_DIR="${DGCLAW_MEMORY_INDEX_DIR:-$WS/.dgclaw/memory_index}"
 memoria_semantica() { # imprime "estado|texto": ligada-ok, ligada-vazia, ligada-outro, desligada
-    EMB_PY="$EMB_PY" DB="$IDX_DIR/chunks.db" python3 - <<'PY' 2>&1
+    EMB_PY="$EMB_PY" DB="$IDX_DIR/chunks.db" python3 -I - <<'PY' 2>&1
 import json, os, sqlite3, subprocess
 r = subprocess.run(["python3", os.environ["EMB_PY"], "status", "--json"],
                    capture_output=True, text=True, timeout=30)
@@ -532,7 +532,7 @@ if systemctl is-active --quiet "dgclaw-panel-${SLUG}.service" 2>/dev/null; then
         | tr ' ' '\n' | grep '^DGCLAW_PANEL_PORT=' | cut -d= -f2)
     P "painel no ar (porta ${PPORT:-8300})"
 else
-    W "painel fora do ar -> /dgclaw:panel"
+    W "painel fora do ar -> rode: sudo prumo agente reparar $SLUG"
 fi
 if systemctl is-active --quiet "dgclaw-${SLUG}-panel.service" 2>/dev/null; then
     W "o painel simples antigo (8200) ainda esta ligado; ele e substituido pelo painel completo"
@@ -563,7 +563,7 @@ fi
 # ─────────────────────────────────────────────────────────────────────────────
 TITULO "9. Poderes"
 if [ -f "$WS/.dgclaw/powers.json" ]; then
-    python3 - "$WS/.dgclaw/powers.json" <<'PY'
+    python3 -I - "$WS/.dgclaw/powers.json" <<'PY'
 import json,subprocess,sys
 try:
     d=json.load(open(sys.argv[1]))
@@ -579,7 +579,7 @@ for p in ligados:
         if u in r.stdout:
             print(f"  [ ok ]  poder {p['id']}: rotina {u} instalada")
         else:
-            print(f"  [aviso] poder {p['id']} esta ligado mas a rotina {u} nao existe -> /dgclaw:powers install {p['id']}")
+            print(f"  [aviso] poder {p['id']} esta ligado mas a rotina {u} nao existe -> peca ao agente para instalar o poder {p['id']}")
 PY
 else
     I "sem powers.json, entao nao ha poderes pra checar"
@@ -593,7 +593,7 @@ if [ -d "$EXTDIR" ]; then
     while IFS= read -r e; do
         NEXT=$((NEXT+1))
         EN_NAME=$(basename "$e")
-        if [ -f "$e/ext.json" ] && python3 -c "import json;json.load(open('$e/ext.json'))" 2>/dev/null; then
+        if [ -f "$e/ext.json" ] && python3 -I -c "import json;json.load(open('$e/ext.json'))" 2>/dev/null; then
             P "extensao $EN_NAME: ext.json valido"
         else
             B "extensao $EN_NAME: ext.json ausente ou invalido (o painel nao sabe o que ela acende)"
@@ -602,7 +602,7 @@ if [ -d "$EXTDIR" ]; then
             [ -f "$e/hooks/$h" ] || continue
             case "$h" in
                 *.md|*.json) I "  gancho $h presente (extensao $EN_NAME)" ;;
-                *.py) python3 -c "import ast,sys;ast.parse(open('$e/hooks/$h').read())" 2>/dev/null \
+                *.py) python3 -I -c "import ast,sys;ast.parse(open('$e/hooks/$h').read())" 2>/dev/null \
                         && I "  gancho $h ok (extensao $EN_NAME)" \
                         || B "  gancho $h da extensao $EN_NAME tem erro de sintaxe: ele nao vai rodar" ;;
                 *.sh) bash -n "$e/hooks/$h" 2>/dev/null \
@@ -612,17 +612,17 @@ if [ -d "$EXTDIR" ]; then
         done
     done < <(find "$EXTDIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)
 fi
-[ "$NEXT" = "0" ] && I "nenhuma extensao instalada (o agente roda inteiro assim; o DG Alive acrescenta a vida emocional)"
+[ "$NEXT" = "0" ] && I "nenhuma extensao instalada (o agente roda inteiro assim; a extensão de emoções acrescenta a vida emocional)"
 
-# Mesa de tarefas LOCAL (DG Claw Web): o agente usa dgclaw-mesa, que fala com o Web pela caixa
+# Mesa de tarefas LOCAL (Prumo da Locadora Web): o agente usa dgclaw-mesa, que fala com o Web pela caixa
 # (dgclaw-api). Nao depende do DG Telegram nem de variavel nenhuma.
 for MESA_CMD in dgclaw-mesa dgclaw-api; do
     if command -v "$MESA_CMD" >/dev/null 2>&1 || [ -x "$PLUGIN/bin/$MESA_CMD" ] || [ -x "/opt/dgclaw/app/bin/$MESA_CMD" ]; then
         P "mesa de tarefas local: o comando $MESA_CMD existe"
     elif [ "$MESA_CMD" = "dgclaw-mesa" ]; then
-        W "mesa de tarefas local: o comando dgclaw-mesa nao foi encontrado -> atualize o DG Claw (a imagem do agente traz o comando) e rode 'sudo dgclaw agente reparar $SLUG'"
+        W "mesa de tarefas local: o comando dgclaw-mesa nao foi encontrado -> atualize o Prumo da Locadora (a imagem do agente traz o comando) e rode 'sudo prumo agente reparar $SLUG'"
     else
-        W "mesa de tarefas local: o comando dgclaw-api (a caixa do agente) nao foi encontrado -> atualize o DG Claw e rode 'sudo dgclaw agente reparar $SLUG'; sem ele o agente nao fala com o Web"
+        W "mesa de tarefas local: o comando dgclaw-api (a caixa do agente) nao foi encontrado -> atualize o Prumo da Locadora e rode 'sudo prumo agente reparar $SLUG'; sem ele o agente nao fala com o Web"
     fi
 done
 if [ -f "$WS/CLAUDE.md" ]; then
@@ -647,7 +647,7 @@ fi
 # padrao (nem a lista de processos mostra) e so o codigo HTTP volta pra tela.
 MESA_URL="${DGCLAW_MESA_URL:-}"; MESA_KEY="${DGCLAW_MESA_KEY:-}"
 if [ -z "$MESA_URL" ] && [ -z "$MESA_KEY" ]; then
-    I "integracao antiga com o DG Telegram: desligada (sem DGCLAW_MESA_URL no config). E opcional e a mesa de tarefas local nao depende dela"
+    I "integracao antiga da mesa de tarefas (app externo): desligada (sem DGCLAW_MESA_URL no config). E opcional e a mesa de tarefas local nao depende dela"
 elif [ -z "$MESA_URL" ] || [ -z "$MESA_KEY" ]; then
     if [ -z "$MESA_URL" ]; then MESA_FALTA="DGCLAW_MESA_URL"; else MESA_FALTA="DGCLAW_MESA_KEY"; fi
     B "mesa de tarefas pela metade: falta $MESA_FALTA no config.sh, e sem as duas o agente nao usa a mesa -> docs/MESA-DE-TAREFAS.md"
@@ -681,7 +681,7 @@ else
 fi
 
 # Quadro de avisos da equipe (17/10/2026): vem de fabrica e nao depende da mesa nem do DG Telegram.
-# O DG Claw Web grava o retrato local ~/.dgclaw/retratos/avisos.json e o hook le esse arquivo.
+# O Prumo da Locadora Web grava o retrato local ~/.dgclaw/retratos/avisos.json e o hook le esse arquivo.
 AV_RETRATO="$WS/.dgclaw/retratos/avisos.json"
 AV_LOG="$WS/.dgclaw/logs/avisos.log"
 # O hook que traz os avisos: vem do hooks.json do plugin quando o plugin esta habilitado no
@@ -699,7 +699,7 @@ if [ "${DGCLAW_AVISOS:-}" = "off" ]; then
 fi
 if [ ! -e "$AV_RETRATO" ]; then
     I "o retrato do quadro ainda nao existe ($AV_RETRATO): o Web grava no primeiro aviso, ou ao reparar o agente"
-elif AV_INFO=$(python3 - "$AV_RETRATO" <<'PY' 2>&1
+elif AV_INFO=$(python3 -I - "$AV_RETRATO" <<'PY' 2>&1
 import json, sys
 try:
     d = json.load(open(sys.argv[1]))
@@ -713,7 +713,7 @@ PY
     AV_QUANDO=$(date -r "$AV_RETRATO" '+%d/%m/%Y %H:%M' 2>/dev/null || echo "?")
     P "retrato do quadro de avisos valido: $AV_INFO (gravado em $AV_QUANDO)"
 else
-    W "retrato do quadro de avisos em $AV_RETRATO: $AV_INFO; o hook nao injeta nada ate o Web regravar -> reinicie o DG Claw Web ou rode sudo dgclaw agente reparar $SLUG"
+    W "retrato do quadro de avisos em $AV_RETRATO: $AV_INFO; o hook nao injeta nada ate o Web regravar -> reinicie o Prumo da Locadora Web ou rode sudo prumo agente reparar $SLUG"
 fi
 if [ -s "$AV_LOG" ]; then
     I "  ultima linha do log do quadro: $(tail -1 "$AV_LOG" | cut -c1-160)"
@@ -760,8 +760,8 @@ fi
 # Instalacao da era anterior a fusao: enquanto as duas camadas existirem juntas, rotina
 # velha e nova disputam os mesmos arquivos. Isto vem antes de qualquer outro conserto.
 if [ -d "$WS/.dg-alive" ]; then
-    B "existe uma camada DG Alive ANTIGA em $WS/.dg-alive (de antes da fusao)"
-    I "  a migracao do DG Alive antigo nao faz parte desta versao: nao misture as duas camadas."
+    B "existe uma camada da extensão de emoções ANTIGA em $WS/.dg-alive (de antes da fusao)"
+    I "  a migracao da extensão de emoções antigo nao faz parte desta versao: nao misture as duas camadas."
     I "  guarde uma copia de $WS/.dg-alive e use um workspace novo, ou remova essa pasta depois de copiar a memoria que quiser manter."
 fi
 
@@ -789,5 +789,5 @@ if [ "$bad" -eq 0 ]; then
 fi
 echo ">> ainda faltam $bad item(ns) acima."
 [ "$FIX" = "0" ] && echo "   muitos deles eu conserto sozinho: rode de novo com --fix."
-echo "   se travar, /dgclaw:report manda um diagnostico sanitizado pro autor."
+echo "   se travar, /report manda um diagnostico sanitizado pro autor."
 exit 1

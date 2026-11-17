@@ -1,7 +1,7 @@
 # Mesa de tarefas
 
 A Mesa mostra ao dono, numa tela só, o que cada agente está fazendo: quem está em quê,
-quanto falta, o que travou e o que está esperando por ele. Fica em `/mesa` no DG Claw Web.
+quanto falta, o que travou e o que está esperando por ele. Fica em `/mesa` no Prumo da Locadora Web.
 
 **Quem cria, atualiza e conclui as tarefas é o próprio agente**, pelo comando `dgclaw-mesa`
 (ou pela API crua, com `dgclaw-api`). O dono acompanha pela tela e também pode mexer: criar
@@ -182,7 +182,7 @@ Toda subcomando aceita `--json` para imprimir a resposta crua da API.
 | 0 | ok |
 | 1 | erro de uso (faltou argumento, id que não é número) |
 | 2 | o Web não respondeu (fora do ar ou reiniciando): tente de novo em instantes |
-| 3 | a caixa do agente não está disponível: peça ao dono `sudo dgclaw agente reparar <slug>` |
+| 3 | a caixa do agente não está disponível: peça ao dono `sudo prumo agente reparar <slug>` |
 | 4 | o Web recusou o pedido (4xx): a frase do `erro` sai no stderr |
 | 5 | erro do lado do Web (5xx): a frase do `erro` sai no stderr |
 

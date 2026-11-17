@@ -44,14 +44,14 @@
 // prefixos fechados são comparados sem diferenciar maiúsculas e tolerando barra final, como o Express do painel roteia.
 
 const TROCAR_SENHA_MOTIVO = 'Troque a senha temporária antes de continuar.';
-const MOTIVO_PAINEL = 'Este endereço do painel é só do dono do DG Claw.';
-const MOTIVO_COFRE = 'O cofre é só do dono do DG Claw.';
-const MOTIVO_CHAVES_API = 'As chaves de API do painel são só do dono do DG Claw.';
+const MOTIVO_PAINEL = 'Este endereço do painel é só do dono do Prumo da Locadora.';
+const MOTIVO_COFRE = 'O cofre é só do dono do Prumo da Locadora.';
+const MOTIVO_CHAVES_API = 'As chaves de API do painel são só do dono do Prumo da Locadora.';
 const MOTIVO_CONTA_IA = 'A conta de IA se conecta pela página Conectar conta, não pelo painel do agente. Se o agente já tem conta, só o dono do Prumo da Locadora mexe nela.';
-const MOTIVO_PERMANENTE = 'Isso muda o agente de forma permanente (instruções, memória, arquivos, configuração ou rotinas) e é só do dono do DG Claw.';
-const MOTIVO_CANAL = 'As credenciais dos canais (Telegram, WhatsApp) são só do dono do DG Claw.';
-const MOTIVO_TELA = 'A Tela do agente dá acesso aos arquivos e às contas dele, por isso é só do dono do DG Claw.';
-const MOTIVO_ENVIO = 'Mandar mensagem, instrução ou decisão ao agente pelo painel é só do dono do DG Claw. Converse pela conversa do agente: ali as suas mensagens e confirmações têm o seu nome.';
+const MOTIVO_PERMANENTE = 'Isso muda o agente de forma permanente (instruções, memória, arquivos, configuração ou rotinas) e é só do dono do Prumo da Locadora.';
+const MOTIVO_CANAL = 'As credenciais dos canais (Telegram, WhatsApp) são só do dono do Prumo da Locadora.';
+const MOTIVO_TELA = 'A Tela do agente dá acesso aos arquivos e às contas dele, por isso é só do dono do Prumo da Locadora.';
+const MOTIVO_ENVIO = 'Mandar mensagem, instrução ou decisão ao agente pelo painel é só do dono do Prumo da Locadora. Converse pela conversa do agente: ali as suas mensagens e confirmações têm o seu nome.';
 const MOTIVO_DESVIO = 'Este endereço tem caracteres que não são aceitos para colaboradores. Você só tem acesso ao seu agente.';
 const MOTIVO_GERAL = 'Este endereço não está liberado para colaboradores. Você tem acesso ao seu agente inteiro, pelo menu dele.';
 const MOTIVO_OUTRO_AGENTE = 'Você só tem acesso ao agente para o qual foi convidado(a).';
@@ -63,6 +63,13 @@ const RX_ESTATICO = /^\/(?:[A-Za-z0-9._-]+\/)*[A-Za-z0-9._-]+\.(?:js|css|png|jpe
 const ehEstatico = (p) => !p.includes('..') && RX_ESTATICO.test(p);
 
 const RX_DOCS = /^\/api\/v1\/(?!colaboradores\/|logs\/)[a-z-]+\/docs\.md$/;
+// Rotas do Face ID liberadas ao colaborador (ver avaliaApi). /docs.md já passa por RX_DOCS.
+const CADEADO_ROTAS = [
+  [/^\/api\/v1\/cadeado\/(?:estado|passkeys|cadastro\/opcoes|verificar\/opcoes|aparelho\/opcoes)$/, ['GET']],
+  [/^\/api\/v1\/cadeado\/(?:uso|cadastro|verificar|aparelho)$/, ['POST']],
+  [/^\/api\/v1\/cadeado\/passkeys\/pk_[0-9a-f]{12}$/, ['PATCH', 'DELETE']],
+  [/^\/api\/v1\/cadeado\/ajustes$/, ['PUT']],
+];
 const RX_AGENTE = /^\/api\/v1\/agents\/([^/]+)(?:\/([^/]*))?(?:\/.*)?$/;
 const RX_MIDIA = /^\/api\/v1\/media\/[0-9a-f]{16}(?:\/(?:thumb|visual))?$/;
 const RX_PAGINA_AGENTE = /^\/a\/([^/]+)\/?$/;
@@ -127,6 +134,8 @@ function avaliar(sessao, metodo, pathname, urlCrua) {
   if (leitura) {
     if (p === '/') return LIBERA;
     if (p === '/conectar' || p === '/conectar/' || p === '/trocar-senha') return LIBERA;
+    // Face ID: a tela de ajustes e a tela do cadeado são de cada pessoa (dono ou colaborador).
+    if (p === '/face-id' || p === '/face-id/' || p === '/cadeado' || p === '/cadeado/') return LIBERA;
     const pa = RX_PAGINA_AGENTE.exec(p);
     if (pa) return meuSlug(pa[1]) ? LIBERA : nega(302, MOTIVO_OUTRO_AGENTE, { redirecionar: destino });
     if (ehEstatico(p)) return LIBERA;
@@ -157,7 +166,7 @@ function avaliaPainel(m, p, bruto, meuSlug) {
   if (prefixo(resto, '/api/cofre')) return nega(403, MOTIVO_COFRE, { extra: { error: MOTIVO_COFRE, howToFix: 'Peça ao dono para cadastrar ou trocar a chave.' } });
   if (prefixo(resto, '/api/chaves-api')) return nega(403, MOTIVO_CHAVES_API, { extra: { error: MOTIVO_CHAVES_API } });
   // /api/provedor inteiro, até a leitura: o GET devolve o link e o código do login em andamento.
-  if (prefixo(resto, '/api/provedor')) return nega(403, MOTIVO_CONTA_IA, { extra: { error: MOTIVO_CONTA_IA, howToFix: 'Avise o dono do DG Claw.' } });
+  if (prefixo(resto, '/api/provedor')) return nega(403, MOTIVO_CONTA_IA, { extra: { error: MOTIVO_CONTA_IA, howToFix: 'Avise o dono do Prumo da Locadora.' } });
   // A Tela (navegador remoto) roda como o agente e abre file:// nas credenciais dele: página, noVNC, WebSocket e senha.
   if (prefixo(resto, '/api/tela') || prefixo(resto, '/tela')) return nega(403, MOTIVO_TELA, { extra: { error: MOTIVO_TELA } });
   if (!leitura && ['/api/canais', '/api/canal', '/api/telegram', '/api/whatsapp'].some((b) => prefixo(resto, b))) {
@@ -189,6 +198,11 @@ function avaliaApi(m, p, meuSlug) {
   if (p === '/api/v1/tts') return metodo(m === 'POST', 'Use POST com o texto.');
   if (p === '/api/v1/tts/cota') return metodo(m === 'GET', 'Use GET para ver a cota de voz.');
   if (RX_DOCS.test(p)) return metodo(m === 'GET', 'Use GET para ler a documentação.');
+  // Face ID (cadeado): só as rotas dele, cada pessoa com as próprias passkeys (o handler filtra pelo titular da sessão).
+  if (p.startsWith('/api/v1/cadeado/')) {
+    const c = CADEADO_ROTAS.find(([rx]) => rx.test(p));
+    return c ? metodo(c[1].includes(m), `Use ${c[1].join(' ou ')} em ${p}.`) : nega(403, MOTIVO_GERAL);
+  }
 
   // O dono do arquivo é conferido na entrega (media.js), que responde 404 se a mídia não é deste agente.
   if (RX_MIDIA.test(p)) return metodo(m === 'GET' || m === 'HEAD', 'Use GET para abrir a mídia.');

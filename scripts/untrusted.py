@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""untrusted.py — Sanitizador central de conteúdo externo (camada DG Claw).
+"""untrusted.py — Sanitizador central de conteúdo externo (camada Prumo da Locadora).
 
 Qualquer texto vindo de fonte não-confiável deve passar por aqui antes de
 ser interpolado num prompt de LLM. Fontes cobertas:

@@ -1,6 +1,6 @@
-// test-cofre-host.mjs — o modo "host" do cofre (DG Claw v1): o painel de dentro só LÊ os nomes.
+// test-cofre-host.mjs — o modo "host" do cofre (Prumo da Locadora v1): o painel de dentro só LÊ os nomes.
 //
-// Neste modo quem guarda a chave é o DG Claw Web, no host. O painel recusa tudo o que escreve e
+// Neste modo quem guarda a chave é o Prumo da Locadora Web, no host. O painel recusa tudo o que escreve e
 // NÃO PODE deixar rastro em disco: nem pasta de cofre, nem chave mestra, nem arquivo de segredo
 // (foi o que uma versão anterior fez, e o agente conseguia decifrar). Roda numa pasta temporária.
 //
@@ -54,7 +54,7 @@ console.log('\nOs nomes vêm do arquivo');
   fs.writeFileSync(NOMES, '# comentário\nOPENAI_API_KEY=\nGEMINI_API_KEY=\n\nlinha-estranha\n');
   const e = cofre.estado();
   ok(e.chaves.map((c) => c.envName).join(',') === 'OPENAI_API_KEY,GEMINI_API_KEY', 'estado().chaves traz os nomes do arquivo, na ordem');
-  ok(e.chaves.every((c) => c.ultimos4 === '' && c.cadastradaPor === 'DG Claw Web' && c.revogadaEm === null), 'ultimos4 vazio, cadastradaPor "DG Claw Web", ativas');
+  ok(e.chaves.every((c) => c.ultimos4 === '' && c.cadastradaPor === 'Prumo da Locadora Web' && c.revogadaEm === null), 'ultimos4 vazio, cadastradaPor "Prumo da Locadora Web", ativas');
   ok(e.guarda.motor === 'host' && /fora da pasta do agente/.test(e.guarda.motorExplicacao), 'guarda.motor é host, com a explicação');
   ok(e.aplicar.pode === false && e.aplicar.motivo && e.aplicar.howToFix, 'aplicar.pode é falso e diz por quê');
   ok(cofre.tem('openai_api_key') === true && cofre.tem('XAI_API_KEY') === false && cofre.tem('../x') === false, 'tem() usa os nomes (normaliza a caixa, recusa nome ruim)');
@@ -68,7 +68,7 @@ for (const [nome, r] of [
   ['aplicar', cofre.aplicar()],
   ['materializar', cofre.materializar()],
 ]) {
-  ok(r.status === 409 && /DG Claw Web/.test(r.erro) && /endereço do DG Claw/.test(r.howToFix) && /dgclaw agente cofre/.test(r.howToFix), `${nome}: 409 com o caminho certo em português`);
+  ok(r.status === 409 && /Prumo da Locadora Web/.test(r.erro) && /endereço do Prumo da Locadora/.test(r.howToFix) && /prumo agente cofre/.test(r.howToFix), `${nome}: 409 com o caminho certo em português`);
   ok(!JSON.stringify(r).includes(VALOR), `${nome}: o valor não volta na resposta`);
 }
 ok(JSON.stringify(arvore(RAIZ).filter((p) => p !== NOMES)) === JSON.stringify(antes), 'depois de tudo isso, nenhum arquivo ou pasta novos (só o cofre-nomes do teste)');
@@ -92,7 +92,7 @@ console.log('\nPOST /api/provedor com chave: 409, sem 500 e sem falar com o runn
   ok(r.status === 409 && r.corpo.error && r.corpo.howToFix, 'com chave: 409 {error, howToFix}');
   ok(!JSON.stringify(r).includes(VALOR) && !logs.join('\n').includes(VALOR), 'a chave não aparece na resposta nem no log');
   const r2 = await chamar('POST /api/provedor', { provedor: 'codex', auth: 'api', modelo: '' });
-  ok(r2.status === 409 && /DG Claw Web/.test(r2.corpo.error), 'sem chave e modo com variável: também 409 (nada fica gravado pela metade)');
+  ok(r2.status === 409 && /Prumo da Locadora Web/.test(r2.corpo.error), 'sem chave e modo com variável: também 409 (nada fica gravado pela metade)');
   ok(chamadas === 0, 'o runner não recebeu nenhum pedido');
   const g = await chamar('GET /api/provedor');
   ok(g.status === 200 || g.status === 503, 'GET segue funcionando (sem 500)');

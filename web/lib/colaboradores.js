@@ -147,7 +147,7 @@ function criarColaboradores({ config, log, agora, gerarHash }) {
     /** Cria o convite. As regras que dependem do registro de agentes (existe? é o Admin?) ficam na rota. */
     criar({ agente, email, nome, criadoPor, instancia }) {
       return transacao(async () => {
-        if (!instancia) throw erroStatus(500, `Não consegui identificar esta instância do agente ${agente} (casa ausente ou ilegível), e o convite precisa dela para não valer num agente recriado com o mesmo nome. Rode "dgclaw agente reparar ${agente}" e convide de novo.`);
+        if (!instancia) throw erroStatus(500, `Não consegui identificar esta instância do agente ${agente} (casa ausente ou ilegível), e o convite precisa dela para não valer num agente recriado com o mesmo nome. Rode "prumo agente reparar ${agente}" e convide de novo.`);
         const mail = normalizaEmail(email);
         const nomeOk = normalizaNome(nome);
         const doEmail = lista.find((c) => !c.revogado_em && c.email === mail);
@@ -215,13 +215,13 @@ function criarColaboradores({ config, log, agora, gerarHash }) {
     definirSenha(id, hash, esperado) {
       return transacao(async () => {
         const c = lista.find((x) => x.id === id);
-        if (!c || c.revogado_em) throw erroStatus(401, 'Seu acesso não vale mais. Peça ao dono do DG Claw um convite novo.');
+        if (!c || c.revogado_em) throw erroStatus(401, 'Seu acesso não vale mais. Peça ao dono do Prumo da Locadora um convite novo.');
         // A conferência e a gravação acontecem juntas, na fila: se o dono reenviou o convite (ou a senha mudou por
         // outro caminho) depois que este pedido começou, a troca velha não pode passar por cima.
         if (esperado && ((c.senha_versao || 1) !== esperado.versao || c.hash !== esperado.hash || (esperado.trocar_senha !== undefined && !!c.trocar_senha !== esperado.trocar_senha))) {
           throw erroStatus(409, 'Sua senha ou seu convite mudou enquanto você trocava a senha (o dono pode ter mandado um convite novo). Entre de novo com a senha mais recente.');
         }
-        if (c.trocar_senha && Number(c.temporaria_expira) < relogio()) throw erroStatus(401, 'A senha temporária venceu. Peça ao dono do DG Claw um convite novo.');
+        if (c.trocar_senha && Number(c.temporaria_expira) < relogio()) throw erroStatus(401, 'A senha temporária venceu. Peça ao dono do Prumo da Locadora um convite novo.');
         const antes = Object.assign({}, c);
         Object.assign(c, { hash, trocar_senha: false, temporaria_expira: null, senha_versao: (c.senha_versao || 1) + 1 });
         try { grava(); } catch (e) { Object.assign(c, antes); throw e; }

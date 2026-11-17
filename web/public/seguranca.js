@@ -185,7 +185,7 @@
 
   /* ── emergência ─────────────────────────────────────────────────────────── */
   function planoHtml(plano) {
-    if (!plano || !plano.comandos || !plano.comandos.length) return '<p class="rp-vazio">O servidor não trouxe o plano. Rode "sudo dgclaw emergencia simular".</p>';
+    if (!plano || !plano.comandos || !plano.comandos.length) return '<p class="rp-vazio">O servidor não trouxe o plano. Rode "sudo prumo emergencia simular".</p>';
     return '<div class="rp-plano"><p class="rp-texto"><b>O que vai acontecer, passo a passo:</b></p><ol>' +
       plano.comandos.map(c => '<li><code>' + esc(c) + '</code></li>').join('') + '</ol>' +
       (plano.avisos && plano.avisos.length ? '<ul class="rp-aviso-lista">' + plano.avisos.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '') + '</div>';
@@ -209,7 +209,7 @@
     if (indisponivel) {
       h += '<div class="rp-bloqueio" id="rpEmMotivo" role="status"><b>O botão está desligado por enquanto.</b> ' + esc((e && e.motivo) || 'Não foi possível saber se o corte é seguro.') + '</div>';
     } else if (e && e.desatualizado) {
-      h += '<p class="rp-fraco">A medição do servidor tem mais de 2 horas. Rode "sudo dgclaw emergencia estado" para atualizar.</p>';
+      h += '<p class="rp-fraco">A medição do servidor tem mais de 2 horas. Rode "sudo prumo emergencia estado" para atualizar.</p>';
     }
     const ocupado = u.fase === 'preparando';
     h += '<div class="rp-acoes"><button type="button" class="rp-btn" data-rp="simular" id="btnSimular"' + (e && e.plano && e.plano.comandos && e.plano.comandos.length ? '' : ' disabled') + '>Simular</button>';
@@ -239,7 +239,7 @@
   const PASSOS = {
     boletins: [
       { alvo: '#secBoletins', titulo: 'Avisos de segurança do Prumo da Locadora',
-        oque: 'Os avisos sobre falhas em ferramentas que o seu sistema usa, conferidos e aprovados pela equipe do DG Claw (o projeto de origem) e publicados aqui quando a correção já está no Prumo da Locadora. Cada um mostra a data, a gravidade, o link da fonte oficial e o que muda quando você corrige.',
+        oque: 'Os avisos sobre falhas em ferramentas que o seu sistema usa, conferidos e aprovados pela equipe do projeto de origem e publicados aqui quando a correção já está no Prumo da Locadora. Cada um mostra a data, a gravidade, o link da fonte oficial e o que muda quando você corrige.',
         como: 'A cada hora o servidor consulta a lista pública de avisos, sem enviar nada seu. Atualizar leva ao chat do Admin com o pedido já escrito, e você só envia. Lembrar depois adia o lembrete por 24 horas. Entendi é para os avisos sem correção ainda: nada a aplicar agora, e ele sai da fila.',
         porque: 'Antes cada aviso abria a própria janela. Agora existe um aviso único no alto das telas e os detalhes ficam aqui, para você resolver com calma e sem fechar várias janelas.' },
     ],
@@ -485,7 +485,7 @@
     if (!res.ok || !res.dados || !res.dados.codigo) {
       est.ui = { fase: 'ocioso' };
       pintaEmergencia();
-      msgEmergencia(res.mensagem || 'O servidor não trouxe o código. Rode "sudo dgclaw emergencia preparar" para ver o motivo.', 'erro');
+      msgEmergencia(res.mensagem || 'O servidor não trouxe o código. Rode "sudo prumo emergencia preparar" para ver o motivo.', 'erro');
       return;
     }
     est.ui = { fase: 'codigo', acao: acaoEscolhida || res.dados.acao || 'cortar', codigo: res.dados.codigo, expira_em: res.dados.expira_em, plano: res.dados.plano };
@@ -504,7 +504,7 @@
     est.ui = { fase: 'ocioso' };
     if (res.ok) {
       msgEmergencia((res.mensagem || (u.acao === 'cortar' ? 'Sistema fora do ar.' : 'Sistema religado.')) +
-        (u.acao === 'cortar' ? ' Esta tela e o painel deixam de responder até você confirmar ou religar pelo servidor (sudo dgclaw emergencia confirmar). Sem confirmação, ele religa sozinho em 5 minutos.' : ''), 'ok');
+        (u.acao === 'cortar' ? ' Esta tela e o painel deixam de responder até você confirmar ou religar pelo servidor (sudo prumo emergencia confirmar). Sem confirmação, ele religa sozinho em 5 minutos.' : ''), 'ok');
     } else {
       msgEmergencia(res.mensagem || 'O servidor não executou o pedido e não explicou o motivo. Veja: journalctl -u dgclaw-seguranca-pedidos -n 30', 'erro');
     }

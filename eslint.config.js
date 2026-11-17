@@ -1,4 +1,4 @@
-// Lint mínimo de JavaScript do DG Claw: só as regras que pegam bug de verdade.
+// Lint mínimo de JavaScript do Prumo da Locadora: só as regras que pegam bug de verdade.
 //
 // Cobre web/, panel/, canais/, scripts/, bin/ e qa/. O runner (TypeScript) fica de fora:
 // o `tsc --noEmit` do CI já confere os tipos e os nomes dele.
@@ -57,14 +57,15 @@ module.exports = [
     languageOptions: { ecmaVersion: 2023, sourceType: 'module', globals: { ...globals.node } },
     rules: regras,
   },
-  // Navegador: os scripts que o painel e o DG Claw Web servem às telas.
+  // Navegador: os scripts que o painel e o Prumo da Locadora Web servem às telas.
   {
     files: ['web/public/**/*.js', 'panel/public/**/*.js'],
     languageOptions: {
       ecmaVersion: 2023,
       sourceType: 'script',
-      // `DGMidias` vem de outro <script> da página (conversa.html do Web).
-      globals: { ...globals.browser, DGMidias: 'readonly' },
+      // `DGMidias` vem de outro <script> da página (conversa.html do Web). `dsIcone`, `dsMarca` e
+      // `dsCarregando` vêm dos scripts do design system (web/public/ds/), carregados antes das telas.
+      globals: { ...globals.browser, DGMidias: 'readonly', dsIcone: 'readonly', dsMarca: 'readonly', dsCarregando: 'readonly' },
     },
     rules: regras,
   },

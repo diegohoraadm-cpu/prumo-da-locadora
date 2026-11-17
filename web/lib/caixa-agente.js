@@ -115,7 +115,7 @@ function criarCaixaAgente({ config, registro, log, porta, agora, filtroRetrato }
         return null;
       }
       if (st.isSymbolicLink() || !st.isDirectory()) {
-        avisaUmaVez(`pasta:${atual}`, `Caixa de ${agente.slug}: ${atual} é ${st.isSymbolicLink() ? 'um atalho' : 'algo que não é pasta'}. Recusei por segurança; o dono deve rodar "sudo dgclaw agente reparar ${agente.slug}".`);
+        avisaUmaVez(`pasta:${atual}`, `Caixa de ${agente.slug}: ${atual} é ${st.isSymbolicLink() ? 'um atalho' : 'algo que não é pasta'}. Recusei por segurança; o dono deve rodar "sudo prumo agente reparar ${agente.slug}".`);
         return null;
       }
     }
@@ -344,7 +344,7 @@ function criarCaixaAgente({ config, registro, log, porta, agora, filtroRetrato }
     const fila = nomes.filter((n) => !n.startsWith('.') && RX_ARQ.test(n)).sort().slice(0, MAX_POR_VOLTA);
     for (const nome of fila) {
       try { await atende(agente, dono, entrada, nome); } catch (e) {
-        log('erro', `Caixa de ${agente.slug}: erro inesperado no pedido ${nome} (${e && e.message}). O pedido continua na entrada; se repetir, avise quem mantém o DG Claw.`);
+        log('erro', `Caixa de ${agente.slug}: erro inesperado no pedido ${nome} (${e && e.message}). O pedido continua na entrada; se repetir, avise quem mantém o Prumo da Locadora.`);
         naoApagados.add(path.join(entrada, nome));
       }
     }

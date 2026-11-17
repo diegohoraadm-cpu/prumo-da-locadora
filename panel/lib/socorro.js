@@ -12,7 +12,7 @@
 //
 //   --safe-mode   desliga CLAUDE.md, hooks, plugins e MCP. Sem ele, um Claude aberto na
 //                 casa do agente leria o CLAUDE.md DO AGENTE e viraria o agente, e os
-//                 hooks do DG Claw gravariam a conversa de socorro no fio do agente
+//                 hooks do Prumo da Locadora gravariam a conversa de socorro no fio do agente
 //                 (chat-tail.md). Neutro quer dizer isto.
 //   cwd = <ws>/.dgclaw/socorro/sala, e NÃO a casa do agente. O Claude grava o transcript
 //                 da sessão numa pasta derivada do cwd, e na pasta do agente ele se
@@ -117,10 +117,10 @@ function buildSocorro(CONFIG, serverDir) {
     const temManual = EMERGENCIA && fs.existsSync(EMERGENCIA);
     const temSkill = SKILL && fs.existsSync(SKILL);
     return [
-      `Você é a SESSÃO DE SOCORRO do agente "${CONFIG.agentName || CONFIG.agentSlug}", um agente DG Claw.`,
+      `Você é a SESSÃO DE SOCORRO do agente "${CONFIG.agentName || CONFIG.agentSlug}", um agente Prumo da Locadora.`,
       'Você NÃO é o agente. Você é um técnico neutro, chamado pelo dono dele '
         + `(${CONFIG.creatorName || 'o dono'}, uma pessoa leiga) porque algo parece errado com o agente.`,
-      `A casa do agente (o workspace) é ${WS}. Os scripts do DG Claw estão em ${lib}.`,
+      `A casa do agente (o workspace) é ${WS}. Os scripts do Prumo da Locadora estão em ${lib}.`,
       temManual
         ? `PRIMEIRO, leia o manual de emergência: ${EMERGENCIA}. Siga o que ele manda.`
         : `O manual de emergência (${EMERGENCIA || 'docs/EMERGENCIA.md'}) ainda não existe nesta instalação: diga isso ao dono uma vez e siga o roteiro abaixo.`,

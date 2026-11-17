@@ -73,7 +73,7 @@ igual "aceita a pasta chrome-linux64" "NAVEGADOR=chromium-playwright64" "$(print
 
 roda "$TMP/vazio" PLAYWRIGHT_BROWSERS_PATH="$TMP/nada" >"$TMP/out" 2>"$TMP/err"
 igual "sem nenhum navegador: sai com 78 (a unidade nao reinicia em laco)" "78" "$?"
-afirma "o erro diz o que procurou e o que fazer" bash -c "grep -q 'nao achei nenhum navegador' '$TMP/err' && grep -q 'dgclaw imagem construir' '$TMP/err'"
+afirma "o erro diz o que procurou e o que fazer" bash -c "grep -q 'nao achei nenhum navegador' '$TMP/err' && grep -q 'prumo imagem construir' '$TMP/err'"
 afirma "a unidade nao reinicia com 78" grep -qx 'RestartPreventExitStatus=78' "$U/dgclaw-tela-chrome.service"
 
 echo "Containerfile: nao aborta fora do amd64"

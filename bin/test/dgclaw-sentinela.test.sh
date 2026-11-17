@@ -39,7 +39,10 @@ SH
 cat >"$T/bin/dgclaw" <<'SH'
 #!/usr/bin/env bash
 echo "$*" >>"$T/dgclaw.log"
-[ -e "$T/conserta" ] && { printf '{"ok":true,"agente":{"status":"idle","ptyVivo":true},"sessionId":"s1","ultimaSaidaEm":null}' >"$SAUDE"; touch "$T/bun-vivo"; }
+# Ordem: no instante do iniciar, a marca .created ja existe? (um iniciar que cai no meio nao pode ser repetido)
+[ "$1 $2" = "agente iniciar" ] && { [ -f "$T/raiz/var/lib/dgclaw/sentinela/ana.created" ] && echo sim || echo nao; } >"$T/marca-antes"
+[ -e "$T/iniciar-falha" ] && exit 1
+[ -e "$T/conserta" ] && { echo running >"$T/estado"; printf '{"ok":true,"agente":{"status":"idle","ptyVivo":true},"sessionId":"s1","ultimaSaidaEm":null}' >"$SAUDE"; touch "$T/bun-vivo"; }
 exit 0
 SH
 chmod +x "$T/bin/"*; export T PATH="$T/bin:$PATH"
@@ -56,11 +59,11 @@ rodar; ok "saudavel: nenhum pedido alem do /api/saude" "$([ "$(grep -vc /api/sau
 # 2. Runner em erro: reinicia uma vez, nao resolve, avisa o Admin (sem Telegram ligado: nada no bot).
 printf '{"ok":true,"agente":{"status":"errored","ptyVivo":false},"sessionId":"s1"}' >"$SAUDE"
 rodar
-ok "runner em erro: dgclaw agente reiniciar ana" "$(grep -qx 'agente reiniciar ana' "$T/dgclaw.log"; echo $?)"
+ok "runner em erro: prumo agente reiniciar ana" "$(grep -qx 'agente reiniciar ana' "$T/dgclaw.log"; echo $?)"
 ok "recado ao Admin com o token e o codigo do problema" "$(grep '/api/agents/admin/input' "$REQ" | grep -q "Bearer tok-admin-teste.*" && grep -q "problema 'runner' no agente ana" "$REQ"; echo $?)"
 ok "sem Telegram ligado, nada vai ao bot" "$([ "$(tg)" = 0 ] && echo 0 || echo 1)"
 grep -q "Tentei consertar sozinho" "$LOGF" 2>/dev/null || true
-ok "o log conta o reparo e o aviso" "$(grep -q "tentando uma vez: dgclaw agente reiniciar ana" "$LOGF" && grep -q "avisando o dono (runner, reparo: reiniciar, nao resolveu)" "$LOGF"; echo $?)"
+ok "o log conta o reparo e o aviso" "$(grep -q "tentando uma vez: prumo agente reiniciar ana" "$LOGF" && grep -q "avisando o dono (runner, reparo: reiniciar, nao resolveu)" "$LOGF"; echo $?)"
 
 ok "a Sentinela nao cria as chaves do aviso no aparelho" "$([ ! -e "$DGCLAW_RAIZ/var/lib/dgclaw/web/push/vapid.json" ] && echo 0 || echo 1)"
 
@@ -74,7 +77,7 @@ node -e 'require(process.argv[1]).criarPush({ dataDir: process.argv[2], log() {}
 rodar; ok "passadas 6 h: trata de novo" "$(grep -qx 'agente reiniciar ana' "$T/dgclaw.log"; echo $?)"
 
 ok "com as chaves do Web, tenta o aviso no aparelho" "$(grep -q 'aviso no aparelho: 0 de 0 aparelhos' "$LOGF"; echo $?)"
-ok "recado ao Admin diz o resultado do reparo" "$(grep -q 'dgclaw agente reiniciar nao resolveu' "$REQ"; echo $?)"
+ok "recado ao Admin diz o resultado do reparo" "$(grep -q 'prumo agente reiniciar nao resolveu' "$REQ"; echo $?)"
 
 # 4. Cai, volta e cai de novo em menos de 6 h: a marca fica e segura reparo e aviso.
 printf '%s' "$SAO" >"$SAUDE"; rodar
@@ -89,7 +92,7 @@ ok "bom e marca velha: estado limpo" "$([ -z "$(ls "$DGCLAW_RAIZ/var/lib/dgclaw/
 bash -c 'exec -a "dgclaw atualizar" sleep 60' & ATU=$!
 sleep 0.2; echo $ATU >"$DGCLAW_RAIZ/var/lib/dgclaw/atualizando"
 printf '{"ok":true,"agente":{"status":"errored","ptyVivo":false},"sessionId":"s1"}' >"$SAUDE"; rodar
-ok "durante o dgclaw atualizar: nenhum pedido e nenhum reparo" "$([ ! -s "$REQ" ] && [ ! -s "$T/dgclaw.log" ] && echo 0 || echo 1)"
+ok "durante o prumo atualizar: nenhum pedido e nenhum reparo" "$([ ! -s "$REQ" ] && [ ! -s "$T/dgclaw.log" ] && echo 0 || echo 1)"
 touch -d '3 hours ago' "$DGCLAW_RAIZ/var/lib/dgclaw/atualizando"; rodar
 ok "marca do atualizar com mais de 2 h (pid vivo, cmdline certo): confere normal" "$(grep -qx 'agente reiniciar ana' "$T/dgclaw.log"; echo $?)"
 rm -f "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/"*
@@ -120,7 +123,7 @@ rm -f "$T/conserta"; touch "$T/bun-vivo"; rm -f "$DGCLAW_RAIZ/var/lib/dgclaw/sen
 
 # 6. Plugin desinstalado: reparar.
 echo '{}' >"$H/.claude/plugins/installed_plugins.json"; rodar
-ok "plugin ausente: dgclaw agente reparar" "$(grep -qx 'agente reparar ana' "$T/dgclaw.log"; echo $?)"
+ok "plugin ausente: prumo agente reparar" "$(grep -qx 'agente reparar ana' "$T/dgclaw.log"; echo $?)"
 printf '{"plugins":{"telegram@claude-plugins-official":[{}]}}' >"$H/.claude/plugins/installed_plugins.json"
 
 # 7. Bot do Telegram morto e o reinicio nao resolve: avisa, sem prometer o caso do outro computador.
@@ -163,6 +166,28 @@ rm -f "$H/.claude/.credentials.json"; rodar
 ok "sem credencial: aviso de login, sem reparo" "$([ ! -s "$T/dgclaw.log" ] && grep sendMessage "$REQ" | grep -q 'Entrar+com+a+assinatura' && echo 0 || echo 1)"
 echo exited >"$T/estado"; rodar
 ok "container parado: aviso, sem reparo" "$([ ! -s "$T/dgclaw.log" ] && grep -q "problema 'parado'" "$REQ" && echo 0 || echo 1)"
+
+# 9b. exited: nada e feito alem do aviso, que cita o comando do servidor.
+rm -f "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/"*; echo exited >"$T/estado"; rodar
+ok "exited: sem agente iniciar, sem marca created" "$([ ! -s "$T/dgclaw.log" ] && [ ! -e "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/ana.created" ] && echo 0 || echo 1)"
+ok "aviso de parado cita sudo prumo agente iniciar ana" "$(grep -qF 'sudo+prumo+agente+iniciar+ana' "$REQ"; echo $?)"
+# 9c. created que sobe: um iniciar, marca, sem aviso.
+printf '{"claudeAiOauth":{"refreshToken":"x"}}' >"$H/.claude/.credentials.json"
+rm -f "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/"*; echo created >"$T/estado"; touch "$T/conserta"; rodar; rm -f "$T/conserta"
+ok "created que sobe: um agente iniciar ana, marca e nenhum aviso" "$([ "$(cat "$T/dgclaw.log")" = 'agente iniciar ana' ] && [ -f "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/ana.created" ] && ! grep -q admin/input "$REQ" && [ "$(tg)" = 0 ] && echo 0 || echo 1)"
+# 9d. created que nao sobe: uma tentativa so, o aviso sai; segunda rodada nao repete nada.
+rm -f "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/"*; echo created >"$T/estado"; rodar
+ok "created que nao sobe: uma tentativa e o aviso de parado" "$([ "$(cat "$T/dgclaw.log")" = 'agente iniciar ana' ] && grep -q "problema 'parado'" "$REQ" && echo 0 || echo 1)"
+rodar
+ok "duas rodadas dentro de 6 h: nao tenta de novo e nao avisa de novo" "$([ ! -s "$T/dgclaw.log" ] && ! grep -q admin/input "$REQ" && echo 0 || echo 1)"
+# 9e. marca created vencida: tenta de novo (a do aviso de parado tambem venceu).
+envelhece "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/ana.created"; rodar
+ok "marca created vencida: tenta de novo" "$([ "$(cat "$T/dgclaw.log")" = 'agente iniciar ana' ] && echo 0 || echo 1)"
+# 9f. iniciar que falha: a marca ja estava gravada quando ele rodou, entao a rodada seguinte nao repete.
+rm -f "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/"* "$T/marca-antes"; echo created >"$T/estado"; touch "$T/iniciar-falha"; rodar
+ok "iniciar que falha no meio: a marca .created ja existia quando ele rodou" "$([ "$(cat "$T/marca-antes" 2>/dev/null)" = sim ] && echo 0 || echo 1)"
+rodar; rm -f "$T/iniciar-falha"
+ok "e a rodada seguinte nao tenta de novo" "$([ ! -s "$T/dgclaw.log" ] && echo 0 || echo 1)"
 
 # 10. Sem agente nenhum: sai sem conferir nada.
 echo '{"versao": 1, "agentes": []}' >"$DGCLAW_RAIZ/etc/dgclaw/agentes.json"; rodar

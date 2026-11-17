@@ -155,7 +155,7 @@ publica 2 "$(bol GHSA-AAAA-1111)"
 roda
 igual "corrompido: sai 1" 1 "$RC"
 tem "diz qual arquivo" "$INSTALADO" "$ERR"
-tem "diz o que fazer" "dgclaw atualizar" "$ERR"
+tem "diz o que fazer" "prumo atualizar" "$ERR"
 
 echo "validacao do contrato"
 raiz_nova

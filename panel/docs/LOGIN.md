@@ -30,7 +30,7 @@ Não existe senha padrão.
 
 Trancado desliga só a senha. O segredo do proxy, a chave de API e o Cloudflare Access
 continuam valendo, cada um com a própria credencial. É assim que o painel roda dentro
-do container no DG Claw v1: sem senha própria, com o DG Claw Web fazendo o login do
+do container no Prumo da Locadora v1: sem senha própria, com o Prumo da Locadora Web fazendo o login do
 dono e chegando pelo proxy. Sem nenhuma dessas três configurada, nada entra.
 
 ## Sessão e proteções
@@ -55,7 +55,7 @@ listar e revogar: aba Cofre, `GET/POST/DELETE /api/chaves-api` (só por senha) o
 `node panel/bin/chave-api.js`. Detalhes em `panel/docs/COFRE.md` e
 `docs/COFRE-POR-API.md`.
 
-## Atrás do proxy do dono (DG Claw Web)
+## Atrás do proxy do dono (Prumo da Locadora Web)
 
 Se `DGCLAW_PANEL_PROXY_SECRET_FILE` (arquivo, preferido) ou `DGCLAW_PANEL_PROXY_SECRET`
 estiver definida, o pedido com `X-DGClaw-Proxy: <segredo>` entra como o dono

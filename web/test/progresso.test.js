@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+require('./_ds-stub');
 const { subirWeb } = require('./ajuda');
 const { criarRunnerFalso } = require('./runner-falso');
 const { loja } = require('../lib/onboarding');
@@ -111,7 +112,7 @@ test('imagem: build ativo com STEP 4/10 ocupa a faixa de 5 a 30; failed vira err
   fs.writeFileSync(logImagem, 'STEP 5/10: RUN npm ci\nError: build falhou\n');
   const falha = await ver();
   assert.match(falha.erro.motivo, /imagem dos agentes falhou/); assert.match(falha.erro.motivo, /build falhou/);
-  assert.match(falha.erro.oQueFazer, /dgclaw imagem construir/);
+  assert.match(falha.erro.oQueFazer, /prumo imagem construir/);
 
   estado = 'inactive';
   const normal = await ver();

@@ -101,8 +101,8 @@ test('escopo: o cofre do agente é fechado dentro do painel, com a frase certa, 
     for (const v of formas('/p/ana/api/cofre')) {
       const r = avalia(COLAB, m, v);
       assert.equal(r.ok, false, `${m} ${v}`); assert.equal(r.status, 403, `${m} ${v}`);
-      assert.equal(r.motivo, 'O cofre é só do dono do DG Claw.', `${m} ${v}`);
-      assert.equal(r.extra.error, 'O cofre é só do dono do DG Claw.');
+      assert.equal(r.motivo, 'O cofre é só do dono do Prumo da Locadora.', `${m} ${v}`);
+      assert.equal(r.extra.error, 'O cofre é só do dono do Prumo da Locadora.');
     }
   }
   assert.equal(avalia(COLAB, 'POST', '/p/ana/api/cofre/aplicar').ok, false);

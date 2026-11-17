@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""quarentena.py (DG Claw) — O que NUNCA volta ao agente depois de um modo de seguranca.
+"""quarentena.py (Prumo da Locadora) — O que NUNCA volta ao agente depois de um modo de seguranca.
 
 POR QUE EXISTE (05/10/2026). O modo de seguranca (_lib/reinicio.py) sobe uma sessao nova
 sem a conversa que travou e guarda a mensagem culpada em <ws>/.dgclaw/quarentena/. Mas a
@@ -155,7 +155,7 @@ def filtrar_linhas(texto, regras):
 
 def main(argv=None):
     import argparse
-    ap = argparse.ArgumentParser(description="Regra da quarentena do modo de seguranca do DG Claw.")
+    ap = argparse.ArgumentParser(description="Regra da quarentena do modo de seguranca do Prumo da Locadora.")
     ap.add_argument("acao", choices=["filtrar-linhas", "status"])
     ap.add_argument("--workspace", default=None)
     a = ap.parse_args(argv)

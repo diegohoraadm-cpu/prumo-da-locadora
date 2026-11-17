@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""pulso_lib.py (DG Claw) — registro no ledger do Pulso (camada de PRECISAO) p/ crons .py.
+"""pulso_lib.py (Prumo da Locadora) — registro no ledger do Pulso (camada de PRECISAO) p/ crons .py.
 
 ZERO path hardcoded de maquina/agente. O ledger vai pra
 DGCLAW_PULSO_DIR (default <ws>/.dgclaw/logs/pulso), derivado de DGCLAW_WORKSPACE.

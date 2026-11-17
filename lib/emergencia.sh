@@ -1,18 +1,29 @@
 #!/usr/bin/env bash
-# lib/emergencia.sh: o botao de emergencia do DG Claw ("tirar do ar") e o religar.
+# lib/emergencia.sh: o botao de emergencia do Prumo da Locadora ("tirar do ar") e o religar.
 #
-# Chamado por `dgclaw emergencia ...` (bin/dgclaw) e pelo executor de pedidos da ronda de seguranca.
+# Chamado por `prumo emergencia ...` (bin/dgclaw) e pelo executor de pedidos da ronda de seguranca.
 # Tira o servidor da internet (para o proxy publico e carrega a tabela nft `inet dgclaw_emergencia`,
 # que derruba ate as conexoes ja abertas) mantendo so o acesso de administracao (Tailscale ou IPS_ADMIN).
 # O ufw nao e alterado. Desenho: docs/BOTAO-DE-EMERGENCIA.md.
 #
-# Uso:  dgclaw emergencia estado|simular|preparar|cortar|confirmar|religar [opcoes]
+# Uso:  prumo emergencia estado|simular|preparar|cortar|confirmar|religar [opcoes]
 # O corte vive na memoria (tabela nft e servicos parados) e NAO sobrevive a um reinicio, por desenho: depois de reiniciar,
 # o marcador `cortado` sem a tabela nft vira o estado "inconsistente" e a ronda avisa. Veja docs/BOTAO-DE-EMERGENCIA.md.
-# Raiz falsa (testes): DGCLAW_RAIZ=<pasta>, igual ao resto do DG Claw.
+# Raiz falsa (testes): DGCLAW_RAIZ=<pasta>, igual ao resto do Prumo da Locadora.
 set -euo pipefail
 
-PROG="dgclaw emergencia"
+# Este script e independente do lib/comum.sh (as funcoes de mensagem dele colidem com as daqui): a conferencia
+# do `prumo` alheio repete a de comum.sh: prumo_alheio. Se o `prumo` do PATH nao e o nosso, as mensagens dizem dgclaw.
+prumo_alheio() {
+  local bin="${DGCLAW_RAIZ:-}/usr/local/bin" achado
+  achado="$(command -v prumo 2>/dev/null)" || return 1
+  [[ -n "$achado" ]] || return 1
+  [[ ! -L "$bin/prumo" && "$achado" == "$bin/prumo" \
+    && "$(cat "$bin/prumo" 2>/dev/null)" == "$(printf '#!/bin/sh\nexec %s/dgclaw "$@"\n' "$bin")" ]] && return 1
+  return 0
+}
+PROG="prumo emergencia"
+prumo_alheio && PROG="dgclaw emergencia"
 SELF="$(readlink -f "${BASH_SOURCE[0]}")"
 RAIZ="${DGCLAW_RAIZ:-}"
 RAIZ="${RAIZ%/}"
@@ -249,11 +260,11 @@ prechecagens() {
     PROBLEMAS+=("não está rodando como root. Rode com sudo.")
   fi
   if [[ "$SELF" =~ [[:space:]] || ! "$SELF" =~ ^[A-Za-z0-9._/@:+-]+$ ]]; then
-    PROBLEMAS+=("o caminho do script ('$SELF') tem caracteres que o agendamento do religar não aceita. Mova o DG Claw para um caminho simples.")
+    PROBLEMAS+=("o caminho do script ('$SELF') tem caracteres que o agendamento do religar não aceita. Mova o Prumo da Locadora para um caminho simples.")
   fi
 
   if ! command -v nft >/dev/null 2>&1; then
-    PROBLEMAS+=("o nft não está instalado. Sem ele não há como fechar a rede com segurança: instale (apt install nftables) e rode o instalador do DG Claw de novo.")
+    PROBLEMAS+=("o nft não está instalado. Sem ele não há como fechar a rede com segurança: instale (apt install nftables) e rode o instalador do Prumo da Locadora de novo.")
   fi
 
   local ts_ok=0 ts_saida="tailscale não instalado" i estado if_up=()

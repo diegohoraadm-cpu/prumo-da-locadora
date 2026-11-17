@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""thread_log.py (DG Claw) — Reconstroi o LOG CANONICO da thread do dono a partir do
+"""thread_log.py (Prumo da Locadora) — Reconstroi o LOG CANONICO da thread do dono a partir do
 transcript (.jsonl) da sessao VIVA da persona.
 
 DUAS ORIGENS, UMA LISTA SO (10/08/2026)
@@ -40,7 +40,7 @@ Por que existe (requisito da "dieta de contexto" / sono-vigilia):
   Esse log entra no CARRY-OVER (working-memory) antes de um restart-com-carry-over
   (auto-compact / reflexao), pra a sessao fresca acordar sabendo a conversa recente.
 
-GENERALIZADO pro contrato DG Claw: ZERO hardcode de persona/paths. Tudo por env DGCLAW_*.
+GENERALIZADO pro contrato Prumo da Locadora: ZERO hardcode de persona/paths. Tudo por env DGCLAW_*.
 
 O que conta como mensagem da thread:
   - ENTRADA (dono), pelo Telegram: user turn cujo conteudo comeca com
@@ -661,7 +661,7 @@ def build_thread_log(jsonl_path, last=14, chat=None):
 
 def _hhmm_local(ts):
     """ts e UTC (ex '2026-06-30T13:51:33'). Devolve HH:MM no fuso LOCAL do host
-    (respeita TZ do ambiente — o DG Claw seta TZ no .service)."""
+    (respeita TZ do ambiente — o Prumo da Locadora seta TZ no .service)."""
     try:
         dt = datetime.fromisoformat(ts.replace("Z", "")).replace(tzinfo=timezone.utc)
         return dt.astimezone().strftime("%H:%M")
@@ -686,7 +686,7 @@ def format_md(events, max_chars=320):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Log canonico da thread do canal (DG Claw).")
+    ap = argparse.ArgumentParser(description="Log canonico da thread do canal (Prumo da Locadora).")
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument("--session", help="customTitle da sessao (ex: dgclaw-<slug>)")
     g.add_argument("--jsonl", help="caminho direto do .jsonl")

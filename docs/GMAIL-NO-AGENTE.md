@@ -12,7 +12,7 @@ libera mais poder quando quiser.
    `https://claude.ai/customize/connectors`, ligue o **Gmail** e autorize a conta Google que o
    agente deve ler. Isso se faz uma vez só, e pela web: o Claude Code não liga conector novo.
 3. **Reiniciar o agente**, se ele já estava rodando quando você ligou o Gmail, para a sessão dele
-   carregar o conector. No servidor: `dgclaw agente reiniciar <slug>`.
+   carregar o conector. No servidor: `prumo agente reiniciar <slug>`.
 4. **Testar:** peça ao agente "resume os meus últimos 5 e-mails". Se vierem e-mails de verdade,
    está funcionando.
 
@@ -101,5 +101,5 @@ em `docs/SEGURANCA.md`, seção "Conectores".
 | --- | --- |
 | Login da assinatura | Login assistido do painel (`POST /api/provedor/login`), ver `panel/docs/PROVEDOR-NA-TELA.md` |
 | Conector ligado | Conta do claude.ai do dono, nunca no servidor |
-| Trava de leitura e envio | `scripts/gmail-permissao.sh`, chamado pelo `dgclaw agente criar` |
+| Trava de leitura e envio | `scripts/gmail-permissao.sh`, chamado pelo `prumo agente criar` |
 | Conversa de liberação com o dono | skill `connect` |

@@ -1,7 +1,7 @@
 // Ler a conversa do agente de volta do disco.
 //
 // O `agents-server` pede isto para mostrar as últimas trocas na tela da pessoa
-// (`conversaDoCard`), e o painel do DG Claw usa o mesmo caminho. É uma leitura
+// (`conversaDoCard`), e o painel do Prumo da Locadora usa o mesmo caminho. É uma leitura
 // pequena de propósito: as últimas N mensagens de texto, sem tool call, sem
 // sidechain e sem o system-reminder, que é o que alguém quer ver ao abrir a
 // janela. Análise profunda de transcript é problema do Bunker, não do runner.

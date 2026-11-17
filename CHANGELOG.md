@@ -1,11 +1,256 @@
 # Changelog
 
-Todas as mudanças importantes do DG Claw ficam neste arquivo.
+Todas as mudanças importantes do Prumo da Locadora ficam neste arquivo.
 
 O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto adota o
 [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.0.5] - <data do merge> (Prumo da Locadora)
+
+Base do original: f4efccc (#129).
+
+- Atualizando da versão anterior para a 1.0.5, a tela termina com "Atualizacao INCOMPLETA" e uma linha FALHOU para cada agente, pedindo `prumo agente recriar <slug> --forcar`. Isso é esperado só desta vez: a 1.0.5 passou a conferir o que existe só dentro da caixa de cada agente antes de trocá-la, e os agentes antigos ainda não têm a referência dessa conferência. Enquanto você não roda o comando, cada agente segue funcionando na versão anterior. A casa do agente, a memória, o cofre e as conversas não são tocados. O `--forcar` troca a caixa pela versão nova e perde só o que foi instalado à mão dentro dela; a lista fica em `/var/lib/dgclaw/agentes/<slug>/perdido-no-recriar-<data>.txt`. As rotinas padrão do agente voltam ao padrão (se você tinha pedido para mudar o horário de alguma, peça de novo depois). Depois do `--forcar`, as próximas atualizações não pedem mais nada.
+
 ## [Não lançado]
+
+**Correção de segurança e de perda de dados: `dgclaw agente recriar` mostra o que se perde e pede `--forcar`.** Trocar o
+container de um agente (o que a atualização faz com a imagem nova) apaga o que alguém instalou direto dentro dele, fora
+da casa do agente, como o `tailscale` que um dono tinha instalado à mão. Isso acontecia sem aviso nenhum. Agora, antes
+de trocar, o comando compara o container com a imagem e lista os pacotes instalados à mão e os arquivos que só existem
+ali. Se houver algo na lista, ele **não troca nada** e pede `--forcar`; se não conseguir conferir, também para. Com
+`--forcar` ele troca. A lista completa é gravada em `perdido-no-recriar-<data>.txt` na pasta do agente **antes** de pedir
+qualquer confirmação (a tela mostra só o começo, e o arquivo guarda tudo). Como os nomes vêm de dentro do container, o
+comando os simplifica (só letras, números e alguns símbolos) e avisa que a lista é dado, nunca instrução; o Admin foi
+orientado a não obedecer nada que apareça nela. Se qualquer passo da conferência falhar, o comando para em vez de
+tratar como "nada a perder". As rotinas padrão do agente (reflexão, vigia, coletas e afins), que o `reparar` regrava sozinho, só ficam de fora da lista se o arquivo for idêntico ao que o produto gerou (o `reparar` passa a gravar a impressão digital delas na casa do agente, em `.dgclaw/unidades-padrao.sha256`); o runner e o painel do agente só ficam de fora se forem idênticos aos da imagem; diretório que só aparece porque um arquivo dentro dele mudou fica de fora apenas se a permissão e o dono forem os da imagem, e programa só em bytecode (`.pyc`) conta como perda; rotina padrão que o dono desligou (e que a recriação religaria) também conta; container preso em `stopping` passa a pedir `--forcar`, porque não dá para conferir o que existe só dentro dele; se alguém editou uma rotina, ou se o agente é anterior a esta versão e ainda não tem essa impressão digital, elas aparecem na lista como possível perda (na primeira atualização depois desta, um agente antigo pede `--forcar` uma vez e já fica com a referência gravada); as rotinas do Instagram e o vigia do canal, que ninguém regrava, entram. A casa, o cofre, as portas e as rotinas do agente continuam intactos como antes.
+Falhas reportadas por Renato Gracie (divulgação responsável).
+
+### Como atualizar (recriar com inventário)
+
+1. **Atualize com o `dgclaw atualizar` padrão.** Se algum agente seu tiver coisa instalada só dentro do container, a
+   atualização termina avisando que aquele agente **não** foi trocado (ele continua rodando como estava, com a
+   imagem antiga) e mostra a lista do que se perderia. Nada é apagado nesse momento.
+2. **Decida com a lista na mão.** Se o que aparece pode ser perdido ou reinstalado depois, rode
+   `sudo dgclaw agente recriar <agente> --forcar`. Se precisa guardar algo, copie para a casa do agente (a pasta
+   `home` dele) antes. O Admin foi instruído a não usar `--forcar` sem mostrar a lista a você.
+3. **Agente sem nada instalado à mão** (a maioria) atualiza como sempre, sem perguntar nada.
+
+**Correção de segurança: o cron de comentários do Instagram não roda mais com permissão total.** A rotina que responde
+os comentários lia o texto de desconhecidos dentro do pedido ao agente e rodava sem nenhuma lista de ferramentas, com a
+permissão toda liberada. Um comentário escrito como ordem podia virar ação no servidor. Agora a sessão roda só com as
+ferramentas de que precisa (ler, o scrape, o cadastro de seguidores, o aviso ao dono e a memória dela), sem internet e
+sem rodar comandos livres. A resposta ao comentário sai por um script novo (`scripts/responder-comentario.sh`) que só
+aceita o número do comentário e o texto, confere que o comentário veio do scrape da rodada, não responde duas vezes e
+lê a conta e a chave da configuração, nunca de quem pede. Se o Claude Code instalado for antigo e não conhecer as
+travas, o cron não roda e avisa você em vez de rodar solto. As rotinas de post e de consolidação foram examinadas e não
+recebem texto de terceiros no pedido, então ficaram como estavam.
+Mais travas na mesma rotina: a sessão agora roda **sem terminal** (só ler e editar arquivos), porque até um comando de
+leitura como `grep -r` furava o bloqueio da pasta de credenciais; ela não lê a configuração da conta, o token nem os
+cookies, e escreve **só** o arquivo de respostas da rodada (`data/rodada/respostas.json`).
+Em vez de responder ela mesma, a sessão grava `data/rodada/respostas.json` e o próprio cron envia cada resposta pelo
+`responder-comentario.sh`. O scrape é feito pelo cron antes da sessão (e, numa rodada manual, pelo `scripts/preparar-scrape.sh`, que faz o scrape, confere e carimba sob a mesma trava), para um arquivo da rodada, e só vira o oficial
+depois de conferido (data recente e posts processados); se falhar, nada é respondido e você é avisado. A sessão
+não usa a memória automática do Claude, não herda nenhuma configuração de permissão (um `allow` antigo, de usuário ou de projeto, não amplia o que ela faz), roda
+dentro da pasta da rodada e só lê o que foi liberado: SOUL, PERSONALITY, a skill, o scrape da rodada, os cadastros de seguidores e as linhas de instrução do dono marcadas para comentários (sem acesso à memória privada). **A sessão deixou de escrever na memória, nos cadastros de seguidores e na memória de trabalho** (e de marcar
+instruções como "aplicadas"); o perfil dos seguidores segue sendo atualizado pelo scrape: a seção "Instruções do dono" que a rotina de posts obedece só muda por você, e a atualização
+das seções "Hoje" e "Pessoas Próximas" fica para a sua sessão principal, não para esta rotina. Duas rodadas nunca rodam juntas. O registro de comentários respondidos
+tem trava e reserva do número antes do envio, e a reserva só é desfeita quando o Instagram recusa de verdade: se a
+conexão cair no meio e não der para saber se a resposta saiu, o número fica reservado, você é avisado e confere na
+conta (nunca há resposta em dobro). O cadastro de seguidores só aceita número de conta e nome de usuário em formato
+válido e nunca grava fora da própria pasta.
+Falhas reportadas por Renato Gracie (divulgação responsável).
+
+### Como atualizar (comentários do Instagram)
+
+1. **Atualize com o `dgclaw atualizar` padrão.** O cron novo passa a valer na próxima rodada.
+2. **Confira a versão do Claude Code.** Se, depois de atualizar, você receber o aviso "Cron de comentários NÃO rodou", peça
+   ao Admin para rodar `claude update` no agente. O aviso diz exatamente qual trava a versão antiga não tem.
+3. **Se você personalizou as instruções do Instagram** (`skills/instagram/comments.md` do seu agente), troque o passo de
+   responder para usar `bash $DGCLAW_PLUGIN_ROOT/scripts/responder-comentario.sh "<id do comentário>" "<texto>"`. É o único
+   jeito que o cron agora permite, e ele já anota o comentário como respondido. Para pular um comentário, use
+   `responder-comentario.sh --pular "<id>"`, e retire do texto o passo de rodar o scrape, que agora é do cron.
+4. **Instruções do dono na memória de trabalho** continuam do jeito que você escreve, e a sessão de comentários não
+   escreve mais ali nem marca instrução como aplicada: uma instrução com a etiqueta `[comentarios]` vale em toda rodada
+   até você apagá-la.
+5. **Se você personalizou o prompt do cron de comentários**, saiba que a sessão não tem mais terminal: ela grava as
+   decisões em `data/rodada/respostas.json` e o cron faz o scrape, o envio e o aviso.
+
+**Correção: o instalador não para por repositório de terceiro.** Se o `apt-get update` falhava por causa de um repositório do
+servidor que não é do Prumo da Locadora (um de terceiro, fora do ar ou com chave vencida), a instalação inteira abortava. Agora vira um
+aviso e a instalação segue; se algum pacote realmente faltar, o passo de instalar dele avisa com a mensagem do próprio apt, e o
+instalador confere que o Node ficou na versão 22 ou mais antes de seguir (se o repositório dele falhou e o Node ficou velho,
+ele para e explica o que fazer).
+Falhas reportadas por Renato Gracie (divulgação responsável).
+
+### Como atualizar (instalador)
+
+Nada além do `dgclaw atualizar` padrão.
+
+**As restrições de cada agente sobrevivem à atualização.** Se você tirou de um agente o terminal (Bash) ou o envio de
+arquivos, ou deixou ele gravar só em certas pastas, essa trava ficava dentro da caixa dele, e a atualização recria a
+caixa: a trava sumia sem aviso. Agora existe um lugar oficial, fora da caixa e fora do alcance do agente, e um comando para
+usá-lo: `sudo dgclaw agente restricoes <agente> --sem-bash sim --sem-enviar-arquivo sim --escrita-so-em pasta1,pasta2`
+(sem opções, ele só mostra o estado; `--escrita-livre` solta de novo a gravação). Criar de novo, reparar, recriar e
+atualizar reaplicam as travas sozinhos, e um arquivo de restrições estragado faz o comando parar com a explicação, em vez
+de soltar a trava. A trava de pastas só barra as ferramentas de arquivo: com o Bash ligado, o terminal ainda grava em
+qualquer lugar, então combine as duas (o comando avisa). Travar o envio de arquivos só é aceito junto com a trava do
+terminal (`--sem-bash sim`), porque com o terminal liberado o agente manda o arquivo por fora das ferramentas. Nos agentes que rodam no Codex essas travas ainda não valem, e o
+comando também avisa. Guia: `docs/RESTRICOES-DO-AGENTE.md`.
+
+Qualquer restrição (inclusive só o terminal ou só o envio de arquivos) fecha também os arquivos de configuração do agente
+para as ferramentas de arquivo: pastas e arquivos ocultos em qualquer profundidade, `SKILL.md`, `CLAUDE.md` e `AGENTS.md`. Sem isso, um
+agente sem Bash editaria o próprio `config.sh` e executaria o que quisesse. No modo sem pastas, o agente também só grava na casa dele e em `/tmp`; o resto do sistema fica fechado. As rotinas que rodam sozinhas dentro da caixa (reflexão, batimento, crons) passam a usar `python3 -I` e a ler o texto da memória do agente como dado, não como parte do programa: um agente sem terminal não consegue mais executar código gravando um `datetime.py` na casa ou aspas no `working-memory.md`. O gancho de escrita bloqueia quando falha
+(não inicia, falta memória, passa do tempo) em vez de liberar.
+
+A trava fica na configuração administrada do Claude Code, que o agente não consegue desligar pelas próprias configurações.
+Com a trava de pastas ligada, o agente só grava a memória dele; as pastas de configuração (`.dgclaw`, `.claude`, `.codex`,
+`.plataforma`) e `/tmp` ficam fechadas, porque são lidas e executadas pelas rotinas do agente.
+
+As rotinas automáticas do agente (reflexão da noite, posts, respostas a comentários e consolidação) agora respeitam as restrições do
+mesmo jeito que a conversa: com restrição ligada, só rodam se a conta de IA conectada for compatível, e recebem as mesmas ferramentas
+travadas. Se recusarem, o log da rotina diz o motivo e o que fazer. Nada muda para quem não usa restrições.
+A reflexão da noite confere a conta antes de qualquer chamada ao Claude, inclusive a busca de lembranças antigas, que agora roda com
+ferramentas e conexões externas desligadas. Quando uma recusa por conta incompatível acontece com um processo antigo do agente ainda
+vivo, o runner o encerra e só então registra a recusa; se não conseguir, avisa que não confirmou a parada.
+
+### Como atualizar (restrições do agente)
+
+A imagem dos agentes precisa ser a nova (ela liga o arquivo de política administrada do Claude Code). O `dgclaw atualizar` já
+reconstrói a imagem e recria cada agente, então basta atualizar; um agente que você deixou parado ganha a trava quando for recriado
+(`sudo dgclaw agente recriar <agente> --forcar`).
+
+Se você já tinha travado algum agente por conta própria, mexendo dentro da caixa dele (por exemplo, editando o
+`settings.json` ou as permissões por lá), essa trava não é lida pelo novo mecanismo e continua sujeita a sumir na próxima
+atualização. Refaça uma vez, pelo comando novo, cada trava que você quer manter: peça ao Admin ("tira o Bash da Ana",
+"a Ana só grava na pasta relatórios") ou rode `sudo dgclaw agente restricoes <agente> ...`. Depois de refeitas, não
+precisam ser repetidas. Confira com `sudo dgclaw agente restricoes <agente>`.
+
+Contas Team e Enterprise do claude.ai não são compatíveis com as restrições nesta versão: uma organização pode passar a
+mandar uma política própria a qualquer momento, e ela substitui a configuração do Prumo da Locadora. Se o agente usa uma conta
+dessas, o comando `restricoes` recusa e para o agente; conecte uma conta pessoal (Pro ou Max) ou uma chave de API no painel
+do agente e rode o comando de novo. Um token OAuth ou login por assinatura sem plano Pro ou Max legível também é recusado, porque pode ser de uma organização. A consulta (`sudo dgclaw agente restricoes <agente>`) também passa a comparar o que está
+aplicado com o que você pediu, e mostra `NAO VALE` quando uma restrição foi gravada e não chegou a ser aplicada.
+
+Um agente que tem restrições agora só liga (`dgclaw agente iniciar`) ou reinicia o runner (`dgclaw agente reiniciar`) depois de
+os arquivos de política serem refeitos a partir das suas restrições e de a imagem dele ser conferida, porque o agente sobe
+sozinho e uma conferência feita depois deixaria um intervalo sem a trava. Se ele estiver numa imagem antiga, não liga e a
+mensagem pede para recriar. Quem deixou um agente parado com restrições e uma imagem antiga precisa rodar uma vez
+`sudo dgclaw imagem construir --agora` (se a imagem do servidor também for antiga) e `sudo dgclaw agente recriar <agente>`.
+Com o terminal travado, o `Monitor` também fica negado, porque ele executa comandos por conta própria.
+
+Se a conta de IA conectada a um agente pertence a uma organização do claude.ai (planos Team ou Enterprise) com política
+administrada remota, essa política substitui a configuração do Prumo da Locadora e as restrições deixam de valer. Para um agente
+com restrições, o `iniciar`, o `reiniciar` e a consulta passam a detectar isso, param o agente e explicam. A saída é conectar
+nele uma conta pessoal (Pro ou Max) ou uma chave de API. Como o agente fica parado, a ordem é: desligar as restrições
+(`sudo dgclaw agente restricoes <agente> --sem-bash nao --sem-enviar-arquivo nao --escrita-livre`), ligar o agente
+(`sudo dgclaw agente iniciar <agente>`), trocar a conta no painel do agente e ligar as restrições de novo com o mesmo comando `restricoes`. Conta de organização com política administrada remota não é compatível com as
+restrições nesta versão, nem quando a política pede para combinar com a local, porque a própria organização pode desligar os
+ganchos nela. Quando o Prumo da Locadora para o agente por esse motivo, ele só considera o container parado quando o podman confirma isso; sem
+confirmação, a mensagem diz que o agente pode estar ligado sem a trava e como pará-lo na mão.
+
+A conta de IA também é conferida depois que o agente já está ligado. Antes, quem conectava uma conta Team ou Enterprise pelo
+painel depois de aplicar as restrições escapava da conferência, e a política remota da organização podia desligar as travas. Agora,
+com qualquer restrição ativa, o runner confere a conta logo depois de cada login pelo painel e antes de abrir ou retomar cada
+sessão do Claude. Se a conta for de uma organização, tiver política remota ou não der para saber qual é, a sessão não abre: o
+painel mostra o motivo e o que fazer (conectar uma conta pessoal Pro ou Max, ou uma chave de API, ou desligar as restrições), e o
+log do runner registra. Se o arquivo de restrições existir e estiver ilegível, o runner trata o agente como restrito e também não
+abre a sessão. Sem restrições ativas nada muda. Depois de conectar a conta certa, a sessão abre sozinha.
+
+O Bun, que roda os ganchos do plugin, lê o arquivo `bunfig.toml` da pasta onde é iniciado, e um `preload` nele executa código. Um
+agente sem terminal, mas com escrita livre na casa, podia gravar esse arquivo e recuperar a execução de comandos. Agora os ganchos
+entram na pasta do plugin antes de chamar o Bun, e o gancho de escrita também recusa `bunfig.toml` em qualquer pasta.
+
+**Prévias de vídeo e foto passam a funcionar em qualquer servidor.** O painel monta a miniatura dos vídeos e das
+fotos com o programa ffmpeg, que o instalador não colocava no servidor. Em um servidor de um cliente, o vídeo que o
+agente enviou apareceu só como botão de arquivo, sem prévia, e o registro do painel repetia "Miniatura: ENOENT"
+a cada abertura da conversa. Agora o instalador instala o ffmpeg sozinho, e o `dgclaw atualizar` faz o mesmo nos
+servidores que já existem. Se o ffmpeg já estiver lá, nada é reinstalado e nenhum serviço reinicia. Se a instalação
+dele falhar, a atualização continua e avisa o que rodar (`apt-get install -y ffmpeg`), porque ele só serve para a
+prévia. O `dgclaw status` ganhou uma linha dizendo se o ffmpeg está instalado.
+
+### Como atualizar (ffmpeg para as prévias)
+
+Peça ao Admin, no chat: "atualiza o Prumo da Locadora". A atualização instala o ffmpeg sozinha; agentes, conversas e
+configurações ficam como estão. Se preferir instalar na hora, rode no servidor: `sudo apt-get install -y ffmpeg`.
+As prévias dos arquivos que já estavam na conversa aparecem na próxima vez que você abrir a conversa.
+
+**Ícone e texto sempre legíveis sobre fundo forte (regra geral de contraste).** Quando um botão ou selo muda para uma cor
+forte, como o botão de gravar áudio que fica vermelho durante a gravação, o ícone e o texto agora trocam sozinhos para
+branco ou escuro, o que contrastar mais com o fundo (mínimo de 4,5:1 para texto e 3:1 para ícone). A conta vale para o
+visual todo, nos temas claro e escuro, e também para as cores da marca configurável (`marca.json`): se você trocar o
+fundo de um botão e não escolher a cor do texto, o painel escolhe a certa. Se você escolher uma cor de texto que não
+passa do mínimo, o painel a corrige. Com isso o botão de perigo no tema escuro deixou de ter texto branco sobre vermelho
+claro, e o verde de sucesso ficou um pouco mais escuro para o texto passar do mínimo sobre o fundo verde claro. Nada
+muda para quem não personalizou as cores, e o `dgclaw atualizar` padrão basta.
+
+**Suporte remoto: chave de diagnóstico só-leitura.** Quando algo para de funcionar, quem dá suporte
+ao seu Prumo da Locadora precisa saber o que está parado e por quê, e você não quer entregar a senha da sua
+máquina para isso. Agora você cria uma chave de suporte que faz uma coisa só: ler o diagnóstico de
+saúde (`GET /api/v1/diagnostico`), que lista quais serviços, agentes e rotinas estão funcionando e o
+motivo de cada falha. A chave não lê conversas, memória nem arquivos, e não consegue mudar nada: em
+qualquer outra rota do sistema ela recebe uma recusa. A máquina é sua, então você revoga a chave
+quando quiser e o acesso acaba na hora. A nova tela **Suporte remoto**, no menu, mostra as chaves
+(quando foram usadas pela última vez e de qual endereço), cria e revoga, e mostra o diagnóstico
+exatamente como o suporte o vê. O sistema guarda só uma marca de cada chave, então o token aparece
+uma única vez, na criação. Quem erra a chave 20 vezes em 10 minutos fica bloqueado por um tempo.
+
+### Como atualizar (diagnóstico remoto)
+
+Nada precisa ser feito para o resto do Prumo da Locadora continuar como está. Com a instalação padrão, também
+não há mudança de rede: o Caddy já repassa o cabeçalho da chave ao painel. Para usar o suporte remoto:
+
+1. **Crie a chave.** Pela tela: abra **Suporte remoto** no menu, deixe o nome "Suporte" (ou escolha
+   outro) e toque em **Criar chave**. Pelo terminal da máquina:
+   `sudo prumo chave-api criar --escopo diagnostico --nome "Suporte"`. Em qualquer caminho o token
+   aparece uma única vez: copie na hora e passe só para quem vai dar o suporte. Se perder, revogue e
+   crie outra.
+2. **Para revogar**, toque em **Revogar** ao lado da chave na tela, ou rode `sudo dgclaw chave-api listar`
+   para ver o código e `sudo dgclaw chave-api revogar <código>`. A chave para de valer na hora.
+3. **Se você colocou o Cloudflare Access (ou outro porteiro) na frente do painel**, libere o caminho
+   `/api/v1/diagnostico` para a chave passar. Sem isso o porteiro barra o pedido antes de ele chegar ao
+   Prumo da Locadora e o suporte recebe uma tela de login no lugar do diagnóstico. Quem usa a instalação padrão
+   não precisa fazer nada aqui.
+
+**Face ID no painel: uma trava opcional, ligada aparelho por aparelho.** Nova tela **Face ID** (no menu ☰, em `/face-id`).
+Quem liga o recurso num aparelho passa a ter o painel travado sozinho depois de alguns minutos sem uso (15 por padrão, de 1
+a 120 à sua escolha) e destrava com o rosto, a digital ou o código do aparelho (Face ID, Touch ID ou biometria, conforme o
+aparelho). Vale para o dono e para cada colaborador, cada um com as próprias passkeys, e quem não ligar não percebe nada.
+O Face ID nunca faz login: ele só destrava uma sessão que já entrou com a senha, e o botão "Entrar com a senha" da tela
+travada continua sendo a saída para aparelho sem biometria. Com a tela travada, as conversas, as APIs, os painéis dos
+agentes (`/p/`) e os WebSockets ficam fechados no servidor, e os agentes que trabalham pela caixa não são afetados. A tela
+Face ID mostra o motivo quando o recurso não pode ser ligado (endereço sem HTTPS, navegador sem passkeys, aparelho sem
+biometria pronta) e explica que a passkey fica presa ao endereço do painel. O guia está em `web/docs/CADEADO.md`.
+
+### Como atualizar (Face ID)
+
+1. **Peça ao Admin, no chat: "atualiza o Prumo da Locadora".** O painel reinicia por alguns segundos para carregar a trava. Nada é
+   ligado sozinho: depois de atualizar, ninguém tem Face ID até ligar na tela nova.
+2. **Cada pessoa liga no próprio aparelho.** Abra **Face ID** no menu ☰ e toque em "Ligar neste aparelho". O recurso é por
+   aparelho: ligar no celular não trava o computador, e quem usa o painel em mais de um aparelho liga em cada um.
+3. **O Face ID precisa de HTTPS.** Se o seu painel ainda abre por um endereço de IP, a tela avisa e a trava não liga. Peça
+   ao Admin para colocar um endereço com HTTPS (veja a skill de trocar o domínio). A senha continua valendo em qualquer caso.
+4. **Se você trocar o endereço do painel, ligue o Face ID de novo.** A passkey fica presa ao endereço em que foi criada.
+
+**Visual novo: ícones próprios, azul de destaque e carregamento com a constelação do logo.** Todas as telas do Web e o painel de
+cada agente trocaram os emojis e símbolos de interface (✓, ✕, ☰, 📎, 🎯 e outros) por ícones de um conjunto próprio, de traço
+fino. O destaque deixou de ser verde e roxo e passou a ser azul, os botões e o foco usam as mesmas cores em toda parte, e os
+carregamentos mostram a constelação do logo batendo, inclusive para quem liga "Reduzir movimento" no aparelho. A conversa
+mantém o papel de parede verde e os balões de hoje.
+
+**Menu do agente em grupos.** O menu lateral tinha mais de vinte itens em fila. Agora a Conversa, a Mesa e a Pasta do agente ficam sempre à vista, e o resto está em grupos que abrem e fecham: Perfil do agente, Dia a dia, Ferramentas, Operação e Segurança. Como funciona e Socorro ficam soltos no fim, e um grupo Conexões (Navegador, Posts, Seguidores, Reuniões) só aparece quando algum deles está ligado. O grupo da página em que você está abre sozinho, o menu lembra neste aparelho o que você deixou aberto, e uma bolinha no nome do grupo fechado avisa quando há algo esperando você lá dentro. Nenhum item foi removido: Conectar conta e Anonimizar ficam em Ferramentas, e Convidar colaborador em Segurança. O painel do agente rodando sozinho, sem o
+Web na frente, também mostra os ícones.
+
+**Marca própria (white label).** Quem quiser o Prumo da Locadora com o próprio nome, logo, favicon, cores e fontes cria um `marca.json` na
+pasta `/etc/dgclaw/marca/` (o instalador a cria se faltar e nunca a esvazia). A mudança vale sem reiniciar. O passo a passo está
+em `docs/WHITE-LABEL.md` e a explicação das cores, dos ícones e do carregamento em `docs/DESIGN-SYSTEM.md`. O Admin sabe fazer a
+troca quando você pedir.
+
+### Como atualizar
+
+Nesta versão há uma instrução nova para o seu Admin, sobre como trocar a marca. Se você personalizou o `CLAUDE.md` ou o
+`AGENTS.md` do Admin, a atualização não os substitui, e a versão nova do modelo fica ao lado com final `.novo`. Peça ao Admin
+para juntar a seção "Trocar a marca" ao seu texto, sem apagar o que você escreveu. Quem não personalizou esses arquivos não
+precisa fazer nada.
 
 ### Corrigido
 
@@ -492,6 +737,35 @@ aprovar sem querer o comando que surgiu em seguida, e o botão Aprovar de uma te
 
 ### Adicionado
 
+- **Análise obrigatória antes de instalar uma atualização.** O relatório do `sudo prumo atualizar --simular`
+  ganhou a seção "O que este Prumo da Locadora usa e o que a versão nova toca": para cada agente, as rotinas, os
+  scripts próprios, as skills e os canais ligados, mais as personalizações registradas (só contagens, ids e nomes no padrão, nunca o texto livre de dentro das casas), cruzados com os
+  arquivos que a versão nova muda ou remove e com os comandos do `prumo` que saíram ou mudaram de nome. Cada
+  cruzamento aparece como ponto de atenção ("a rotina X do agente Y chama scripts/foo.sh, que muda nesta
+  versão"). Além disso, a instalação agora exige um parecer: o Admin lê o relatório, cruza com o que você usa no
+  dia a dia, diz a você se a atualização é segura e se vale a pena, e grava o veredito com
+  `sudo prumo atualizar --parecer segura|arriscada --motivo "<frase>"`. O `--ok-do-dono` só passa com parecer
+  `segura` para aquela mesma versão. Parecer `arriscada` bloqueia a instalação, e só `--ok-do-dono
+  --apesar-do-alerta` a libera, quando você, depois de ouvir o alerta, pedir. Tudo fica em
+  `/var/log/dgclaw/atualizar-pareceres.log`. O recado do aviso de versão nova ao Admin agora manda fazer essa
+  análise. O aviso continua sendo uma checagem a cada 6 horas, e não um webhook, para o seu servidor não precisar abrir porta
+  nem ser cadastrado em lugar nenhum.
+- **Guia de projeto de cliente** (`docs/PROJETO-DE-CLIENTE.md`): o padrão de instalar o Prumo da Locadora completo na VPS do próprio cliente, o passo a passo com o acesso temporário do suporte, a comparação com as outras formas de acesso e o checklist de onboarding e entrega.
+- **Acesso temporário do suporte: `prumo suporte`.** Quando a equipe de suporte precisa ajustar a sua instalação,
+  você libera uma chave SSH da equipe do Prumo da Locadora com prazo (`sudo prumo suporte ligar --chave '<linha>' --dias 7`, de 1 a 30
+  dias). O servidor recusa a chave sozinho quando o prazo acaba, e um timer diário tira a linha vencida do
+  arquivo. `sudo prumo suporte desligar` tira o acesso na hora e lista as sessões SSH de root abertas naquele momento, marcando a sua (se ainda houver outra, avisa que o acesso não está totalmente desligado; `--derrubar-sessoes` encerra todas as outras, menos a sua), `sudo prumo suporte status` mostra o que está
+  ligado e até quando, e o `prumo status` ganhou a linha "suporte: desligado" ou "suporte: ligado até ...". Só as
+  chaves do suporte são tocadas; as suas ficam como estão. Cada ligar e desligar fica em
+  `/var/log/dgclaw/suporte.log`, só com o fingerprint, nunca com a chave inteira. Exige OpenSSH 8.2 ou mais novo
+  (o Ubuntu 24.04 já tem). O Admin conhece o comando e só liga quando você pede.
+- **Regra de ação em massa ou destrutiva.** Todo agente e o Admin passam a nascer sabendo que, antes de
+  apagar, sobrescrever, mover, mandar mensagem para vários, mudar a etapa de vários registros num CRM,
+  cancelar, importar ou qualquer coisa que atinja mais de um item de uma vez ou não dê para desfazer, eles
+  primeiro mapeiam o que seria atingido sem mudar nada, mostram a você o número e uma amostra, esperam o seu
+  sim para aquele número, fazem em lotes e contam o que foi feito. Rotina automática com ação em massa só
+  roda se você aprovou a rotina antes, com o número estimado. A regra está nas instruções de cada agente
+  (`CLAUDE.md` e `AGENTS.md`), no `LAWS.md` e nas do Admin.
 - **Caixa de cofre na conversa.** Quando o agente precisa de uma senha ou chave de um serviço (OpenAI,
   Hostinger, Groq...), ele mostra na própria conversa um cartão com um campo de senha, e o valor vai
   direto para o cofre dele, sem passar pela conversa. O cartão ficou mais completo: avisa "Já tem uma
@@ -541,6 +815,24 @@ aprovar sem querer o comando que surgiu em seguida, e o botão Aprovar de uma te
   parou), seguida das que chegaram nesse meio tempo. Cada balão mostra se está tocando agora ou na fila. Para
   pular, toque no 🎧 do balão que quer ouvir: ele toca e segue dali. Só as respostas normais do agente entram
   na fila sozinhas; as mensagens de rotina só tocam se você apertar o 🎧 delas.
+
+### Como atualizar (regra de ação em massa)
+
+Nesta versão há uma regra nova nas instruções dos agentes: nada de apagar ou mexer em muita coisa de uma vez
+sem mostrar o número a você e esperar o seu sim. Os agentes que você já tem guardam o próprio `CLAUDE.md`, que
+é seu e pode estar personalizado, então a atualização não o substitui. Peça ao Admin para levar a seção "Ação
+destrutiva ou em massa: pergunte antes" do modelo novo (`templates/CLAUDE.md.tmpl`) para o `CLAUDE.md` de cada
+agente, sem apagar o que você escreveu. Agentes criados depois da atualização já nascem com ela. O mesmo vale
+para o `CLAUDE.md` e o `AGENTS.md` do Admin: a versão nova chega como `.novo`, e a seção entra no seu arquivo.
+
+### Como atualizar (parecer antes de instalar)
+
+A partir desta versão o `--ok-do-dono` só funciona depois de um parecer gravado. Se você já usa o Admin para
+atualizar, nada muda na conversa: ele vai analisar, contar o que achou, e só então pedir o seu sim. Se você
+roda o comando na mão, grave antes o parecer sobre a versão que vai instalar, com
+`sudo dgclaw atualizar --parecer segura --commit <commit do DESTINO> --motivo "<uma frase>"`. Se o `CLAUDE.md` ou o `AGENTS.md` do Admin
+estiverem personalizados, leve do `.novo` para o seu arquivo a parte "Atualizar o Prumo da Locadora", sem apagar o que
+você escreveu, para o Admin saber fazer a análise.
 
 ### Como atualizar (voz)
 

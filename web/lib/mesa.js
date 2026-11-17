@@ -604,8 +604,8 @@ function criarMesa(opcoes) {
         if (m !== 'GET') { H.erroJson(res, 405, 'Use GET para ler a documentação da Mesa.'); return true; }
         let texto;
         try { texto = fs.readFileSync(docsPath); } catch (e) {
-          log('erro', `Não achei a documentação da Mesa em ${docsPath} (${e.code || e.message}). Reinstale o Prumo da Locadora (sudo dgclaw atualizar).`);
-          H.erroJson(res, 500, 'A documentação da Mesa não está instalada neste servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
+          log('erro', `Não achei a documentação da Mesa em ${docsPath} (${e.code || e.message}). Reinstale o Prumo da Locadora (sudo prumo atualizar).`);
+          H.erroJson(res, 500, 'A documentação da Mesa não está instalada neste servidor. Reinstale o Prumo da Locadora (sudo prumo atualizar).');
           return true;
         }
         res.writeHead(200, { 'Content-Type': 'text/markdown; charset=utf-8', 'Content-Length': texto.length, 'Cache-Control': 'no-store' });

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// docs-inventario: tira do CODIGO do DG Claw a lista do que existe (telas, rotas, comandos, skills,
+// docs-inventario: tira do CODIGO do Prumo da Locadora a lista do que existe (telas, rotas, comandos, skills,
 // powers, canais, provedores). E a verdade que o teste tests/docs-em-dia compara com o manual
 // (docs/manual/*.md). Node 22, sem dependencias, sem rede.
 //
@@ -44,7 +44,7 @@ function quebrou(o_que, o_que_fazer) {
 function ler(rel) {
   const f = path.join(RAIZ, rel);
   try { return fs.readFileSync(f, 'utf8'); }
-  catch (e) { return quebrou(`nao consegui ler ${rel} (${e.code || e.message}) em ${RAIZ}.`, 'confira se a pasta e a raiz do repositorio do DG Claw (opcao --raiz) e se o arquivo ainda existe; se ele mudou de lugar, atualize scripts/docs-inventario.mjs.'); }
+  catch (e) { return quebrou(`nao consegui ler ${rel} (${e.code || e.message}) em ${RAIZ}.`, 'confira se a pasta e a raiz do repositorio do Prumo da Locadora (opcao --raiz) e se o arquivo ainda existe; se ele mudou de lugar, atualize scripts/docs-inventario.mjs.'); }
 }
 
 function listar(rel, filtro) {
@@ -324,8 +324,10 @@ const saida = {
   telas: telas.itens(), rotas: rotas.itens(), rotas_detalhe: detalhe.itens(),
   comandos: comandos.itens(), skills: skills.itens(), powers: powers.itens(),
   canais: canais.itens(), provedores: provedores.itens(),
+  // O manual e o texto ao dono dizem `prumo`; o `dgclaw` continua existindo (a CLI e a mesma). O checar normaliza.
+  apelidos_de_comando: { prumo: 'dgclaw' },
 };
 for (const k of ['telas', 'rotas', 'comandos', 'skills', 'powers', 'canais', 'provedores']) {
-  if (saida[k].length === 0) quebrou(`a lista "${k}" saiu vazia em ${RAIZ}.`, 'o extrator nao entendeu o codigo (ou a pasta nao e o DG Claw). Ajuste scripts/docs-inventario.mjs.');
+  if (saida[k].length === 0) quebrou(`a lista "${k}" saiu vazia em ${RAIZ}.`, 'o extrator nao entendeu o codigo (ou a pasta nao e o Prumo da Locadora). Ajuste scripts/docs-inventario.mjs.');
 }
 process.stdout.write(`${JSON.stringify(saida, null, 2)}\n`);

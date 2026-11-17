@@ -1,7 +1,7 @@
 # Poder: meetings (Reuniões) — TRAVADO nesta versão
 
-> Status: **não acoplado no v1 do DG Claw.** Aparece como tile travado no painel (aba REUNIOES) e em
-> `/dgclaw:powers`. Este arquivo documenta o que o poder fará quando for acoplado — não tente instalar.
+> Status: **não acoplado no v1 do Prumo da Locadora.** Aparece como tile travado no painel (aba REUNIOES) e na
+> lista de poderes. Este arquivo documenta o que o poder fará quando for acoplado — não tente instalar.
 
 ## O que vai fazer
 Deixar a pessoa virtual **participar de reuniões** (Zoom/Meet/Teams) via **Recall.ai**: entrar como bot,
@@ -19,5 +19,5 @@ mandar insights pro dono no Telegram. Os transcripts viram memória (diário + v
 - Captions habilitadas pelo host nas chamadas (requisito do Zoom).
 
 ## Ativar / desativar (futuro)
-- Ativar: `/dgclaw:powers install meetings` (vai conduzir a coleta da API key etc.).
+- Ativar: peça ao agente para instalar o poder meetings (vai conduzir a coleta da API key etc.).
 - Desativar: `python3 .../powers.py disable meetings` → aba REUNIOES volta a travar; dados preservados.

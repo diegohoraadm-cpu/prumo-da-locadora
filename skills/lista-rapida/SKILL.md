@@ -20,7 +20,7 @@ uma data quando houver interpretações que mudem o recorte.
 
 Antes da síntese, reúna as quatro fontes do **mesmo agente e da mesma pessoa**:
 
-1. Histórico canônico do chat DG Claw e do Telegram, incluindo sessões anteriores
+1. Histórico canônico do chat Prumo da Locadora e do Telegram, incluindo sessões anteriores
    e transcrição de áudios. Busque o intervalo inteiro, paginando quando necessário.
 2. `working-memory.md`, inclusive referências ao transbordo quando necessárias.
 3. Cards/tarefas da Mesa, incluindo concluídas. Estado atual ajuda a classificar;
@@ -104,10 +104,10 @@ python3 <pasta-da-skill>/scripts/lista_rapida.py renderizar \
 O comando cria `vis-lista-rapida-<carimbo>.html` e um `.txt` com a lista completa.
 HTML autossuficiente, sem rede, claro/escuro, adaptado ao celular e ao `dgvis`.
 Mantenha os nomes `vis-*`, que fazem o chat reconhecer o visual.
-No DG Claw, o arquivo enviado precisa ficar dentro do workspace do agente;
+No Prumo da Locadora, o arquivo enviado precisa ficar dentro do workspace do agente;
 o painel recusa anexos de `/tmp` ou de fora dessa pasta.
 
-- **DG Claw:** envie o conteúdo do `.txt` pelo `dgchat.reply` e anexe o HTML com
+- **Prumo da Locadora:** envie o conteúdo do `.txt` pelo `dgchat.reply` e anexe o HTML com
   `dgchat.send_file`, usando o `chat` do pedido. Se a ferramenta instalada aceitar
   `files` no próprio `reply`, use esse contrato.
 - **DG Telegram / Telegram comum:** `telegram.reply` com `text` contendo a lista

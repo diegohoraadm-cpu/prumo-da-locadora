@@ -1,6 +1,6 @@
-# Arquitetura do DG Claw v1
+# Arquitetura do Prumo da Locadora v1
 
-O DG Claw reúne um painel web, um Admin e agentes de trabalho em uma VPS Ubuntu.
+O Prumo da Locadora reúne um painel web, um Admin e agentes de trabalho em uma VPS Ubuntu.
 O dono entra pelo navegador e conversa com o Admin para criar seu primeiro agente.
 Telegram e outros canais são conexões opcionais, configuradas depois.
 

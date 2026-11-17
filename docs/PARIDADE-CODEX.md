@@ -1,6 +1,6 @@
 # Paridade Claude e Codex
 
-O DG Claw tem dois motores pela assinatura: o **Claude** (Claude Code, login claude.ai) e o
+O Prumo da Locadora tem dois motores pela assinatura: o **Claude** (Claude Code, login claude.ai) e o
 **ChatGPT** (Codex CLI, login ChatGPT). Outras IAs entram só por chave de API. O Claude fica como
 está; o objetivo é que o agente no Codex tenha tudo o que o agente no Claude tem, a não ser o que é
 produto exclusivo da Anthropic, e que essas exceções tenham um caminho alternativo ou fiquem
@@ -71,8 +71,8 @@ agente (régua: feature de ~2 mil linhas leva 10 a 30 min).
 | Contexto de início e pós-compactação | hook `SessionStart` (`hooks/session-context.sh`, `avisos-reset`) | funciona (07/11) | turno real: o modelo respondeu o conteúdo da `working-memory.md` sem abrir arquivo; `session-context.sh` lê o `AGENTS.md` (não o `CLAUDE.md`) quando `DGCLAW_MOTOR=codex`, porque o Codex não importa arquivos com `@` | feito (`source` = `compact` aciona `avisos-reset` pelo `matcher` `compact\|clear`; a compactação em si não foi reproduzida num turno real) | (incluso) |
 | Fio do Telegram na mensagem | hook `inject-telegram-thread.py` | não se aplica | depende do Telegram | volta junto com a ponte de Telegram | (na ponte) |
 | Trava de resposta do chat (devolve o turno que terminou só em texto) | hook `Stop` nativo `trava-resposta.mjs` (`runner/src/trava-resposta-source.ts`, instalado em `escreverSettings`), só nos agentes Claude | não funciona | `runner/src/provedores/codex.ts:173` ignora `stopHooks`; o hook `Stop` do Codex exige confiança por hook e o runner hoje não instala um `Stop` bloqueante lá | exceção registrada: no Codex vale a regra do canal na identidade (`bin/dgclaw`, `regra_canal_dgchat`, e `templates/ambiente/agente.md`), que manda responder pela tool `mcp__dgchat__reply`; instalar um `Stop` bloqueante no `hooks.json` com a confiança resolvida é o caminho se a falha aparecer no Codex | 0 (exceção) |
-| Skills do DG Claw | link em `~/.claude/skills` (`bin/dgclaw:926-940`) | parcial | só o painel contorna, mandando o caminho do `SKILL.md` (`web/lib/comandos.js:357`) | linkar as mesmas pastas em `.agents/skills` do agente Codex; trocar `${CLAUDE_PLUGIN_ROOT}` pelo caminho `.dgclaw/plugin` que já existe | 0,5 |
-| Comandos `/dgclaw:*` | namespace do plugin | exclusivo Anthropic | o Codex não tem plugin com namespace de comandos | a skill nativa cobre o mesmo uso (o agente chama a skill pelo nome) | (nas skills) |
+| Skills do Prumo da Locadora | link em `~/.claude/skills` (`bin/dgclaw:926-940`) | parcial | só o painel contorna, mandando o caminho do `SKILL.md` (`web/lib/comandos.js:357`) | linkar as mesmas pastas em `.agents/skills` do agente Codex; trocar `${CLAUDE_PLUGIN_ROOT}` pelo caminho `.dgclaw/plugin` que já existe | 0,5 |
+| Comandos `/nome-da-skill` | namespace do plugin | exclusivo Anthropic | o Codex não tem plugin com namespace de comandos | a skill nativa cobre o mesmo uso (o agente chama a skill pelo nome) | (nas skills) |
 | Leitura da conversa (`thread_log`) | transcript JSONL | funciona | `scripts/_lib/thread_log.py:279-281,510`; `test_thread_log_rollout.py` 23/23 verdes | nada | 0 |
 | Lista de conversas (working memory, FTS, reflexão) | `glob("*.jsonl")` em `~/.claude/projects` | parcial | `build-working-memory.py:436`, `conversas_fts.py:380`, `reflection.sh:143` | `listar_sessoes()` em `thread_log.py` incluindo `CODEX_HOME/sessions/**/rollout-*.jsonl` | 0,25 |
 | Memória semântica (índice) | arquivos `.md` + embedder | funciona | `scripts/memory_index/reindex.py`, `embedder.py` não dependem do motor | nada | 0 |
@@ -84,7 +84,7 @@ agente (régua: feature de ~2 mil linhas leva 10 a 30 min).
 
 | Recurso | No Claude | No Codex hoje | Prova | Como fazer no Codex | Horas |
 | --- | --- | --- | --- | --- | --- |
-| Painel (DG Chat) | MCP `dgchat` | funciona | `runner/src/provedores/mcp-codex.ts:93-180`; `web/lib/rollout.js:229` | nada | 0 |
+| Painel (chat do painel) | MCP `dgchat` | funciona | `runner/src/provedores/mcp-codex.ts:93-180`; `web/lib/rollout.js:229` | nada | 0 |
 | WhatsApp | ponte própria + MCP `whatsapp_*` | funciona (sem teste ao vivo) | `docs/CANAL-WHATSAPP.md:236`; `scripts/dgchat-mcp/server.mjs:150-170` | teste ao vivo num agente Codex | 0,1 |
 | Telegram | `--channels plugin:telegram@claude-plugins-official` | exclusivo Anthropic | `codex.ts:221` ignora `--channels` | ponte própria no molde do WhatsApp (Bot API, `/input`, MCP `telegram_reply`); serve aos dois motores | 1,25 |
 | Gmail, Agenda e Drive | conectores do claude.ai | exclusivo Anthropic | `docs/GMAIL-NO-AGENTE.md:15-30` | MCP próprio com OAuth do dono, só leitura e rascunho; a trava vira `enabled_tools` do MCP no Codex | 2 + espera do OAuth do Google |
@@ -96,6 +96,7 @@ agente (régua: feature de ~2 mil linhas leva 10 a 30 min).
 | Lembretes | agendador do Web + `/input` | funciona | `web/lib/lembretes.js:207` | nada | 0 |
 | Pokes e heartbeat | `inject.py` em modo bunker | funciona | `scripts/_lib/inject.py:442-474,552`; `poke_ledger.py` não depende do motor | nada | 0 |
 | Crons headless (reflexão headless, post, comentários, poderes) | `claude --print` | não funciona | `reflection.sh:303-313`, `scripts/cron/dgclaw-post.sh:105`, `dgclaw-comentarios.sh:101` | um `motor-headless` que escolhe `claude -p` ou `codex exec ... </dev/null` | 0,5 |
+| Busca do eco do passado (`memory_search.py`, Haiku sem ferramentas e sem MCP) | `claude --print --model haiku` | não funciona | `scripts/memory_index/memory_search.py` (`call_haiku`) | usar o mesmo `motor-headless` dos crons; até lá a busca com Codex cai no termo exato do índice | 0,25 |
 | Custos (tokens por mensagem) | `channels-tokens-logger.py` lê o transcript | não funciona | `scripts/channels-tokens-logger.py:76-80,119-136` | ler `token_count` do rollout; na assinatura do ChatGPT não há custo em dólar, só tokens | 0,25 |
 | Mesa de tarefas | `dgclaw-mesa` | funciona | `templates/AGENTS.md.tmpl:155` | nada | 0 |
 | Modo monitor | `dgclaw-monitor` | funciona | `docs/MODO-MONITOR.md:40` | nada | 0 |
@@ -109,7 +110,7 @@ agente (régua: feature de ~2 mil linhas leva 10 a 30 min).
 | --- | --- |
 | Telegram oficial por `--channels` | ponte própria de Telegram pelo runner (Fase 4) |
 | Conectores do claude.ai (Gmail, Agenda, Drive e outros) | MCP próprio por serviço; até lá, o que precisa deles fica num agente Claude ou num card Claude |
-| Namespace de comandos de plugin (`/dgclaw:x`) | skills nativas do Codex pelo nome |
+| Namespace de comandos de plugin (`/nome-da-skill`) | skills nativas do Codex pelo nome |
 | `statusLine` | o rollout e o app-server já trazem o uso do plano |
 | Regras `allow`/`ask`/`deny` por ferramenta | `enabled_tools`/`disabled_tools` por servidor MCP e a política de aprovação do Codex |
 
@@ -144,13 +145,13 @@ levar dias.
 ## Riscos
 
 1. **A confiança dos hooks do Codex.** Hook sem confiança não roda, e isso é uma proteção que o
-   DG Claw tem de manter. A única saída aceita é dar confiança explícita só aos hooks que o próprio
-   DG Claw distribui e revisa: gravar o hash de cada um no `config.toml` do `CODEX_HOME` do agente
+   Prumo da Locadora tem de manter. A única saída aceita é dar confiança explícita só aos hooks que o próprio
+   Prumo da Locadora distribui e revisa: gravar o hash de cada um no `config.toml` do `CODEX_HOME` do agente
    na instalação e na atualização. **`--dangerously-bypass-hook-trust` não pode ser usado**, nem no
    container: com ele, um `.codex/hooks.json` que chegue num repositório clonado ou numa pasta de
    terceiro roda comandos sozinho no começo da sessão, sem o modelo precisar aceitar nada, e leva as
    credenciais e os arquivos do container. Hooks de projetos externos continuam bloqueados. No
-   **Admin, que roda como root**, vale o mesmo, e o arquivo de hooks do DG Claw tem de ser de root e
+   **Admin, que roda como root**, vale o mesmo, e o arquivo de hooks do Prumo da Locadora tem de ser de root e
    ficar fora de qualquer pasta em que um agente escreva. A Fase 1 só fecha com um teste que põe um
    hook externo malicioso num projeto e confere que ele **não** roda.
 

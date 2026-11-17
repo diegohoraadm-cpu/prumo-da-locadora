@@ -37,10 +37,10 @@ no `container/Containerfile`), incluindo `VERSAO` e `CHANGELOG.md`. Então o age
 não a do host. O aviso dispara quando todas estas coisas aconteceram:
 
 1. `sudo ./install.sh` rodou com o código novo (grava `VERSAO` e o `CHANGELOG.md` novos no host);
-2. a imagem nova foi construída (`dgclaw imagem construir`, ou o instalador com `--com-imagem`);
+2. a imagem nova foi construída (`prumo imagem construir`, ou o instalador com `--com-imagem`);
 3. o container do agente passou a usar a imagem nova (agente recriado);
-4. o runner leu o `runner.json` com o gancho (`dgclaw agente reparar <slug>` põe o gancho nos agentes
-   antigos; depois `dgclaw agente reiniciar <slug>`);
+4. o runner leu o `runner.json` com o gancho (`prumo agente reparar <slug>` põe o gancho nos agentes
+   antigos; depois `prumo agente reiniciar <slug>`);
 5. o dono mandou uma mensagem na conversa.
 
 Até a imagem ser refeita, o agente continua com a versão velha e não avisa nada, o que é o certo: as
@@ -50,7 +50,7 @@ reescrito a cada instalação, então o gancho entra sozinho.
 
 ## Quem recebe e quem não recebe
 
-- Agente criado depois desta funcionalidade: o `dgclaw agente criar` roda o gancho com `--semear`, que
+- Agente criado depois desta funcionalidade: o `prumo agente criar` roda o gancho com `--semear`, que
   grava o visto com a versão e o CHANGELOG de agora. Ele não recebe aviso do que já nasceu com ele.
   O Admin de uma instalação nova é semeado do mesmo jeito.
 - Agente que já existia antes (sem arquivo de visto): recebe o aviso uma vez, com os itens da seção

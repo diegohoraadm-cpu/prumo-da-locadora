@@ -1,6 +1,6 @@
 # Saúde do agente e modo de segurança
 
-Este documento explica como o DG Claw sabe se o agente está **respondendo** (e não só
+Este documento explica como o Prumo da Locadora sabe se o agente está **respondendo** (e não só
 "de pé"), o que o dono vê na tela, o que fazer em cada caso e como funciona o modo de
 segurança. Cada agente roda no seu container; tudo o que está aqui vale por agente.
 
@@ -16,7 +16,7 @@ processo morto, para quem fala com ele. Dois casos mostraram isso:
 - **O login vencido** (`Login expired · Please run /login`). O runner continua dizendo
   "working", mas cada mensagem do dono se perde numa tela de login e nenhum aviso chega.
 
-Por isso o DG Claw mede também a **resposta**: ele olha o último turno do agente e diz se foi
+Por isso o Prumo da Locadora mede também a **resposta**: ele olha o último turno do agente e diz se foi
 normal.
 
 ## Os quatro estados
@@ -147,7 +147,7 @@ vez, o próximo passo é a aba Socorro, ou quem cuida do servidor olhar a workin
 ## Para quem administra
 
 Os comandos rodam dentro do container do agente, como o usuário `agente`. O `modo-seguro.sh`
-lê do `config.sh` do agente o endereço do runner (gravado pelo `dgclaw agente criar`):
+lê do `config.sh` do agente o endereço do runner (gravado pelo `prumo agente criar`):
 
 ```bash
 SLUG=meuagente

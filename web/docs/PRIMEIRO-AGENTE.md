@@ -9,7 +9,7 @@ trabalho continuam separados em containers.
 1. O instalador entrega o endereço do painel, o usuário e um link de primeiro acesso (`/primeiro-acesso#<código>`,
    uso único, válido por 30 minutos). A pessoa abre o link, cadastra a senha no navegador e já entra em
    `/a/admin`. A senha nunca aparece no terminal. Na reinstalação com senha existente, o instalador
-   informa que a atual foi mantida. Um link novo sai com `sudo dgclaw primeiro-acesso`. Não publique
+   informa que a atual foi mantida. Um link novo sai com `sudo prumo primeiro-acesso`. Não publique
    capturas do link de primeiro acesso antes de ele ser usado.
 2. No Admin, o botão **Quero criar meu primeiro agente** envia essa frase à conversa. Depois vem
    a pergunta sobre o nome. **Continuar** manda o nome pela conversa, sem criar ainda.
@@ -48,7 +48,7 @@ node /opt/dgclaw/app/web/bin/onboarding.js testar <id>
 | --- | --- | --- |
 | Boas-vindas | Só existe o Admin no registro e não há pedido | Iniciar a conversa e escolher o nome |
 | Solicitado | O runner do Admin aceitou a mensagem | Aguardar o Admin |
-| Criando | Helper iniciou `dgclaw agente criar` | Aguardar, o andamento vem da criação real |
+| Criando | Helper iniciou `prumo agente criar` | Aguardar, o andamento vem da criação real |
 | Login | CLI terminou e o agente está no registro | Conectar a assinatura no painel dele |
 | Testando | Saudação enviada à conversa real | Aguardar a resposta |
 | Pronto | Mensagem nova com origem `agente` após o envio de teste | Abrir a conversa pela badge |
@@ -72,7 +72,7 @@ em memória). `etapa` é um texto em português. `passo` e `total` só existem q
 | Enviando | 2 | Enviando suas escolhas ao Admin |
 | Solicitado | 5 | O Admin está lendo o seu pedido |
 | Imagem dos agentes em construção (fase solicitado ou criando, antes da primeira etapa do `dgclaw`) | 5 a 30, proporcional ao último `STEP n/m` do podman | Preparando a imagem dos agentes (só na primeira vez, leva alguns minutos) |
-| Criando | 30 a 80, proporcional à etapa do `dgclaw agente criar` | Uma das 11 etapas abaixo |
+| Criando | 30 a 80, proporcional à etapa do `prumo agente criar` | Uma das 11 etapas abaixo |
 | Login | 85 | Falta conectar a assinatura |
 | Testando | 92 | Esperando o primeiro oi do agente |
 | Pronto | 100 | Pronto! Seu agente chegou |
@@ -87,7 +87,7 @@ execução mais recente do log.
 A imagem é construída pela unidade `dgclaw-imagem.service` antes do primeiro `agente criar`. O Web pergunta
 `systemctl is-active` (sem shell, 2 s de limite, resposta guardada por 3 s) e lê o fim de
 `/var/log/dgclaw/imagem.log` (`DGCLAW_RAIZ` muda a raiz). Se a unidade falhou com o pedido ainda em
-solicitado, `erro` traz as últimas linhas do log e "Peça ao Admin para rodar dgclaw imagem construir de novo".
+solicitado, `erro` traz as últimas linhas do log e "Peça ao Admin para rodar prumo imagem construir de novo".
 Sem resposta do systemd, a barra segue só pela fase do pedido e o Web registra um aviso.
 
 Erro mantém o `pct` da última etapa. O motivo vem da linha `Nao deu certo:` do log e o que fazer vem de

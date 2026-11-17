@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""poke-verify.py — Verificador deterministico de pokes (DG Claw). ZERO token LLM.
+"""poke-verify.py — Verificador deterministico de pokes (Prumo da Locadora). ZERO token LLM.
 
 Roda num timer (a cada ~15min). Para cada poke pendente cujo prazo venceu:
   - TEM recibo (ACK explicito OU artefato fresco) -> resolve (sucesso), tira de pending.
@@ -92,7 +92,7 @@ def main():
             L.mark_failed(ws, key, note=reason)
             log(f"[{key}] ✗ esgotado ({reason}) — FAILED + alerta dono")
             notify_owner(
-                f"⚠️ DG Claw ({slug}): o poke '{tag}' (chave {key}) nao confirmou "
+                f"⚠️ Prumo da Locadora ({slug}): o poke '{tag}' (chave {key}) nao confirmou "
                 f"recibo apos {max_retries} tentativa(s). Pode ser sessao travada ou "
                 f"a rotina nao rodou. Veja .dgclaw/pokes/failed/ e .dgclaw/logs/poke-verify.log."
             )

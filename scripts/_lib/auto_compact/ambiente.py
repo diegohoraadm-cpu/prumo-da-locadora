@@ -10,7 +10,7 @@ def log(m):
     print(f"[{ts}] auto-compact: {m}", flush=True)
 
 
-# ─── resolucao de env (contrato DG Claw) ─────────────────────────────────────
+# ─── resolucao de env (contrato Prumo da Locadora) ─────────────────────────────────────
 
 def env(name, default=""):
     return os.environ.get(name, default)
@@ -98,7 +98,7 @@ def resolve_compact_mode() -> str:
 
 def resolve_channel_service(slug: str) -> str:
     """Nome da unit systemd da sessao --channels viva. Override por
-    DGCLAW_CHANNEL_SERVICE; default segue o contrato do DG Claw: dgclaw-<slug>.service."""
+    DGCLAW_CHANNEL_SERVICE; default segue o contrato do Prumo da Locadora: dgclaw-<slug>.service."""
     return env("DGCLAW_CHANNEL_SERVICE") or f"dgclaw-{slug}.service"
 
 

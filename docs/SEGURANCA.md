@@ -1,6 +1,6 @@
-# Segurança do DG Claw
+# Segurança do Prumo da Locadora
 
-Este documento explica o que o DG Claw protege, de quem, como, e o que ainda não protege.
+Este documento explica o que o Prumo da Locadora protege, de quem, como, e o que ainda não protege.
 Para relatar uma falha, siga o `SECURITY.md` na raiz do repositório.
 
 ## Resumo em cinco linhas
@@ -38,7 +38,7 @@ comprometido ainda consegue mandar dados para a internet (ver "Pendências").
 
 ## Portas
 
-- **Caddy** é a única porta pública, com HTTPS automático. Ele entrega o DG Claw Web.
+- **Caddy** é a única porta pública, com HTTPS automático. Ele entrega o Prumo da Locadora Web.
 - **Painel de cada agente, runner e serviços internos** escutam em `127.0.0.1`. O painel só
   aceita abrir para fora com configuração explícita.
 - O instalador não abre porta nenhuma além da do Caddy.
@@ -61,7 +61,7 @@ comprometido ainda consegue mandar dados para a internet (ver "Pendências").
 - Contra CSRF, toda requisição que muda alguma coisa confere `Origin` e `Sec-Fetch-Site`.
   Sair é por POST.
 - No modo trancado só a senha fica desligada. As outras três portas de entrada continuam
-  valendo, cada uma com a própria credencial: o segredo do proxy do DG Claw Web, a chave de API
+  valendo, cada uma com a própria credencial: o segredo do proxy do Prumo da Locadora Web, a chave de API
   do painel e o Cloudflare Access.
 
 ## Chaves de API do painel
@@ -116,9 +116,9 @@ sem tela.
   respondeu, com 1 se algo respondeu, e com 2 quando o teste não conseguiu concluir. Sem
   argumento, testa todos os agentes que estão rodando.
 
-## Proxy do DG Claw Web
+## Proxy do Prumo da Locadora Web
 
-O DG Claw Web faz o login do dono e repassa as requisições para o painel do agente em
+O Prumo da Locadora Web faz o login do dono e repassa as requisições para o painel do agente em
 `/p/<slug>/`. Para o painel acreditar que a requisição veio do Web, ela traz o cabeçalho
 `X-DGClaw-Proxy` com um segredo por agente.
 
@@ -173,14 +173,14 @@ aí a máscara não o reconhece.
   agente, porque é ele quem libera o envio quando o dono pede. Ela segura engano e texto
   malicioso lido num e-mail, mas não segura um agente decidido a tirá-la. Para esse caso a
   defesa é o aviso ao dono a cada liberação e o registro em `.dgclaw/logs/permissoes.log`. O
-  `dgclaw agente criar` grava a trava só na primeira vez; repetir o comando não desfaz uma
+  `prumo agente criar` grava a trava só na primeira vez; repetir o comando não desfaz uma
   liberação que o dono já deu.
 
 ## Conta da assinatura
 
 Rodar o agente na assinatura de quem usa é permitido. Os riscos estão em
 `docs/RISCO-DE-BLOQUEIO-DE-CONTA.md`, com as fontes oficiais. Em resumo: cada pessoa usa a
-própria conta, o DG Claw nunca copia o arquivo de login de um lugar para outro, e agente que
+própria conta, o Prumo da Locadora nunca copia o arquivo de login de um lugar para outro, e agente que
 atende outra pessoa usa a credencial dela.
 
 ## Segredos fora do lugar
@@ -195,7 +195,7 @@ atende outra pessoa usa a credencial dela.
 | Item | Risco | Situação |
 | --- | --- | --- |
 | Saída livre para a internet | um agente comprometido por prompt injection consegue mandar o que tem no container para qualquer endereço | aceito na v1; a correção é um proxy de saída com lista de destinos |
-| Instalação baixa pacotes e a chave do repositório do Node | quem controlar um dos endereços de onde o instalador baixa pacotes executa código na máquina | o DG Claw em si se instala por `git clone` do repositório público e `sudo ./install.sh`, sem `curl \| bash`; as fontes externas usam HTTPS (`curl --proto '=https' --tlsv1.2`); fixar versão e conferir hash fica para depois |
+| Instalação baixa pacotes e a chave do repositório do Node | quem controlar um dos endereços de onde o instalador baixa pacotes executa código na máquina | o Prumo da Locadora em si se instala por `git clone` do repositório público e `sudo ./install.sh`, sem `curl \| bash`; as fontes externas usam HTTPS (`curl --proto '=https' --tlsv1.2`); fixar versão e conferir hash fica para depois |
 | Cabeçalhos contra iframe no painel | uma página hostil poderia carregar o painel num iframe e induzir cliques | o painel precisa abrir dentro de outra página em algumas instalações; o login com `SameSite` e a checagem de `Origin` seguram as ações |
 | Escrita de arquivo pelo painel | entre conferir o caminho e gravar, um agente malicioso poderia trocar uma pasta por atalho | exige um agente já comprometido dentro do próprio container |
 | Token do runner e segredo do proxy dentro do container | quem controla o agente consegue falar com o próprio runner | aceitável na v1: cada token vale só para aquele agente, e o token do Admin nunca entra em container |

@@ -238,7 +238,7 @@ console.log('\nChave de API (Bearer) e CSRF');
   m.fechar();
 }
 
-console.log('\nSegredo do proxy (DG Claw Web)');
+console.log('\nSegredo do proxy (Prumo da Locadora Web)');
 {
   const arq = path.join(RAIZ, 'proxy.segredo');
   fs.writeFileSync(arq, `${SEGREDO_PROXY}\n`, { mode: 0o600 });

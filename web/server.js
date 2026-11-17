@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict';
-// DG Claw Web: login, conversa com os agentes, proxy dos painéis. Node 22, sem dependências.
+// Prumo da Locadora Web: login, conversa com os agentes, proxy dos painéis. Node 22, sem dependências.
 
 const fs = require('node:fs');
 const crypto = require('node:crypto');
@@ -53,10 +53,13 @@ const { criarSeguranca } = require('./lib/seguranca');
 const { criarLogsRotas, autorizado: logsAutorizado } = require('./lib/logs-rotas');
 const { criarRondaPainel } = require('./lib/ronda-painel');
 const { criarNaoLidas } = require('./lib/nao-lidas');
+const { criarChavesApi, ESCOPOS } = require('./lib/chaves-api');
 const { criarUso } = require('./lib/uso');
 const { criarColaboradores } = require('./lib/colaboradores');
 const { criarColaboradoresRotas } = require('./lib/colaboradores-rotas');
 const { criarEmail } = require('./lib/email');
+const { criarCadeado, MSG_TRAVADO } = require('./lib/cadeado');
+const { criarMarca } = require('./lib/marca');
 const escopo = require('./lib/escopo');
 
 const METODOS_QUE_ESCREVEM = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
@@ -70,9 +73,9 @@ const TIPOS_ESTATICOS = {
 };
 const RX_SLUG_ROTA = /^[a-z0-9][a-z0-9-]{0,31}$/;
 
-const LOGIN_RESERVA = '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Entrar</title>' +
+const loginReserva = (nome) => '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Entrar</title>' +
   '<style>body{font-family:system-ui,sans-serif;max-width:22rem;margin:14vh auto;padding:0 1rem}input,button{display:block;width:100%;margin:.5rem 0;padding:.6rem;font-size:1rem}</style></head><body>' +
-  '<h1>Prumo da Locadora</h1><p id="e" style="color:#b00"></p><form method="post" action="/login"><input name="usuario" placeholder="Usuário" autocomplete="username" required>' +
+  '<h1>' + nome + '</h1><p id="e" style="color:#b00"></p><form method="post" action="/login"><input name="usuario" placeholder="Usuário" autocomplete="username" required>' +
   '<input name="senha" type="password" placeholder="Senha" autocomplete="current-password" required><input type="hidden" name="next" value=""><button>Entrar</button></form>' +
   '<script>var q=new URLSearchParams(location.search);document.getElementById("e").textContent=q.get("erro")||"";document.querySelector("[name=next]").value=q.get("next")||"/"</script></body></html>';
 
@@ -81,6 +84,30 @@ function proximoSeguro(v) {
   const s = typeof v === 'string' ? v : '';
   if (!s.startsWith('/') || s.startsWith('//') || s.startsWith('/\\') || /[\x00-\x1f]/.test(s) || s.startsWith('/login') || s.startsWith('/sair')) return '/';
   return s;
+}
+
+/** O coletor é a Parte B do diagnóstico. Sem o módulo instalado, a rota responde 503 com o motivo em vez de derrubar o Web. */
+function montaDiagnostico(deps) {
+  let criar;
+  try {
+    ({ criarDiagnostico: criar } = require('./lib/diagnostico'));
+  } catch (e) {
+    if (e.code !== 'MODULE_NOT_FOUND' || !/lib[\\/]diagnostico/.test(String(e.message))) throw e;
+    deps.log('erro', 'O coletor de diagnóstico não está instalado (falta web/lib/diagnostico). A rota /api/v1/diagnostico vai responder 503 até a instalação ser refeita.');
+    return {
+      async responder(req, res) {
+        H.erroJson(res, 503, 'O coletor de diagnóstico não está instalado neste servidor.', { como_resolver: 'Atualize o Prumo da Locadora (sudo prumo atualizar) para instalar o coletor.' });
+      },
+    };
+  }
+  return criar(deps);
+}
+
+/** "20/10/2026" no fuso do Web, para as mensagens que o suporte lê. */
+function dataCurta(iso, tz) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return String(iso).slice(0, 10);
+  try { return new Intl.DateTimeFormat('pt-BR', { timeZone: tz, day: '2-digit', month: '2-digit', year: 'numeric' }).format(d); } catch (_) { return iso.slice(0, 10); }
 }
 
 /**
@@ -138,6 +165,11 @@ function criarServidor(opcoes) {
   const auth = criarAuth({ config, log, agora: opcoes.agora });
   const colaboradores = criarColaboradores({ config, log, agora: opcoes.agora, gerarHash: (senha) => auth.gerarHash(senha) });
   auth.ligarColaboradores(colaboradores);
+  // Cadeado com Face ID (opcional, por aparelho): destrava sessão já autenticada, nunca cria sessão. Ver lib/cadeado.js.
+  const cadeado = criarCadeado({ config, log, agora: opcoes.agora, encerrarSessao: (hash) => { const r = auth.encerraPorHash(hash); proxy.fecharDaSessao(hash); return r.gravou; }, gravaSessoes: () => auth.gravaSessoes(), sessoesDoCadeado: (tit, hs) => auth.sessoesDoCadeado(tit, hs), existeSessao: (hash) => auth.existeHash(hash), marcarSessao: (h, ap, manter) => auth.marcaCadeado(h, ap, manter), sessaoViva: (req) => !!auth.sessaoDoPedido(req), desmarcarSessao: (h) => auth.desmarcaCadeado(h), lerMarca: (h) => auth.leCadeado(h), estadoMax: opcoes.cadeadoEstadoMax });
+  auth.aoCriarSessao((ev) => cadeado.aoCriarSessao(ev));
+  auth.antesDeCriarSessao((ev) => cadeado.marcaParaSessaoNova(ev));
+  cadeado.limpaOrfaos((id) => { const c = colaboradores.obter(id); return !(c && c.revogado_em); }).catch((e) => log('erro', `Cadeado: não limpei as passkeys de colaboradores revogados (${e.message}).`));
   auth.ligarInstancias((slug) => instanciaDe(registro.obter(slug)));
   log('info', config.smtp.host ? `E-mail dos convites de colaborador: ligado (${config.smtp.host}:${config.smtp.porta}).` : 'E-mail dos convites de colaborador: desligado (opcional; o convite sai pelo texto da tela). Para ligar, defina DGCLAW_SMTP_HOST e as outras DGCLAW_SMTP_* no web.env.');
   // Conexões abertas (stream da conversa) de cada colaborador: ao revogar ou trocar a senha, fecham junto com a sessão.
@@ -145,6 +177,7 @@ function criarServidor(opcoes) {
   const fechaStreamsDe = (id) => { for (const r of streamsDoColaborador.get(id) || []) r.destroy(); streamsDoColaborador.delete(id); proxy.fecharDoColaborador(id); };
   const primeiroAcesso = criarPrimeiroAcesso({ config, auth, log, agora: opcoes.agora });
   const avatares = criarAvatar({ dataDir: config.dataDir, log });
+  const marca = criarMarca({ dir: config.marcaDir, padraoJson: path.join(__dirname, 'marca-padrao.json'), padraoDir: path.join(__dirname, 'public', 'ds', 'marca-padrao'), log });
   const midia = criarMidia({ dataDir: config.dataDir, log, registro, publicDir: config.publicDir });
   const leitor = criarLeitor({ log, tz: config.tz, canalTelegram: config.canalTelegram, midia });
   const leitorRollout = criarLeitorRollout({ log, tz: config.tz, midia });
@@ -157,7 +190,7 @@ function criarServidor(opcoes) {
   const cofreAgente = criarCofreAgente({ config, log, reiniciar: opcoes.reiniciarCofre });
   const voz = opcoes.voz || criarVoz({ env: config.env, log });
   const contaColab = criarContaColaborador({ dataDir: config.dataDir, login, log, agora: opcoes.agora, escreveArquivo: opcoes.escreveContaAgentes });
-  const colabRotas = criarColaboradoresRotas({ colaboradores, auth, registro, email: opcoes.email || criarEmail({ config, log }), config, log, agora: opcoes.agora, aoDerrubar: fechaStreamsDe, conta: contaColab });
+  const colabRotas = criarColaboradoresRotas({ colaboradores, auth, registro, email: opcoes.email || criarEmail({ config, log }), config, log, agora: opcoes.agora, aoDerrubar: fechaStreamsDe, conta: contaColab, aoRevogar: (id) => cadeado.removerDoTitular(`colaborador:${id}`).catch((e) => log('erro', `Cadeado: não apaguei as passkeys do colaborador ${id} ao revogar (${e.message}). Rode a revogação de novo ou apague-as em passkeys.json.`)) });
   const sigilo = opcoes.sigilo || criarSigilo({ env: config.env, registro, dataDir: config.dataDir, log, timeoutMs: opcoes.timeoutSigiloMs });
   const anonimizar = opcoes.anonimizar || criarAnonimizar({
     env: config.env, dataDir: config.dataDir, registro, log, paraContainer,
@@ -211,6 +244,10 @@ function criarServidor(opcoes) {
   // texto de log não é de confiança e não pode chegar ao contexto de um agente (nem do Admin).
   const logsRotas = criarLogsRotas({ registro, log, agora: opcoes.agora, orcamento: opcoes.logsOrcamento, leitor: opcoes.logsLeitor });
 
+  // Chave de suporte: lê só o diagnóstico (ver docs/interno/PLANO-DIAGNOSTICO-REMOTO.md).
+  const chavesApi = criarChavesApi({ config, log, agora: opcoes.agora });
+  const diagnostico = opcoes.diagnostico || montaDiagnostico({ config, registro, runner, log, agora: opcoes.agora });
+
   let versaoJsCache = { ts: 0, valor: '0' };
   /** Versão da tela: mtime de conversa.js. A tela compara com a que carregou e se recarrega sozinha. */
   function versaoJs() {
@@ -227,6 +264,10 @@ function criarServidor(opcoes) {
     let html;
     try { html = fs.readFileSync(path.join(config.publicDir, 'conversa.html'), 'utf8'); } catch (_) { return false; }
     html = html.replace(/[ \t]*<nav id="trocaBaixo"[^>]*><\/nav>\n?/, '');
+    // Mesma troca dos {{MARCA_*}} (com escape) que o servirArquivo faz para o dono.
+    try { html = marca.html(html); } catch (e) {
+      log('erro', `Falha aplicando a marca na conversa do colaborador (${e.code || e.message}).`); return false;
+    }
     const corpoHtml = Buffer.from(html, 'utf8');
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Content-Length': corpoHtml.length, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
     res.end(m === 'HEAD' ? undefined : corpoHtml);
@@ -241,6 +282,16 @@ function criarServidor(opcoes) {
     const tipo = TIPOS_ESTATICOS[path.extname(caminho).toLowerCase()] || 'application/octet-stream';
     const cab = { 'Content-Type': tipo, ETag: etag, 'Cache-Control': cache || 'no-cache', 'X-Content-Type-Options': 'nosniff' };
     if (path.basename(caminho) === 'sw.js') cab['Service-Worker-Allowed'] = '/';
+    if (tipo.startsWith('text/html')) {
+      // Páginas: troca os {{MARCA_*}} (nome, slogan, tema) com escape. Sempre sem cache: a marca pode mudar a qualquer hora.
+      let corpoHtml;
+      try { corpoHtml = Buffer.from(marca.html(fs.readFileSync(caminho, 'utf8')), 'utf8'); } catch (e) {
+        log('erro', `Falha lendo a página ${caminho} (${e.code || e.message}).`); res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('Erro ao abrir a página.'); return true;
+      }
+      res.writeHead(200, { 'Content-Type': tipo, 'Cache-Control': cache || 'no-cache', 'X-Content-Type-Options': 'nosniff', 'Content-Length': corpoHtml.length });
+      res.end(req.method === 'HEAD' ? undefined : corpoHtml);
+      return true;
+    }
     if (req.headers['if-none-match'] === etag) { res.writeHead(304, cab); res.end(); return true; }
     cab['Accept-Ranges'] = 'bytes';
     // Range de um intervalo só (o iPhone só toca vídeo se o servidor responder 206). Vários intervalos: serve inteiro.
@@ -267,6 +318,36 @@ function criarServidor(opcoes) {
     const s = fs.createReadStream(caminho, status === 206 ? { start: ini, end: fim } : undefined);
     s.on('error', (e) => { log('erro', `Falha lendo o arquivo estático ${caminho} (${e.code || e.message}).`); res.destroy(); });
     s.pipe(res);
+    return true;
+  }
+
+  /** /marca.css, /manifest.webmanifest e /marca/<logo|favicon|icone-app|fonte/base|fonte/mono>. */
+  function servirMarca(req, res, p) {
+    const texto = (tipo, corpo) => {
+      const buf = Buffer.from(corpo, 'utf8');
+      res.writeHead(200, { 'Content-Type': tipo, 'Cache-Control': 'no-cache', 'X-Content-Type-Options': 'nosniff', 'Content-Length': buf.length });
+      res.end(req.method === 'HEAD' ? undefined : buf);
+      return true;
+    };
+    if (p === '/marca.css') return texto('text/css; charset=utf-8', marca.css());
+    if (p === '/manifest.webmanifest') return texto('application/manifest+json; charset=utf-8', marca.manifest());
+    const mm = /^\/marca\/(logo|favicon|icone-app|fonte\/(base|mono))$/.exec(p);
+    if (!mm) return false;
+    const a = mm[1].startsWith('fonte/') ? marca.arquivo('fonte', mm[2]) : marca.arquivo(mm[1]);
+    if (!a) return false;
+    // O arquivo já foi conferido (sem atalho, extensão e tamanho); aqui só evita servir um atalho trocado depois.
+    try { if (fs.lstatSync(a.caminho).isSymbolicLink()) return false; } catch (_) { return false; }
+    let st;
+    try { st = fs.statSync(a.caminho); } catch (_) { return false; }
+    if (!st.isFile()) return false;
+    const cab = { 'Content-Type': a.tipo, 'Content-Length': st.size, 'Cache-Control': 'no-cache', 'X-Content-Type-Options': 'nosniff', ETag: `"${st.size.toString(16)}-${Math.round(st.mtimeMs).toString(16)}"` };
+    if (a.tipo === 'image/svg+xml') cab['Content-Security-Policy'] = "sandbox; default-src 'none'; style-src 'unsafe-inline'";
+    if (req.headers['if-none-match'] === cab.ETag) { res.writeHead(304, cab); res.end(); return true; }
+    res.writeHead(200, cab);
+    if (req.method === 'HEAD') { res.end(); return true; }
+    const rs = fs.createReadStream(a.caminho);
+    rs.on('error', (e) => { log('erro', `Falha lendo o arquivo da marca ${mm[1]} (${e.code || e.message}).`); res.destroy(); });
+    rs.pipe(res);
     return true;
   }
 
@@ -520,9 +601,34 @@ function criarServidor(opcoes) {
     return n;
   }
 
+  /** Gestão das chaves: só sessão de navegador. Nenhuma chave (nem a caixa de um agente) gerencia chaves. */
+  async function chavesApiRota(req, res, url, sessao) {
+    if (sessao.via === 'caixa') return H.erroJson(res, 403, 'A caixa dos agentes não gerencia chaves de API. Isso é do dono, pela tela Suporte remoto.');
+    const m = req.method;
+    const falha = (r) => H.erroJson(res, r.status, r.erro, r.como_resolver ? { como_resolver: r.como_resolver } : undefined);
+    if (m === 'GET') return H.enviaJson(res, 200, { ok: true, chaves: chavesApi.listar(), escopos: ESCOPOS });
+    if (m === 'POST') {
+      let corpo;
+      try { corpo = await H.lerJson(req, 4 * 1024); } catch (e) { return H.erroJson(res, e.status || 400, e.message); }
+      const r = chavesApi.criar({ nome: corpo.nome, escopos: corpo.escopos, quem: sessao.usuario });
+      if (!r.ok) return falha(r);
+      log('info', `Chave de API ${r.chave.id} ("${r.chave.nome}") criada por ${sessao.usuario}, escopos: ${r.chave.escopos.join(', ')}.`);
+      return H.enviaJson(res, 201, { ok: true, token: r.token, chave: r.chave, aviso: 'Guarde este token agora: ele não aparece de novo. O sistema guarda só uma marca dele.' });
+    }
+    if (m === 'DELETE') {
+      const r = chavesApi.revogar(url.searchParams.get('id'), sessao.usuario);
+      if (!r.ok) return falha(r);
+      log('info', `Chave de API ${r.chave.id} ("${r.chave.nome}") revogada por ${sessao.usuario}.`);
+      return H.enviaJson(res, 200, { ok: true, chave: r.chave });
+    }
+    return H.erroJson(res, 405, 'Use GET para listar, POST para criar ou DELETE ?id=<código> para revogar.');
+  }
+
   async function api(req, res, url, sessao) {
     const p = url.pathname;
     const m = req.method;
+    if (p === '/api/v1/cadeado' || p.startsWith('/api/v1/cadeado/')) { await cadeado.rotas(req, res, url, sessao); return undefined; }
+
     if (p.startsWith('/api/v1/tarefas') && await mesa.rota(req, res, url, sessao)) return undefined;
 
     if (p.startsWith('/api/v1/pedidos') && await pedidos.rota(req, res, url, sessao)) return undefined;
@@ -570,6 +676,14 @@ function criarServidor(opcoes) {
         return H.enviaJson(res, 200, { ok: true, ...onboarding.dispensarCartao(corpo && corpo.id) });
       } catch (e) { return H.erroJson(res, e.status || 500, e.status ? e.message : 'Não consegui guardar que o cartão foi dispensado. Peça ao Admin para conferir o espaço e as permissões do servidor.'); }
     }
+
+    if (ehRotaDiagnostico(p)) {
+      if (sessao.via === 'caixa') return H.erroJson(res, 403, 'O diagnóstico não é lido pela caixa dos agentes: ele é do dono da máquina e de quem tem a chave de suporte.');
+      if (m !== 'GET' && m !== 'HEAD') return H.erroJson(res, 405, 'O diagnóstico só se lê: use GET /api/v1/diagnostico.', { como_resolver: 'Troque o método para GET.' });
+      return diagnostico.responder(req, res, url, { tipo: 'sessao', usuario: sessao.usuario });
+    }
+
+    if (p === '/api/v1/chaves-api') return chavesApiRota(req, res, url, sessao);
 
     if (p === '/api/v1/colaboradores' || p.startsWith('/api/v1/colaboradores/')) {
       if (await colabRotas.tratar(req, res, url, sessao)) return undefined;
@@ -968,7 +1082,9 @@ function criarServidor(opcoes) {
     abrirStream({
       req, res, agente, since, log, tickMs: opcoes.tickSseMs,
       // Colaborador: a cada tique o stream confere a sessão e fecha quando ela deixou de valer (expirou, saiu, foi revogada).
-      valeAinda: ehColab(sessao) ? () => sessaoAindaVale(req, sessao) : null,
+      // Colaborador confere a cada tique se continua valendo. O dono (sem caixa) fecha quando a sessão é encerrada por fora, como ao remover o Face ID de um aparelho.
+      valeAinda: ehColab(sessao) ? () => sessaoAindaVale(req, sessao) : (sessao && !sessao.via ? () => !!auth.sessaoDoPedido(req) : null),
+      travadoAgora: sessao && !sessao.via ? () => cadeado.travada(req, sessao) : null,
       fontes: ehColab(sessao)
         // Colaborador: sem a fonte do foco (é a lista do dono) e com os avisos técnicos trocados por um genérico.
         ? { thread: async (a) => { const t = await conversa.thread(a); return Object.assign({}, t, { avisos: avisosPara(sessao, t.avisos) }); }, atividade: async (a) => atividadePara(sessao, a, await conversa.atividade(a)), versaoJs }
@@ -1254,6 +1370,45 @@ function criarServidor(opcoes) {
     return res.end(r.audio);
   }
 
+  // ── porteiro das chaves de API ───────────────────────────────────────────
+  const ehRotaDiagnostico = (p) => p === '/api/v1/diagnostico' || p === '/api/v1/diagnostico/';
+
+  function recusaChave(res, status, erro, comoResolver, extraCab) {
+    return H.erroJson(res, status, erro, { como_resolver: comoResolver }, Object.assign({ 'Cache-Control': 'no-store' }, extraCab || {}));
+  }
+
+  async function porteiroChave(req, res, url) {
+    const ip = H.ipDoPedido(req, config.proxiesConfiaveis);
+    const b = chavesApi.bloqueio(ip);
+    if (b.bloqueado) {
+      log('aviso', `Chave de API: IP ${ip} bloqueado por excesso de tentativas inválidas; libera em ${b.retryAfter} s.`);
+      return recusaChave(res, 429, `Tentativas demais com chave inválida vindas deste endereço. Libera em ${Math.ceil(b.retryAfter / 60)} min.`,
+        'Confira a chave com quem a gerou e espere o prazo antes de tentar de novo.', { 'Retry-After': String(b.retryAfter) });
+    }
+    const r = chavesApi.julgar(req.headers.authorization);
+    if (r.estado !== 'valida') {
+      chavesApi.registrarFalha(ip);
+      if (r.estado === 'revogada') {
+        log('aviso', `Chave de API revogada ("${r.nome}") usada por ${ip}.`);
+        return recusaChave(res, 401, `A chave foi revogada em ${dataCurta(r.revogadaEm, config.tz)} pelo dono da máquina.`, 'Peça uma chave nova a ele.');
+      }
+      log('aviso', `Chave de API recusada de ${ip}: ${r.estado === 'formato' ? 'formato inválido' : 'chave desconhecida'}.`);
+      if (r.estado === 'formato') {
+        return recusaChave(res, 401, 'O cabeçalho Authorization não está no formato esperado.', 'Mande "Authorization: Bearer dgc_..." com a chave inteira, sem aspas nem espaços extras.');
+      }
+      return recusaChave(res, 401, 'A chave não é válida.', 'Confira se copiou a chave inteira. Se ela foi perdida, o dono da máquina cria outra na tela Suporte remoto.');
+    }
+    if ((req.method === 'GET' || req.method === 'HEAD') && ehRotaDiagnostico(url.pathname) && r.escopos.includes('diagnostico')) {
+      chavesApi.marcarUso(r.id, ip);
+      log('info', `Diagnóstico lido com a chave ${r.id} ("${r.nome}") de ${ip}.`);
+      res.setHeader('Cache-Control', 'no-store');
+      return diagnostico.responder(req, res, url, { tipo: 'chave', id: r.id, nome: r.nome });
+    }
+    log('aviso', `Chave de API ${r.id} ("${r.nome}") tentou ${req.method} ${url.pathname.slice(0, 120)} de ${ip}: recusado, a chave só lê o diagnóstico.`);
+    return recusaChave(res, 403, 'Esta chave é de diagnóstico: ela só pode ler GET /api/v1/diagnostico. Nenhuma outra rota aceita chave de API.',
+      'Use GET /api/v1/diagnostico com esta chave. Para qualquer outra coisa, o dono da máquina entra pelo navegador.');
+  }
+
   // ── despacho ─────────────────────────────────────────────────────────────
   const quemDoProxy = (sessao, req) => (sessao.papel === 'colaborador' ? { colaborador_id: sessao.colaborador_id, valeAinda: () => sessaoAindaVale(req, sessao) } : {});
 
@@ -1269,10 +1424,17 @@ function criarServidor(opcoes) {
     }
     if (p === '/api/login-estado' && m === 'GET') {
       if (auth.semSenha) {
-        return H.enviaJson(res, 200, { ok: true, trancado: auth.trancado, sem_senha: true, usuario: auth.usuario, mensagem: 'Use o link de primeiro acesso que apareceu no fim da instalação. Se perdeu, rode no servidor: sudo dgclaw primeiro-acesso' });
+        return H.enviaJson(res, 200, { ok: true, trancado: auth.trancado, sem_senha: true, usuario: auth.usuario, mensagem: 'Use o link de primeiro acesso que apareceu no fim da instalação. Se perdeu, rode no servidor: sudo prumo primeiro-acesso' });
       }
       return H.enviaJson(res, 200, { ok: true, trancado: auth.trancado, sem_senha: false, mensagem: auth.trancado ? `O acesso está trancado: ${auth.motivoTrancado} Rode o gerador de hash do instalador e coloque o resultado no web.env.` : null });
     }
+
+    // Documentação do diagnóstico: pública, sem chave nem sessão (só texto, nenhum dado da máquina).
+    if ((m === 'GET' || m === 'HEAD') && p === '/api/v1/diagnostico/docs.md') return diagnostico.responder(req, res, url, { tipo: 'publico' });
+
+    // Pedido com chave de API: julgado SÓ pela chave, ignorando cookie e caixa. Fica antes de tudo
+    // para que uma chave de suporte nunca chegue a nenhuma rota que não seja a do diagnóstico.
+    if (/^\s*Bearer/i.test(String(req.headers.authorization || ''))) return porteiroChave(req, res, url);
 
     if (!p.startsWith('/p/')) {
       res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -1308,12 +1470,18 @@ function criarServidor(opcoes) {
       return querHtml(req) && !p.startsWith('/api/') ? H.paginaErro(res, 403, 'Pedido recusado', motivo) : H.erroJson(res, 403, motivo);
     }
 
+    // Marca (white label): rotas públicas, só GET/HEAD, sem sessão (o login precisa delas). Tudo vem validado de lib/marca.js.
+    if ((m === 'GET' || m === 'HEAD') && (p === '/marca.css' || p === '/manifest.webmanifest' || p.startsWith('/marca/'))) {
+      if (servirMarca(req, res, p)) return undefined;
+      return H.paginaErro(res, 404, 'Página não encontrada', 'Esse endereço não existe neste servidor.');
+    }
+
     if (p === '/login' && m === 'GET') {
       const ja = auth.sessaoDoPedido(req);
       if (ja) { res.writeHead(302, { Location: destinoDaSessao(ja, proximoSeguro(url.searchParams.get('next'))) }); return res.end(); }
       if (!servirArquivo(req, res, path.join(config.publicDir, 'login.html'), 'no-store')) {
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
-        res.end(LOGIN_RESERVA);
+        res.end(loginReserva(marca.html('{{MARCA_NOME}}')));
       }
       return undefined;
     }
@@ -1321,7 +1489,7 @@ function criarServidor(opcoes) {
     if (p === '/primeiro-acesso' && (m === 'GET' || m === 'HEAD')) {
       if (!servirArquivo(req, res, path.join(config.publicDir, 'primeiro-acesso.html'), 'no-store')) {
         log('erro', `A tela de primeiro acesso não está instalada: falta ${path.join(config.publicDir, 'primeiro-acesso.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de primeiro acesso não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de primeiro acesso não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo prumo atualizar).');
       }
       return undefined;
     }
@@ -1346,11 +1514,28 @@ function criarServidor(opcoes) {
       if (!veredito.ok) return negarEscopo(req, res, sessao, veredito, p);
     }
 
-    if (ehColab(sessao)) {
+    // Cadeado: sessão travada por falta de uso não vê tela nem API (só o necessário para destravar). Ver lib/cadeado.js.
+    if (sessao && !sessao.via && cadeado.gate(req, res, url, sessao)) return undefined;
+
+    // Conferido quando o corpo termina de chegar (H.lerCorpo, por onde passam todas as leituras de corpo, inclusive o upload e o
+    // proxy): a sessão pode ter perdido o acesso (colaborador) ou travado pelo cadeado enquanto o envio estava em andamento.
+    if (sessao && !sessao.via) {
       req.dgRevalidar = () => {
-        const vale = sessaoAindaVale(req, sessao);
-        if (!vale) log('aviso', `Pedido ${m} ${p.slice(0, 120)} do colaborador ${sessao.usuario} recusado: a sessão deixou de valer enquanto o corpo chegava.`);
-        return vale;
+        if (ehColab(sessao) && !sessaoAindaVale(req, sessao)) {
+          log('aviso', `Pedido ${m} ${p.slice(0, 120)} do colaborador ${sessao.usuario} recusado: a sessão deixou de valer enquanto o corpo chegava.`);
+          return false;
+        }
+        // A sessão ainda existe? (o dono pode ter tido o aparelho removido por outra sessão, que encerra esta)
+        if (!auth.sessaoDoPedido(req)) {
+          log('aviso', `Pedido ${m} ${p.slice(0, 120)} de ${sessao.usuario} recusado: a sessão foi encerrada enquanto o corpo chegava. Nada foi feito.`);
+          return { status: 401, mensagem: 'A sua sessão foi encerrada enquanto o envio estava em andamento. Nada foi feito. Entre de novo com a senha.' };
+        }
+        // O que destrava (verificar) tem de poder ler o corpo com a sessão travada.
+        if (!cadeado.livreTravado(m, p) && cadeado.travada(req, sessao)) {
+          log('aviso', `Pedido ${m} ${p.slice(0, 120)} de ${sessao.usuario} recusado: a tela travou (Face ID) enquanto o corpo chegava. Nada foi feito.`);
+          return { status: 423, mensagem: MSG_TRAVADO };
+        }
+        return true;
       };
     }
 
@@ -1380,6 +1565,9 @@ function criarServidor(opcoes) {
         const slugPainel = decodeURIComponent(pp[1]);
         if (RX_SLUG_ROTA.test(slugPainel)) marcaAutor(slugPainel, sessao, null);
       }
+      const quemP = quemDoProxy(sessao, req);
+      // Dono com Face ID ligado: como o colaborador, o Web lê o corpo antes e só então abre a conexão com o painel (o painel age quando o corpo termina).
+      if (!sessao.via && !quemP.colaborador_id && cadeado.ligado(req, sessao)) quemP.lerCorpoAntes = true;
       // O dono também inicia/cancela o login da conta de IA pelo painel do agente, sem passar pelas rotas /login do Web:
       // aqui respeita a reserva do colaborador e invalida a autoria dele (web/lib/conta-colaborador.js).
       if (!ehColab(sessao) && !sessao.via && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(m) && /^\/api\/provedor(\/|$)/i.test(pp[2])) {
@@ -1394,10 +1582,30 @@ function criarServidor(opcoes) {
           const seg = await contaColab.seguraProvedorNoPainelDoDono(agP);
           if (seg.veto) return H.erroJson(res, seg.veto.status, seg.veto.corpo.erro);
           res.once('close', seg.liberar);
-          try { return await proxy.responder(req, res, pp[1], sessao.usuario, quemDoProxy(sessao, req)); } catch (e) { seg.liberar(); throw e; }
+          try { return await proxy.responder(req, res, pp[1], sessao.usuario, quemP); } catch (e) { seg.liberar(); throw e; }
         }
       }
-      return proxy.responder(req, res, pp[1], sessao.usuario, quemDoProxy(sessao, req));
+      return proxy.responder(req, res, pp[1], sessao.usuario, quemP);
+    }
+
+    if ((p === '/cadeado' || p === '/cadeado/') && (m === 'GET' || m === 'HEAD')) {
+      if (!sessao) return semSessaoPagina(req, res, url);
+      const destino = cadeado.destinoSeguro(url.searchParams.get('next'));
+      if (sessao.via || !cadeado.travada(req, sessao)) { res.writeHead(302, { Location: destino, 'Cache-Control': 'no-store' }); return res.end(); }
+      if (!servirArquivo(req, res, path.join(config.publicDir, 'cadeado.html'), 'no-store')) {
+        log('erro', `A tela do cadeado não está instalada: falta ${path.join(config.publicDir, 'cadeado.html')}.`);
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela do cadeado não foi encontrado no servidor. Reinstale o Prumo da Locadora Web.');
+      }
+      return undefined;
+    }
+
+    if ((p === '/face-id' || p === '/face-id/') && (m === 'GET' || m === 'HEAD')) {
+      if (!sessao) return semSessaoPagina(req, res, url);
+      if (!servirArquivo(req, res, path.join(config.publicDir, 'face-id.html'), 'no-store')) {
+        log('erro', `A tela do Face ID não está instalada: falta ${path.join(config.publicDir, 'face-id.html')}.`);
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela do Face ID não foi encontrado no servidor. Reinstale o Prumo da Locadora Web.');
+      }
+      return undefined;
     }
 
     if (p === '/' && (m === 'GET' || m === 'HEAD')) {
@@ -1430,7 +1638,7 @@ function criarServidor(opcoes) {
       if (!sessao) return semSessaoPagina(req, res, url);
       if (!servirArquivo(req, res, path.join(config.publicDir, 'lembretes.html'), 'no-store')) {
         log('erro', `A tela de lembretes não está instalada: falta ${path.join(config.publicDir, 'lembretes.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de lembretes não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de lembretes não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo prumo atualizar).');
       }
       return undefined;
     }
@@ -1439,7 +1647,16 @@ function criarServidor(opcoes) {
       if (!sessao) return semSessaoPagina(req, res, url);
       if (!servirArquivo(req, res, path.join(config.publicDir, 'avisos.html'), 'no-store')) {
         log('erro', `A tela do quadro de avisos não está instalada: falta ${path.join(config.publicDir, 'avisos.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela do quadro de avisos não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela do quadro de avisos não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo prumo atualizar).');
+      }
+      return undefined;
+    }
+
+    if ((p === '/suporte' || p === '/suporte/') && (m === 'GET' || m === 'HEAD')) {
+      if (!sessao) return semSessaoPagina(req, res, url);
+      if (!servirArquivo(req, res, path.join(config.publicDir, 'suporte.html'), 'no-store')) {
+        log('erro', `A tela de suporte remoto não está instalada: falta ${path.join(config.publicDir, 'suporte.html')}.`);
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de suporte remoto não foi encontrado no servidor. Reinstale o Prumo da Locadora Web.');
       }
       return undefined;
     }
@@ -1461,7 +1678,7 @@ function criarServidor(opcoes) {
       if (ehColab(sessao) && servirConversaColab(res, m)) return undefined;
       if (!servirArquivo(req, res, path.join(config.publicDir, 'conversa.html'), 'no-store')) {
         log('erro', `A tela da conversa não está instalada: falta ${path.join(config.publicDir, 'conversa.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela da conversa não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela da conversa não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo prumo atualizar).');
       }
       return undefined;
     }
@@ -1480,7 +1697,7 @@ function criarServidor(opcoes) {
       if (!sessao) return semSessaoPagina(req, res, url);
       if (!servirArquivo(req, res, path.join(config.publicDir, 'seguranca.html'), 'no-store')) {
         log('erro', `A tela de segurança não está instalada: falta ${path.join(config.publicDir, 'seguranca.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de segurança não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de segurança não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo prumo atualizar).');
       }
       return undefined;
     }
@@ -1507,7 +1724,7 @@ function criarServidor(opcoes) {
       if (!sessao) return semSessaoPagina(req, res, url);
       if (!servirArquivo(req, res, path.join(config.publicDir, 'mesa.html'), 'no-store')) {
         log('erro', `A tela da Mesa não está instalada: falta ${path.join(config.publicDir, 'mesa.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela da Mesa de tarefas não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela da Mesa de tarefas não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo prumo atualizar).');
       }
       return undefined;
     }
@@ -1553,6 +1770,7 @@ function criarServidor(opcoes) {
       const nega = (status, motivo) => { socket.write(`HTTP/1.1 ${status} Recusado\r\nConnection: close\r\nContent-Type: text/plain; charset=utf-8\r\n\r\n${motivo}`); socket.destroy(); };
       if (!pp) return nega(404, 'Só o painel (/p/<agente>/) aceita WebSocket.');
       if (!sessao) return nega(401, 'Você precisa entrar antes.');
+      if (!sessao.via && cadeado.travada(req, sessao)) return nega(423, 'A tela está travada por falta de uso. Destrave com o Face ID ou entre com a senha.');
       const veredito = escopo.websocketLiberado(sessao, url.pathname, req.url);
       if (!veredito.ok) {
         log('aviso', `WebSocket em ${url.pathname.slice(0, 120)} recusado para o colaborador ${sessao.usuario}: ${veredito.motivo}`);
@@ -1567,9 +1785,16 @@ function criarServidor(opcoes) {
         return nega(403, 'Este agente é da equipe do seu agente principal; a conversa com ele fica fechada.');
       }
       const quem = quemDoProxy(sessao, req);
+      if (!sessao.via) quem.sessaoHash = auth.hashDaSessao(req);
       if (quem.colaborador_id) {
         // A conferência repete o login do upgrade: o proxy a chama a cada 30 s e fecha o socket quando a sessão cai.
-        quem.valeAinda = () => { const s2 = auth.sessaoDoPedido(req); return !!s2 && s2.papel === 'colaborador' && s2.colaborador_id === quem.colaborador_id && s2.senha_versao === sessao.senha_versao; };
+        quem.valeAinda = () => { const s2 = auth.sessaoDoPedido(req); return !!s2 && s2.papel === 'colaborador' && s2.colaborador_id === quem.colaborador_id && s2.senha_versao === sessao.senha_versao && !cadeado.travada(req, sessao); };
+      } else if (!sessao.via) {
+        // Dono: entra na conferência mesmo sem Face ID ligado agora (ele pode ligar com a Tela já aberta), e a sessão encerrada por fora
+        // (aparelho removido, saída) também fecha a conexão; o proxy repete a conferência antes do 101 chegar ao navegador. travada() usa o
+        // registro da sessão no servidor (exige), não o cookie deste req, e devolve falso enquanto a sessão não foi presa a um aparelho.
+        // A Tela aberta antes de travar cai na próxima conferência do proxy (até 30 s).
+        quem.valeAinda = () => !!auth.sessaoDoPedido(req) && !cadeado.travada(req, sessao);
       }
       return proxy.upgrade(req, socket, head, pp[1], sessao.usuario, quem);
     } catch (e) {
@@ -1580,7 +1805,7 @@ function criarServidor(opcoes) {
   });
 
   // ── socket de administração do host ──────────────────────────────────────────
-  // O comando `dgclaw colaborador` (root, no servidor) fala com o Web por um socket Unix em <dataDir>/admin.sock
+  // O comando `prumo colaborador` (root, no servidor) fala com o Web por um socket Unix em <dataDir>/admin.sock
   // (pasta 0700, socket 0600). Só atende /api/v1/colaboradores*; a sessão é a do dono, sem cookie. Quem chega por ele já
   // é root no servidor, e nenhum agente, caixa ou colaborador consegue abrir esse arquivo.
   const caminhoSocketAdmin = path.join(config.dataDir, 'admin.sock');
@@ -1604,10 +1829,10 @@ function criarServidor(opcoes) {
     }
   });
 
-  /** Abre o socket. Nunca derruba o Web: se não der, o comando `dgclaw colaborador` diz que o Web não responde e o log diz por quê. */
+  /** Abre o socket. Nunca derruba o Web: se não der, o comando `prumo colaborador` diz que o Web não responde e o log diz por quê. */
   function abreSocketAdmin() {
     return new Promise((resolve) => {
-      const falhou = (motivo) => { log('erro', `Não abri o socket de administração ${caminhoSocketAdmin} (${motivo}). O Web segue funcionando, mas o comando "dgclaw colaborador" não vai conseguir falar com ele até isso ser resolvido. Confira a permissão da pasta ${config.dataDir} e o tamanho do caminho (o limite de um socket Unix é de uns 100 caracteres).`); resolve(false); };
+      const falhou = (motivo) => { log('erro', `Não abri o socket de administração ${caminhoSocketAdmin} (${motivo}). O Web segue funcionando, mas o comando "prumo colaborador" não vai conseguir falar com ele até isso ser resolvido. Confira a permissão da pasta ${config.dataDir} e o tamanho do caminho (o limite de um socket Unix é de uns 100 caracteres).`); resolve(false); };
       try {
         let st = null;
         try { st = fs.lstatSync(caminhoSocketAdmin); } catch (e) { if (e.code !== 'ENOENT') throw e; }
@@ -1628,7 +1853,7 @@ function criarServidor(opcoes) {
   }
 
   return {
-    servidor, servidorAdmin, caminhoSocketAdmin, config, registro, auth, colaboradores, contaColab, proxy, midia, conversa, anonimizar, filtroAnon, log, caixa, push, lembretes, avisos, estados, vigiaAtencao, prefsAtencao,
+    servidor, servidorAdmin, caminhoSocketAdmin, config, registro, auth, colaboradores, cadeado, contaColab, proxy, midia, conversa, anonimizar, filtroAnon, log, caixa, push, lembretes, avisos, chavesApi, diagnostico, estados, vigiaAtencao, prefsAtencao,
     ouvir(porta, host) {
       return new Promise((resolve, reject) => {
         servidor.once('error', reject);
@@ -1643,7 +1868,7 @@ function criarServidor(opcoes) {
         });
       });
     },
-    fechar() { return new Promise((resolve) => { caixa.parar(); lembretes.parar(); avisos.parar(); vigiaAtencao.parar(); proxy.fecharTudo(); anonimizar.encerrar(); servidorAdmin.closeAllConnections(); servidorAdmin.close(); servidor.closeAllConnections && servidor.closeAllConnections(); servidor.close(() => resolve()); }); },
+    fechar() { return cadeado.aguardar().catch(() => {}).then(() => new Promise((resolve) => { caixa.parar(); lembretes.parar(); avisos.parar(); vigiaAtencao.parar(); proxy.fecharTudo(); anonimizar.encerrar(); servidorAdmin.closeAllConnections(); servidorAdmin.close(); servidor.closeAllConnections && servidor.closeAllConnections(); servidor.close(() => resolve()); })); },
   };
 }
 

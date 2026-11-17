@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""report.py — Coleta um BUNDLE de diagnostico SANITIZADO pro AUTOR do plugin DG Claw.
+"""report.py — Coleta um BUNDLE de diagnostico SANITIZADO pro AUTOR do plugin Prumo da Locadora.
 
 Objetivo: um cliente do plugin consegue mandar um relatorio de erro/dificuldade pro
 autor (DG Medeiros / DGatoM/DG-Claw) SEM vazar nada pessoal da persona dele.
@@ -298,7 +298,7 @@ def github_issue_url(repo, slug, scrubbed_bundle):
     import urllib.parse
     title = f'[report] problema no agente ({slug})'
     body_hint = (
-        'Cole abaixo o bundle de diagnostico (ja sanitizado) gerado por /dgclaw:report.\n'
+        'Cole abaixo o bundle de diagnostico (ja sanitizado) gerado por /report.\n'
         'Por seguranca o conteudo NAO foi pre-preenchido por padrao — anexe/cole manualmente.\n\n'
         '```\n<cole aqui o conteudo do report-*.txt>\n```\n'
     )
@@ -369,7 +369,7 @@ def selftest(cfg):
 
 # ----------------------------------------------------------------------------- main
 def main():
-    ap = argparse.ArgumentParser(description='Coleta bundle de diagnostico sanitizado pro autor do DG Claw.')
+    ap = argparse.ArgumentParser(description='Coleta bundle de diagnostico sanitizado pro autor do Prumo da Locadora.')
     ap.add_argument('--config', help='caminho do .dgclaw/config.sh')
     ap.add_argument('--desc', default='', help='descricao do problema escrita pelo dono')
     ap.add_argument('--consent', action='store_true',

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""memory_search.py (DG Claw) — Pre-turn semantic memory hook (HippoRAG-inspired).
+"""memory_search.py (Prumo da Locadora) — Pre-turn semantic memory hook (HippoRAG-inspired).
 
 Versao GENERALIZADA: sem hardcode de nome/paths de workspace e SEM acoplamento a
-vault externo (fora da persona). Tudo sai do contrato de env do DG Claw (DGCLAW_*).
+vault externo (fora da persona). Tudo sai do contrato de env do Prumo da Locadora (DGCLAW_*).
 
 Pipeline (lado LEITURA do indice semantico):
   1. detect_triggers(context) — Haiku extrai palavras/conceitos incomuns (~$0.001-0.002)
@@ -30,7 +30,7 @@ Uso CLI (chamado pelo hook UserPromptSubmit / crons):
   echo '{"input": "...", "recent": ["msg1","msg2"]}' | memory_search.py
   → imprime JSON {recall, triggers, chunks_found, skipped, reason, duration_ms}
 
-Envs (contrato DG Claw):
+Envs (contrato Prumo da Locadora):
   DGCLAW_EMBED_PROVIDER   auto | local | gemini | off (ver embedder.py)
   GEMINI_API_KEY          so para o provedor gemini
   DGCLAW_WORKSPACE        raiz do workspace da persona (<ws>)
@@ -209,6 +209,11 @@ def call_haiku(prompt: str, timeout: int = 60):
         CLAUDE_BIN, "--print",
         "--model", "haiku",
         "--no-session-persistence",
+        # Texto entra como dado: sem ferramentas, sem MCP e sem configuracao do projeto, um turno so.
+        "--tools", "",
+        "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}',
+        "--setting-sources", "",
+        "--max-turns", "1",
         "--output-format", "json",
         "-p", prompt,
     ]

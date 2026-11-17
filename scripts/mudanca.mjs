@@ -89,7 +89,7 @@ function cifrar(buf, senha) {
 function decifrar(buf, senha) {
   const cabeca = buf.subarray(0, MAGICO.length).toString();
   if (cabeca !== MAGICO) {
-    throw new Error("este arquivo nao e uma mudanca do DG Claw (ou chegou corrompido)");
+    throw new Error("este arquivo nao e uma mudanca do Prumo da Locadora (ou chegou corrompido)");
   }
   let p = MAGICO.length;
   const sal = buf.subarray(p, (p += 16));

@@ -1,11 +1,11 @@
 # Ronda de segurança de fábrica
 
-Todo DG Claw instalado vem com uma ronda de segurança. Ela varre, várias vezes ao dia, as falhas de segurança
+Todo Prumo da Locadora instalado vem com uma ronda de segurança. Ela varre, várias vezes ao dia, as falhas de segurança
 que afetam **aquela** instalação, e avisa o dono dela. Quem não usa o Notion não recebe aviso sobre o Notion:
 a ronda monta tudo a partir do que existe no seu servidor.
 
 Ela é diferente do [aviso de segurança do painel](BOLETINS-DE-SEGURANCA.md). O boletim é uma notícia que a equipe
-do DG Claw publica sobre as ferramentas do próprio programa. A ronda olha o seu servidor inteiro, no seu ritmo,
+do Prumo da Locadora publica sobre as ferramentas do próprio programa. A ronda olha o seu servidor inteiro, no seu ritmo,
 sem esperar a equipe publicar nada.
 
 ## O que a ronda olha
@@ -15,14 +15,14 @@ O inventário é guardado em `/var/lib/dgclaw/seguranca/inventario.json`:
 - **Os pacotes do servidor** (`dpkg`) e o **kernel que está em execução**. Um kernel antigo, instalado mas
   desligado, não conta como exposto.
 - **O que escuta na rede**: as portas públicas, o programa que as abriu e o pacote dono dele.
-- **O app do DG Claw**: os `package-lock.json` de `/opt/dgclaw/app`, os pacotes Python fixados e a imagem base
+- **O app do Prumo da Locadora**: os `package-lock.json` de `/opt/dgclaw/app`, os pacotes Python fixados e a imagem base
   do `container/Containerfile`.
-- **O que você conectou no DG Claw**: os servidores MCP, os plugins e as skills do Admin e de cada agente.
+- **O que você conectou no Prumo da Locadora**: os servidores MCP, os plugins e as skills do Admin e de cada agente.
   Eles viram "serviços externos" com nome de gente (Notion, Google Drive, Slack, GitHub...), e, quando o
   pacote e a versão aparecem na configuração, entram na consulta de falhas. O mapa de nomes fica em
   `seguranca/ronda/servicos.json`. Um serviço que o mapa não conhece entra com o nome que você deu a ele.
 
-A parte pessoal do inventário (o app e os serviços conectados) é refeita a cada 3 dias e sempre que o DG Claw
+A parte pessoal do inventário (o app e os serviços conectados) é refeita a cada 3 dias e sempre que o Prumo da Locadora
 é atualizado. Quando algo novo entra, fica registrado: "acrescentado à ronda em 31/10/2026: Notion via MCP do
 agente luna". Os pacotes do servidor, o kernel e as portas são lidos de novo em toda rodada, porque uma
 atualização do sistema não pode fazer a ronda avisar de uma falha que já foi corrigida.
@@ -75,7 +75,7 @@ execução ou num pacote exposto à rede, ou a de gravidade crítica ou alta con
 tem. Para os pacotes do Ubuntu vale a prioridade que o próprio Ubuntu deu, e não a nota genérica da falha.
 
 **Só se corrige sozinho o que uma pessoa escreveu antes** no catálogo `seguranca/acoes-permitidas.json`, que
-vai junto com o DG Claw e só muda por uma nova versão. Nada vem do texto de notícia nem é inventado pela IA. Hoje
+vai junto com o Prumo da Locadora e só muda por uma nova versão. Nada vem do texto de notícia nem é inventado pela IA. Hoje
 o catálogo tem uma única ação, uma **proteção provisória** (desligar o MPTCP), que a ronda só aplica enquanto a correção
 oficial não existe. Veja "O catálogo de ações" e "Quando a correção ainda não saiu".
 
@@ -94,7 +94,7 @@ Para a ronda não aplicar nada sozinha mesmo quando o catálogo tiver ações, p
   as ações. Nada some: o que o dono fecha na janela continua na tela e no selo.
 - **No chat com o Admin**: só quando aparece uma coincidência **nova** (uma falha que a ronda ainda não tinha
   mostrado, ou uma que ela corrigiu sozinha). O Admin recebe **um** recado por rodada, de texto fixo, só com os
-  números das falhas e o nível. Ele lê `dgclaw seguranca resumo`, escreve o alerta para você e conversa sobre o
+  números das falhas e o nível. Ele lê `prumo seguranca resumo`, escreve o alerta para você e conversa sobre o
   que fazer. Dia sem nada novo: nenhuma IA é acionada, e o painel mostra a frase fixa "sem novidades".
 - **Quando a própria ronda falha**: um vigia confere de hora em hora se a última rodada agendada terminou. Se
   não terminou, ele roda de novo uma vez. Se falhar de novo, avisa o Admin e põe um alerta no painel.
@@ -114,7 +114,7 @@ nenhum aceita comando livre. Todo valor é conferido por formato antes de ser us
 
 | Tipo | O que faz | Checagem antes | Como desfaz |
 | --- | --- | --- | --- |
-| `nft-tabela` | carrega uma tabela do firewall nft a partir de um arquivo do próprio DG Claw (`arquivo`, `tabela`) e liga uma unidade do systemd que a recarrega no boot | `nft -c -f` só valida | desliga e apaga a unidade e o arquivo, e apaga a tabela |
+| `nft-tabela` | carrega uma tabela do firewall nft a partir de um arquivo do próprio Prumo da Locadora (`arquivo`, `tabela`) e liga uma unidade do systemd que a recarrega no boot | `nft -c -f` só valida | desliga e apaga a unidade e o arquivo, e apaga a tabela |
 | `sysctl` | grava `/etc/sysctl.d/90-dgclaw-ronda-<id>.conf` e aplica (`chave`, `valor`) | lê o valor atual; recusa se a chave não existe | apaga o arquivo e volta o valor anterior |
 | `apt-pacote` | `apt-get install --only-upgrade <pacote>=<versao>` (`pacote`, `versao`) | `apt-get -s` simula; `needrestart -b` não pode mostrar serviço esperando reinício; sem `needrestart` a ronda considera que pode exigir reinício | reinstala a versão anterior |
 
@@ -153,9 +153,9 @@ recebe o recado como de uma falha nova. Exceção: se a CISA diz que a falha est
 proteção, ela continua em "Ação necessária", com a sugestão de considerar o botão de emergência.
 
 A **proteção provisória** é uma ação do catálogo marcada `"paliativo": true`, descrita em `seguranca/paliativos.json`. Se ela não
-está ligada, o painel oferece **Aplicar proteção provisória** (ou `sudo dgclaw seguranca aplicar <id>`); com o aplicar sozinha
+está ligada, o painel oferece **Aplicar proteção provisória** (ou `sudo prumo seguranca aplicar <id>`); com o aplicar sozinha
 ligado e `pode_sozinho: true`, a ronda aplica com o mesmo teste de saúde do nível 1. Dá para desfazer pelo botão **Desfazer** do cartão ou por
-`sudo dgclaw seguranca desfazer <registro>`. O que vale é a leitura de verdade do sistema (por exemplo, `sysctl -n`): configurar à mão
+`sudo prumo seguranca desfazer <registro>`. O que vale é a leitura de verdade do sistema (por exemplo, `sysctl -n`): configurar à mão
 também conta. Se alguém voltar a configuração, a falha volta a pedir ação.
 
 ### Como acrescentar um paliativo novo
@@ -170,7 +170,7 @@ também conta. Se alguém voltar a configuração, a falha volta a pedir ação.
 
 ## Como desligar ou mudar os horários
 
-Tudo no `/etc/dgclaw/dgclaw.env`; depois rode `sudo ./install.sh` de novo no clone (ou `sudo dgclaw atualizar`).
+Tudo no `/etc/dgclaw/dgclaw.env`; depois rode `sudo ./install.sh` de novo no clone (ou `sudo prumo atualizar`).
 
 | Linha | Efeito |
 | --- | --- |
@@ -214,18 +214,18 @@ Cada rodada registra o pico de memória no log (`memoria_pico_mb=`) e no `ronda.
 O que se faz clicando no painel se faz também pela linha de comando, no servidor (Admin ou terminal como root):
 
 ```text
-sudo dgclaw seguranca estado [--json]       última rodada, próxima, parcial?, quantos por nível
-sudo dgclaw seguranca resumo [--json] [--todos]   os achados novos (ou todos), já limpos
-sudo dgclaw seguranca rodar [--sem-avisar]  faz uma rodada agora
-sudo dgclaw seguranca aplicar <id>          aplica a ação do catálogo (só com o sim do dono)
-sudo dgclaw seguranca desfazer <registro>   volta atrás numa ação aplicada
-sudo dgclaw seguranca inventario [--json] [--refazer]
-sudo dgclaw seguranca pedido-todos          executa a fila de pedidos do painel (é o que o systemd chama)
+sudo prumo seguranca estado [--json]       última rodada, próxima, parcial?, quantos por nível
+sudo prumo seguranca resumo [--json] [--todos]   os achados novos (ou todos), já limpos
+sudo prumo seguranca rodar [--sem-avisar]  faz uma rodada agora
+sudo prumo seguranca aplicar <id>          aplica a ação do catálogo (só com o sim do dono)
+sudo prumo seguranca desfazer <registro>   volta atrás numa ação aplicada
+sudo prumo seguranca inventario [--json] [--refazer]
+sudo prumo seguranca pedido-todos          executa a fila de pedidos do painel (é o que o systemd chama)
 ```
 
 O painel não é root. Quando você clica em "Aplicar", "Agendar" ou nos botões de emergência, ele deixa um pedido
 em `/var/lib/dgclaw/web/seguranca/pedidos/`; uma unidade do systemd (`dgclaw-seguranca-pedidos.path`) o entrega ao
-`dgclaw seguranca pedido-todos`, que **valida tudo de novo** (o achado existe, a ação está no catálogo e casa com ele,
+`prumo seguranca pedido-todos`, que **valida tudo de novo** (o achado existe, a ação está no catálogo e casa com ele,
 o horário é válido, o código de emergência confere) e só então executa. O resultado volta em
 `pedidos/feitos/<uuid>.json`. Nunca existe comando livre num pedido. O formato dos arquivos está em
 `docs/interno/CONTRATO-RONDA.md`, e as rotas da API do painel que leem e pedem estas mesmas coisas ficam no
@@ -239,7 +239,7 @@ recado, **qual** fonte ficou de fora e por quê. Ela nunca parece limpa quando n
 - Uma falha que sumiu da lista numa rodada parcial **não** é dada como corrigida: o sumiço pode ser da fonte.
 - Se o OSV.dev (a fonte que confirma se a falha atinge você) ou mais da metade das fontes ficam fora, a rodada
   conta como falha: o vigia roda de novo e avisa se continuar assim.
-- Para ver o motivo: `sudo dgclaw seguranca estado`, ou o log em `/var/log/dgclaw/ronda.log`.
+- Para ver o motivo: `sudo prumo seguranca estado`, ou o log em `/var/log/dgclaw/ronda.log`.
 
 ## Arquivos
 

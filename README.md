@@ -70,7 +70,7 @@ um **link de primeiro acesso**. Pode rodar de novo sem estragar nada.
 
 **Passo 5. Criar a senha.** Abra o link de primeiro acesso no navegador (vale 30 minutos e uma vez só) e
 cadastre uma senha de pelo menos 12 caracteres. Você entra direto no chat do **Admin**. Se o link
-vencer: `sudo dgclaw primeiro-acesso`.
+vencer: `sudo prumo primeiro-acesso`.
 
 **Passo 6. Criar o seu assistente.** No card do Admin, toque em **Quero criar meu primeiro agente**,
 digite o nome e toque em **Continuar**. Preencha a função e o tom e toque em **Criar meu agente**.
@@ -98,7 +98,7 @@ sudo ./install.sh --usuario maria --dominio painel.minhaempresa.com.br --proxy-e
 Nesse modo o instalador não instala o Caddy nem mexe no ufw. O Prumo da Locadora escuta só em `127.0.0.1:8300`
 (ou na porta de `--porta-painel`) e, no fim, o instalador imprime o trecho pronto para o nginx e as linhas
 para um túnel da Cloudflare. O domínio é obrigatório, e o modo fica guardado para as próximas execuções e
-para `sudo dgclaw atualizar`. Quem já tem podman ou docker no servidor deve usar `--faixa-rede` (sugestão:
+para `sudo prumo atualizar`. Quem já tem podman ou docker no servidor deve usar `--faixa-rede` (sugestão:
 `10.91.0.0/16`) para os agentes não disputarem IPs com outras redes. Os detalhes estão em
 [INSTALL.md](INSTALL.md#instalar-numa-vps-que-já-tem-nginx-ou-outro-proxy).
 
@@ -135,7 +135,7 @@ Detalhes em [docs/SEGURANCA.md](docs/SEGURANCA.md). Para relatar uma falha, veja
 
 Peça ao Admin: **"atualiza o Prumo da Locadora"**. Ele faz um backup datado, baixa a versão nova e
 confere que senha, memória, conversas e cofres continuam iguais. No terminal, o mesmo é
-`sudo dgclaw atualizar` (`--simular` mostra antes, `--voltar <backup>` desfaz). Passo a passo em
+`sudo prumo atualizar` (`--simular` mostra antes, `--voltar <backup>` desfaz). Passo a passo em
 [docs/ATUALIZAR.md](docs/ATUALIZAR.md).
 
 ## Como funciona por dentro

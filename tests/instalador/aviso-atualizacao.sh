@@ -44,7 +44,7 @@ caso_aviso_desligado_no_dgclaw_env_nao_liga_o_timer_e_preserva_as_linhas() {
     nega "o timer NAO foi ligado" tem "$STUB_LOG" "systemctl enable dgclaw-checar-atualizacao.timer"
     nega "nenhuma checagem foi disparada" tem "$STUB_LOG" "dgclaw-checar-atualizacao.service"
     afirma "o timer foi desligado" tem "$STUB_LOG" "systemctl disable --now dgclaw-checar-atualizacao.timer"
-    afirma "a saida explica como ligar" tem "$SAIDA" "dgclaw atualizar --aviso ligar"
+    afirma "a saida explica como ligar" tem "$SAIDA" "prumo atualizar --aviso ligar"
     limpar_cenario
 }
 
@@ -75,5 +75,24 @@ caso_sentinela_instala_e_liga_o_timer() {
     afirma "o timer foi ligado" tem "$STUB_LOG" "systemctl enable dgclaw-sentinela.timer"
     nega "sem Persistent (o timer nao tem OnCalendar)" tem "$u/dgclaw-sentinela.timer" "Persistent"
     nega "o timer nunca e reiniciado (o atualizar roda este instalador)" tem "$STUB_LOG" "systemctl restart dgclaw-sentinela.timer"
+    limpar_cenario
+}
+
+caso_suporte_instala_a_limpeza_diaria_endurecida() {
+    novo_cenario
+    afirma "a instalacao termina" instalacao_basica
+    local u="$RAIZ/etc/systemd/system" s
+    s="$u/dgclaw-suporte-limpar.service"
+    afirma "unidade de servico existe" test -f "$s"
+    afirma "oneshot como root" tem "$s" "Type=oneshot"
+    afirma "chama o dgclaw suporte limpar" tem "$s" "ExecStart=/usr/local/bin/dgclaw suporte limpar"
+    for linha in NoNewPrivileges=yes ProtectSystem=strict PrivateTmp=yes ProtectKernelTunables=yes \
+                 ProtectControlGroups=yes RestrictSUIDSGID=yes "ReadWritePaths=/root/.ssh /var/log/dgclaw /var/lib/dgclaw/suporte"; do
+        afirma "endurecimento: $linha" tem "$s" "$linha"
+    done
+    nega "nao esconde o /root (o arquivo mora la)" tem "$s" "ProtectHome=yes"
+    afirma "timer diario" tem "$u/dgclaw-suporte-limpar.timer" "OnCalendar=daily"
+    afirma "timer persistente" tem "$u/dgclaw-suporte-limpar.timer" "Persistent=true"
+    afirma "o timer foi ligado" tem "$STUB_LOG" "systemctl enable dgclaw-suporte-limpar.timer"
     limpar_cenario
 }

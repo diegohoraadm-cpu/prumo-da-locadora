@@ -38,7 +38,7 @@ bloqueado e a internet respondeu, 1 se algo respondeu e 2 quando não conseguiu 
 - Quem tem root no servidor enxerga tudo, inclusive o cofre.
 
 **Se der erro.** O teste de isolamento que responder "algo respondeu" é problema real: peça ao Admin para rodar
-`sudo dgclaw agente reparar <slug>` e depois repetir o teste. Se continuar, relate pelo
+`sudo prumo agente reparar <slug>` e depois repetir o teste. Se continuar, relate pelo
 [SECURITY.md](../../SECURITY.md).
 
 ## O Admin roda como root, e por quê
@@ -74,7 +74,7 @@ firewall do provedor da VPS bloqueando as portas 80 e 443. Veja [atualizar-e-bac
 tela e a API mostram quem guardou, quando e os 4 últimos caracteres. Nunca o valor.
 
 **Como pedir ou onde clicar.** Na aba **Cofre** do painel do agente, ou pedindo ao agente na conversa
-([COFRE-NA-CONVERSA.md](../COFRE-NA-CONVERSA.md)). O Admin guarda por comando com `dgclaw agente cofre` ou pela
+([COFRE-NA-CONVERSA.md](../COFRE-NA-CONVERSA.md)). O Admin guarda por comando com `prumo agente cofre` ou pela
 API ([COFRE-POR-API.md](../COFRE-POR-API.md)). O agente só passa a usar a chave nova depois de reiniciar: a tela e os comandos têm a opção de aplicar (reiniciar) na mesma hora.
 
 **Limites.**
@@ -95,8 +95,8 @@ de verdade.
 **Como funciona na prática.**
 
 - **Primeiro acesso:** o instalador entrega um link de uso único, válido por 30 minutos (`/primeiro-acesso`). Você
-  cadastra a senha ali (mínimo de 12 caracteres). Link perdido: peça ao Admin `sudo dgclaw primeiro-acesso`.
-- **Trocar a senha:** `sudo dgclaw senha trocar` (a senha nova vai pelo teclado, sem aparecer). Trocar a senha
+  cadastra a senha ali (mínimo de 12 caracteres). Link perdido: peça ao Admin `sudo prumo primeiro-acesso`.
+- **Trocar a senha:** `sudo prumo senha trocar` (a senha nova vai pelo teclado, sem aparecer). Trocar a senha
   derruba as sessões abertas.
 - **Tentativas erradas:** 5 erros em 15 minutos para a mesma conta e o mesmo endereço, ou 20 erros em 15 minutos
   para o mesmo endereço somando todas as contas, bloqueiam novas tentativas até a janela passar. Nem a senha certa
@@ -109,7 +109,7 @@ de verdade.
 - **Contra páginas maliciosas:** pedidos que mudam algo conferem a origem. Sair é só por POST.
 
 **Se der erro.** Painel "trancado" quer dizer senha ausente ou fraca: use o link de primeiro acesso ou
-`sudo dgclaw senha trocar`. Bloqueio por tentativas: espere o tempo que a tela mostrar.
+`sudo prumo senha trocar`. Bloqueio por tentativas: espere o tempo que a tela mostrar.
 
 ## Ronda de segurança
 
@@ -125,8 +125,8 @@ conectou, como Notion ou Google Drive). O resultado aparece na tela `/seguranca`
 | 2 | Falha crítica sem ação segura, sem correção, ou que pede reinício | Avisa e espera a sua decisão: aplicar, agendar ou deixar |
 | 3 | Falha leve ou média | Aparece no painel, com a correção quando já existe |
 
-**Como pedir.** "Admin, como está a ronda de segurança?" Ele roda `sudo dgclaw seguranca estado` e
-`sudo dgclaw seguranca resumo`. Para fazer uma rodada na hora: `sudo dgclaw seguranca rodar`.
+**Como pedir.** "Admin, como está a ronda de segurança?" Ele roda `sudo prumo seguranca estado` e
+`sudo prumo seguranca resumo`. Para fazer uma rodada na hora: `sudo prumo seguranca rodar`.
 
 **Quando a correção ainda não saiu.** A falha não assusta: fica na seção "Aguardando correção oficial" da tela
 Segurança. Se existe uma proteção provisória conhecida, o painel oferece **Aplicar proteção provisória**.
@@ -160,7 +160,7 @@ ser aplicada. O painel e os sites saem do ar. O seu acesso de administração pe
 confirmar em 5 minutos, o servidor religa sozinho.
 
 **Onde clicar.** Tela `/seguranca`, bloco "Botão de emergência". No terminal, o caminho é
-`sudo dgclaw emergencia` e a ordem é: `simular`, `preparar` (gera um código de uso único que vale 2 minutos),
+`sudo prumo emergencia` e a ordem é: `simular`, `preparar` (gera um código de uso único que vale 2 minutos),
 `cortar --codigo <código>`, `confirmar` e, quando passar, `religar --codigo <código>`. A tela pede o código e a frase
 `TIRAR-DO-AR`.
 
@@ -173,7 +173,7 @@ um caminho de acesso garantido, o botão fica desligado e a tela diz o motivo, p
 - O corte não sobrevive a um reinício do servidor. Depois de reiniciar, a tela mostra "Falha de proteção"; rode
   `preparar` e `cortar` de novo, ou `religar`.
 
-**Se der erro.** `sudo dgclaw emergencia estado` diz se está cortado, normal ou inconsistente. Guia completo em
+**Se der erro.** `sudo prumo emergencia estado` diz se está cortado, normal ou inconsistente. Guia completo em
 [EMERGENCIA.md](../EMERGENCIA.md).
 
 ## Saúde do agente e modo de segurança
@@ -211,6 +211,22 @@ agente, pela página `/conectar`. Mais em [SAUDE-E-MODO-SEGURO.md](../SAUDE-E-MO
 - **WhatsApp:** usa uma biblioteca não oficial, e a Meta pode banir o número. Use um número secundário, nunca o
   principal do negócio. Só os números da lista de permitidos conversam com o agente.
 - **Texto que vem de fora** (e-mail, página, arquivo, mensagem de canal) é material para o agente ler, nunca ordem.
+
+## Face ID
+
+O Face ID é uma trava opcional do painel, ligada aparelho por aparelho na tela `/face-id` (menu **Face ID**). Com ela
+ligada, a tela trava sozinha depois de alguns minutos sem uso e só volta com o rosto, a digital ou o código do
+aparelho (uma passkey). Vale para o dono e para cada colaborador, cada um com as próprias passkeys. O Face ID nunca
+faz login: ele só destrava uma sessão que já entrou com a senha, e "Entrar com a senha" é sempre a saída. Detalhes
+em [CADEADO.md](../../web/docs/CADEADO.md).
+
+## Suporte remoto
+
+A tela `/suporte` (menu **Suporte remoto**) cria uma chave de API de escopo `diagnostico` para quem dá suporte.
+Essa chave só lê o estado de saúde da máquina e dos agentes em `/api/v1/diagnostico`: não lê conversas, memória,
+cofre nem arquivos, e não opera nada. O valor aparece uma vez só. O dono revoga a chave quando quiser, pela mesma
+tela ou com `sudo prumo chave-api revogar <id>`, e ela deixa de valer na hora. O passo a passo está em
+[DIAGNOSTICO-REMOTO.md](../../web/docs/DIAGNOSTICO-REMOTO.md).
 
 ## O que a segurança do Prumo da Locadora não faz
 

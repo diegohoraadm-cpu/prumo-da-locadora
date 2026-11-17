@@ -1,5 +1,5 @@
 #!/bin/bash
-# inject.sh — Helper bash compartilhado pros crons de vida do DG Claw injetarem um "poke"
+# inject.sh — Helper bash compartilhado pros crons de vida do Prumo da Locadora injetarem um "poke"
 # na sessao --channels VIVA do agente (a mesma que serve o bot Telegram), em vez de chamar
 # `claude -p` (que queima credito de API). A propria persona executa a tarefa na sessao dela,
 # na ASSINATURA FLAT do dono. Tecnica de injecao headless, generalizada e

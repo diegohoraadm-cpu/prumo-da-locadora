@@ -1,12 +1,12 @@
 {
-  "description": "DG Claw — hooks de plugin do MODO SERVIDOR (v0.1): recall por palavra-chave, registro do fio do Telegram e re-injecao pos-compactacao. O dispatch.ts garante que eles SO agem dentro de um workspace DG Claw servidor (Linux) — em qualquer outra sessao/SO saem em silencio. O modo LOCAL nao usa estes hooks: registra os proprios no .claude/settings.json do workspace do agente. O quadro de avisos da equipe (avisos.py, le o retrato local gravado pelo DG Claw Web, sem rede) tem entrada propria, com timeout proprio, pra nao comer os 8 s do recall.",
+  "description": "Prumo da Locadora — hooks de plugin do MODO SERVIDOR (v0.1): recall por palavra-chave, registro do fio do Telegram e re-injecao pos-compactacao. O dispatch.ts garante que eles SO agem dentro de um workspace Prumo da Locadora servidor (Linux) — em qualquer outra sessao/SO saem em silencio. O modo LOCAL nao usa estes hooks: registra os proprios no .claude/settings.json do workspace do agente. O quadro de avisos da equipe (avisos.py, le o retrato local gravado pelo Prumo da Locadora Web, sem rede) tem entrada propria, com timeout proprio, pra nao comer os 8 s do recall.",
   "hooks": {
     "UserPromptSubmit": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"${CLAUDE_PLUGIN_ROOT}/hooks/dispatch.ts\" user-prompt",
+            "command": "S=\"$PWD\" && cd \"${CLAUDE_PLUGIN_ROOT}/hooks\" && DGCLAW_SESSAO_CWD=\"$S\" bun \"${CLAUDE_PLUGIN_ROOT}/hooks/dispatch.ts\" user-prompt",
             "timeout": 8
           }
         ]
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"${CLAUDE_PLUGIN_ROOT}/hooks/dispatch.ts\" avisos",
+            "command": "S=\"$PWD\" && cd \"${CLAUDE_PLUGIN_ROOT}/hooks\" && DGCLAW_SESSAO_CWD=\"$S\" bun \"${CLAUDE_PLUGIN_ROOT}/hooks/dispatch.ts\" avisos",
             "timeout": 6
           }
         ]
@@ -27,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"${CLAUDE_PLUGIN_ROOT}/hooks/dispatch.ts\" post-tool",
+            "command": "S=\"$PWD\" && cd \"${CLAUDE_PLUGIN_ROOT}/hooks\" && DGCLAW_SESSAO_CWD=\"$S\" bun \"${CLAUDE_PLUGIN_ROOT}/hooks/dispatch.ts\" post-tool",
             "timeout": 6
           }
         ]
@@ -38,7 +38,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"${CLAUDE_PLUGIN_ROOT}/hooks/dispatch.ts\" session-start",
+            "command": "S=\"$PWD\" && cd \"${CLAUDE_PLUGIN_ROOT}/hooks\" && DGCLAW_SESSAO_CWD=\"$S\" bun \"${CLAUDE_PLUGIN_ROOT}/hooks/dispatch.ts\" session-start",
             "timeout": 8
           }
         ]
@@ -48,7 +48,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"${CLAUDE_PLUGIN_ROOT}/hooks/dispatch.ts\" avisos-reset",
+            "command": "S=\"$PWD\" && cd \"${CLAUDE_PLUGIN_ROOT}/hooks\" && DGCLAW_SESSAO_CWD=\"$S\" bun \"${CLAUDE_PLUGIN_ROOT}/hooks/dispatch.ts\" avisos-reset",
             "timeout": 5
           }
         ]

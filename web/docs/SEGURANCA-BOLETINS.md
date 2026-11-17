@@ -1,10 +1,10 @@
-# Aviso de segurança do DG Claw
+# Aviso de segurança do Prumo da Locadora
 
-Quando sai um boletim de segurança do DG Claw (uma falha publicada numa das ferramentas que o
+Quando sai um boletim de segurança do Prumo da Locadora (uma falha publicada numa das ferramentas que o
 sistema usa, já conferida pela equipe do Danilo), o servidor percebe sozinho (uma consulta de
 leitura ao GitHub a cada hora) e o painel o inclui no aviso único "Seu ambiente está em risco" (uma
 janela só, junto com as falhas críticas da ronda) e no selo discreto no alto das telas. O detalhe de cada
-boletim e as ações ficam na tela Segurança, seção "Avisos de segurança do DG Claw". Nada é baixado nem instalado sem o ok do dono: a atualização
+boletim e as ações ficam na tela Segurança, seção "Avisos de segurança do Prumo da Locadora". Nada é baixado nem instalado sem o ok do dono: a atualização
 continua sendo feita pelo Admin, com o sim dele.
 
 Estas rotas são **só do dono, pelo painel** (sessão do navegador) e do Admin, no servidor. Agente
@@ -44,7 +44,7 @@ Mais graves primeiro.
 ```
 
 - `severidade`: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` ou `desconhecida`.
-- `acao`: `atualizar-dgclaw` (a correção está na versão nova do DG Claw), `atualizar-sistema` (a
+- `acao`: `atualizar-dgclaw` (a correção está na versão nova do Prumo da Locadora), `atualizar-sistema` (a
   correção está nos pacotes do servidor), `parar-servico` ou `aguardar` (a correção ainda não saiu).
 - `publicado_em`: quando a **falha** foi publicada pela fonte oficial. `boletim_em`: quando o boletim foi preparado.
 - `mostrar_modal`: o servidor considera que o boletim ainda não foi adiado nem dispensado. Fica falso por 24

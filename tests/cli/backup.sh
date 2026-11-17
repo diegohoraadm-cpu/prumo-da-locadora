@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# `dgclaw backup`, `dgclaw backup listar` e `dgclaw restaurar`, numa raiz falsa com podman de mentira.
+# `prumo backup`, `prumo backup listar` e `prumo restaurar`, numa raiz falsa com podman de mentira.
 #
 # Cobre: o backup cria pasta datada com MANIFESTO (versao e commit) e tars que abrem; listar mostra;
 # nunca apaga; restaurar recusa backup de outra versao sem --mesmo-assim; restaurar faz o backup
@@ -46,7 +46,7 @@ afirma "o manifesto diz que as casas entraram" grep -qx 'casas_dos_agentes_no_ba
 afirma "o backup guarda a memoria da Ana" bash -c "tar -xzOf '$B1/dados.tar.gz' var/lib/dgclaw/agentes/ana/home/MEMORY.md | grep -q cafe"
 afirma "imprime a pasta" grep -qF "$B1" "$TMP/o2.txt"
 afirma "imprime o tamanho" grep -q 'Tamanho:' "$TMP/o2.txt"
-afirma "imprime o comando para restaurar" grep -qF "sudo dgclaw restaurar $B1" "$TMP/o2.txt"
+afirma "imprime o comando para restaurar" grep -qF "sudo prumo restaurar $B1" "$TMP/o2.txt"
 
 echo "backup --sem-casas"
 sleep 1
@@ -73,7 +73,7 @@ printf 'GROQ_API_KEY=gsk_mudou\nLINHA_NOVA=1\n' >"$ETC/web.env"
 dgclaw restaurar "$B1" >"$TMP/o5.txt" 2>&1; rc=$?
 igual "recusa (codigo 1)" "1" "$rc"
 afirma "explica a diferenca de versao" grep -q "versao '1.0.0'.*'1.1.0'" "$TMP/o5.txt"
-afirma "aponta o atualizar --voltar" grep -qF "sudo dgclaw atualizar --voltar $B1" "$TMP/o5.txt"
+afirma "aponta o atualizar --voltar" grep -qF "sudo prumo atualizar --voltar $B1" "$TMP/o5.txt"
 afirma "oferece o --mesmo-assim" grep -q -- '--mesmo-assim' "$TMP/o5.txt"
 afirma "o web.env nao foi tocado" grep -qx 'LINHA_NOVA=1' "$ETC/web.env"
 nega "nao parou agente nenhum" grep -q '^podman stop' "$STUB_LOG"
@@ -117,7 +117,7 @@ afirma "parou a Ana antes de restaurar" grep -q '^podman stop .*dgclaw-ana' "$ST
 afirma "religou a Ana depois" grep -q '^podman start dgclaw-ana' "$STUB_LOG"
 afirma "agendou o reinicio do Admin desacoplado" grep -q '^systemd-run --on-active=20 --unit=dgclaw-admin-restart-' "$STUB_LOG"
 nega "nunca reiniciou o Admin direto" grep -q '^systemctl restart dgclaw-admin' "$STUB_LOG"
-afirma "diz como desfazer" grep -q 'Para desfazer: sudo dgclaw restaurar ' "$TMP/o7.txt"
+afirma "diz como desfazer" grep -q 'Para desfazer: sudo prumo restaurar ' "$TMP/o7.txt"
 
 echo "restaurar --mesmo-assim com outra versao"
 sed -i 's/^DGCLAW_VERSAO=.*/DGCLAW_VERSAO=1.1.0/' "$ETC/dgclaw.env"

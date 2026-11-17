@@ -183,6 +183,13 @@ caso_rodar_duas_vezes_nao_duplica() {
     cp "$e/runner/admin.token" "$TMP/token1"
     cp "$e/web.env" "$TMP/webenv1"
     cp "$RAIZ/etc/caddy/Caddyfile" "$TMP/caddy1"
+    # As restricoes de um agente (e o gancho dele no settings.json) sao do dono: o install.sh regrava o
+    # runner.json do Admin, mas nao pode encostar nelas.
+    local ra="$RAIZ/var/lib/dgclaw/agentes/ana"
+    mkdir -p "$ra/runner" "$ra/home/.claude"
+    printf '{"versao":1,"sem_bash":true,"sem_enviar_arquivo":true,"escrita_so_em":["relatorios"],"campo_do_dono":"fica"}\n' >"$ra/runner/restricoes.json"
+    printf '{"hooks":{"PreToolUse":[{"matcher":"Write","hooks":[{"type":"command","command":"node /opt/dgclaw/app/scripts/escrita-restrita-hook.mjs"}]}]}}\n' >"$ra/home/.claude/settings.json"
+    cp "$ra/runner/restricoes.json" "$TMP/restricoes1"; cp "$ra/home/.claude/settings.json" "$TMP/settings-ana1"
     n1="$(wc -l <"$STUB_LOG")"
     # Segunda rodada: sem senha, e com outro IP (o dominio da primeira precisa ser mantido).
     EXTRA_ENV=(DGCLAW_STUB_IP=198.51.100.9)
@@ -193,6 +200,8 @@ caso_rodar_duas_vezes_nao_duplica() {
     afirma "hash da senha nao mudou" cmp "$TMP/webenv1" "$e/web.env"
     afirma "avisa que a senha atual vale" tem "$SAIDA" "senha atual"
     afirma "Caddyfile nao mudou" cmp "$TMP/caddy1" "$RAIZ/etc/caddy/Caddyfile"
+    afirma "restricoes.json de um agente nao mudou" cmp "$TMP/restricoes1" "$ra/runner/restricoes.json"
+    afirma "settings.json de um agente nao mudou" cmp "$TMP/settings-ana1" "$ra/home/.claude/settings.json"
     igual "$(contar "$RAIZ/etc/caddy/Caddyfile" reverse_proxy)" 1 || { echo "      FALHOU: reverse_proxy duplicado"; FALHAS=$((FALHAS + 1)); }
     afirma "dominio da primeira rodada mantido" tem "$e/dgclaw.env" "DGCLAW_DOMINIO=203-0-113-7.sslip.io"
     igual "$(contar "$STUB_LOG" 'ufw --force enable')" 1 || { echo "      FALHOU: ufw ligado mais de uma vez"; FALHAS=$((FALHAS + 1)); }
@@ -219,6 +228,31 @@ caso_reinstalar_preserva_chaves_do_web_env() {
     afirma "usuario certo" grep -qx 'DGCLAW_PANEL_USER=maria' "$e"
     afirma "hash no formato" grep -qE "^DGCLAW_PANEL_PASSWORD_HASH='scrypt[$]teste[$][0-9a-f]{64}'$" "$e"
     afirma "ainda 600" modo_e "$e" 600
+    limpar_cenario
+}
+
+caso_marca_pasta_nasce_vazia_e_arquivos_alheios_sobrevivem_a_reinstalar() {
+    novo_cenario
+    afirma "primeira rodada" instalacao_basica
+    local m="$RAIZ/etc/dgclaw/marca"
+    afirma "a pasta da marca foi criada" test -d "$m"
+    afirma "a pasta da marca nasce legivel (755)" modo_e "$m" 755
+    printf '{"nome": "Acme Bot"}\n' >"$m/marca.json"
+    printf 'logo-da-pessoa\n' >"$m/logo.svg"
+    chmod 700 "$m"
+    afirma "segunda rodada (reinstalar/atualizar)" instalar "" --usuario maria --provedor claude
+    afirma "o marca.json continua igual" grep -qx '{"nome": "Acme Bot"}' "$m/marca.json"
+    afirma "o logo da pessoa continua" grep -qx 'logo-da-pessoa' "$m/logo.svg"
+    afirma "o modo que a pessoa escolheu para a pasta nao foi mexido" modo_e "$m" 700
+    limpar_cenario
+}
+
+caso_marca_pasta_que_ja_existe_nao_e_recriada() {
+    novo_cenario
+    mkdir -p "$RAIZ/etc/dgclaw/marca"
+    printf 'alheio\n' >"$RAIZ/etc/dgclaw/marca/arquivo-alheio.txt"
+    afirma "instalacao com a pasta ja existente" instalacao_basica
+    afirma "o arquivo alheio sobreviveu" grep -qx 'alheio' "$RAIZ/etc/dgclaw/marca/arquivo-alheio.txt"
     limpar_cenario
 }
 
@@ -293,7 +327,7 @@ caso_sem_senha_gera_link_de_primeiro_acesso() {
     nega "o link em algum arquivo da raiz" grep -rqF -- "$tk" "$RAIZ"
     nega "o link no registro dos stubs" tem "$STUB_LOG" "$tk"
     nega "a saida mostra uma senha" grep -q "Senha:    [^ae]" "$SAIDA"
-    afirma "explica como gerar outro" tem "$SAIDA" "sudo dgclaw primeiro-acesso"
+    afirma "explica como gerar outro" tem "$SAIDA" "sudo prumo primeiro-acesso"
     limpar_cenario
 }
 
@@ -553,7 +587,7 @@ caso_app_alterado_a_mao_vai_para_a_pasta_de_migracao() {
     afirma "o tar guarda a edicao" bash -c "tar -xzOf '$pasta/app-antes.tar.gz' ./web/server.js | grep -q 'editado pelo Admin'"
     afirma "tem o LEIA.txt" test -s "$pasta/LEIA.txt"
     afirma "o PENDENTE existe" test -s "$adm/personalizacoes-migracao/PENDENTE"
-    afirma "o aviso aparece na saida" tem "$SAIDA" "dgclaw personalizacoes levantar"
+    afirma "o aviso aparece na saida" tem "$SAIDA" "prumo personalizacoes levantar"
     afirma "o app voltou a ser igual ao oficial (editado)" bash -c "! grep -q 'editado pelo Admin' '$app/web/server.js'"
     afirma "o app voltou a ser igual ao oficial (acrescentado)" test ! -e "$app/web/extra.js"
     afirma "o app voltou a ser igual ao oficial (apagado)" test -f "$app/web/apagar-depois.js"
@@ -1123,10 +1157,10 @@ caso_rede_containers_preserva_tabela_com_container_ativo() {
         EXTRA_ENV=("DGCLAW_STUB_NFT_NETAVARK=1" "DGCLAW_STUB_PS=dgclaw-ana exited\ndgclaw-beto $estado\noutro-servico running")
         afirma "estado $estado: a instalacao termina com sucesso" instalacao_basica
         nega "estado $estado: a tabela fica" tem "$STUB_LOG" "nft delete"
-        afirma "estado $estado: manda parar o agente" tem "$SAIDA" "sudo dgclaw agente parar <slug>"
+        afirma "estado $estado: manda parar o agente" tem "$SAIDA" "sudo prumo agente parar <slug>"
         afirma "estado $estado: lista o agente que nao esta parado" tem "$SAIDA" "dgclaw-beto"
         afirma "estado $estado: manda rodar o install.sh" tem "$SAIDA" "rode sudo ./install.sh de novo"
-        afirma "estado $estado: manda iniciar de novo" tem "$SAIDA" "sudo dgclaw agente iniciar <slug>"
+        afirma "estado $estado: manda iniciar de novo" tem "$SAIDA" "sudo prumo agente iniciar <slug>"
         afirma "estado $estado: container de fora tambem precisa parar" tem "$SAIDA" "nao sao do Prumo da Locadora tambem precisam estar parados"
         limpar_cenario
     done
@@ -1548,4 +1582,24 @@ caso_caddy_restauracao_mantem_modo_do_arquivo() {
     afirma "conteudo restaurado" cmp "$TMP/caddy-antes" "$RAIZ/etc/caddy/Caddyfile"
     igual "$(stat -c %a "$RAIZ/etc/caddy/Caddyfile")" 640 || { echo "      FALHOU: modo do arquivo restaurado"; FALHAS=$((FALHAS + 1)); }
     limpar_cenario
+}
+
+caso_apt_update_falhando_vira_aviso_e_nao_aborta() {
+    novo_cenario
+    EXTRA_ENV=(DGCLAW_STUB_APT_UPDATE_FALHA=1)
+    afirma "a instalacao termina com sucesso mesmo com o apt-get update falhando" instalacao_basica
+    afirma "o aviso diz o que aconteceu" tem "$SAIDA" "o 'apt-get update' terminou com codigo 100"
+    afirma "o aviso diz que a instalacao segue" tem "$SAIDA" "Sigo com a instalacao"
+    afirma "os pacotes continuaram a ser instalados" tem "$TMP/estado/instalados" "podman"
+    afirma "o detalhe do repositorio que falhou ficou no registro" tem "$RAIZ/var/log/dgclaw/instalar.log" "repo-de-terceiro.invalid"
+}
+
+caso_apt_update_falhando_com_node_velho_aborta_e_explica() {
+    novo_cenario
+    EXTRA_ENV=(DGCLAW_STUB_APT_UPDATE_FALHA=1 DGCLAW_STUB_APT_NAO_INSTALA=nodejs)
+    nega "a instalacao para quando o Node continua velho" instalacao_basica
+    afirma "o aviso do apt aparece" tem "$SAIDA" "o 'apt-get update' terminou com codigo 100"
+    afirma "a mensagem diz que o Node continua velho" tem "$SAIDA" "o Node do servidor continua na versao 18"
+    afirma "a mensagem diz o que fazer" tem "$SAIDA" "rode ./install.sh de novo"
+    nega "nao chegou a copiar o codigo" test -e "$RAIZ/opt/dgclaw/app/install.sh"
 }

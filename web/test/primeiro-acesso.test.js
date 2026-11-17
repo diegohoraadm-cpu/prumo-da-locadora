@@ -32,7 +32,7 @@ test('primeiro acesso: token valido cadastra a senha, grava o scrypt no web.env 
   try {
     const est = await x.t.c.get('/api/login-estado');
     assert.equal(est.json.sem_senha, true); assert.equal(est.json.usuario, 'maria');
-    assert.match(est.json.mensagem, /sudo dgclaw primeiro-acesso/);
+    assert.match(est.json.mensagem, /sudo prumo primeiro-acesso/);
     assert.equal((await x.t.c.get('/primeiro-acesso')).status, 200);
 
     const r = await x.post({ token: x.token, senha: PW, confirmacao: PW });
@@ -90,7 +90,7 @@ test('primeiro acesso: token errado 403, incompleto 400, arquivo ausente 404', a
   try {
     const errado = crypto.randomBytes(32).toString('base64url');
     let r = await x.post({ token: errado, senha: PW, confirmacao: PW });
-    assert.equal(r.status, 403); assert.match(r.json.erro, /Gere outro com: sudo dgclaw primeiro-acesso/);
+    assert.equal(r.status, 403); assert.match(r.json.erro, /Gere outro com: sudo prumo primeiro-acesso/);
     r = await x.post({ token: x.token.slice(0, 20), senha: PW, confirmacao: PW });
     assert.equal(r.status, 400); assert.match(r.json.erro, /incompleto/);
     fs.unlinkSync(x.arq);

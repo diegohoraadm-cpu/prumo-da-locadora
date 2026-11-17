@@ -1,6 +1,6 @@
-# Contrato: resultado da ronda de fábrica (DG Claw), versão 1
+# Contrato: resultado da ronda de fábrica (Prumo da Locadora), versão 1
 
-Arquivo: `/var/lib/dgclaw/web/seguranca/ronda.json` (escrito pelo root, atômico, legível pelo DG Claw Web).
+Arquivo: `/var/lib/dgclaw/web/seguranca/ronda.json` (escrito pelo root, atômico, legível pelo Prumo da Locadora Web).
 Escreve: `seguranca/ronda/ronda.py` (motor). Lê: `web/lib/ronda-painel.js` (painel e API).
 
 ```json
@@ -44,7 +44,7 @@ Escreve: `seguranca/ronda/ronda.py` (motor). Lê: `web/lib/ronda-painel.js` (pai
 Pedidos do dono (o Web não é root e não executa nada): o Web grava um arquivo em
 `/var/lib/dgclaw/web/seguranca/pedidos/<uuid>.json` com
 `{"tipo": "aplicar"|"agendar"|"emergencia-cortar"|"emergencia-religar", "id": "<achado>", "quando": "<ISO>|null", "codigo": "<codigo de confirmacao>|null", "pedido_em", "por": "<usuario do painel>"}`.
-Uma unidade systemd `.path` (root) vê o arquivo e roda `dgclaw seguranca pedido <arquivo>`, que valida TUDO de novo
+Uma unidade systemd `.path` (root) vê o arquivo e roda `prumo seguranca pedido <arquivo>`, que valida TUDO de novo
 (achado existe em ronda.json, ação está no catálogo `seguranca/acoes-permitidas.json`, código de emergência confere e não expirou),
 executa, grava o resultado em `pedidos/feitos/<uuid>.json` (`{"ok", "mensagem", "feito_em"}`) e apaga o pedido.
 Nunca há comando livre no pedido.
@@ -70,22 +70,22 @@ algum serviço."). `ronda.json` antigo, sem o campo, vale como `false`.
 
 Tipos de pedido novos, além de `aplicar`, `agendar`, `emergencia-cortar` e `emergencia-religar`:
 
-- `"emergencia-preparar"`: o root roda `dgclaw emergencia preparar --json` e grava a saída em `dados` do resultado.
+- `"emergencia-preparar"`: o root roda `prumo emergencia preparar --json` e grava a saída em `dados` do resultado.
 - `"desfazer"`: `id` é o do achado com `estado: "aplicado-sozinho"` ou `"protegido-aguardando"` e `aplicado.desfazer` preenchido.
 
 `codigo` (já previsto) vale para `emergencia-cortar` e `emergencia-religar`; o executor roda
-`dgclaw emergencia cortar --codigo <codigo>` / `religar --codigo <codigo>` (a frase TIRAR-DO-AR / RELIGAR é conferida pelo Web, antes de gravar o pedido).
+`prumo emergencia cortar --codigo <codigo>` / `religar --codigo <codigo>` (a frase TIRAR-DO-AR / RELIGAR é conferida pelo Web, antes de gravar o pedido).
 `por` vai ao script como `EMERGENCIA_QUEM=<por>` (só `[A-Za-z0-9._@-]`) para ficar no log.
 
 Resultado do pedido (`pedidos/feitos/<uuid>.json`), campo novo opcional: `"dados": {...}` (objeto). Para
-`emergencia-preparar` é a saída de `dgclaw emergencia preparar --json`:
+`emergencia-preparar` é a saída de `prumo emergencia preparar --json`:
 `{"acao": "cortar"|"religar", "codigo", "expira_em", "valido_s", "plano": {...}}`.
 `ok: false` leva a `mensagem` com o erro do script (stderr), em português.
 
 Estado da emergência para a tela: `/var/lib/dgclaw/web/seguranca/emergencia.json`, gravado por `lib/emergencia.sh`
 a cada `estado`, `simular`, `preparar`, `cortar`, `confirmar` e `religar`:
 `{"versao":1,"atualizado_em","disponivel":bool,"motivo":"","avisos":[],"estado":{"cortado",...},"plano":{...}}`.
-O motor precisa agendar `dgclaw emergencia estado` (timer de 10 min e depois de cada ronda) para a tela não ver estado velho.
+O motor precisa agendar `prumo emergencia estado` (timer de 10 min e depois de cada ronda) para a tela não ver estado velho.
 
 `ronda.json` campos opcionais lidos pela tela: `vigia_alerta` (`{"quando","motivo"}` ou null) e `achado.decisao` (`"ciente"` etc., ignorado se ausente).
 
@@ -128,8 +128,8 @@ Com `False`, a correção vira `{"tipo": "nenhuma", "disponivel": false, "execut
 | `aguardando-fornecedor` | sem correção instalável e nenhum paliativo conhecido | não |
 
 Exceção: achado `explorada_ativamente` (KEV) sem correção e sem paliativo verificado nem oferecido fica `aberto`, com o texto
-dizendo que vale considerar o botão de emergência ou falar com o Admin. Achado de pacote do próprio DG Claw com correção na origem
-segue como antes (a equipe do DG Claw avisa por boletim).
+dizendo que vale considerar o botão de emergência ou falar com o Admin. Achado de pacote do próprio Prumo da Locadora com correção na origem
+segue como antes (a equipe do Prumo da Locadora avisa por boletim).
 
 **Campo opcional `paliativo`**, presente sempre que um paliativo do catálogo `seguranca/paliativos.json` casa com o achado:
 `{"id", "descricao", "efeito", "verificado": bool, "verificado_em": ISO|null, "acao_id": str|null}`.
@@ -153,5 +153,5 @@ o `sysctl`), volta a `aberto` com a oferta de Aplicar. A ação de catálogo com
 definitiva por `acao_do_catalogo`.
 
 `protegido-aguardando` e `aguardando-fornecedor` ficam fora do recado ao Admin (`novos`) e fora da contagem por nível de
-`dgclaw seguranca estado` (que mostra `aguardando_correcao: {"total", "protegidos"}` à parte). O pedido `desfazer` e a rota
+`prumo seguranca estado` (que mostra `aguardando_correcao: {"total", "protegidos"}` à parte). O pedido `desfazer` e a rota
 `POST /ronda/<id>/desfazer` aceitam `protegido-aguardando` com `aplicado.desfazer` preenchido.

@@ -1,10 +1,10 @@
 ---
 name: report
-description: Manda um relatorio de erro ou dificuldade pro mantenedor do Prumo da Locadora (repo diegohoraadm-cpu/prumo-da-locadora). Use quando o usuario pedir "reportar problema", "mandar o erro pro autor", "relatar um bug do DG Claw", "abrir um report", "isso nao funciona, avisa o criador", ou rodar /dgclaw:report. Coleta um pacote de diagnostico SANITIZADO (versao do plugin, sistema, versoes de runtime, saida do doctor e so as linhas de erro dos logs), MOSTRA um preview, pede CONSENTIMENTO explicito e so entao envia. Nunca inclui memoria, identidade, personalidade nem token.
+description: Manda um relatorio de erro ou dificuldade pro mantenedor do Prumo da Locadora (repo diegohoraadm-cpu/prumo-da-locadora). Use quando o usuario pedir "reportar problema", "mandar o erro pro autor", "relatar um bug do Prumo da Locadora", "abrir um report", "isso nao funciona, avisa o criador", ou rodar /report. Coleta um pacote de diagnostico SANITIZADO (versao do plugin, sistema, versoes de runtime, saida do doctor e so as linhas de erro dos logs), MOSTRA um preview, pede CONSENTIMENTO explicito e so entao envia. Nunca inclui memoria, identidade, personalidade nem token.
 user-invocable: true
 ---
 
-# /dgclaw:report: reportar um problema pro autor
+# /report: reportar um problema pro autor
 
 Voce vai ajudar o dono a mandar um relatorio util pro autor do plugin, sem vazar
 nada pessoal dele nem do assistente.

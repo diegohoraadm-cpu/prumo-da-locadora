@@ -1,5 +1,5 @@
 'use strict';
-/* provedores.js: a lista das IAs (provedores) que o DG Claw conhece, num lugar só.
+/* provedores.js: a lista das IAs (provedores) que o Prumo da Locadora conhece, num lugar só.
 
    O mesmo arquivo serve ao navegador (window.DGProvedores, via conectar-puro.js) e ao servidor
    (require, em lib/login.js). Para ligar uma IA nova, acrescente uma linha aqui com ativo:true; para
@@ -39,7 +39,7 @@
     const p = acha(pedido, l);
     const conhecidos = l.filter(x => x.ativo).map(x => x.id).join(', ');
     if (!p) return { ok: false, erro: 'Não conheço a IA "' + pedido.slice(0, 40) + '". As disponíveis são: ' + conhecidos + '. Nada foi iniciado.' };
-    if (!p.ativo) return { ok: false, erro: 'A IA ' + p.nome + ' ainda não está disponível no DG Claw. As disponíveis são: ' + conhecidos + '. Nada foi iniciado.' };
+    if (!p.ativo) return { ok: false, erro: 'A IA ' + p.nome + ' ainda não está disponível no Prumo da Locadora. As disponíveis são: ' + conhecidos + '. Nada foi iniciado.' };
     if (p.id !== idDoProvedor(atual)) {
       const nomeAtual = (acha(idDoProvedor(atual), l) || {}).nome || idDoProvedor(atual);
       return { ok: false, erro: 'Este agente usa ' + nomeAtual + ' e trocar para ' + p.nome + ' ainda não está disponível. Conecte a conta de ' + nomeAtual + ' ou peça ao Admin para criar um agente novo com ' + p.nome + '. Nada foi iniciado.' };

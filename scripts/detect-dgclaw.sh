@@ -1,11 +1,11 @@
 #!/bin/bash
-# detect-dgclaw.sh — Acha assistentes DG Claw instalados nesta maquina.
+# detect-dgclaw.sh — Acha assistentes Prumo da Locadora instalados nesta maquina.
 #
 # Uso:
 #   bash detect-dgclaw.sh            # lista todos (uma linha por agente: slug|workspace|config)
 #   bash detect-dgclaw.sh <slug>     # imprime o config.sh path daquele slug (rc!=0 se nao achar)
 #
-# Cobre os dois layouts de instalacao do DG Claw:
+# Cobre os dois layouts de instalacao do Prumo da Locadora:
 #   - sandbox/root:    /root/dgclaw/<slug>/.dgclaw/config.sh   (roda como root)
 #   - usuario dedicado: /home/dgclaw-<slug>/.dgclaw/config.sh
 # E confirma cruzando com o state-dir do Telegram em ~/.claude/dgclaw-channels/<slug>/.
@@ -39,7 +39,7 @@ for cfg in "${CONFIGS[@]}"; do
     continue
   fi
 
-  # lista as extensoes instaladas neste agente (o DG Alive e uma delas)
+  # lista as extensoes instaladas neste agente (a extensão de emoções e uma delas)
   exts=""
   if [ -d "$ws/.dgclaw/ext" ]; then
     for e in "$ws"/.dgclaw/ext/*/; do
@@ -62,5 +62,5 @@ if [ -n "$WANT" ]; then
   exit 1
 fi
 
-[ "$found" = "1" ] || { echo "detect-dgclaw: nenhum DG Claw encontrado nesta maquina" >&2; exit 2; }
+[ "$found" = "1" ] || { echo "detect-dgclaw: nenhum Prumo da Locadora encontrado nesta maquina" >&2; exit 2; }
 exit 0

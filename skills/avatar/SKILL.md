@@ -1,15 +1,15 @@
 ---
 name: avatar
-description: Gera ou troca o AVATAR do assistente DG Claw, a figura que aparece no painel. Use quando o usuario pedir "gerar o avatar", "criar a carinha dele", "mudar o mascote do painel", "trocar a foto do assistente", "fazer a imagem dele", ou rodar /dgclaw:avatar. Explica os tres caminhos (usar o que ja vem, gerar a partir da aparencia descrita, ou subir a propria imagem) e onde os arquivos ficam. As expressoes que mudam com o humor sao da extensao DG Alive.
+description: Gera ou troca o AVATAR do assistente Prumo da Locadora, a figura que aparece no painel. Use quando o usuario pedir "gerar o avatar", "criar a carinha dele", "mudar o mascote do painel", "trocar a foto do assistente", "fazer a imagem dele", ou rodar /avatar. Explica os tres caminhos (usar o que ja vem, gerar a partir da aparencia descrita, ou subir a propria imagem) e onde os arquivos ficam. As expressoes que mudam com o humor sao da extensao de emocoes.
 user-invocable: true
 ---
 
-# /dgclaw:avatar: a cara do assistente no painel
+# /avatar: a cara do assistente no painel
 
-O painel mostra uma figura do assistente no cabecalho. No DG Claw ela e **fixa**:
+O painel mostra uma figura do assistente no cabecalho. No Prumo da Locadora ela e **fixa**:
 uma so imagem, sempre a mesma, porque o nucleo nao tem estado emocional.
 
-Se a extensao **DG Alive** estiver instalada, essa mesma figura passa a **trocar
+Se a **extensão de emoções** estiver instalada, essa mesma figura passa a **trocar
 conforme o humor** (alegre, animado, pensativo, triste, irritado, cansado). E a
 extensao que ativa isso e que traz o mapa de humor para figura. Explique assim se o
 dono perguntar por que a carinha nao muda.
@@ -18,7 +18,7 @@ Os arquivos ficam em:
 
 ```
 <workspace>/.dgclaw/panel/public/assets/sprites/
-  avatar.jpg     rosto no cabecalho (o que o DG Claw usa)
+  avatar.jpg     rosto no cabecalho (o que o Prumo da Locadora usa)
   default.gif    figura parada, usada quando nao ha humor definido
 ```
 

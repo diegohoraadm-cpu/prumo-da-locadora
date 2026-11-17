@@ -399,7 +399,14 @@ console.log('\n11. A tela: funções puras, tutorial completo e nada de HTML mon
   ok(linkDoTelegram({ appUrl: 'javascript:alert(1)', agente: 'luna' }, 'cofre') === '', 'endereço que não é http(s) não vira link');
 
   ok(textoErro({ status: 409, corpo: { erro: 'frase da API', como_resolver: 'faça isto' } }) === 'frase da API faça isto', 'erro mostra a frase da API e o como resolver');
-  ok(textoErro({ status: 502, corpo: {} }).length > 30 && !/desconhecido/i.test(textoErro({ status: 502, corpo: {} })), 'erro sem corpo ainda diz algo útil, nunca vazio');
+  {
+  const r502 = { status: 502, corpo: {} };
+  ok(textoErro(r502, { ligado: true, modo: 'local' }) === 'O painel respondeu com o erro 502 e sem explicação. Recarregue a aba; se repetir, avise o Admin.', 'erro sem corpo, modo local: não cita o DG Telegram');
+  ok(textoErro(r502, { ligado: true, modo: 'proxy' }) === 'O painel respondeu com o erro 502 e sem explicação. Recarregue a aba; se repetir, o DG Telegram pode estar fora do ar.', 'erro sem corpo, modo proxy: cita o DG Telegram');
+  const semCfg = 'O painel respondeu com o erro 502 e sem explicação. Recarregue a aba; se repetir, o servidor pode estar fora do ar.';
+  ok(textoErro(r502, null) === semCfg && textoErro(r502, { ligado: false, falhaDeRede: true }) === semCfg, 'erro sem corpo, config nula ou falha de rede: não afirma o modo');
+}
+ok(textoErro({ status: 502, corpo: {} }).length > 30 && !/desconhecido/i.test(textoErro({ status: 502, corpo: {} })), 'erro sem corpo ainda diz algo útil, nunca vazio');
 
   const passos = passosDoTutorial();
   ok(passos.length >= 10 && passos[0].chave === 'tela' && passos[0].alvo === null, `o tutorial tem ${passos.length} passos e começa pela tela inteira`);

@@ -95,8 +95,8 @@ module.exports = function registrar(router, ctx) {
   // ─── API: Emotions ────────────────────────────────────────────
 
   router.get('/api/emotions', (req, res) => {
-    // Sem a extensao DG Alive instalada nao existe state.json nenhum: devolve vazio, e o
-    // painel mostra o bloco de emocoes apagado. Nao e erro, e o DG Claw puro.
+    // Sem a extensao de emocoes instalada nao existe state.json nenhum: devolve vazio, e o
+    // painel mostra o bloco de emocoes apagado. Nao e erro, e o Prumo da Locadora puro.
     const data = readJSON(resolveStateFile(P.STATE_FILE, P.STATE_FILE_LEGACY));
     res.json({
       emotions: data.emotions || {},

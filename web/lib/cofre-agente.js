@@ -1,5 +1,5 @@
 'use strict';
-// Cofre do agente gravado pelo DG Claw Web, no host (o painel de dentro do container só lê os nomes).
+// Cofre do agente gravado pelo Prumo da Locadora Web, no host (o painel de dentro do container só lê os nomes).
 //
 // Onde fica cada coisa (tudo no host; `<casa>` é a pasta do agente, a mesma do registro):
 //   <casa>/cofre/cofre.env     as chaves, uma `NOME='valor'` por linha. Pasta 700 e arquivo 600 do
@@ -60,9 +60,9 @@ function criarCofreAgente({ config, log, reiniciar }) {
 
   function semV1(agente) {
     return recusa(
-      `O agente ${agente.nome} não está no layout da v1 (o registro não traz "cofre_arquivo"), então o DG Claw Web não sabe onde gravar a chave dele.`,
+      `O agente ${agente.nome} não está no layout da v1 (o registro não traz "cofre_arquivo"), então o Prumo da Locadora Web não sabe onde gravar a chave dele.`,
       409,
-      'Esse agente guarda a chave de outro jeito. Se ele devia ser da v1, confira o registro de agentes (agentes.json) e crie o agente de novo pelo "dgclaw agente".',
+      'Esse agente guarda a chave de outro jeito. Se ele devia ser da v1, confira o registro de agentes (agentes.json) e crie o agente de novo pelo "prumo agente".',
     );
   }
 
@@ -74,7 +74,7 @@ function criarCofreAgente({ config, log, reiniciar }) {
   function recusaDeGravacao(e, oQue, agente) {
     log('erro', `Cofre de ${agente.slug}: não consegui ${oQue} (${e instanceof ErroGravacao ? e.code : (e.code || e.name)}): ${e.message}`);
     return recusa(`Não consegui ${oQue}: ${e.message}`, 500,
-      'Nada foi alterado nesse arquivo. Confira se a pasta do agente existe e se o DG Claw Web roda como root (ver web/README.md).');
+      'Nada foi alterado nesse arquivo. Confira se a pasta do agente existe e se o Prumo da Locadora Web roda como root (ver web/README.md).');
   }
 
   // ── leitura do cofre.env ────────────────────────────────────────────────
@@ -88,7 +88,7 @@ function criarCofreAgente({ config, log, reiniciar }) {
       if (e.code === 'ENOENT') return { itens: [] };
       log('erro', `Cofre de ${agente.slug}: não consegui ler ${cofre} (${e.code || e.name}).`);
       return { erro: recusa(`Não consegui ler o arquivo do cofre de ${agente.nome} (${e.code || e.name}).`, 500,
-        'Confira se o arquivo existe e se o DG Claw Web roda como root.') };
+        'Confira se o arquivo existe e se o Prumo da Locadora Web roda como root.') };
     }
     const itens = [];
     let desconhecidas = 0;
@@ -146,7 +146,7 @@ function criarCofreAgente({ config, log, reiniciar }) {
     try { texto = fs.readFileSync(arq, 'utf8'); } catch (e) {
       if (e.code === 'ENOENT') return { chaves: [] };
       log('erro', `Cofre de ${agente.slug}: não consegui ler os metadados ${arq} (${e.code || e.name}).`);
-      return { erro: recusa(`Não consegui ler os registros das chaves de ${agente.nome} (${e.code || e.name}).`, 500, 'Confira a pasta de dados do DG Claw Web.') };
+      return { erro: recusa(`Não consegui ler os registros das chaves de ${agente.nome} (${e.code || e.name}).`, 500, 'Confira a pasta de dados do Prumo da Locadora Web.') };
     }
     try {
       const j = JSON.parse(texto);
@@ -171,7 +171,7 @@ function criarCofreAgente({ config, log, reiniciar }) {
       return null;
     } catch (e) {
       const r = recusaDeGravacao(e, 'anotar o registro da chave', agente);
-      r.howToFix = 'A alteração no cofre do agente JÁ foi feita; só o registro de quem cadastrou e quando não foi anotado. Corrija a pasta de dados do DG Claw Web e repita.';
+      r.howToFix = 'A alteração no cofre do agente JÁ foi feita; só o registro de quem cadastrou e quando não foi anotado. Corrija a pasta de dados do Prumo da Locadora Web e repita.';
       return r;
     }
   }
@@ -192,7 +192,7 @@ function criarCofreAgente({ config, log, reiniciar }) {
         // Trava esquecida por um processo que morreu: passou de 30 s, é lixo.
         try { if (Date.now() - fs.statSync(arq).mtimeMs > 30000) { fs.unlinkSync(arq); continue; } } catch (_) { continue; }
         if (Date.now() > limite) {
-          return recusa(`O cofre de ${agente.nome} está sendo alterado por outro pedido há mais de 5 s.`, 409, 'Espere um instante e tente de novo. Se persistir, apague o arquivo .lock dessa pasta de dados com o DG Claw Web parado.');
+          return recusa(`O cofre de ${agente.nome} está sendo alterado por outro pedido há mais de 5 s.`, 409, 'Espere um instante e tente de novo. Se persistir, apague o arquivo .lock dessa pasta de dados com o Prumo da Locadora Web parado.');
         }
         dormir(25);
       }

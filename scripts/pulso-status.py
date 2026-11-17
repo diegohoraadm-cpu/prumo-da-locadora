@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""pulso-status.py — Saude operacional do agente DG Claw (fonte unica do PULSO).
+"""pulso-status.py — Saude operacional do agente Prumo da Locadora (fonte unica do PULSO).
 
 Descobre DINAMICAMENTE os componentes a monitorar (NADA hardcoded com nome de
 persona):
@@ -455,7 +455,7 @@ def discover_components():
         seen_units.add(key)
         comps.append({"nome": nome, "grupo": grupo, "kind": kind, "unit": unit, "crit": crit})
 
-    # 1. Runtime do DG Claw (por convencao de nome + slug, com uma excecao declarada)
+    # 1. Runtime do Prumo da Locadora (por convencao de nome + slug, com uma excecao declarada)
     #
     # Quem hospeda a sessao viva nem sempre e o dgclaw-<slug>.service: num agente de
     # runner proprio e o dgclaw-agent-<slug>.service, e e ele que o config.sh declara

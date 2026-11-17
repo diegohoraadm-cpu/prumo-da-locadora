@@ -1,7 +1,7 @@
 // A porta do runner: HTTP e WebSocket, no mesmo dialeto do bunker-server.
 //
 // Falar o MESMO protocolo é a decisão central deste trabalho. Quem consome um
-// agente hoje (o `agents-server` pelo `bunker-client.ts`, o painel do DG Claw
+// agente hoje (o `agents-server` pelo `bunker-client.ts`, o painel do Prumo da Locadora
 // pelo `bunkerUrl` do `config.json`, e o `inject.py` das rotinas pelo
 // `DGCLAW_BUNKER_URL`) continua falando exatamente o que já fala: muda o
 // endereço, não o vocabulário. A alternativa (protocolo novo) obrigaria a mexer
@@ -217,7 +217,7 @@ export function criarServidor(gerente: GerenteDeSessoes): http.Server {
             success: false,
             error:
               "Este runner serve UM agente, que já existe. Criar agente é papel de quem provisiona " +
-              "(o agents-server, ou o instalador do DG Claw na máquina do cliente): ele escreve o " +
+              "(o agents-server, ou o instalador do Prumo da Locadora na máquina do cliente): ele escreve o " +
               "descritor e sobe a unidade dgclaw-agent-<slug>.",
             code: "RUNNER_DE_UM_AGENTE",
           },
@@ -316,12 +316,14 @@ export function criarServidor(gerente: GerenteDeSessoes): http.Server {
                   howToFix:
                     recusa.tipo === "chave"
                       ? `${recusa.comoResolver}. Depois disso a mensagem pode ser reenviada.`
-                      : recusa.tipo === "login-expirado"
+                      : recusa.tipo === "restricao"
+                        ? `${recusa.comoResolver}. Depois disso a sessão abre de novo e a mensagem pode ser reenviada.`
+                        : recusa.tipo === "login-expirado"
                         ? `${recusa.comoResolver}. Depois disso o runner reinicia a mesma sessão sozinho, e a mensagem pode ser reenviada.`
                         : "Fazer o login da conta deste agente, pelo painel (Provedor do agente), pelo terminal do cartão ou por " +
                           "lib/login-agente.sh. Depois disso o runner troca a sessão do login por uma " +
                           "limpa sozinho, e a mensagem pode ser reenviada.",
-                  code: recusa.tipo === "chave" ? "SEM_CHAVE" : recusa.tipo === "login-expirado" ? "LOGIN_EXPIRADO" : "SEM_LOGIN",
+                  code: recusa.tipo === "chave" ? "SEM_CHAVE" : recusa.tipo === "restricao" ? "RESTRICAO_CONTA" : recusa.tipo === "login-expirado" ? "LOGIN_EXPIRADO" : "SEM_LOGIN",
                 },
                 409,
               );

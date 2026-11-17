@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-inject-telegram-thread.py (DG Claw) — UserPromptSubmit hook da sessao --channels viva.
+inject-telegram-thread.py (Prumo da Locadora) — UserPromptSubmit hook da sessao --channels viva.
 
 PROBLEMA QUE RESOLVE (backport da agente de referência, pedido do mantenedor 30/06 e 17/07/2026):
   O DONO so ve a THREAD do canal (o chat do Telegram). Quando ele responde "pode
@@ -34,7 +34,7 @@ ISOLAMENTO / OPT-IN (critico — igual ao hook-memory-inject):
   (publico/ronda/post) NAO seta as flags -> nao injeta nada (nao vaza). O outbound log
   e a working-memory podem conter conteudo pessoal.
 
-GENERALIZADO pro contrato DG Claw: ZERO hardcode de persona/paths. Tudo por env DGCLAW_*.
+GENERALIZADO pro contrato Prumo da Locadora: ZERO hardcode de persona/paths. Tudo por env DGCLAW_*.
   DGCLAW_THREAD_HOOK           opt-in (=1 liga). Default OFF.
   DGCLAW_PRIVATE_CONTEXT       gate de privacidade (=1). Default OFF.
   DGCLAW_WORKSPACE             raiz do workspace (deriva session dir, logs, WM).

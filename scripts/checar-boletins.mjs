@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Checagem de boletins de segurança do DG Claw. Roda como root, pelo timer dgclaw-checar-boletins.timer
+// Checagem de boletins de segurança do Prumo da Locadora. Roda como root, pelo timer dgclaw-checar-boletins.timer
 // (a cada 1 h). Contrato do arquivo: docs/interno/CONTRATO-BOLETINS.md. Visão geral: docs/BOLETINS-DE-SEGURANCA.md.
 //
 // O que faz: baixa seguranca/boletins.json da branch principal do repositório oficial (leitura pública, sem token
@@ -118,11 +118,11 @@ function idsInstalados() {
     bruto = fs.readFileSync(ARQ_INSTALADO, 'utf8');
   } catch (e) {
     if (e.code === 'ENOENT') return new Set();
-    throw new Falha(`Não consegui ler ${ARQ_INSTALADO} (${e.code || e.message}). Sem ele não sei quais boletins esta versão já corrige. Confira as permissões ou rode sudo dgclaw atualizar.`);
+    throw new Falha(`Não consegui ler ${ARQ_INSTALADO} (${e.code || e.message}). Sem ele não sei quais boletins esta versão já corrige. Confira as permissões ou rode sudo prumo atualizar.`);
   }
   let j;
   try { j = JSON.parse(bruto); } catch (e) {
-    throw new Falha(`O arquivo ${ARQ_INSTALADO} está corrompido (${e.name}). Rode sudo dgclaw atualizar para reinstalar a versão.`);
+    throw new Falha(`O arquivo ${ARQ_INSTALADO} está corrompido (${e.name}). Rode sudo prumo atualizar para reinstalar a versão.`);
   }
   const ids = new Set();
   const lista = j && Array.isArray(j.boletins) ? j.boletins : [];
@@ -141,7 +141,7 @@ function idsTratadosPelaRonda() {
   try {
     j = JSON.parse(fs.readFileSync(ARQ_RONDA, 'utf8'));
   } catch (e) {
-    if (e.code !== 'ENOENT') anota(`não consegui usar ${ARQ_RONDA} (${e.code || e.name}); sem a ronda, os boletins que não são do DG Claw seguem pendentes até o dono confirmar.`);
+    if (e.code !== 'ENOENT') anota(`não consegui usar ${ARQ_RONDA} (${e.code || e.name}); sem a ronda, os boletins que não são do Prumo da Locadora seguem pendentes até o dono confirmar.`);
     return new Set();
   }
   const ids = new Set();
@@ -152,7 +152,7 @@ function idsTratadosPelaRonda() {
   return ids;
 }
 
-/** Só a versão nova do DG Claw resolve os boletins de atualizar-dgclaw. Para as demais ações, estar no arquivo instalado
+/** Só a versão nova do Prumo da Locadora resolve os boletins de atualizar-dgclaw. Para as demais ações, estar no arquivo instalado
  *  não prova nada (o pacote do sistema pode continuar vulnerável): é preciso a ronda local listar o id (ou um relacionado)
  *  como tratado, ou o dono confirmar pela API (dispensar). */
 function resolvido(b, instalados, tratadosRonda) {

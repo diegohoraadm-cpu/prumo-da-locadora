@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dgclaw dominio: troca do dominio do painel.
+# prumo dominio: troca do dominio do painel.
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh
 . "$(dirname "$0")/_comum.sh"
@@ -63,7 +63,7 @@ rm -f "$STUB_ESTADO/caddy-falha"
 printf 'import conf.d/*\n\nloja.exemplo.com {\n\trespond "oi"\n}\n' >"$CF"
 dgclaw dominio trocar outro.exemplo.com.br >"$TMP/o.txt" 2>&1
 igual "outros sites: sai com 0" "0" "$?"
-afirma "outros sites: site do DG Claw em conf.d" grep -q '^outro.exemplo.com.br {' "$CONFD"
+afirma "outros sites: site do Prumo da Locadora em conf.d" grep -q '^outro.exemplo.com.br {' "$CONFD"
 afirma "outros sites: Caddyfile dos outros preservado" grep -q 'loja.exemplo.com' "$CF"
 
 # Caddyfile personalizado (0640): vira copia ao lado e o bloco gerado entra no lugar

@@ -1,10 +1,10 @@
 ---
 name: connect
-description: Conecta o assistente DG Claw a servicos Google (Drive, Gmail, Calendar) usando os connectors nativos do Claude. Use quando o usuario quiser dar ao assistente acesso ao Drive/Gmail/Agenda, perguntar "como conecto o Google", ou pedir pra ligar os connectors.
+description: Conecta o assistente Prumo da Locadora a servicos Google (Drive, Gmail, Calendar) usando os connectors nativos do Claude. Use quando o usuario quiser dar ao assistente acesso ao Drive/Gmail/Agenda, perguntar "como conecto o Google", ou pedir pra ligar os connectors.
 user-invocable: true
 ---
 
-# /dgclaw:connect — Conectar servicos (Google)
+# connect — Conectar servicos (Google)
 
 Liga Drive / Gmail / Google Calendar no assistente usando os **connectors
 nativos do Claude Code** (sem precisar criar projeto no Google Cloud nem mexer

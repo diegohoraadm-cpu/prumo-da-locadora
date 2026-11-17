@@ -1,4 +1,4 @@
-# Pokes e verificação de recibo (DG Claw)
+# Pokes e verificação de recibo (Prumo da Locadora)
 
 Um **poke** é como um cron de vida faz o assistente trabalhar **dentro da sessão `--channels` viva**
 (a mesma que serve o bot Telegram), na assinatura flat do dono, em vez de chamar `claude -p`

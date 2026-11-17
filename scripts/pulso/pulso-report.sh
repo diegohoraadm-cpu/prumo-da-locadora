@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# pulso-report.sh (DG Claw) — manda pro dono (via notify-owner.sh) o pulso do dia.
+# pulso-report.sh (Prumo da Locadora) — manda pro dono (via notify-owner.sh) o pulso do dia.
 #
 #   pulso-report.sh <config.sh> report   -> resumo agendado (3x/dia): % + contagem +
 #                                           lista de problemas.
@@ -36,7 +36,7 @@ if [ -z "$STATUS_JSON" ]; then
 fi
 
 # Monta a mensagem em Python (texto plano) e decide se envia.
-MSG="$(MODE="$MODE" python3 - "$STATUS_JSON" <<'PY'
+MSG="$(MODE="$MODE" python3 -I - "$STATUS_JSON" <<'PY'
 import json, os, sys
 d = json.loads(sys.argv[1])
 mode = os.environ.get("MODE", "report")

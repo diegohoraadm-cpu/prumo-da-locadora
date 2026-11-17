@@ -1,9 +1,9 @@
 #!/bin/bash
-# cost-alerts.sh (DG Claw) — alerta o dono quando o gasto Anthropic da persona
+# cost-alerts.sh (Prumo da Locadora) — alerta o dono quando o gasto Anthropic da persona
 # atravessa thresholds do orcamento mensal (50/75/90/100%) OU quando uma execucao
 # individual passa de um teto. Notifica SEMPRE via scripts/notify-owner.sh.
 #
-# Tudo parametrizado por env do contrato DG Claw. ZERO hardcode de persona/paths.
+# Tudo parametrizado por env do contrato Prumo da Locadora. ZERO hardcode de persona/paths.
 #
 # Env:
 #   DGCLAW_WORKSPACE        (obrigatorio na pratica) — raiz do workspace da persona.
@@ -50,7 +50,7 @@ notify() {
 
 # ── 1. soma custo do mes corrente + coleta execucoes caras ───────────────────
 MONTH_START_EPOCH=$(date -d "$(date '+%Y-%m-01')" +%s)
-SUMMARY=$(EXEC_ALERT="$EXEC_ALERT" LOG_DIR="$LOG_DIR" MONTH_START_EPOCH="$MONTH_START_EPOCH" python3 2>>"$RUN_LOG" <<'PYEOF'
+SUMMARY=$(EXEC_ALERT="$EXEC_ALERT" LOG_DIR="$LOG_DIR" MONTH_START_EPOCH="$MONTH_START_EPOCH" python3 -I 2>>"$RUN_LOG" <<'PYEOF'
 import json, glob, os, sys
 from datetime import datetime
 
@@ -109,12 +109,12 @@ TOTAL=$(echo "$SUMMARY" | jq -r '.total')
 # Sem teto configurado nao ha contra o que comparar: um default inventado (era US$ 200)
 # alertava gasto "perto do limite" de um limite que a pessoa nunca escolheu.
 TEM_TETO=0
-if [[ "$BUDGET" =~ ^[0-9]+([.][0-9]+)?$ ]] && python3 -c "import sys; sys.exit(0 if float('$BUDGET') > 0 else 1)"; then
+if [[ "$BUDGET" =~ ^[0-9]+([.][0-9]+)?$ ]] && python3 -I -c "import sys; sys.exit(0 if float('$BUDGET') > 0 else 1)"; then
     TEM_TETO=1
 fi
 PCT=0
 if [ "$TEM_TETO" = 1 ]; then
-    PCT=$(python3 -c "b=float('$BUDGET'); t=float('$TOTAL'); print(int((t/b)*100))")
+    PCT=$(python3 -I -c "b=float('$BUDGET'); t=float('$TOTAL'); print(int((t/b)*100))")
     echo "[$(date -Iseconds)] month_total=\$$TOTAL budget=\$$BUDGET pct=$PCT%" >> "$RUN_LOG"
 else
     echo "[$(date -Iseconds)] month_total=\$$TOTAL sem teto configurado (DGCLAW_BUDGET_USD vazio ou invalido): nada a conferir nos limites mensais" >> "$RUN_LOG"

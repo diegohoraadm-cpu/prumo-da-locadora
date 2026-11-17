@@ -24,7 +24,7 @@ test('rótulos: Admin, principal (primeiro agente de trabalho) e demais, com o p
   assert.equal(P.principal([ADMIN]), null);
   const adm = P.papel(ADMIN, false);
   assert.equal(adm.rotulo, 'Agente admin');
-  assert.equal(adm.papel, 'Para administrar: atualizar o DG Claw, criar agentes e configurar.');
+  assert.equal(adm.papel, 'Para administrar: atualizar o Prumo da Locadora, criar agentes e configurar.');
   const pri = P.papel(ANA, true);
   assert.equal(pri.rotulo, 'Agente principal');
   assert.equal(pri.papel, 'O seu agente do dia a dia: é com ele que você conversa e pede tarefas.');
@@ -40,14 +40,14 @@ test('rótulos: Admin, principal (primeiro agente de trabalho) e demais, com o p
 });
 
 test('mini tutorial: endereço, usuário, itens e legenda do vídeo; nunca senha', () => {
-  const t = P.pronto({ usuario: 'danilo', principalNome: 'Lucro FC', endereco: 'https://x.test/' });
+  const t = P.pronto({ usuario: 'danilo', principalNome: 'Cliente Exemplo', endereco: 'https://x.test/' });
   assert.equal(t.titulo, 'Tudo pronto! Agora é só usar');
   assert.equal(t.passo1, '1. Acesse o seu painel:');
   assert.equal(t.endereco, 'https://x.test/');
   assert.equal(t.passo2, '2. Entre com o usuário danilo e a mesma senha que você usou para entrar aqui.');
   assert.equal(t.passo3, '3. O que você vai ver:');
-  assert.deepEqual(t.itens, ['Admin: para administrar (atualizar o DG Claw, criar agentes e configurar).',
-    'Lucro FC: o seu agente do dia a dia. Você pode trocar o nome dele depois, é só pedir ao Admin.']);
+  assert.deepEqual(t.itens, ['Admin: para administrar (atualizar o Prumo da Locadora, criar agentes e configurar).',
+    'Cliente Exemplo: o seu agente do dia a dia. Você pode trocar o nome dele depois, é só pedir ao Admin.']);
   assert.equal(t.legendaVideo, 'Veja em menos de 1 minuto');
   assert.equal(P.pronto({ endereco: 'x' }).itens.length, 1);
   assert.match(P.pronto({ endereco: 'x' }).passo2, /usuário que você escolheu/);
@@ -89,7 +89,7 @@ test('cartão: cada fase mostra só o que precisa', () => {
   const nav = v({ estado: 'aguardando_navegador', provedor: 'codex', link: LINK, codigoDispositivo: 'ABCD-1234' }, { iniciado: true });
   assert.equal(nav.fase, 'navegador'); assert.equal(nav.codigoDispositivo, 'ABCD-1234'); assert.equal(nav.campoCodigo, false);
   const conc = v({ estado: 'concluido', provedor: 'claude' }, { iniciado: true, concluiuAgora: true });
-  assert.equal(conc.fase, 'concluido'); assert.equal(conc.texto, 'Seu agente DG Claw já está conectado.'); assert.equal(conc.selo.chave, 'conectado');
+  assert.equal(conc.fase, 'concluido'); assert.equal(conc.texto, 'Seu agente Prumo da Locadora já está conectado.'); assert.equal(conc.selo.chave, 'conectado');
   const fal = v({ estado: 'falhou', provedor: 'claude', mensagem: 'O login não foi concluído em 15 minutos e foi cancelado. Inicie de novo.' }, { iniciado: true });
   assert.equal(fal.fase, 'falhou'); assert.match(fal.texto, /15 minutos/); assert.equal(fal.gerarRotulo, 'Gerar novo link');
   // falhou que sobrou de antes não aparece como novidade

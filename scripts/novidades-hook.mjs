@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Gancho UserPromptSubmit do Claude Code para o aviso de novidades depois de uma atualização do
-// DG Claw. Roda dentro do container do agente (como o usuário agente) e no host (Admin, como root).
+// Prumo da Locadora. Roda dentro do container do agente (como o usuário agente) e no host (Admin, como root).
 //
 // Como funciona: lê a versão atual em <app>/VERSAO (o instalador grava, e como a imagem do agente
 // copia o app inteiro, o container enxerga a versão da imagem em que está, não a do host). Compara
@@ -16,7 +16,7 @@
 // <workspace>/.dgclaw/logs/novidades-hook.log. Contrato e decisões: docs/NOVIDADES.md.
 //
 // Modo `--semear`: grava o "visto" com a versão e o CHANGELOG de agora, sem imprimir aviso. É o que o
-// `dgclaw agente criar` (e a primeira instalação do Admin) usam para o agente NOVO não receber aviso
+// `prumo agente criar` (e a primeira instalação do Admin) usam para o agente NOVO não receber aviso
 // de coisas que já nasceram com ele. Agente antigo, sem arquivo de visto, recebe o aviso uma vez.
 import fs from 'node:fs';
 import path from 'node:path';

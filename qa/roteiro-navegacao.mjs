@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// roteiro-navegacao.mjs: o QA de navegação do DG Claw. Roda ANTES de abrir qualquer PR que mexa
+// roteiro-navegacao.mjs: o QA de navegação do Prumo da Locadora. Roda ANTES de abrir qualquer PR que mexa
 // em tela (web/public, panel/public, casca, menu). Ver docs/QA.md.
 //
 // O que faz: entra como o dono, abre a Conversa e CLICA, no menu da esquerda, em cada item (Conversa,
@@ -188,7 +188,7 @@ async function aguardaAssentar(page) {
   const noPainel = /\/p\/[^/]+\//.test(page.url());
   const achou = await page.waitForSelector('#cabecalho #nomeAgente', { timeout: noPainel ? 8000 : 20000 }).then(() => true, () => false);
   if (!achou) return false;
-  await page.waitForFunction(() => { const n = document.querySelector('#nomeAgente'); return n && n.textContent.trim() && n.textContent.trim() !== 'DG Claw' && document.querySelector('#mlTabs .ml-tab.ativo'); }, null, { timeout: 20000 }).catch(() => {});
+  await page.waitForFunction(() => { const n = document.querySelector('#nomeAgente'); return n && n.textContent.trim() && n.textContent.trim() !== 'Prumo da Locadora' && document.querySelector('#mlTabs .ml-tab.ativo'); }, null, { timeout: 20000 }).catch(() => {});
   await page.waitForLoadState('networkidle', { timeout: 8000 }).catch(() => {});
   await dormir(700);
   return true;

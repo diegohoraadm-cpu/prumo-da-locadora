@@ -5,7 +5,8 @@
 # caso real (26/10/2026): o agente de um aluno ficou mudo no Telegram por 2 dias e ninguem avisou.
 #
 # Para cada agente do agentes.json confere, nesta ordem, e para no primeiro problema:
-#   parado     o container nao esta de pe                      (sem reparo: pode ter sido desligado de proposito)
+#   parado     o container nao esta de pe                      (so "created" ganha UM `agente iniciar`, marca de 6 h;
+#                                                                "exited" fica sem reparo: pode ter sido desligado de proposito)
 #   runner     o /api/saude nao responde, a sessao esta em erro ou sem terminal   -> reiniciar
 #   travado    a sessao esta "working" sem falar nada ha mais de 2 horas           -> reiniciar
 #   login      sem credencial do Claude e sem chave no cofre    (sem reparo: so o dono entra na conta)
@@ -80,7 +81,7 @@ pasta_telegram() {
 # frase <problema>: o que aconteceu e a correcao em uma linha, para leigo.
 frase() {
     case "$1" in
-        parado) echo "O agente $NOME está desligado. Se não foi você, peça ao Admin no painel: \"ligue o agente $NOME de novo\"." ;;
+        parado) echo "O agente $NOME está desligado. Se não foi você, peça ao Admin no painel: \"ligue o agente $NOME de novo\". No servidor: sudo prumo agente iniciar $SLUG" ;;
         runner) echo "O agente $NOME não está respondendo. Peça ao Admin no painel: \"conserte o agente $NOME\"." ;;
         travado) echo "O agente $NOME está preso numa tarefa há mais de 2 horas. Peça ao Admin no painel: \"reinicie o agente $NOME\"." ;;
         login) echo "O login do Claude do agente $NOME venceu, então ele parou de pensar. Abra o agente $NOME no painel e clique em Entrar com a assinatura." ;;
@@ -126,8 +127,8 @@ avisar() {
 [ "$(id -u)" = 0 ] || [ -n "$R" ] || { echo "a sentinela precisa rodar como root (sudo)." >&2; exit 1; }
 agentes_ler | jq -e 'any(.agentes[]; .tipo == "agente")' >/dev/null 2>&1 || exit 0
 mkdir -p "$ESTADO" "$DG_LOG" && chmod 700 "$ESTADO"
-# O `dgclaw atualizar` recria os containers: no meio dele tudo parece quebrado. A marca e dele (lib/atualizar.sh).
-# So vale se o pid ainda e um `dgclaw atualizar`: depois de um reboot o numero pode ser de outro processo.
+# O `prumo atualizar` recria os containers: no meio dele tudo parece quebrado. A marca e dele (lib/atualizar.sh).
+# So vale se o pid ainda e um `prumo atualizar`: depois de um reboot o numero pode ser de outro processo.
 # Marca com mais de 2 h e de um atualizar que morreu sem limpar (queda de energia, SIGKILL): ignorada.
 p=""; [ -n "$(find "$DG_LIB/atualizando" -mmin -120 2>/dev/null)" ] && p="$(tr -dc '0-9' 2>/dev/null <"$DG_LIB/atualizando")"
 if [ -n "$p" ] && tr '\0' ' ' 2>/dev/null </proc/"$p"/cmdline | grep -q 'dgclaw.* atualizar'; then log "atualizacao em andamento (pid $p); esta rodada nao confere nada"; exit 0; fi
@@ -137,6 +138,17 @@ while IFS=$'\t' read -r SLUG NOME URL H TD PROV COFRE; do
     diagnosticar 0; prob="$PROB"
     # Bom agora: so sai a marca com mais de 6 h; a recente segura o proximo reparo e aviso.
     if [ -z "$prob" ]; then find "$ESTADO" -name "$SLUG.*" -mmin +$((JANELA / 60)) -delete; continue; fi
+    # Container que nasceu e nunca subiu ("created"): um `agente iniciar` por janela. "exited" nao entra (desligado de proposito).
+    mc="$ESTADO/$SLUG.created"
+    if [ "$prob" = parado ] && [ "$(podman inspect -f '{{.State.Status}}' "dgclaw-$SLUG" 2>/dev/null)" = created ] \
+        && { [ ! -f "$mc" ] || [ $(( $(date +%s) - $(cat "$mc") )) -ge "$JANELA" ]; }; then
+        date +%s >"$mc"
+        log "$SLUG: container em 'created'; tentando uma vez: prumo agente iniciar $SLUG"
+        dgclaw agente iniciar "$SLUG" >>"$LOGF" 2>&1
+        fim=$(( $(date +%s) + ESPERA ))
+        while diagnosticar 0; [ -n "$PROB" ] && [ "$(date +%s)" -lt "$fim" ]; do sleep 5; done
+        prob="$PROB"; [ -z "$prob" ] && { log "$SLUG: 'created' subiu com agente iniciar"; continue; }
+    fi
     marca="$ESTADO/$SLUG.$prob"
     if [ -f "$marca" ] && [ $(( $(date +%s) - $(cat "$marca") )) -lt "$JANELA" ]; then
         log "$SLUG: segue com '$prob'; o dono ja foi avisado ha menos de $((JANELA / 3600)) h"; continue
@@ -150,7 +162,7 @@ while IFS=$'\t' read -r SLUG NOME URL H TD PROV COFRE; do
         *) acao="" ;;
     esac
     if [ -n "$acao" ]; then
-        log "$SLUG: '$prob'; tentando uma vez: dgclaw agente $acao $SLUG"
+        log "$SLUG: '$prob'; tentando uma vez: prumo agente $acao $SLUG"
         dgclaw agente "$acao" "$SLUG" >>"$LOGF" 2>&1
         fim=$(( $(date +%s) + ESPERA ))
         while diagnosticar 1; [ -n "$PROB" ] && [ "$(date +%s)" -lt "$fim" ]; do sleep 5; done
@@ -166,7 +178,7 @@ while IFS=$'\t' read -r SLUG NOME URL H TD PROV COFRE; do
         fi
     fi
     log "$SLUG: avisando o dono ($prob${acao:+, reparo: $acao}${depois:+, nao resolveu})"
-    avisar "$texto" "$prob" "$([ -z "$acao" ] && echo "sem conserto automatico" || { [ -z "$depois" ] && echo "consertado com dgclaw agente $acao" || echo "dgclaw agente $acao nao resolveu"; })"
+    avisar "$texto" "$prob" "$([ -z "$acao" ] && echo "sem conserto automatico" || { [ -z "$depois" ] && echo "consertado com prumo agente $acao" || echo "prumo agente $acao nao resolveu"; })"
 done < <(agentes_ler | jq -r '.agentes[] | select(.tipo == "agente")
     | [.slug, .nome, .runner, .home_host, .transcripts_dir, (.provedor // "claude"), (.cofre_arquivo // "-")] | @tsv')
 exit 0

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# lib/personalizacoes.sh: as personalizacoes do programa feitas pelo Admin sobrevivem a `dgclaw atualizar`.
+# lib/personalizacoes.sh: as personalizacoes do programa feitas pelo Admin sobrevivem a `prumo atualizar`.
 #
 # Carregado com `source` pelo bin/dgclaw, depois de lib/atualizar.sh, nunca executado. Usa as
 # funcoes e variaveis dele e da lib/comum.sh (_git, ATU_REPO, ATU_SEM_BAIXAR, falha, ok, info...),
@@ -180,7 +180,7 @@ personalizacoes_conferir() {
     local msg_cruza="a versao nova mexe em arquivo que uma personalizacao sua tambem mexeu, entao nao reaplico sozinho:
 ${lista%$'\n'}
    Frase pronta para o Admin repassar ao dono: \"$frase\""
-    local oque_fazer="leia o capitulo \"Personalizacao que cruza com a versao nova\" em $DG_OPT/app/docs/ATUALIZAR.md; em resumo, guarde uma copia (git -C $ATU_REPO branch $ramo_pers-antes-\$(date +%Y%m%d)), reaplique a mao com git -C $ATU_REPO rebase $oficial resolvendo o conflito, atualize a entrada no registro ($reg) e rode sudo dgclaw atualizar de novo."
+    local oque_fazer="leia o capitulo \"Personalizacao que cruza com a versao nova\" em $DG_OPT/app/docs/ATUALIZAR.md; em resumo, guarde uma copia (git -C $ATU_REPO branch $ramo_pers-antes-\$(date +%Y%m%d)), reaplique a mao com git -C $ATU_REPO rebase $oficial resolvendo o conflito, atualize a entrada no registro ($reg) e rode sudo prumo atualizar de novo."
     if [ "${PERS_SO_CONFERIR:-0}" = 1 ]; then
         aviso "$msg_cruza"
         info "O que fazer: $oque_fazer Nada foi mudado."
@@ -220,7 +220,7 @@ _pers_ensaio_rebase() {
 }
 
 # personalizacoes_trava_atualizar: duas atualizacoes ao mesmo tempo nao podem ler relatorios, baixar e
-# instalar uma por cima da outra. Nao uso o DG_TRAVA (flock): o `dgclaw agente recriar` que a
+# instalar uma por cima da outra. Nao uso o DG_TRAVA (flock): o `prumo agente recriar` que a
 # atualizacao chama por dentro pega essa mesma trava e esperaria 30 segundos por ela. Aqui a trava e
 # uma pasta com o pid do dono, em /opt/dgclaw (fora de /etc/dgclaw, que o backup confere); pid que
 # ja morreu e trava velha e e retomada.
@@ -231,7 +231,7 @@ personalizacoes_trava_atualizar() {
     if ! ( umask 077; mkdir "$dir" ) 2>/dev/null; then
         dono="$(cat "$dir/pid" 2>/dev/null || true)"
         if [ -n "$dono" ] && [ "$dono" != "$$" ] && kill -0 "$dono" 2>/dev/null && tr '\0' ' ' <"/proc/$dono/cmdline" 2>/dev/null | grep -q dgclaw; then
-            falha "ja existe outra atualizacao do DG Claw rodando (pid $dono, trava $dir)." \
+            falha "ja existe outra atualizacao do Prumo da Locadora rodando (pid $dono, trava $dir)." \
                   "espere ela terminar (systemctl list-units 'dgclaw-atualizar-*') e rode de novo. Se tiver certeza de que nao ha nenhuma, apague a pasta da trava: rmdir $dir (apague o arquivo pid dentro dela antes)."
         fi
     fi
@@ -297,7 +297,7 @@ personalizacoes_baixar() {
         _git rebase --abort >/dev/null 2>&1 \
             || aborto=" ATENCAO: o 'git rebase --abort' tambem falhou; confira o clone com git -C $ATU_REPO status antes de qualquer coisa."
         falha "a reaplicacao das personalizacoes por cima da versao nova nao encaixou (git rebase ${destino:0:12} em $ATU_REPO): $(printf '%s' "$erro" | tail -n 3 | tr '\n' ' ')$aborto" \
-              "a branch '$ramo_pers' ficou como estava, com uma copia em '$copia'. O backup ja foi feito e nada mais mudou. Leia o capitulo \"Personalizacao que cruza com a versao nova\" em $DG_OPT/app/docs/ATUALIZAR.md: com o sim do dono, reaplique a mao (git -C $ATU_REPO rebase $destino), atualize o registro $(personalizacoes_registro) e rode sudo dgclaw atualizar de novo."
+              "a branch '$ramo_pers' ficou como estava, com uma copia em '$copia'. O backup ja foi feito e nada mais mudou. Leia o capitulo \"Personalizacao que cruza com a versao nova\" em $DG_OPT/app/docs/ATUALIZAR.md: com o sim do dono, reaplique a mao (git -C $ATU_REPO rebase $destino), atualize o registro $(personalizacoes_registro) e rode sudo prumo atualizar de novo."
     fi
     depois="$(_git rev-parse HEAD)"
     PERS_REAPLICADAS="$PERS_N"; PERS_COPIA="$copia"
@@ -311,7 +311,7 @@ personalizacoes_linha_resumo() {
     [ -z "$PERS_COPIA" ] || printf '  Copia das personalizacoes de antes: branch %s no clone\n' "$PERS_COPIA"
 }
 
-# --- marcador de levantamento pendente e o comando `dgclaw personalizacoes` ---------------------
+# --- marcador de levantamento pendente e o comando `prumo personalizacoes` ---------------------
 
 _pers_dir_migracao() { printf '%s' "$DG_ADMIN/personalizacoes-migracao"; }
 
@@ -320,7 +320,7 @@ _pers_dir_migracao() { printf '%s' "$DG_ADMIN/personalizacoes-migracao"; }
 personalizacoes_avisar_pendente() {
     local m; m="$(_pers_dir_migracao)/PENDENTE"
     [ -s "$m" ] || return 0
-    aviso "ha um levantamento de personalizacoes pendente desde $(head -n 1 "$m" | cut -f1). O Admin deve rodar: sudo dgclaw personalizacoes levantar (e, ao terminar, sudo dgclaw personalizacoes concluir)."
+    aviso "ha um levantamento de personalizacoes pendente desde $(head -n 1 "$m" | cut -f1). O Admin deve rodar: sudo prumo personalizacoes levantar (e, ao terminar, sudo prumo personalizacoes concluir)."
 }
 
 # _pers_pasta_mais_recente: a pasta de migracao mais nova (a data esta no nome); cria uma se nao houver.
@@ -468,7 +468,7 @@ personalizacoes_levantar() {
 personalizacoes_concluir() {
     local dir m novo reg; dir="$(_pers_dir_migracao)"; m="$dir/PENDENTE"; reg="$(personalizacoes_registro)"
     [ -f "$reg" ] || falha "o registro de personalizacoes nao existe ($reg), entao nao dou o levantamento por concluido." \
-        "crie o registro (rode ./install.sh do clone, que copia o modelo) e escreva nele as personalizacoes que o levantamento achou; depois rode: sudo dgclaw personalizacoes concluir"
+        "crie o registro (rode ./install.sh do clone, que copia o modelo) e escreva nele as personalizacoes que o levantamento achou; depois rode: sudo prumo personalizacoes concluir"
     if [ ! -e "$m" ]; then ok "nao havia levantamento pendente; nada a fazer"; return 0; fi
     novo="$dir/CONCLUIDO-$(date +%Y%m%d-%H%M%S)"
     mv "$m" "$novo" || falha "nao consegui renomear $m para $novo." "confira a permissao de $dir."
@@ -479,10 +479,10 @@ personalizacoes_main() {
     local sub="${1:-}"; [ $# -eq 0 ] || shift
     case "$sub" in
         levantar|conferir|concluir) ;;
-        "") falha "faltou dizer o que fazer com as personalizacoes." "use: levantar, conferir ou concluir (veja dgclaw --ajuda)." ;;
-        *) falha "'personalizacoes $sub' nao existe." "use: levantar, conferir ou concluir (veja dgclaw --ajuda)." ;;
+        "") falha "faltou dizer o que fazer com as personalizacoes." "use: levantar, conferir ou concluir (veja prumo --ajuda)." ;;
+        *) falha "'personalizacoes $sub' nao existe." "use: levantar, conferir ou concluir (veja prumo --ajuda)." ;;
     esac
-    [ $# -eq 0 ] || falha "'personalizacoes $sub' nao recebe argumentos (veio: $*)." "rode so: sudo dgclaw personalizacoes $sub"
+    [ $# -eq 0 ] || falha "'personalizacoes $sub' nao recebe argumentos (veio: $*)." "rode so: sudo prumo personalizacoes $sub"
     exigir_ferramentas git
     carregar_env_dgclaw
     case "$sub" in
@@ -550,6 +550,7 @@ _om_relatorio() {
         printf '  (nao consegui ler o CHANGELOG.md da versao nova; leia os commits acima)\n'
     fi
 
+    uso_calcular "$de" "$para"
     printf '\nPontos de atencao:\n'
     while IFS= read -r f; do
         [ -n "$f" ] || continue
@@ -563,11 +564,18 @@ _om_relatorio() {
         printf '%s' "$pontos"
         if [ "$np" -gt "$max" ]; then printf '  e mais %s arquivo(s)\n' "$((np - max))"; fi
     fi
+    if [ "${#USO_CRUZ[@]}" -gt 0 ]; then
+        printf '  Cruzando com o que este Prumo da Locadora usa:\n'
+        for f in "${USO_CRUZ[@]}"; do printf '  - %s\n' "$f"; done
+    fi
+    for f in ${USO_LIM[@]+"${USO_LIM[@]}"}; do printf '  limite atingido: %s\n' "$f"; done
+    printf '\nO que este Prumo da Locadora usa e o que a versao nova toca:\n'
+    printf '%s' "$USO_TXT" | sed 's/^/  /'
     velho="$(personalizacoes_registro)"
     printf '\nSuas personalizacoes estao no registro %s.\n' "$velho"
-    printf '\nVersao de destino (para conferencia, nao precisa ler):\nDESTINO=%s\n' "$para"
+    printf '\nVersao de destino (para conferencia, nao precisa ler):\nDESTINO=%s\nPERSONALIZACOES=%s\nMODO=%s\nINSTALADO=%s\nINSTALADO_ORIGEM=%s\n' "$para" "${ATU_PERS_HEAD:-nenhuma}" "${ATU_MODO_INST:-oficial}" "${ATU_COMMIT_ANTIGO:-}" "${ATU_COMMIT_ORIGEM:-}"
     if [ -n "$head" ]; then printf 'HEAD=%s\n' "$head"; fi
-    printf '\nAntes de instalar: leia o que muda, diga ao dono em linguagem simples se ve algum risco para os arquivos, os dados ou as personalizacoes dele e espere o ok. Com o ok: sudo dgclaw atualizar --ok-do-dono --segundo-plano\n'
+    printf '\nAntes de instalar: leia o que muda e o que este Prumo da Locadora usa (secao acima), diga ao dono em linguagem simples se a atualizacao e segura e se vale a pena, e grave o parecer: sudo prumo atualizar --parecer segura --commit <commit do DESTINO> --motivo "<texto curto>" (ou arriscada, que bloqueia). Espere o ok dele. Com o ok: sudo prumo atualizar --ok-do-dono --segundo-plano\n'
 }
 
 # _om_changelog <origem> <destino>: linhas de item que o CHANGELOG do destino tem e o da origem nao
@@ -584,13 +592,18 @@ _om_changelog() {
 # para aqui, antes do backup.
 _om_exigir_ok() {
     local motivo="$1" arq="${2:-}"
-    if [ "${ATU_OK_DONO:-0}" = 1 ]; then ok "ok do dono recebido (--ok-do-dono): sigo com a atualizacao"; return 0; fi
+    if [ "${ATU_OK_DONO:-0}" = 1 ]; then
+        atualizar_conferir_parecer
+        ok "ok do dono recebido (--ok-do-dono): sigo com a atualizacao"
+        return 0
+    fi
     if [ "$ENSAIO" = 1 ]; then
         info "a atualizacao de verdade vai exigir --ok-do-dono, depois que o dono ler o relatorio acima."
+        info "Antes dele, a analise: com o relatorio lido e cruzado com o que este Prumo da Locadora usa, grave o parecer: sudo prumo atualizar --parecer segura|arriscada --motivo \"<texto curto>\". Parecer arriscada bloqueia a instalacao."
         return 0
     fi
     falha "$motivo e eu ainda nao tenho o ok do dono.${arq:+ O relatorio esta em $arq.}" \
-          "mostre ${arq:+o relatorio }ao dono em linguagem simples (diga se ve risco para os arquivos, os dados ou as personalizacoes dele), espere o ok e rode: sudo dgclaw atualizar --ok-do-dono --segundo-plano. Nada foi mudado (parei antes do backup)."
+          "mostre ${arq:+o relatorio }ao dono em linguagem simples (diga se a atualizacao e segura para os arquivos, os dados, as rotinas e as personalizacoes dele e se vale a pena), grave o parecer (sudo prumo atualizar --parecer segura --commit <commit do DESTINO> --motivo \"<texto curto>\"), espere o ok e rode: sudo prumo atualizar --ok-do-dono --segundo-plano. Nada foi mudado (parei antes do backup)."
 }
 
 # atualizar_o_que_muda: roda antes do backup. Mostra o que a versao nova traz e, sempre que o que vai ser
@@ -600,7 +613,7 @@ _om_exigir_ok() {
 # que ele veja o novo.
 atualizar_o_que_muda() {
     local de="" real="" para="" head="" ramo n arq ts sem_base=0 difere=0 por_que="" prev prev_dest prev_arq
-    ATU_DESTINO=""
+    ATU_DESTINO=""; OM_PREV_DEST=""; OM_PREV_PERS=""; OM_PREV_MODO=""; OM_PREV_INST=""; ATU_PERS_HEAD=""; ATU_MODO_INST=""
     ATU_ETAPA="lendo o que muda"
     passo "Lendo o que a versao nova muda (antes de instalar qualquer coisa)"
     if ! git_do_clone "$ATU_REPO" rev-parse --git-dir >/dev/null 2>&1; then
@@ -630,6 +643,12 @@ atualizar_o_que_muda() {
         return 0
     fi
     ATU_DESTINO="$para"
+    # O que o parecer tambem prende: o HEAD da branch das personalizacoes (ou "nenhuma") e o modo de instalacao.
+    ATU_PERS_HEAD="$(_git rev-parse -q --verify "refs/heads/$(_pers_ramo)" 2>/dev/null || true)"; ATU_PERS_HEAD="${ATU_PERS_HEAD:-nenhuma}"
+    ATU_MODO_INST=oficial
+    if [ "${PERS_ATIVO:-0}" = 1 ]; then ATU_MODO_INST=personalizacoes; fi
+    if [ "${ATU_SEM_BAIXAR:-0}" = 1 ]; then ATU_MODO_INST="$ATU_MODO_INST+sem-baixar"; fi
+    if [ "${ATU_SEM_PERS:-0}" = 1 ]; then ATU_MODO_INST="$ATU_MODO_INST+sem-personalizacoes"; fi
 
     # O instalado de verdade. "HEAD do clone" e so um palpite do atualizar_descobrir_commit_antigo: sem base.
     real="${ATU_COMMIT_ANTIGO:-}"
@@ -663,7 +682,10 @@ atualizar_o_que_muda() {
     prev="$(find "$(dirname "$arq")" -maxdepth 1 -name '*.o-que-muda.txt' -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -n 1 | cut -d' ' -f2- || true)"
     if [ -n "$prev" ]; then
         prev_arq="$prev"; prev_dest="$(sed -n 's/^DESTINO=//p' "$prev" | head -n 1)"
+        OM_PREV_PERS="$(sed -n 's/^PERSONALIZACOES=//p' "$prev" | head -n 1)"; OM_PREV_MODO="$(sed -n 's/^MODO=//p' "$prev" | head -n 1)"
+        OM_PREV_INST="$(sed -n 's/^INSTALADO=//p' "$prev" | head -n 1)"
     fi
+    OM_PREV_DEST="$prev_dest"   # o parecer (lib/atualizar.sh) confere que foi dado sobre o relatorio que o analista leu
     ( umask 027; mkdir -p "$DG_LOG"; _om_relatorio "$de" "$para" "$head" >"$arq" ) \
         || falha "nao consegui gravar o relatorio em $arq." "confira a pasta e o espaco em disco (ls -ld $DG_LOG; df -h $DG_LOG). Nada foi mudado."
     cat "$arq"
@@ -674,7 +696,7 @@ atualizar_o_que_muda() {
             prev_dest=""
         else
             falha "a versao a instalar mudou desde o relatorio que foi mostrado ao dono (antes ${prev_dest:0:10}, em $prev_arq; agora ${para:0:10}). O relatorio novo ja foi gravado em $arq." \
-                  "mostre o relatorio novo (acima) ao dono em linguagem simples, espere o ok e rode de novo: sudo dgclaw atualizar --ok-do-dono --segundo-plano. Nada foi mudado (parei antes do backup)."
+                  "mostre o relatorio novo (acima) ao dono em linguagem simples, espere o ok e rode de novo: sudo prumo atualizar --ok-do-dono --segundo-plano. Nada foi mudado (parei antes do backup)."
         fi
     fi
     n="$(_git rev-list --count --no-merges "${de:-$para}..$para" 2>/dev/null || printf 0)"

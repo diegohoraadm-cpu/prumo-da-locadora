@@ -65,7 +65,7 @@
   /* "Última ronda: hoje, 13h02. Próxima: 19h00." (a próxima só leva o dia quando não é hoje). */
   function resumoTopo(ronda, agora) {
     if (!ronda || ronda.nunca_rodou || !ronda.rodada_em) {
-      return 'A ronda de segurança ainda não rodou neste servidor. Ela roda sozinha; para rodar agora, peça ao Admin: sudo dgclaw seguranca rodar.';
+      return 'A ronda de segurança ainda não rodou neste servidor. Ela roda sozinha; para rodar agora, peça ao Admin: sudo prumo seguranca rodar.';
     }
     const ref = typeof agora === 'number' ? agora : Date.now();
     let s = 'Última ronda: ' + quando(ronda.rodada_em, ref) + '.';
@@ -94,7 +94,7 @@
     const v = ronda && ronda.vigia_alerta;
     if (!v) return '';
     return 'A ronda automática falhou: ' + v.motivo + (v.quando ? ' (visto em ' + quando(v.quando, Date.now()) + ')' : '') +
-      ' Rode "sudo dgclaw seguranca rodar" no servidor ou peça ao Admin para ver o motivo.';
+      ' Rode "sudo prumo seguranca rodar" no servidor ou peça ao Admin para ver o motivo.';
   }
 
   function gravidadeRotulo(sev) { return GRAVIDADE[sev] || 'Não informada'; }

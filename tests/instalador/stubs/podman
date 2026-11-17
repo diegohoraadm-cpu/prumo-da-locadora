@@ -18,6 +18,11 @@ if [ "${1:-}" = network ] && [ "${2:-}" = inspect ]; then
     printf '%s |%s|%s\n' "$subs" "$iface" "${rotulo:-}"
     exit 0
 fi
+# `inspect -f {{.State.Status}} <container>`: o estado esta em $DGCLAW_STUB_ESTADO/c-<container> (sem arquivo: nao existe).
+if [ "${1:-}" = inspect ]; then
+    cat "$(estado_dir)/c-${*: -1}" 2>/dev/null || exit 1
+    exit 0
+fi
 if [ "${1:-}" = ps ]; then
     # DGCLAW_STUB_PS_FALHA=1 simula o podman quebrado; DGCLAW_STUB_PS e a listagem "<nome> <estado>" (\n literal separa linhas).
     if [ "${DGCLAW_STUB_PS_FALHA:-0}" = 1 ]; then echo "podman: erro simulado" >&2; exit 125; fi

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# pulso-report.sh (DG Claw) — manda pro dono (via notify-owner.sh) o pulso do dia.
+# pulso-report.sh (Prumo da Locadora) — manda pro dono (via notify-owner.sh) o pulso do dia.
 #
 # Generalizacao do pulso-report do ClaudeClaw: notifica SEMPRE via notify-owner.sh
 # (nunca telegram_notify hardcoded) e le o ledger de DGCLAW_PULSO_DIR.
@@ -37,7 +37,7 @@ LEDGER="$LEDGER_DIR/$DAY.jsonl"
 [ -f "$LEDGER" ] || { echo "pulso-report: sem ledger do dia ($LEDGER) — nada a reportar" >&2; exit 0; }
 
 # Monta a mensagem em Python (texto plano) e decide se envia.
-MSG="$(MODE="$MODE" python3 - "$LEDGER" <<'PY'
+MSG="$(MODE="$MODE" python3 -I - "$LEDGER" <<'PY'
 import json, os, sys
 mode = os.environ.get("MODE", "report")
 last = {}  # id -> ultimo registro do dia (o mais recente vence)

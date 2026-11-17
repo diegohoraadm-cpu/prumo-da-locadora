@@ -11,7 +11,7 @@ const os = require('node:os');
 const tls = require('node:tls');
 
 const TEMPO_TOTAL_MS = 20000;
-const MOTIVO_SEM_CONFIG = 'O envio de e-mail não está configurado neste DG Claw (DGCLAW_SMTP_HOST no web.env). Mande o convite pelo texto abaixo.';
+const MOTIVO_SEM_CONFIG = 'O envio de e-mail não está configurado neste Prumo da Locadora (DGCLAW_SMTP_HOST no web.env). Mande o convite pelo texto abaixo.';
 
 /** Pontos no começo da linha ganham outro ponto (RFC 5321 4.5.2); sem isso uma linha "." encerraria o DATA. */
 function dotStuff(texto) {
@@ -195,7 +195,7 @@ function criarEmail({ config, log }) {
     async enviar({ para, assunto, texto }) {
       if (!host) return { enviado: false, motivo: MOTIVO_SEM_CONFIG };
       if (!remetente || !enderecoDe(remetente)) {
-        return { enviado: false, motivo: 'Falta o remetente do e-mail. Defina DGCLAW_SMTP_REMETENTE no web.env (por exemplo: DG Claw <voce@exemplo.com>). Mande o convite pelo texto abaixo.' };
+        return { enviado: false, motivo: 'Falta o remetente do e-mail. Defina DGCLAW_SMTP_REMETENTE no web.env (por exemplo: Prumo da Locadora <voce@exemplo.com>). Mande o convite pelo texto abaixo.' };
       }
       for (const [nome, v] of [['destinatário', para], ['assunto', assunto], ['remetente', remetente]]) {
         if (typeof v !== 'string' || !v || temQuebra(v)) {

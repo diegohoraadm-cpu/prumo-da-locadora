@@ -49,7 +49,7 @@ WD="$STABLE/channel-watchdog.sh"
 
 cat > "/etc/systemd/system/${UNIT}.service" <<EOF
 [Unit]
-Description=DG Claw watchdog do canal Telegram: ${SLUG}
+Description=Prumo da Locadora watchdog do canal Telegram: ${SLUG}
 After=dgclaw-${SLUG}.service
 
 [Service]
@@ -63,7 +63,7 @@ EOF
 
 cat > "/etc/systemd/system/${UNIT}.timer" <<EOF
 [Unit]
-Description=DG Claw watchdog do canal Telegram (timer): ${SLUG}
+Description=Prumo da Locadora watchdog do canal Telegram (timer): ${SLUG}
 
 [Timer]
 OnBootSec=2min

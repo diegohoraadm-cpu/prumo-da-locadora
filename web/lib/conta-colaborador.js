@@ -171,7 +171,7 @@ function criarContaColaborador({ dataDir, login, log, agora, escreveArquivo }) {
   }
 
   function recusaPorSituacao(s) {
-    if (s.atualizar) return erro(503, 'O programa deste agente ainda é de uma versão antiga e, por segurança, não deixa o colaborador conectar a conta. Avise o dono do Prumo da Locadora para atualizar (comando "dgclaw atualizar", que recria o agente com a versão nova).');
+    if (s.atualizar) return erro(503, 'O programa deste agente ainda é de uma versão antiga e, por segurança, não deixa o colaborador conectar a conta. Avise o dono do Prumo da Locadora para atualizar (comando "prumo atualizar", que recria o agente com a versão nova).');
     switch (s.tipo) {
       case 'conectado': return erro(409, MSG_JA_CONECTADO);
       case 'expirado': return erro(403, MSG_EXPIRADO);

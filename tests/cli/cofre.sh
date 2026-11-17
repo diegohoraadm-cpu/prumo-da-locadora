@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dgclaw agente cofre: o embrulho fino de web/bin/cofre.js. Aqui o cofre.js e um falso que so
+# prumo agente cofre: o embrulho fino de web/bin/cofre.js. Aqui o cofre.js e um falso que so
 # anota o que recebeu; no fim, um caso com o cofre.js de verdade numa raiz falsa.
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh

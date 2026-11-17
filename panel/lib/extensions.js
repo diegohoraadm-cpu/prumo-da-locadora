@@ -2,8 +2,8 @@
 /**
  * extensions.js — Descobre quais extensoes estao instaladas no agente.
  *
- * O DG Claw sozinho e um profissional: ele nao tem humor, nao tem emocao e o painel dele
- * nao mostra nada disso. Quem instala a extensao DG Alive ganha o estado emocional, e o
+ * O Prumo da Locadora sozinho e um profissional: ele nao tem humor, nao tem emocao e o painel dele
+ * nao mostra nada disso. Quem instala a extensao de emocoes ganha o estado emocional, e o
  * painel passa a mostrar a aba de humor e as expressoes do avatar.
  *
  * A deteccao e por pasta: .dgclaw/ext/<nome>/ existe = extensao instalada. Nada de flag
@@ -45,7 +45,7 @@ function listExtensions(extDir, legacyAlive) {
   return nomes.sort();
 }
 
-/** Atalho: a extensao de emocoes (DG Alive) esta instalada? */
+/** Atalho: a extensao de emocoes (extensão de emoções) esta instalada? */
 function hasAlive(extDir, legacyAlive) {
   return listExtensions(extDir, legacyAlive).includes('alive');
 }
@@ -53,7 +53,7 @@ function hasAlive(extDir, legacyAlive) {
 /**
  * Escolhe o arquivo de estado que existe: o novo (.dgclaw/ext/alive/) ou o da instalacao
  * antiga (persona/). Se nenhum existir, devolve o caminho novo mesmo, pra quem chamou
- * seguir o caminho normal de "arquivo ausente" (que no DG Claw puro e o caso esperado,
+ * seguir o caminho normal de "arquivo ausente" (que no Prumo da Locadora puro e o caso esperado,
  * nao um erro). Nunca devolve null, pra nao explodir em quem so quer ler.
  */
 function resolveStateFile(primary, legacy) {

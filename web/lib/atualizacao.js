@@ -1,5 +1,5 @@
 'use strict';
-// Aviso de nova versão do DG Claw: o painel só LÊ o estado que scripts/checar-atualizacao.mjs grava
+// Aviso de nova versão do Prumo da Locadora: o painel só LÊ o estado que scripts/checar-atualizacao.mjs grava
 // (o Web não consulta o GitHub nem instala nada) e guarda quando o dono dispensou a faixa.
 // Contrato das rotas: web/docs/ATUALIZACAO.md. Visão geral: docs/AVISO-DE-ATUALIZACAO.md.
 //
@@ -63,14 +63,14 @@ function criarAtualizacao(opcoes) {
     let bruto;
     try { bruto = fs.readFileSync(arqEstado, 'utf8'); } catch (e) {
       if (e.code === 'ENOENT') return { ausente: true };
-      return { erro: `Não consegui ler ${arqEstado} (${e.code || e.message}). Rode "sudo dgclaw atualizar --checar" no servidor para refazê-lo.` };
+      return { erro: `Não consegui ler ${arqEstado} (${e.code || e.message}). Rode "sudo prumo atualizar --checar" no servidor para refazê-lo.` };
     }
     let j;
     try { j = JSON.parse(bruto); } catch (e) {
-      return { erro: `O arquivo ${arqEstado} está corrompido (${e.message}). Rode "sudo dgclaw atualizar --checar" no servidor para refazê-lo.` };
+      return { erro: `O arquivo ${arqEstado} está corrompido (${e.message}). Rode "sudo prumo atualizar --checar" no servidor para refazê-lo.` };
     }
     if (!j || typeof j !== 'object' || Array.isArray(j)) {
-      return { erro: `O arquivo ${arqEstado} não tem o formato esperado. Rode "sudo dgclaw atualizar --checar" no servidor para refazê-lo.` };
+      return { erro: `O arquivo ${arqEstado} não tem o formato esperado. Rode "sudo prumo atualizar --checar" no servidor para refazê-lo.` };
     }
     return { estado: normaliza(j) };
   }
@@ -145,7 +145,7 @@ function criarAtualizacao(opcoes) {
       res.end(t);
     } catch (e) {
       log('erro', `Atualização: não consegui ler docs/ATUALIZACAO.md (${e.code || e.message}).`);
-      H.erroJson(res, 500, 'O documento do aviso de atualização não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
+      H.erroJson(res, 500, 'O documento do aviso de atualização não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo prumo atualizar).');
     }
   }
 

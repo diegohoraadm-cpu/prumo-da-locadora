@@ -1,4 +1,4 @@
-// agents.js: quais assistentes DG Claw existem nesta maquina.
+// agents.js: quais assistentes Prumo da Locadora existem nesta maquina.
 //
 // Serve o seletor de agente do painel. Cada agente tem o painel dele, numa porta propria,
 // entao "trocar de agente" e abrir outro endereco, nao recarregar dados aqui dentro.
@@ -13,7 +13,7 @@ const path = require('path');
 /**
  * Onde procurar agente nesta maquina.
  *
- * Os dois jeitos historicos de instalar o DG Claw servidor sao a pasta `dgclaw/<slug>/` do
+ * Os dois jeitos historicos de instalar o Prumo da Locadora servidor sao a pasta `dgclaw/<slug>/` do
  * usuario root e um usuario dedicado `dgclaw-<slug>` (veja RAIZES_DE_SEMPRE). Enquanto
  * foram os dois unicos, a lista podia ser fixa; deixou de poder em 10/08/2026, quando o
  * primeiro agente entregue pela plataforma nasceu em `/opt/agentes/ana` e ficou INVISIVEL para o seletor. O sintoma

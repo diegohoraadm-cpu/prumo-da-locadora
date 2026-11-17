@@ -61,7 +61,7 @@ function smtpFalso(opcoes) {
 
 const envDe = (porta, extra) => Object.assign({
   DGCLAW_SMTP_HOST: '127.0.0.1', DGCLAW_SMTP_PORTA: String(porta), DGCLAW_SMTP_USUARIO: 'robo@exemplo.com', DGCLAW_SMTP_SENHA: VALOR_DE_TESTE,
-  DGCLAW_SMTP_REMETENTE: 'DG Claw <robo@exemplo.com>', DGCLAW_SMTP_TESTE_SEM_TLS: '1',
+  DGCLAW_SMTP_REMETENTE: 'Prumo da Locadora <robo@exemplo.com>', DGCLAW_SMTP_TESTE_SEM_TLS: '1',
 }, extra || {});
 
 const montar = (env) => { const cap = capturaLog(); return { cap, email: criarEmail({ config: { env }, log: cap.log }) }; };
@@ -84,7 +84,7 @@ test('email: conversa completa (EHLO, AUTH PLAIN, MAIL, RCPT, DATA, QUIT) e mens
   try {
     const { email, cap } = montar(envDe(smtp.porta));
     const texto = 'Olá, Maria!\nSenha temporária: Ab3dEf5hJk7m\nAté logo, pão de açúcar.';
-    const assuntoOriginal = 'Convite para conversar com o agente Ana no DG Claw';
+    const assuntoOriginal = 'Convite para conversar com o agente Ana no Prumo da Locadora';
     const r = await email.enviar({ para: 'maria@x.com', assunto: assuntoOriginal, texto });
     assert.deepEqual(r, { enviado: true });
     const c = smtp.rec.comandos;
@@ -122,7 +122,7 @@ test('email: dot-stuffing nas linhas que começam com ponto', () => {
 });
 
 test('email: assunto longo vira várias encoded-words de até 75 caracteres', () => {
-  const a = codificaAssunto('Convite para conversar com o agente Ana no DG Claw, com acentuação: ção, é, ü');
+  const a = codificaAssunto('Convite para conversar com o agente Ana no Prumo da Locadora, com acentuação: ção, é, ü');
   for (const palavra of a.split('\r\n ')) assert.ok(palavra.length <= 75, palavra);
   assert.match(a, /^=\?UTF-8\?B\?/);
 });

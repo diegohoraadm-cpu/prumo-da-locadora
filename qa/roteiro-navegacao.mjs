@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// roteiro-navegacao.mjs: o QA de navegação do DG Claw. Roda ANTES de abrir qualquer PR que mexa
+// roteiro-navegacao.mjs: o QA de navegação do Prumo da Locadora. Roda ANTES de abrir qualquer PR que mexa
 // em tela (web/public, panel/public, casca, menu). Ver docs/QA.md.
 //
 // O que faz: entra como o dono, abre a Conversa e CLICA, no menu da esquerda, em cada item (Conversa,

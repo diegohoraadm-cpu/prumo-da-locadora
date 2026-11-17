@@ -766,7 +766,7 @@ function criarConversa({ config, runner, leitor, leitorRollout, midia, log, agor
     if (!texto && !ids.length) return erro(400, 'Mande o texto em "text" (ou os ids dos arquivos em "anexos"). Recebi vazio.');
     // Token do BotFather colado sozinho: vai para o .env do agente e nunca para o runner.
     if (!ids.length && tokenTelegram.ehToken(texto)) {
-      if (ehColab) return erro(403, 'Guardar o token de um bot do Telegram muda a configuração do agente, e isso é só do dono do DG Claw. Peça a ele. Nada foi enviado.', { codigo: 'SO_DO_DONO' });
+      if (ehColab) return erro(403, 'Guardar o token de um bot do Telegram muda a configuração do agente, e isso é só do dono do Prumo da Locadora. Peça a ele. Nada foi enviado.', { codigo: 'SO_DO_DONO' });
       const g = await tokenTelegram.guardar(agente, texto);
       if (g.erro) {
         log('aviso', `Token do Telegram colado na conversa de ${agente.slug} não foi guardado: ${g.erro.corpo.erro}`);

@@ -335,7 +335,7 @@ function criarAnonimizar(opcoes) {
       if (o.motor) return o.motor;
       const script = path.join(appDir, 'anonimizar', 'motor.py');
       if (!fs.existsSync(script)) {
-        throw new ErroAnon(503, `O motor de anonimização não está instalado (falta ${script}). Atualize o DG Claw com "dgclaw atualizar" e tente de novo. Nada foi enviado ao agente.`, 'MOTOR_AUSENTE');
+        throw new ErroAnon(503, `O motor de anonimização não está instalado (falta ${script}). Atualize o Prumo da Locadora com "prumo atualizar" e tente de novo. Nada foi enviado ao agente.`, 'MOTOR_AUSENTE');
       }
       let py = env.DGCLAW_ANON_PYTHON;
       if (!py) { const venv = path.join(base, 'venv', 'bin', 'python'); py = fs.existsSync(venv) ? venv : 'python3'; }
@@ -526,7 +526,7 @@ function criarAnonimizar(opcoes) {
     const ok = [];
     for (const n of novas) {
       const valido = n && TIPOS.includes(n.tipo) && typeof n.valor === 'string' && n.valor && typeof n.marcador === 'string' && n.marcador.startsWith(`[${n.tipo}_`) && /^\[[A-Z]+_\d+\]$/.test(n.marcador);
-      if (!valido) throw new ErroAnon(502, 'O motor devolveu um dado novo malformado. Nada foi enviado ao agente. Peça ao Admin para atualizar o DG Claw.', 'MOTOR_RESPOSTA_INVALIDA');
+      if (!valido) throw new ErroAnon(502, 'O motor devolveu um dado novo malformado. Nada foi enviado ao agente. Peça ao Admin para atualizar o Prumo da Locadora.', 'MOTOR_RESPOSTA_INVALIDA');
       if (existentes.has(n.marcador)) {
         if (existentes.get(n.marcador) !== n.valor) throw new ErroAnon(502, `O motor reaproveitou o marcador ${n.marcador} para outro valor. Nada foi enviado ao agente, para não misturar duas pessoas.`, 'MARCADOR_DUPLICADO');
         continue;
@@ -740,7 +740,7 @@ function criarAnonimizar(opcoes) {
       // Marcadores deste documento: SÓ a lista `usados` do motor (ele olha todas as partes de todas as saídas, inclusive
       // cabeçalho, comentário e metadado). Sem ela eu não sei o que apagar depois, então o documento não segue.
       if (!Array.isArray(r.usados) || r.usados.some((m) => typeof m !== 'string' || !/^\[[A-Z]+_\d+\]$/.test(m))) {
-        throw new ErroAnon(502, 'O motor de anonimização não informou quais marcadores o documento usa (lista "usados"). Ele está desatualizado: peça ao Admin para atualizar o DG Claw. Nada foi enviado ao agente.', 'MOTOR_SEM_USADOS');
+        throw new ErroAnon(502, 'O motor de anonimização não informou quais marcadores o documento usa (lista "usados"). Ele está desatualizado: peça ao Admin para atualizar o Prumo da Locadora. Nada foi enviado ao agente.', 'MOTOR_SEM_USADOS');
       }
       const marcadores = new Set(r.usados);
       for (const n of novas) marcadores.add(n.marcador);

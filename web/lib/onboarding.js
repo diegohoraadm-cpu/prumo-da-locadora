@@ -37,7 +37,7 @@ const FIXOS = {
 // Marco seguinte de cada fase fixa (a imagem e a criação calculam o seu pelo passo).
 const PROXIMOS = { enviando: FIXOS.solicitado[0], solicitado: FAIXA_IMAGEM[1], login: FIXOS.testando[0], testando: FIXOS.pronto[0], pronto: 100 };
 const ETAPA_IMAGEM = 'Preparando a imagem dos agentes (só na primeira vez, pode levar de 5 a 15 minutos)';
-// Ordem e títulos de `dgclaw agente criar` (bin/dgclaw). O texto do log vem sem acento.
+// Ordem e títulos de `prumo agente criar` (bin/dgclaw). O texto do log vem sem acento.
 const ETAPAS = [
   [/^Reservando a faixa/i, 'Reservando um espaço para o agente'],
   [/^Montando a casa/i, 'Preparando a casa do agente'],
@@ -200,7 +200,7 @@ function criarOnboarding({ config, registro, conversa, midia, log = () => {}, im
       } else if (falhou && fase === 'solicitado') {
         const im = lerImagem(lerFim(logImagem, log));
         [pct, etapa] = FIXOS.solicitado;
-        erroImg = { motivo: 'A construção da imagem dos agentes falhou.' + (im.uteis.length ? ' Últimas linhas do registro: ' + im.uteis.join(' | ') : ''), oQueFazer: 'Peça ao Admin para rodar dgclaw imagem construir de novo.' };
+        erroImg = { motivo: 'A construção da imagem dos agentes falhou.' + (im.uteis.length ? ' Últimas linhas do registro: ' + im.uteis.join(' | ') : ''), oQueFazer: 'Peça ao Admin para rodar prumo imagem construir de novo.' };
       } else [pct, etapa] = FIXOS.solicitado;
     } else [pct, etapa] = FIXOS[fase] || FIXOS.solicitado;
     pct = Math.max(pct, maximos.get(p.id) || 0);

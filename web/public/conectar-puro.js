@@ -18,7 +18,7 @@
   const ROTULO_ADMIN = 'Agente admin';
   const ROTULO_PRINCIPAL = 'Agente principal';
   const ROTULO_TRABALHO = 'Agente de trabalho';
-  const PAPEL_ADMIN = 'Para administrar: atualizar o DG Claw, criar agentes e configurar.';
+  const PAPEL_ADMIN = 'Para administrar: atualizar o Prumo da Locadora, criar agentes e configurar.';
   const PAPEL_PRINCIPAL = 'O seu agente do dia a dia: é com ele que você conversa e pede tarefas.';
   const PAPEL_TRABALHO = 'O seu agente de trabalho.';
 
@@ -219,7 +219,7 @@
         });
       case 'concluido':
         if (ctx.colaborador) return Object.assign(base, { fase: 'concluido', texto: 'Este agente já está conectado.', aviso: 'Conectado' });
-        return Object.assign(base, { fase: 'concluido', texto: 'Seu agente DG Claw já está conectado.', entrarOutra: true, aviso: 'Conectado' });
+        return Object.assign(base, { fase: 'concluido', texto: 'Seu agente Prumo da Locadora já está conectado.', entrarOutra: true, aviso: 'Conectado' });
       case 'falhou':
         return Object.assign(base, {
           fase: 'falhou', texto: traduzFalha(d && d.mensagem), gerar: !bloqueio, gerarRotulo: 'Gerar novo link', gerarBloqueio: bloqueio,
@@ -266,7 +266,7 @@
         legendaVideo: 'Veja em menos de 1 minuto',
       };
     }
-    const itens = ['Admin: para administrar (atualizar o DG Claw, criar agentes e configurar).'];
+    const itens = ['Admin: para administrar (atualizar o Prumo da Locadora, criar agentes e configurar).'];
     if (ctx.principalNome) itens.push(ctx.principalNome + ': o seu agente do dia a dia. Você pode trocar o nome dele depois, é só pedir ao Admin.');
     return {
       titulo: 'Tudo pronto! Agora é só usar',

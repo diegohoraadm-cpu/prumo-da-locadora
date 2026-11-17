@@ -1,6 +1,6 @@
-// test-cofre-host.mjs — o modo "host" do cofre (DG Claw v1): o painel de dentro só LÊ os nomes.
+// test-cofre-host.mjs — o modo "host" do cofre (Prumo da Locadora v1): o painel de dentro só LÊ os nomes.
 //
-// Neste modo quem guarda a chave é o DG Claw Web, no host. O painel recusa tudo o que escreve e
+// Neste modo quem guarda a chave é o Prumo da Locadora Web, no host. O painel recusa tudo o que escreve e
 // NÃO PODE deixar rastro em disco: nem pasta de cofre, nem chave mestra, nem arquivo de segredo
 // (foi o que uma versão anterior fez, e o agente conseguia decifrar). Roda numa pasta temporária.
 //
@@ -54,7 +54,7 @@ console.log('\nOs nomes vêm do arquivo');
   fs.writeFileSync(NOMES, '# comentário\nOPENAI_API_KEY=\nGEMINI_API_KEY=\n\nlinha-estranha\n');
   const e = cofre.estado();
   ok(e.chaves.map((c) => c.envName).join(',') === 'OPENAI_API_KEY,GEMINI_API_KEY', 'estado().chaves traz os nomes do arquivo, na ordem');
-  ok(e.chaves.every((c) => c.ultimos4 === '' && c.cadastradaPor === 'DG Claw Web' && c.revogadaEm === null), 'ultimos4 vazio, cadastradaPor "DG Claw Web", ativas');
+  ok(e.chaves.every((c) => c.ultimos4 === '' && c.cadastradaPor === 'DG Claw Web' && c.revogadaEm === null), 'ultimos4 vazio, cadastradaPor "Prumo da Locadora Web", ativas');
   ok(e.guarda.motor === 'host' && /fora da pasta do agente/.test(e.guarda.motorExplicacao), 'guarda.motor é host, com a explicação');
   ok(e.aplicar.pode === false && e.aplicar.motivo && e.aplicar.howToFix, 'aplicar.pode é falso e diz por quê');
   ok(cofre.tem('openai_api_key') === true && cofre.tem('XAI_API_KEY') === false && cofre.tem('../x') === false, 'tem() usa os nomes (normaliza a caixa, recusa nome ruim)');

@@ -394,7 +394,7 @@
       if (estado && estado.vnc === false) {
         mostrarResultado(`<div class="app-erro"><strong>A tela ainda não ligou.</strong>
           <p>A senha foi gravada, mas o programa que mostra a tela não respondeu em 20 segundos. Atualize a página e clique em
-          "Abrir a tela". Se continuar assim, peça ao Admin para rodar "dgclaw agente tela" com o nome deste agente.</p></div>`);
+          "Abrir a tela". Se continuar assim, peça ao Admin para rodar "prumo agente tela" com o nome deste agente.</p></div>`);
         return;
       }
       abrirTela();

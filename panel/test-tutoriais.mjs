@@ -84,7 +84,7 @@ console.log('\nA fusão de Operações e Pulso (01/10/2026)');
 ok(!html.includes('data-tab="pulso"'), 'a aba Pulso não existe mais no menu');
 ok(!html.includes('data-ir-para="pulso"'), 'nenhum link leva para a aba Pulso');
 ok(!html.includes('id="panel-pulso"'), 'nem o painel dela');
-ok(!html.includes('ext-off-note'), 'nenhum bilhete "isso só aparece com o DG Alive" na tela');
+ok(!html.includes('ext-off-note'), 'nenhum bilhete "isso só aparece com a extensão de emoções" na tela');
 ok(html.includes('data-tab="como"') && html.includes('id="panel-como"'), 'a aba Como funciona existe');
 
 console.log('\nAs abas que desenham o próprio tutorial');

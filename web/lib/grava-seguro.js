@@ -1,5 +1,5 @@
 'use strict';
-// Escrita de arquivo de segredo pelo DG Claw Web, que roda como root no host.
+// Escrita de arquivo de segredo pelo Prumo da Locadora Web, que roda como root no host.
 //
 // Quem escreve como root numa pasta que outra pessoa alcança corre um risco
 // conhecido: trocar uma pasta (ou o próprio arquivo) por um atalho e fazer o root

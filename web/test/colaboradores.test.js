@@ -300,7 +300,7 @@ test('login: usuário inexistente e senha errada dão a mesma mensagem; temporá
     s.relogio.t += 8 * DIA;
     const vencida = await c.post('/login', { json: { usuario: 'maria@x.com', senha: temp } });
     assert.equal(vencida.status, 401);
-    assert.equal(vencida.json.erro, 'A senha temporária venceu. Peça ao dono do DG Claw um convite novo.');
+    assert.equal(vencida.json.erro, 'A senha temporária venceu. Peça ao dono do Prumo da Locadora um convite novo.');
     assert.equal((await s.dono.get('/api/v1/colaboradores')).json.colaboradores[0].estado, 'temporaria_vencida');
     // o dono manda de novo e a pessoa entra
     const id = (await s.dono.get('/api/v1/colaboradores')).json.colaboradores[0].id;

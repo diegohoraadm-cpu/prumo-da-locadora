@@ -639,7 +639,7 @@
       // Colaborador: o Web recusa o cofre inteiro. Não é falha, é a regra; a frase vem pronta do servidor.
       const alvo = document.getElementById('cofre-corpo');
       const c = r.corpo || {};
-      if (alvo) alvo.innerHTML = `<div class="app-erro"><strong>${esc(c.error || 'O cofre é só do dono do DG Claw.')}</strong>${c.howToFix ? `<p>${esc(c.howToFix)}</p>` : ''}</div>`;
+      if (alvo) alvo.innerHTML = `<div class="app-erro"><strong>${esc(c.error || 'O cofre é só do dono do Prumo da Locadora.')}</strong>${c.howToFix ? `<p>${esc(c.howToFix)}</p>` : ''}</div>`;
       return;
     }
     if (!r.ok) {

@@ -5271,7 +5271,7 @@ window.addEventListener('resize', posicionaAlertas);
       }
       if (Date.now() - ini > 150000) {
         emCurso = false;
-        return falha('passaram 150 s e o agente não voltou a responder. Peça ao Admin para conferir o serviço dele (dgclaw status).');
+        return falha('passaram 150 s e o agente não voltou a responder. Peça ao Admin para conferir o serviço dele (prumo status).');
       }
       tempo = setTimeout(volta, 2000);
     };

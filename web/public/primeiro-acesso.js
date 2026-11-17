@@ -12,11 +12,11 @@
 
   fetch('/api/login-estado', { cache: 'no-store' }).then((r) => r.json()).then((j) => {
     if (j && j.usuario) document.getElementById('quem').textContent = 'Usuário: ' + j.usuario;
-    if (j && j.sem_senha === false) mostra('Este painel já tem senha. Se o link foi usado, entre pelo login normal. Se não foi você, rode no servidor: sudo dgclaw senha');
+    if (j && j.sem_senha === false) mostra('Este painel já tem senha. Se o link foi usado, entre pelo login normal. Se não foi você, rode no servidor: sudo prumo senha');
   }).catch(() => { /* a tela continua valendo sem o nome do usuário */ });
 
   if (!token) {
-    mostra('Faltou o link completo. Abra o endereço inteiro que apareceu no fim da instalação (ele termina com # e uma sequência de letras e números). Se perdeu, rode no servidor: sudo dgclaw primeiro-acesso');
+    mostra('Faltou o link completo. Abra o endereço inteiro que apareceu no fim da instalação (ele termina com # e uma sequência de letras e números). Se perdeu, rode no servidor: sudo prumo primeiro-acesso');
     form.querySelectorAll('input,button').forEach((e) => { e.disabled = true; });
     return;
   }

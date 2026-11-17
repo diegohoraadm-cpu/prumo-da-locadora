@@ -2,7 +2,7 @@
 // um agente que existem os agentes das outras pessoas.
 //
 // O seletor de agente nasceu num mundo de UMA maquina por dono: varrer o disco e listar
-// todo DG Claw achado era exatamente o certo. Com a plataforma isso virou vazamento: a
+// todo Prumo da Locadora achado era exatamente o certo. Com a plataforma isso virou vazamento: a
 // Ana fica em /opt/agentes/ana numa VPS onde tambem ficam o Bento e outros agentes,
 // e a rota /api/agents dela, servida pela fachada autenticada, devolvia nome, slug e ate
 // link dos outros. Medido antes da correcao: ["bento"].
@@ -42,7 +42,7 @@ process.env.DGCLAW_ROOTS = raiz;
 const { listar } = require('./lib/agents');
 
 // ── 1. Sem fachada: o comportamento de sempre, byte a byte ──────────────────
-// Um DG Claw instalado sozinho na maquina de quem o comprou continua listando os agentes
+// Um Prumo da Locadora instalado sozinho na maquina de quem o comprou continua listando os agentes
 // dela. A correcao nao pode ter tirado isso: e o modo normal, e e util.
 const semFachada = listar('agente-da-dona', 'exemplo.local').map((a) => a.slug);
 if (semFachada.includes('agente-da-dona') && semFachada.includes('agente-de-outra-pessoa')) {

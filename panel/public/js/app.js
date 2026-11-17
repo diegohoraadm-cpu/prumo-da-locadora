@@ -1360,7 +1360,7 @@ async function loadStatus() {
     semErro(API.costsOverview()),
     semErro(API.session()),
     semErro(API.rotinasUsuario()),
-    // Emoções só existem com a extensão DG Alive: sem ela nem pergunto.
+    // Emoções só existem com a extensão de emoções: sem ela nem pergunto.
     aliveOn() ? semErro(API.emotions()) : Promise.resolve(null),
     semErro(API.thoughts()),
   ]);
@@ -1394,7 +1394,7 @@ function destaque(id, num, pe, classeNum, classePe) {
 }
 
 function renderDestaqueHumor(data) {
-  // Sem o DG Alive o cartão de humor some inteiro (data-ext="alive"), e nada é escrito
+  // Sem a extensão de emoções o cartão de humor some inteiro (data-ext="alive"), e nada é escrito
   // nele: um "sem emoções" escondido viraria anúncio do que o dono não tem no dia em
   // que alguém mexer no CSS (05/10/2026: "parece que o agente é um Goku").
   if (!aliveOn()) return;
@@ -1534,7 +1534,7 @@ setInterval(() => {
 function renderEmotions(data) {
   const { emotions, mood, needs, recentEvents, lastUpdate, fileModified } = data;
 
-  // Sem a extensão DG Alive não existe humor pra mostrar: o retrato fica parado, o
+  // Sem a extensão de emoções não existe humor pra mostrar: o retrato fica parado, o
   // selo diz que a área está desligada e o resto do painel segue normal.
   if (!aliveOn()) {
     pintaRetratoProprio(APP_CONFIG.avatar || BASE + '/assets/sprites/default.gif');
@@ -2379,10 +2379,10 @@ async function initConfig() {
 
   // O RETRATO GRANDE, o que a pessoa realmente olha. Ele nasce no index.html com
   // `default.gif` e so trocava dentro de renderEmotions, que nao roda em agente
-  // sem DG Alive. Resultado: o avatar configurado ficava invisivel justamente em
+  // sem a extensão de emoções. Resultado: o avatar configurado ficava invisivel justamente em
   // quem nao tem emocao, e o dono via um bonequinho generico no lugar da cara do
   // proprio agente. (O mini avatar do cabecalho acertava por acaso: o HTML ja
-  // nasce apontando para avatar.jpg.) Com DG Alive instalado nada muda aqui, o
+  // nasce apontando para avatar.jpg.) Com a extensão de emoções instalado nada muda aqui, o
   // sprite de humor assume depois, como sempre.
   if (!aliveOn() && APP_CONFIG.avatar) pintaRetratoProprio(APP_CONFIG.avatar);
 }
@@ -2391,7 +2391,7 @@ async function initConfig() {
  * Acende ou apaga os blocos que dependem de extensão.
  *
  * MUDOU EM 01/10/2026: sem a extensão, o bloco SOME inteiro. Antes ele
- * aparecia apagado com um bilhete "isso aqui só aparece com o DG Alive", e o dono de
+ * aparecia apagado com um bilhete "isso aqui só aparece com a extensão de emoções", e o dono de
  * um Prumo da Locadora puro via a tela cheia de anúncio de uma coisa que ele não tem e não
  * pediu. Com a extensão instalada, tudo volta a aparecer, no mesmo lugar. Quem
  * esconde é o CSS (`[data-ext].ext-off`), e os layouts em volta (faixa, mosaico) são
@@ -2469,7 +2469,7 @@ function falhaNoBoot(e) {
   aviso.setAttribute('role', 'alert');
   const titulo = document.createElement('b');
   titulo.textContent = 'Não consegui abrir esta página do painel.';
-  aviso.append(titulo, `O que aconteceu: ${motivo}. O que fazer: recarregue a página. Se o aviso voltar, peça ao Admin do seu DG Claw para conferir se o painel deste agente está de pé.`);
+  aviso.append(titulo, `O que aconteceu: ${motivo}. O que fazer: recarregue a página. Se o aviso voltar, peça ao Admin do seu Prumo da Locadora para conferir se o painel deste agente está de pé.`);
   const lugar = document.querySelector('main.content') || document.body;
   lugar.insertBefore(aviso, lugar.firstChild);
 }

@@ -1,5 +1,5 @@
 'use strict';
-// Primeiro acesso por link de uso único: o instalador (ou `dgclaw primeiro-acesso`) grava o sha256 de um token
+// Primeiro acesso por link de uso único: o instalador (ou `prumo primeiro-acesso`) grava o sha256 de um token
 // em primeiro-acesso.json; a pessoa abre /primeiro-acesso#<token>, cadastra a senha no navegador e já entra logada.
 // O token nunca vai para o disco nem para o log. O arquivo tem {versao, usuario, token_sha256, criado, expira, usado_em}
 // (epoch ms) e é gerado por gerar_primeiro_acesso em lib/comum.sh.
@@ -85,19 +85,19 @@ function criarPrimeiroAcesso({ config, auth, log, agora }) {
         dado = lerArquivo();
       } catch (e) {
         if (e.code === 'ENOENT') {
-          if (!auth.semSenha && !auth.trancado) return erro(410, 'Este link já foi usado. Se não foi você, rode no servidor: sudo dgclaw senha');
-          return erro(404, 'Este link não vale mais. Gere outro com: sudo dgclaw primeiro-acesso');
+          if (!auth.semSenha && !auth.trancado) return erro(410, 'Este link já foi usado. Se não foi você, rode no servidor: sudo prumo senha');
+          return erro(404, 'Este link não vale mais. Gere outro com: sudo prumo primeiro-acesso');
         }
-        log('erro', `Primeiro acesso: não consegui ler ${arquivo} (${e.code || e.message}). Confira se o JSON está inteiro; gere outro com sudo dgclaw primeiro-acesso.`);
-        return erro(500, `Não consegui ler o arquivo do link de primeiro acesso (${e.code || e.message}). No servidor, rode: sudo dgclaw primeiro-acesso`);
+        log('erro', `Primeiro acesso: não consegui ler ${arquivo} (${e.code || e.message}). Confira se o JSON está inteiro; gere outro com sudo prumo primeiro-acesso.`);
+        return erro(500, `Não consegui ler o arquivo do link de primeiro acesso (${e.code || e.message}). No servidor, rode: sudo prumo primeiro-acesso`);
       }
       const esperado = Buffer.from(String(dado && dado.token_sha256 || ''), 'hex');
       if (esperado.length !== 32 || !crypto.timingSafeEqual(sha256buf(token), esperado)) {
         log('aviso', `Primeiro acesso: token que não confere (ip ${ip}).`);
-        return erro(403, 'Este link não vale (ou foi copiado pela metade, ou já foi trocado por um mais novo). Gere outro com: sudo dgclaw primeiro-acesso');
+        return erro(403, 'Este link não vale (ou foi copiado pela metade, ou já foi trocado por um mais novo). Gere outro com: sudo prumo primeiro-acesso');
       }
-      if (dado.usado_em != null) return erro(410, 'Este link já foi usado. Se não foi você, rode no servidor: sudo dgclaw senha');
-      if (!(Number(dado.expira) > relogio())) return erro(410, 'Este link expirou. Gere outro com: sudo dgclaw primeiro-acesso');
+      if (dado.usado_em != null) return erro(410, 'Este link já foi usado. Se não foi você, rode no servidor: sudo prumo senha');
+      if (!(Number(dado.expira) > relogio())) return erro(410, 'Este link expirou. Gere outro com: sudo prumo primeiro-acesso');
 
       if (typeof senha !== 'string') return erro(400, 'Digite a senha.');
       if (senha !== confirmacao) return erro(400, 'As senhas não conferem.');
@@ -115,27 +115,27 @@ function criarPrimeiroAcesso({ config, auth, log, agora }) {
 
       // depois do await: confere de novo, em sequência síncrona, que ninguém usou o token no meio
       let atual;
-      try { atual = lerArquivo(); } catch (e) { return erro(410, 'Este link já foi usado. Se não foi você, rode no servidor: sudo dgclaw senha'); }
+      try { atual = lerArquivo(); } catch (e) { return erro(410, 'Este link já foi usado. Se não foi você, rode no servidor: sudo prumo senha'); }
       if (atual.token_sha256 !== dado.token_sha256 || atual.usado_em != null) {
-        return erro(410, 'Este link já foi usado. Se não foi você, rode no servidor: sudo dgclaw senha');
+        return erro(410, 'Este link já foi usado. Se não foi você, rode no servidor: sudo prumo senha');
       }
       const usuario = String(atual.usuario || auth.usuario || '').trim();
       try {
         gravaAtomico(arquivo, JSON.stringify(Object.assign({}, atual, { usado_em: relogio() })) + '\n');
       } catch (e) {
         log('erro', `Primeiro acesso: não consegui marcar o link como usado em ${arquivo} (${e.code || e.message}).`);
-        return erro(500, `Não consegui gravar o uso do link (${e.code || e.message}). No servidor, rode: sudo dgclaw primeiro-acesso`);
+        return erro(500, `Não consegui gravar o uso do link (${e.code || e.message}). No servidor, rode: sudo prumo primeiro-acesso`);
       }
       try {
         gravaHashNoEnv(hash);
       } catch (e) {
         log('erro', `Primeiro acesso: não consegui gravar a senha em ${webEnv} (${e.code || e.message}). O link já foi marcado como usado.`);
-        return erro(500, `Não consegui gravar a senha no servidor (${e.code || e.message}). O link já foi usado: rode no servidor sudo dgclaw primeiro-acesso e tente de novo.`);
+        return erro(500, `Não consegui gravar a senha no servidor (${e.code || e.message}). O link já foi usado: rode no servidor sudo prumo primeiro-acesso e tente de novo.`);
       }
       const r = auth.definirHash(hash);
       if (!r.ok) {
         log('erro', `Primeiro acesso: o hash gerado não foi aceito (${r.erro}).`);
-        return erro(500, `O servidor não aceitou o hash gerado (${r.erro}). Rode: sudo dgclaw primeiro-acesso`);
+        return erro(500, `O servidor não aceitou o hash gerado (${r.erro}). Rode: sudo prumo primeiro-acesso`);
       }
       const s = auth.criaSessao(usuario, req);
       log('info', `Primeiro acesso concluído: senha cadastrada para ${usuario} (ip ${ip}).`);

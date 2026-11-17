@@ -14,8 +14,8 @@ const H = require('./http');
 const C = require('./boletim-contrato');
 
 const BASE = '/api/v1/seguranca';
-const COMO_REFAZER = 'Rode "sudo dgclaw seguranca rodar" no servidor para refazê-lo.';
-const COMO_REFAZER_EMERGENCIA = 'Rode "sudo dgclaw emergencia estado" no servidor para refazê-lo.';
+const COMO_REFAZER = 'Rode "sudo prumo seguranca rodar" no servidor para refazê-lo.';
+const COMO_REFAZER_EMERGENCIA = 'Rode "sudo prumo emergencia estado" no servidor para refazê-lo.';
 const MAX_ARQUIVO = 4 * 1024 * 1024;
 const MAX_PENDENTES = 20;
 const FRASE_CORTAR = 'TIRAR-DO-AR';
@@ -314,7 +314,7 @@ function criarRondaPainel(opcoes) {
     if (!norm) { H.erroJson(res, 400, `O id do achado não tem o formato esperado (letras, números, ponto, hífen e sublinhado). Use um id de GET ${BASE}/ronda.`); return null; }
     id = norm;
     const l = lerRonda();
-    if (l.ausente) { H.erroJson(res, 404, `A ronda ainda não rodou, então não há achado ${id}. Rode "sudo dgclaw seguranca rodar" no servidor.`); return null; }
+    if (l.ausente) { H.erroJson(res, 404, `A ronda ainda não rodou, então não há achado ${id}. Rode "sudo prumo seguranca rodar" no servidor.`); return null; }
     if (l.erro) { falha(res, l); return null; }
     const a = [...l.ronda.niveis[1], ...l.ronda.niveis[2], ...l.ronda.niveis[3]].find((x) => x.id === id);
     if (!a) { H.erroJson(res, 404, `Não há achado com o id ${id} na última ronda. Ele pode já ter sido resolvido. Atualize a tela.`); return null; }
@@ -420,7 +420,7 @@ function criarRondaPainel(opcoes) {
     if (l.ausente) {
       return H.enviaJson(res, 200, {
         ok: true, desconhecido: true, disponivel: false,
-        motivo: 'O servidor ainda não mediu se o botão de emergência pode ser usado. Rode "sudo dgclaw emergencia estado" no servidor.',
+        motivo: 'O servidor ainda não mediu se o botão de emergência pode ser usado. Rode "sudo prumo emergencia estado" no servidor.',
       });
     }
     if (l.erro) return falha(res, l);
@@ -462,7 +462,7 @@ function criarRondaPainel(opcoes) {
       res.end(t);
     } catch (e) {
       log('erro', `Ronda: não consegui ler docs/RONDA-PAINEL.md (${e.code || e.message}).`);
-      H.erroJson(res, 500, 'O documento da ronda de segurança não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
+      H.erroJson(res, 500, 'O documento da ronda de segurança não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo prumo atualizar).');
     }
   }
 

@@ -47,7 +47,7 @@ function criarRotasAnonimizar({ anon, registro, midia, log, origemOk, arquivoDoc
     }
     const m = req.method;
     if (ESCREVE.has(m) && !origemOk(req)) {
-      H.erroJson(res, 403, 'Pedido recusado: a origem não é a deste site. Abra o DG Claw pelo endereço normal e tente de novo.');
+      H.erroJson(res, 403, 'Pedido recusado: a origem não é a deste site. Abra o Prumo da Locadora pelo endereço normal e tente de novo.');
       return true;
     }
     const sub = p.slice(BASE.length);
@@ -115,7 +115,7 @@ function criarRotasAnonimizar({ anon, registro, midia, log, origemOk, arquivoDoc
           if (m !== 'GET') return metodoErrado('GET');
           if (!leituraDoSite(req, true)) {
             log('aviso', `Anonimizar: leitura da tabela de ${slug} recusada (pedido sem Origin do próprio site).`);
-            H.erroJson(res, 403, 'Pedido recusado: a tabela só abre pela tela do DG Claw, neste mesmo site. Abra a tela Anonimizar e use "Ver tabela".');
+            H.erroJson(res, 403, 'Pedido recusado: a tabela só abre pela tela do Prumo da Locadora, neste mesmo site. Abra a tela Anonimizar e use "Ver tabela".');
             return true;
           }
           const entradas = anon.tabela(slug);
@@ -131,7 +131,7 @@ function criarRotasAnonimizar({ anon, registro, midia, log, origemOk, arquivoDoc
         }
         if (acao === 'final' && extra) {
           if (m !== 'GET') return metodoErrado('GET');
-          if (!leituraDoSite(req, false)) { H.erroJson(res, 403, 'Pedido recusado: a versão final só baixa pela tela do DG Claw, neste mesmo site.'); return true; }
+          if (!leituraDoSite(req, false)) { H.erroJson(res, 403, 'Pedido recusado: a versão final só baixa pela tela do Prumo da Locadora, neste mesmo site.'); return true; }
           if (!RX_MEDIA.test(extra)) { H.erroJson(res, 400, 'O id do arquivo não vale. Use o botão "Baixar versão final" ao lado do anexo.'); return true; }
           const r = await anon.gerarFinal(agente, midia.obter(extra));
           const ativo = ['.html', '.htm'].includes(r.ext);
@@ -166,7 +166,7 @@ function criarRotasAnonimizar({ anon, registro, midia, log, origemOk, arquivoDoc
     let texto;
     try { texto = fs.readFileSync(docsPath, 'utf8'); } catch (e) {
       log('erro', `Anonimizar: não li ${docsPath} (${e.code || e.message}).`);
-      H.erroJson(res, 500, 'A documentação não está instalada neste servidor. Reinstale o DG Claw Web.');
+      H.erroJson(res, 500, 'A documentação não está instalada neste servidor. Reinstale o Prumo da Locadora Web.');
       return;
     }
     res.writeHead(200, { 'Content-Type': 'text/markdown; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });

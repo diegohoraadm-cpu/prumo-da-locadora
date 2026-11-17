@@ -311,7 +311,7 @@ test('nao troca dentro de identificador nem de caminho (XDG Claw, /opt/dgclaw, $
   assert.equal(r.ocorrencias.length, 0);
 });
 
-test('logica: literal a esquerda da comparacao, chave de objeto, .get/.has e lista nao trocam', () => {
+test('logica: literal a esquerda da comparacao, chave de objeto e .get/.has nao trocam (lista de nomes nao e detectada: fica por excecao logica:, como sigilo.js)', () => {
   const src = [
     "if ('DG Claw' === nome) a();",
     "const o = { 'DG Claw': 1 };",
@@ -383,4 +383,15 @@ test('par teste x origem desencontrado e acusado (dgclaw-sentinela.test.sh x bin
 test('fica_em tambem protege os testes do diagnostico (web/test/diagnostico*) para produto e teste ficarem juntos', () => {
   const r = aplica('web/test/diagnostico-runner-prazo.test.js', "const bom = ['`dgclaw status`']; const t = 'Rode sudo dgclaw status no DG Claw';\n");
   assert.equal(r.novo, "const bom = ['`dgclaw status`']; const t = 'Rode sudo dgclaw status no Prumo da Locadora';\n");
+});
+
+test('comando com variavel (dgclaw ${...} e dgclaw $x): manual em texto ao dono, deixado em codigo', () => {
+  const r = aplica('lib/x.sh', '#!/usr/bin/env bash\nfalha "rode com sudo: sudo dgclaw ${args[*]}"\ndgclaw $sub\n');
+  assert.deepEqual(estados(r), ['manual:comando-com-variavel', 'deixado:comando-em-codigo']);
+  assert.equal(r.novo.includes('sudo dgclaw ${args[*]}'), true);
+});
+
+test('DG Alive com artigo maiusculo e sem artigo concorda (O, Sem o, Com, sem, camada)', () => {
+  const r = aplica('docs/d.md', 'O DG Alive escuta. Sem o DG Alive nada. Com DG Alive sim. Roda sem DG Alive. A camada DG Alive antiga.\n');
+  assert.equal(r.novo, 'A extensão de emoções escuta. Sem a extensão de emoções nada. Com a extensão de emoções sim. Roda sem a extensão de emoções. A camada da extensão de emoções antiga.\n');
 });

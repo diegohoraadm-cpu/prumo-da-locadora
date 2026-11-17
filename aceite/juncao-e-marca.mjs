@@ -571,8 +571,8 @@ async function blocoF4() {
   criterio(sudo.length === 0, `F4.4 "sudo dgclaw " em manual, EMERGENCIA, README, INSTALL, templates e skills (fora de comando.fica_em): ${sudo.length} (esperado 0)`, sudo);
   if (!LOTE || LOTE === 'M4') {
     const r = M.rodar({ raiz: REPO, pastas: ['bin', 'lib', 'install.sh'], dry: true, regras, excs });
-    const falta = r.flatMap((a) => a.ocorrencias.filter((o) => o.regra === 'comando' && o.estado === 'troca').map((o) => `${a.rel}:${o.linha}`));
-    criterio(falta.length === 0, `F4.4 comando ao dono ainda "dgclaw" em string de bin, lib e install.sh: ${falta.length} (esperado 0)`, falta);
+    const falta = r.flatMap((a) => a.ocorrencias.filter((o) => o.regra === 'comando' && (o.estado === 'troca' || o.motivo === 'comando-com-variavel')).map((o) => `${a.rel}:${o.linha}${o.motivo ? ` (${o.motivo})` : ''}`));
+    criterio(falta.length === 0, `F4.4 comando ao dono ainda "dgclaw" em string de bin, lib e install.sh, inclusive "dgclaw \${...}" e "dgclaw $x": ${falta.length} (esperado 0)`, falta);
   }
   if (!LOTE || LOTE === 'M3') {
     const fixos = ['templates/ambiente/admin.md', 'skills/criar-agente/SKILL.md'].filter((f) => !(ler(f) || '').includes('dgclaw colaborador criar'));

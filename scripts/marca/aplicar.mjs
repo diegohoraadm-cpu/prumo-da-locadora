@@ -346,6 +346,10 @@ export function analisar(rel, src, ctx) {
   const rxCmd = new RegExp(`(?<![\\w/.\\-=$])${esc(cmd.de)}(?= (?:${subs})(?![\\w-])| --[a-z]| \\.\\.\\.| <[a-z])`, 'g');
   const ficaEm = (cmd.fica_em || []).some((p) => rel === p || (p.endsWith('*') ? rel.startsWith(p.slice(0, -1)) : rel.startsWith(p.endsWith('/') ? p : `${p}/`)));
   if (!ficaEm) for (const m of src.matchAll(rxCmd)) cands.push({ pos: m.index, len: m[0].length, regra: 'comando', de: m[0], para: cmd.para });
+  // `dgclaw ${...}` e `dgclaw $var`: o subcomando so se sabe em tempo de execucao. Em texto ao dono e manual (o lote decide);
+  // em codigo e invocacao (deixado). Pedido do QA-M0-rodada-2 (bin/dgclaw:2927, lib/uso-atualizacao.sh:251).
+  const rxVar = new RegExp(`(?<![\\w/.\\-=$])${esc(cmd.de)}(?= \\$)`, 'g');
+  if (!ficaEm) for (const m of src.matchAll(rxVar)) cands.push({ pos: m.index, len: m[0].length, regra: 'comando', de: m[0], para: cmd.para, manual: 'comando-com-variavel' });
 
   const ligadas = new Set(regras.barra.ligadas);
   for (const m of src.matchAll(new RegExp(`(?<![\\w.-])${esc(regras.barra.prefixo)}([a-z][a-z0-9-]*|\\*)?`, 'g'))) {

@@ -15,6 +15,11 @@
     { "de": "sem o DG Alive", "para": "sem a extensão de emoções" },
     { "de": "do DG Alive", "para": "da extensão de emoções" },
     { "de": "o DG Alive", "para": "a extensão de emoções" },
+    { "de": "O DG Alive", "para": "A extensão de emoções" },
+    { "de": "Sem o DG Alive", "para": "Sem a extensão de emoções" },
+    { "de": "Com DG Alive", "para": "Com a extensão de emoções" },
+    { "de": "sem DG Alive", "para": "sem a extensão de emoções" },
+    { "de": "camada DG Alive", "para": "camada da extensão de emoções" },
     { "de": "DG Alive", "para": "extensão de emoções" },
     { "de": "DG Telegram", "para": null, "vigiar": true }
   ],

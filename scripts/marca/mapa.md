@@ -8,18 +8,18 @@ Gerado sem escrever nada. Ocorrencia = um achado da regra; "troca" so acontece e
 | --- | ---: | ---: | ---: | ---: | ---: |
 | M1 | 73 | 199 | 75 | 22 | 1 |
 | M3 | 39 | 114 | 8 | 49 | 0 |
-| M4 | 160 | 841 | 86 | 81 | 867 |
+| M4 | 160 | 841 | 86 | 84 | 871 |
 | M5 | 91 | 667 | 165 | 21 | 11 |
-| sem-lote | 0 | 0 | 37 | 0 | 0 |
-| **total** | 363 | 1821 | 371 | 173 | 879 |
+| sem-lote | 0 | 0 | 40 | 0 | 0 |
+| **total** | 363 | 1821 | 374 | 176 | 883 |
 
 Por regra (todos os lotes):
 
 | Regra | Trocaria | Excecao | Manual |
 | --- | ---: | ---: | ---: |
 | barra | 17 | 8 | 68 |
-| comando | 1073 | 175 | 45 |
-| frase | 731 | 95 | 55 |
+| comando | 1073 | 176 | 48 |
+| frase | 731 | 97 | 55 |
 | sem-regra | 0 | 93 | 5 |
 
 Manual, por motivo:
@@ -29,6 +29,7 @@ Manual, por motivo:
 | barra-generica | 4 |
 | barra-inexistente | 15 |
 | barra-nao-ligada | 41 |
+| comando-com-variavel | 3 |
 | comando-no-inicio-de-string | 4 |
 | comparacao-de-logica | 2 |
 | fora-de-contexto | 42 |
@@ -41,7 +42,7 @@ Arquivos sem lote no plano (o Teia atribui a um lote):
 | Arquivo | Trocaria | Excecao | Manual |
 | --- | ---: | ---: | ---: |
 | NOTICE.md | 0 | 1 | 0 |
-| aceite/juncao-e-marca.mjs | 0 | 20 | 0 |
+| aceite/juncao-e-marca.mjs | 0 | 23 | 0 |
 | aceite/juncao-excecoes.json | 0 | 16 | 0 |
 
 ## 2. Ocorrencias de `/dgclaw:` (decisao de cada uma)
@@ -51,10 +52,10 @@ Regra do plano: skill ligada vira `/x`; skill que existe mas nao e ligada, reesc
 | Arquivo | Ocorrencia | Lote | Decisao |
 | --- | --- | --- | --- |
 | CHANGELOG.md | `/dgclaw:setup` (linha 1175) | M5 | fica por excecao |
-| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 180) | sem-lote | fica por excecao |
-| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 477) | sem-lote | fica por excecao |
-| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 587) | sem-lote | fica por excecao |
-| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 596) | sem-lote | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 181) | sem-lote | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 478) | sem-lote | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 588) | sem-lote | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 597) | sem-lote | fica por excecao |
 | docs/MEMORIA-SEMANTICA.md | `/dgclaw:setup` (linha 27) | M5 | sair (a skill nao existe) |
 | docs/MEMORIA-SEMANTICA.md | `/dgclaw:doctor` (linha 69) | M5 | reescrever a mao (skill existe, nao e ligada ao agente) |
 | docs/MESA-DE-TAREFAS.md | `/dgclaw:mesa` (linha 29) | M5 | reescrever a mao (skill existe, nao e ligada ao agente) |
@@ -152,7 +153,7 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 
 | Arquivo | Linhas | Trocaria | Manual |
 | --- | ---: | ---: | ---: |
-| aceite/juncao-e-marca.mjs | 17 | 0 | 0 |
+| aceite/juncao-e-marca.mjs | 19 | 0 | 0 |
 | aceite/juncao-excecoes.json | 15 | 0 | 0 |
 | bin/test/dgclaw-agente.test.sh | 1 | 0 | 1 |
 | bin/test/dgclaw-mesa.test.sh | 1 | 0 | 1 |
@@ -194,8 +195,8 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 | tests/cli/restricoes-consulta.sh | 21 | 0 | 0 |
 | tests/cli/restricoes-conta.sh | 24 | 0 | 0 |
 | tests/cli/restricoes-ligar.sh | 20 | 0 | 0 |
-| tests/cli/restricoes-suporte.sh | 57 | 0 | 0 |
-| tests/cli/restricoes.sh | 110 | 1 | 0 |
+| tests/cli/restricoes-suporte.sh | 58 | 0 | 0 |
+| tests/cli/restricoes.sh | 111 | 1 | 0 |
 | tests/cli/stubs/curl | 1 | 1 | 0 |
 | tests/cli/stubs/ss | 1 | 1 | 0 |
 | tests/cli/stubs/ssh | 1 | 1 | 0 |
@@ -211,12 +212,12 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 | tests/instalador/aviso-atualizacao.sh | 2 | 0 | 0 |
 | tests/instalador/casos.sh | 4 | 0 | 3 |
 | tests/instalador/ffmpeg.sh | 1 | 1 | 0 |
-| tests/instalador/fim.sh | 18 | 1 | 6 |
+| tests/instalador/fim.sh | 19 | 1 | 6 |
 | tests/instalador/proxy.sh | 1 | 0 | 1 |
 | tests/instalador/ronda-seguranca.sh | 1 | 0 | 0 |
 | tests/instrucoes/rodar.sh | 5 | 0 | 7 |
 | tests/rodar.sh | 3 | 3 | 0 |
-| tests/ronda/test_ronda.py | 10 | 7 | 3 |
+| tests/ronda/test_ronda.py | 12 | 7 | 5 |
 | tests/tela/rodar.sh | 1 | 0 | 0 |
 | web/test/auth.test.js | 1 | 0 | 1 |
 | web/test/casca.test.js | 1 | 0 | 0 |
@@ -232,7 +233,7 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 | web/test/ronda-tela.test.js | 2 | 0 | 2 |
 | web/test/socket-admin.test.js | 1 | 1 | 0 |
 
-Total: 1017 linhas em 79 arquivos de teste.
+Total: 1024 linhas em 79 arquivos de teste.
 
 ## 4. O que ficou manual, por lote (nao trocado; inclui as barras)
 
@@ -317,11 +318,12 @@ Total: 1017 linhas em 79 arquivos de teste.
 | tests/instrucoes/rodar.sh | fora-de-contexto | 64 | `/dgclaw:nome` |
 | tests/instrucoes/rodar.sh | fora-de-contexto | 76 | `/dgclaw:mesa` |
 
-### M4 (81)
+### M4 (84)
 
 | Arquivo | Motivo | Linha | Trecho |
 | --- | --- | ---: | --- |
 | .trivyignore.yaml | tipo-nao-coberto | 6 | `DG Claw` |
+| bin/dgclaw | comando-com-variavel | 2927 | `dgclaw` |
 | bin/dgclaw-api | sudo-fora-de-zona | 89 | `dgclaw` |
 | bin/test/dgclaw-agente.test.sh | fora-de-contexto | 130 | `DG Claw` |
 | bin/test/dgclaw-mesa.test.sh | sudo-fora-de-zona | 207 | `dgclaw` |
@@ -399,7 +401,9 @@ Total: 1017 linhas em 79 arquivos de teste.
 | tests/instalador/fim.sh | sudo-fora-de-zona | 140 | `dgclaw` |
 | tests/instalador/fim.sh | sudo-fora-de-zona | 148 | `dgclaw` |
 | tests/instalador/proxy.sh | sudo-fora-de-zona | 73 | `dgclaw` |
+| tests/ronda/test_ronda.py | comando-com-variavel | 1133 | `dgclaw` |
 | tests/ronda/test_ronda.py | comando-no-inicio-de-string | 1137 | `dgclaw` |
+| tests/ronda/test_ronda.py | comando-com-variavel | 1152 | `dgclaw` |
 | tests/ronda/test_ronda.py | comando-no-inicio-de-string | 1158 | `dgclaw` |
 | tests/ronda/test_ronda.py | comando-no-inicio-de-string | 2170 | `dgclaw` |
 
@@ -456,14 +460,14 @@ Total: 1017 linhas em 79 arquivos de teste.
 | tests/cli/personalizacoes.sh | lib/personalizacoes.sh | comando | 1 / 37 | 16 / 1 |
 | tests/cli/personalizacoes.sh | lib/personalizacoes.sh | frase | 0 / 1 | 1 / 0 |
 | tests/cli/restricoes-conta.sh | runner/src/restricoes-conta.ts | comando | 0 / 24 | 4 / 0 |
-| tests/cli/restricoes.sh | lib/restricoes.sh | comando | 1 / 109 | 35 / 9 |
+| tests/cli/restricoes.sh | lib/restricoes.sh | comando | 1 / 110 | 35 / 9 |
 | tests/cli/suporte.sh | lib/suporte.sh | comando | 4 / 255 | 36 / 0 |
 | tests/cli/tela.sh | panel/lib/tela.js | comando | 0 / 5 | 5 / 0 |
 | tests/cli/tela.sh | panel/public/js/tela.js | comando | 0 / 5 | 1 / 0 |
 | tests/cli/versao.sh | lib/versao.sh | comando | 3 / 12 | 5 / 0 |
 | tests/instalador/aviso-atualizacao.sh | lib/aviso-atualizacao.sh | comando | 0 / 2 | 18 / 0 |
 | tests/instalador/ronda-seguranca.sh | lib/ronda-seguranca.sh | comando | 0 / 1 | 20 / 0 |
-| tests/ronda/test_ronda.py | seguranca/ronda/ronda.py | comando | 7 / 3 | 39 / 0 |
+| tests/ronda/test_ronda.py | seguranca/ronda/ronda.py | comando | 7 / 5 | 39 / 0 |
 | web/test/auth.test.js | web/lib/auth.js | comando | 0 / 1 | 1 / 0 |
 | web/test/colaboradores.test.js | web/lib/colaboradores.js | comando | 0 / 1 | 1 / 0 |
 | web/test/email.test.js | web/lib/email.js | frase | 3 / 1 | 2 / 0 |

@@ -33,8 +33,9 @@ sobrecarga, limite de uso, recusa), o canal está vivo (3.5), a conversa está e
 a sessão travou (3.7), a memória parou (3.9). Para o último turno, o `saude_sessao.py` já diz o
 tipo do problema e o que fazer (manual 2.3).
 
-Quatro queixas têm capítulo próprio no manual. As três primeiras se resolvem pelo terminal do
-servidor, com o "posso?" antes de mudar qualquer coisa; a do Cofre é só olhar o painel:
+Quatro queixas têm capítulo próprio no manual. "Não consigo entrar" e "um agente ficou de fora"
+se resolvem pelo terminal do servidor, com o "posso?" antes de mudar qualquer coisa; o Face ID se
+resolve na tela, e o Cofre é só olhar o painel:
 
 - **"Não consigo entrar no painel"** (manual 3.1.1): quase nunca é a senha. Veja primeiro se foi
   bloqueio por tentativas e se a pessoa usou e-mail em vez do usuário. `sudo prumo usuario` mostra o
@@ -46,22 +47,29 @@ servidor, com o "posso?" antes de mudar qualquer coisa; a do Cofre é só olhar 
   o aviso da 1.0.5 e a lista `perdido-no-recriar-*.txt` do agente, diga ao dono o que o `--forcar`
   perde (só o que foi instalado à mão dentro da caixa; as rotinas padrão voltam ao padrão) e, com o
   sim dele, rode `sudo dgclaw agente recriar <nome do agente> --forcar`.
-- **"Onde fica o Cofre?"** (manual 3.1.3): no painel do agente, abra o menu, grupo **Segurança**,
-  item **Cofre (chaves)**. Só o dono vê esse item.
+- **"Onde fica o Cofre?"** (manual 3.1.3): no menu da conversa (ícone de três traços), grupo
+  **Segurança**, item **Cofre (chaves)**, que só o dono vê; no painel do agente, a aba **Cofre**, que o
+  colaborador vê mas não consegue abrir.
 
-Os comandos `sudo prumo ...` o dono digita no terminal do servidor, o mesmo da instalação (manual
+Os comandos `sudo prumo ...` (entrar no painel) o dono digita no terminal do servidor, o mesmo da instalação (manual
 3.1.1, "Como chegar ao terminal do servidor"): quem não entra no painel não fala com o Admin. Se ele
 não sabe chegar lá, peça o acesso a quem instalou; não invente outro caminho.
 
 Agente sem container (`ausente`): `agente iniciar` não funciona. A receita é uma só, com o sim do dono:
-`sudo dgclaw agente recriar <nome do agente> --forcar` (manual 3.2.1). Para conferir o `--forcar`,
-veja se `/var/lib/dgclaw/agentes/<nome do agente>/home/.dgclaw/unidades-padrao.sha256` passou a existir;
-o `dgclaw status` não prova isso. Se `perdido-no-recriar-*.txt` não existe, não há nada a perder. A
-rotina padrão que o dono desligou volta a rodar.
+`sudo dgclaw agente recriar <nome do agente> --forcar` (manual 3.2.1). Como não existe caixa, não há
+lista nem nada a perder. Para conferir, veja se
+`/var/lib/dgclaw/agentes/<nome do agente>/home/.dgclaw/unidades-padrao.sha256` passou a existir
+(`sudo ls -l` nesse caminho); o `dgclaw status` não prova isso.
+
+No caso do agente de fora da atualização, a lista se lê assim, sempre com o `sh -c` (a pasta é fechada
+para o usuário comum, e o `*` seria expandido antes do `sudo`):
+`sudo sh -c 'ls /var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-*.txt'`. Aparece o nome do
+arquivo: há algo a perder, leia com `sudo sh -c 'cat ...'`. "No such file": nada a perder. A rotina
+padrão que o dono desligou volta a rodar.
 
 Agente que ficou parado logo depois de criado (`created`) agora liga sozinho: o instalador liga no fim
 da instalação e da atualização, e a Sentinela tenta uma vez a cada 6 horas. Só se ele continuar
-parado é que se liga à mão com `dgclaw agente iniciar <slug>`. O agente desligado (`exited`) nunca
+parado é que se liga à mão com `sudo dgclaw agente iniciar <nome do agente>`. O agente desligado (`exited`) nunca
 liga sozinho: pode ter sido de propósito.
 
 Enquanto investiga, não narre comando. No máximo: "estou olhando, um minuto".
@@ -88,8 +96,8 @@ nesses casos só piora (zera o cache e o próximo turno sai mais caro).
 - Uma mudança por vez, com cópia antes (`<arquivo>.antes-socorro-AAAAMMDD-HHMM`). Nada se apaga.
 - Nunca faça login com a sessão do agente de pé: pare o runner antes (manual 3.4).
 - Nunca remova o container do agente para "limpar" (`podman rm`, `dgclaw agente remover`): para
-  desligar, `dgclaw agente parar <slug>`. Para reiniciar só o runner, `dgclaw agente reiniciar <slug>`.
-- Para refazer a parte de dentro de um agente (tarefas agendadas, runner e painel): `dgclaw agente reparar <slug>`.
+  desligar, `sudo dgclaw agente parar <nome do agente>`. Para reiniciar só o runner, `sudo dgclaw agente reiniciar <nome do agente>`.
+- Para refazer a parte de dentro de um agente (tarefas agendadas, runner e painel): `sudo dgclaw agente reparar <nome do agente>`.
 
 ## Passo 5: prove que voltou
 

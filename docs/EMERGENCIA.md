@@ -24,8 +24,9 @@
    portas e o registro dele. Para desligar, use `dgclaw agente parar <slug>`.
    **Exceção:** `dgclaw agente recriar <nome do agente> --forcar` troca o container de propósito. É o
    caminho quando o agente ficou de fora da atualização para a 1.0.5 ou está sem container (seção
-   3.2.1), e só com o "posso?" e a lista do que se perde na mão: se perde o que foi instalado à mão
-   dentro do container, e as rotinas padrão voltam ao padrão. A casa, a memória, o cofre e as conversas
+   3.2.1), e só com o "posso?" (quando o agente tem container, com a lista do que se perde na mão; sem
+   container não há lista e nada a perder): se perde o que foi instalado à mão dentro do container, e
+   as rotinas padrão voltam ao padrão. A casa, a memória, o cofre e as conversas
    ficam.
 7. **Uma mudança por vez.** Mudou, conferiu (seção 5), só então a próxima.
 
@@ -192,8 +193,7 @@ Locadora foi instalado (INSTALL.md, "Os três comandos"); o servidor é acessado
 o-que-nao-faz.md). Entre do mesmo jeito que na instalação. Quem entra com um usuário comum põe `sudo`
 na frente de cada comando, como nos exemplos abaixo. Se o dono não lembra como se entra, ou se foi
 outra pessoa que instalou, ele precisa pedir a ela o acesso ao servidor: pelo painel não há outro
-caminho, porque é justamente o painel que não abre. Este manual não cita nome de provedor nem botão de
-site de provedor.
+caminho, porque é justamente o painel que não abre.
 
 **`prumo` e `dgclaw` são o mesmo comando** (o instalador cria o `prumo` como atalho). Os exemplos desta
 seção usam `prumo`, que é o que a tela de login mostra; `sudo dgclaw usuario` faz a mesma coisa.
@@ -253,9 +253,13 @@ normalmente) e reiniciar o painel não destrava a tela.
 
 ### 3.1.3 Onde fica o Cofre (as chaves do agente)
 O dono pergunta "onde ponho a chave?" ou "onde está o cofre?". O Cofre é a tela onde ficam as chaves
-que o agente usa (as senhas dos serviços que ele acessa). Não precisa de terminal. No painel, abra o
-agente, abra o menu (botão "Abrir o menu", no topo da tela), procure o grupo **Segurança** e, dentro
-dele, o item **Cofre (chaves)**. Só o dono vê esse item: o colaborador convidado não o vê.
+que o agente usa (as senhas dos serviços que ele acessa). Não precisa de terminal. Há dois lugares, e o
+nome muda:
+- **No menu da conversa:** toque no ícone de três traços no canto do topo da tela, procure o grupo
+  **Segurança** e, dentro dele, o item **Cofre (chaves)**. Só o dono vê esse item; o colaborador
+  convidado não o vê.
+- **No painel do agente** (a tela do próprio agente): a aba se chama só **Cofre**. O colaborador vê a
+  aba, mas o cofre recusa o acesso dele: a chave é do dono.
 
 ### 3.2 O agente aparece e o container está de pé?
 Quem entra no servidor com usuário comum põe `sudo` na frente de cada comando `dgclaw` desta seção.
@@ -281,13 +285,13 @@ dgclaw agente listar
   3.2.1.
 - `CONTAINER` em `running` e `SAUDE` em `sem resposta`: o runner de dentro não responde. Veja o
   log (`podman exec $C journalctl -u dgclaw-runner -n 40 --no-pager`). Com o "posso?":
-  `dgclaw agente reparar $SLUG` refaz só a parte de dentro (tarefas agendadas, runner e painel) e
+  `sudo dgclaw agente reparar <nome do agente>` refaz só a parte de dentro (tarefas agendadas, runner e painel) e
   espera o `/api/saude` responder. Erro que cita a imagem: `dgclaw imagem construir --agora`.
 - `running` e `ok`: o container e o runner estão bem. Siga para 3.3.
 - Saiu com código 255 logo na partida, sem log (`dgclaw agente iniciar` já explica): falta
   inotify. Cada agente gasta de 5 a 6 instâncias do root e o padrão do Ubuntu é 128. Veja o uso
   com `dgclaw status`, suba o limite com `sysctl -w fs.inotify.max_user_instances=1024` (o
-  instalador grava `/etc/sysctl.d/90-dgclaw-inotify.conf`) e rode `dgclaw agente iniciar $SLUG`.
+  instalador grava `/etc/sysctl.d/90-dgclaw-inotify.conf`) e rode `sudo dgclaw agente iniciar <nome do agente>`.
 - O container sobe e cai logo: `podman logs --tail 40 $C` mostra o motivo. Imagem faltando:
   `dgclaw imagem status`.
 
@@ -311,17 +315,22 @@ atualização roda, antes do FALHOU, a tela já mostrou o "AVISO DA VERSÃO 1.0.
 e o comando de cada um; o item da 1.0.5 no `CHANGELOG.md` diz o mesmo.
 
 **Para cada agente da lista FALHOU, um de cada vez, com o "posso?":**
-1. **Veja se há algo a perder:** `sudo ls /var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-*.txt`.
-   A atualização só grava esse arquivo quando acha, dentro da caixa, algo que não está na casa. Sem
-   arquivo, não há nada a perder. Com arquivo, leia com `sudo cat`; se só aparecem rotinas com o nome
-   `dgclaw-<nome do agente>-...`, é o esperado.
+1. **Veja se há algo a perder:** `sudo sh -c 'ls /var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-*.txt'`.
+   Use exatamente assim, com o `sh -c` e as aspas: a pasta do agente é fechada para o usuário comum, e
+   sem o `sh -c` o `*` é expandido antes do `sudo`, não acha nada e dá "No such file" mesmo quando a
+   lista existe. A atualização só grava esse arquivo quando acha, dentro da caixa, algo que não está
+   na casa. Duas saídas possíveis:
+   - Aparece o nome de um arquivo `perdido-no-recriar-<data>.txt`: há algo a perder. Leia com
+     `sudo sh -c 'cat /var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-*.txt'`. Se só
+     aparecem rotinas com o nome `dgclaw-<nome do agente>-...`, é o esperado.
+   - Aparece "No such file or directory": nada a perder, siga para o passo 2.
 2. **Diga ao dono o que o `--forcar` perde**, em palavras simples. Exemplo: "Vou trocar a caixa do
    agente pela versão nova. A memória, o cofre e as conversas ficam como estão. Perde-se só o que
    alguém instalou à mão dentro da caixa. As rotinas padrão voltam ao padrão: se você editou ou
    desligou alguma, a mudança se perde, e a que estava desligada volta a rodar. Posso?" Se a lista
-   mostra um programa que o dono instalou e ainda usa, não rode o passo 3: diga a ele o nome do
-   programa, peça que o anote e deixe o agente como está (ele segue funcionando na versão anterior).
-   Este manual não cita canal de suporte para esse caso.
+   mostra um programa que o dono instalou e ainda usa, o `--forcar` o apaga. O dono escolhe: (a) adiar,
+   deixando o agente como está, que segue funcionando na versão anterior; ou (b) anotar o nome do
+   programa, rodar o passo 3 e instalar o programa de novo depois, já na caixa nova.
 3. **Troque a caixa:** `sudo dgclaw agente recriar <nome do agente> --forcar`.
 4. **Confira que a caixa foi trocada:** `sudo ls -l /var/lib/dgclaw/agentes/<nome do agente>/home/.dgclaw/unidades-padrao.sha256`.
    Esse arquivo é a referência que os agentes antigos não tinham: o `--forcar` o grava, então ele passa

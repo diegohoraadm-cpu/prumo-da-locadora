@@ -131,6 +131,16 @@
       "arquivo": "docs/EMERGENCIA.md",
       "linha": "mesmo que ele melhore no meio. Durante o `sudo dgclaw atualizar` ela não confere nada.",
       "motivo": "a rodada 2 do C5 dividiu o paragrafo da Sentinela (secao 2.4) em paragrafos curtos, a pedido do Esquadro, e acrescentou a excecao do \"created\"; as frases desta linha continuam la, so quebradas em outras linhas (a do container desligado ganhou a marca exited)"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "`dgclaw agente reparar $SLUG` refaz só a parte de dentro (tarefas agendadas, runner e painel) e",
+      "motivo": "o acerto final do C5 (Esquadro, 17/11) trocou nesta linha o \"$SLUG\" e o comando sem sudo por \"sudo dgclaw ... <nome do agente>\", a convencao unica da secao 3.2 para o texto que vai ao dono; o resto da linha e igual"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "instalador grava `/etc/sysctl.d/90-dgclaw-inotify.conf`) e rode `dgclaw agente iniciar $SLUG`.",
+      "motivo": "o acerto final do C5 (Esquadro, 17/11) trocou nesta linha o \"$SLUG\" e o comando sem sudo por \"sudo dgclaw ... <nome do agente>\", a convencao unica da secao 3.2 para o texto que vai ao dono; o resto da linha e igual"
     }
   ],
   "emergencia_novas": []

@@ -132,7 +132,7 @@
     return [
       { alvo: '#srTexto', titulo: 'O aviso único',
         oque: 'Uma janela só que junta tudo o que está pedindo atenção na segurança do seu ambiente: avisos sobre ferramentas com falha e falhas críticas achadas pela ronda.',
-        como: 'O painel soma os avisos de segurança do ' + (typeof dsMarca !== 'undefined' ? dsMarca.nome : 'DG Claw') + ' que você ainda não dispensou com as falhas críticas abertas da ronda. Nada é enviado para fora: ele só lê o que o seu servidor já sabe.',
+        como: 'O painel soma os avisos de segurança do ' + (typeof dsMarca !== 'undefined' ? dsMarca.nome : 'Prumo da Locadora') + ' que você ainda não dispensou com as falhas críticas abertas da ronda. Nada é enviado para fora: ele só lê o que o seu servidor já sabe.',
         porque: 'Para você não precisar fechar uma janela por problema. É um aviso só, e o detalhe de cada um fica na tela Segurança.' },
       { alvo: '#srLista', titulo: 'Os pontos em risco',
         oque: 'Os nomes simples dos problemas e a gravidade de cada um, os mais graves primeiro (no máximo 5, o resto aparece como "e mais").',

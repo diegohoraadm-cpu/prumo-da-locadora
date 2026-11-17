@@ -1,5 +1,5 @@
 'use strict';
-/* menu-grupos.js: os grupos (acordeões) do menu lateral do painel quando ele roda sozinho, sem a casca do DG Claw Web.
+/* menu-grupos.js: os grupos (acordeões) do menu lateral do painel quando ele roda sozinho, sem a casca do Prumo da Locadora Web.
    Mesma ideia do menu da Conversa (web/public/menu-lado.js): o grupo da aba aberta abre sozinho, o que a pessoa deixa
    aberto fica neste aparelho, e um grupo sem nenhuma aba visível não aparece. Os botões .tab continuam sendo os de
    sempre: quem abre a aba é o js/app.js. */

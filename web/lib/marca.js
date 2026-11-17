@@ -42,8 +42,8 @@ function criarMarca(cfg) {
     try {
       return JSON.parse(fs.readFileSync(padraoJson, 'utf8'));
     } catch (e) {
-      log('erro', `Não li o padrão de fábrica da marca (${padraoJson}: ${e.code || e.message}). Uso nomes mínimos embutidos; reinstale o DG Claw Web para restaurar o arquivo.`);
-      return { nome: 'DG Claw', nome_curto: 'DG Claw', slogan: '', titulo_login: 'Entre para falar com os seus agentes.', logo_tem_nome: false, tema: 'claro' };
+      log('erro', `Não li o padrão de fábrica da marca (${padraoJson}: ${e.code || e.message}). Uso nomes mínimos embutidos; reinstale o Prumo da Locadora Web para restaurar o arquivo.`);
+      return { nome: 'Prumo da Locadora', nome_curto: 'Prumo', slogan: '', titulo_login: 'Entre para falar com os seus agentes.', logo_tem_nome: false, tema: 'claro' };
     }
   }
 
@@ -54,7 +54,7 @@ function criarMarca(cfg) {
     const chave = campo + '|' + v + '|' + causa;
     if (avisados.has(chave)) return;
     avisados.add(chave);
-    log('aviso', `Marca: o campo "${campo}" de ${path.join(dir, 'marca.json')} foi ignorado (valor recebido: ${JSON.stringify(v)}; ${causa}). Uso o padrão do DG Claw só para esse campo. ${fazer}`);
+    log('aviso', `Marca: o campo "${campo}" de ${path.join(dir, 'marca.json')} foi ignorado (valor recebido: ${JSON.stringify(v)}; ${causa}). Uso o padrão do Prumo da Locadora só para esse campo. ${fazer}`);
   }
 
   /** Confere um arquivo da pasta da marca. Devolve { caminho, tam, mtime } ou null (com aviso). */
@@ -108,13 +108,13 @@ function criarMarca(cfg) {
     try {
       const st = fs.lstatSync(arq);
       if (st.isSymbolicLink() || !st.isFile() || st.size > TETO.json) {
-        log('aviso', `Marca: ${arq} foi ignorado (precisa ser um arquivo comum de até ${TETO.json} bytes, não um atalho). Uso a marca padrão do DG Claw.`);
+        log('aviso', `Marca: ${arq} foi ignorado (precisa ser um arquivo comum de até ${TETO.json} bytes, não um atalho). Uso a marca padrão do Prumo da Locadora.`);
       } else {
         bruto = JSON.parse(fs.readFileSync(arq, 'utf8'));
-        if (!bruto || typeof bruto !== 'object' || Array.isArray(bruto)) { log('aviso', `Marca: ${arq} precisa conter um objeto JSON ({ ... }). Uso a marca padrão do DG Claw.`); bruto = null; }
+        if (!bruto || typeof bruto !== 'object' || Array.isArray(bruto)) { log('aviso', `Marca: ${arq} precisa conter um objeto JSON ({ ... }). Uso a marca padrão do Prumo da Locadora.`); bruto = null; }
       }
     } catch (e) {
-      if (e.code !== 'ENOENT') log('aviso', `Marca: não consegui ler ${arq} (${e.code || e.message}). Uso a marca padrão do DG Claw; corrija o JSON (aspas, vírgulas) e a marca volta sozinha.`);
+      if (e.code !== 'ENOENT') log('aviso', `Marca: não consegui ler ${arq} (${e.code || e.message}). Uso a marca padrão do Prumo da Locadora; corrija o JSON (aspas, vírgulas) e a marca volta sozinha.`);
     }
     if (!bruto) return dados;
 

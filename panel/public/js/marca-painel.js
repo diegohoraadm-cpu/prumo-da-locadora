@@ -1,8 +1,8 @@
 'use strict';
 /* marca-painel.js: o nome da marca (white label) no painel.
-   O painel é servido na mesma origem do DG Claw Web, que publica o nome em /manifest.webmanifest. Lê de lá e troca
+   O painel é servido na mesma origem do Prumo da Locadora Web, que publica o nome em /manifest.webmanifest. Lê de lá e troca
    o texto dos elementos marcados com data-marca-nome e o título da aba. Sem o Web por perto (painel solto), a rota
-   não existe, o nome fica "DG Claw" e nada é trocado. */
+   não existe, o nome fica "Prumo da Locadora" e nada é trocado. */
 // Sem /ds (painel instalado sem a pasta web/public/ds), as telas seguem funcionando, só sem ícone e sem a constelação.
 if (typeof window.dsIcone !== 'function') {
   console.warn('marca-painel: /ds/icone.js não carregou; o painel segue sem ícones. Reinstale o painel com o plugin inteiro.');
@@ -10,7 +10,7 @@ if (typeof window.dsIcone !== 'function') {
 }
 if (typeof window.dsCarregando !== 'function') window.dsCarregando = function () { return ''; };
 (function () {
-  const PADRAO = 'DG Claw';
+  const PADRAO = 'Prumo da Locadora';
   function aplicar(nome) {
     if (nome === PADRAO) return;
     document.title = document.title.split(PADRAO).join(nome);

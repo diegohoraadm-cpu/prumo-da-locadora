@@ -19,8 +19,8 @@
 })(this, function (raiz) {
   const esc = s => String(s == null ? '' : s)
     .replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  /* Nome da marca (white label): vem do <meta name="marca-nome"> (ds/marca.js); sem ele, DG Claw. */
-  const NOME = (raiz.dsMarca && raiz.dsMarca.nome) || 'DG Claw';
+  /* Nome da marca (white label): vem do <meta name="marca-nome"> (ds/marca.js); sem ele, Prumo da Locadora. */
+  const NOME = (raiz.dsMarca && raiz.dsMarca.nome) || 'Prumo da Locadora';
   /* Ícone do sprite; só com nome literal do código. */
   const ico = n => '<svg class="ds-ico" aria-hidden="true"><use href="/ds/icones.svg#i-' + n + '"/></svg>';
 

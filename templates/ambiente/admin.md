@@ -172,7 +172,7 @@ tela **Anonimizar** (menu ☰, grupo Ferramentas, endereço `/anonimizar`), por 
 
 ### Trocar a marca (nome, logo, cores e fontes)
 
-Se o dono quiser o DG Claw com o nome ou o visual da empresa dele, você faz isso na pasta `/etc/dgclaw/marca/`: um
+Se o dono quiser o Prumo da Locadora com o nome ou o visual da empresa dele, você faz isso na pasta `/etc/dgclaw/marca/`: um
 `marca.json` mais os arquivos que ele cita (logo, favicon, ícone do app, fontes `woff2`), todos soltos na mesma pasta. O
 passo a passo, os campos aceitos e os limites estão em `/opt/dgclaw/app/docs/WHITE-LABEL.md`; os nomes das cores e o que cada
 uma muda estão em `/opt/dgclaw/app/docs/DESIGN-SYSTEM.md`. Peça ao dono o nome da marca, o logo e as cores (ou os arquivos),

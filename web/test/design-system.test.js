@@ -96,17 +96,17 @@ test('login, conversa, menu e seus JS não têm emojis de interface, nem 🦞', 
   }
 });
 
-test('os HTML migrados não têm "DG Claw" literal: o nome vem de {{MARCA_NOME}}', () => {
+test('os HTML migrados não têm "Prumo da Locadora" literal: o nome vem de {{MARCA_NOME}}', () => {
   for (const f of HTML_MIGRADOS) {
     const t = ler(f);
-    assert.ok(!/DG Claw/.test(t), `${f} tem "DG Claw" literal`);
+    assert.ok(!/Prumo da Locadora/.test(t), `${f} tem "Prumo da Locadora" literal`);
     assert.match(t, /data-tema="\{\{MARCA_TEMA\}\}"/, f);
     assert.match(t, /<meta name="marca-nome" content="\{\{MARCA_NOME\}\}">/, f);
     for (const css of ['/ds/tokens.css', '/ds/componentes.css', '/marca.css']) assert.ok(t.includes(css), `${f} sem ${css}`);
     assert.ok(t.indexOf('/ds/tokens.css') < t.indexOf('/marca.css'), `${f}: marca.css precisa vir depois de tokens.css`);
   }
   const SEM_NOME_LITERAL = ['conversa.js', 'casca.js', 'menu-lado.js', 'avisos.js', 'conectar.js', 'colaboradores.js', 'lembretes.js', 'lembretes-faixa.js', 'seguranca-resumo.js', 'login.js', 'trocar-senha.js', 'campo-cofre.js'];
-  for (const f of SEM_NOME_LITERAL) assert.ok(!/['"`][^'"`\n]*DG Claw[^'"`\n]*['"`]/.test(ler(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '').replace(/\|\| 'DG Claw'/g, '').replace(/: 'DG Claw'\)/g, ')')), `${f} tem texto "DG Claw" visível`);
+  for (const f of SEM_NOME_LITERAL) assert.ok(!/['"`][^'"`\n]*Prumo da Locadora[^'"`\n]*['"`]/.test(ler(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '').replace(/\|\| 'Prumo da Locadora'/g, '').replace(/: 'Prumo da Locadora'\)/g, ')')), `${f} tem texto "Prumo da Locadora" visível`);
 });
 
 test('toda página .html de web/public: o único {{ ... }} é de MARCA_*', () => {

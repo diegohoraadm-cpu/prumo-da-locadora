@@ -80,7 +80,7 @@
   }
 
   /* HTML do cartão. `id` identifica o cartão (hash da mensagem) para o marcador. */
-  const SO_DONO = 'O cofre é só do dono do ' + (typeof dsMarca !== 'undefined' ? dsMarca.nome : 'DG Claw') + '.';
+  const SO_DONO = 'O cofre é só do dono do ' + (typeof dsMarca !== 'undefined' ? dsMarca.nome : 'Prumo da Locadora') + '.';
   const ehColaborador = () => !!(raiz.DGPapel && raiz.DGPapel.colaborador);
 
   function html(envName, rotulo, id, extra) {

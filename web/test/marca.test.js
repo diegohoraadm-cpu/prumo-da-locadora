@@ -29,10 +29,10 @@ function marcaDe(dir) {
 test('marca: sem pasta nem marca.json, vale o padrão de fábrica e nada é logado', () => {
   const { m, cap } = marcaDe(path.join(pastaTemp('vazia'), 'nao-existe'));
   const d = m.obter();
-  assert.equal(d.nome, 'DG Claw'); assert.equal(d.tema, 'claro'); assert.equal(d.logo, null);
+  assert.equal(d.nome, 'Prumo da Locadora'); assert.equal(d.tema, 'claro'); assert.equal(d.logo, null);
   assert.equal(cap.linhas.length, 0);
   assert.equal(m.arquivo('logo').caminho, path.join(PADRAO_DIR, 'logo.svg'));
-  assert.match(m.html('<h1>{{MARCA_NOME}}</h1>'), /<h1>DG Claw<\/h1>/);
+  assert.match(m.html('<h1>{{MARCA_NOME}}</h1>'), /<h1>Prumo da Locadora<\/h1>/);
 });
 
 test('marca: campos válidos entram (nome, cor de botão, logo, fonte, tema)', () => {
@@ -70,7 +70,7 @@ test('marca: campo malicioso cai no padrão só daquele campo, o resto sobrevive
   const pagina = m.html('<title>{{MARCA_NOME}}</title><h1>{{MARCA_TITULO_LOGIN}}</h1><i>{{MARCA_SLOGAN}}</i>');
   assert.match(css, /--cor-acento:#00aa00;/);                       // o campo bom passou
   assert.match(pagina, /Entre no Acme/);
-  assert.match(pagina, /<title>DG Claw<\/title>/);                  // nome inválido: padrão só dele
+  assert.match(pagina, /<title>Prumo da Locadora<\/title>/);                  // nome inválido: padrão só dele
   for (const saida of [css, pagina, m.manifest()]) {
     assert.ok(!/<script|<\/style|passwd|background:url\(\/\/x|\}body\{/.test(saida), saida);
   }
@@ -88,7 +88,7 @@ test('marca: campo malicioso cai no padrão só daquele campo, o resto sobrevive
 test('marca: JSON quebrado volta ao padrão inteiro com aviso; e a marca muda sem reiniciar (cache por mtime)', () => {
   const dir = pasta('{ isso nao e json');
   const { m, cap } = marcaDe(dir);
-  assert.equal(m.obter().nome, 'DG Claw');
+  assert.equal(m.obter().nome, 'Prumo da Locadora');
   assert.match(cap.linhas.join('\n'), /não consegui ler .*marca\.json/);
   fs.writeFileSync(path.join(dir, 'marca.json'), JSON.stringify({ nome: 'Novo Nome' }));
   const futuro = new Date(Date.now() + 5000);
@@ -146,6 +146,6 @@ test('marca: nome e slogan com HTML são rejeitados e não viram marcação em p
   try {
     fs.writeFileSync(path.join(t.publico, 'login.html'), '<meta name="marca-nome" content="{{MARCA_NOME}}"><p>{{MARCA_SLOGAN}}</p>');
     const lg = await t.c.get('/login');
-    assert.equal(lg.texto, '<meta name="marca-nome" content="DG Claw"><p>Seus agentes, no seu servidor.</p>');
+    assert.equal(lg.texto, '<meta name="marca-nome" content="Prumo da Locadora"><p>O assistente de IA da sua locadora, no seu servidor.</p>');
   } finally { await t.fechar(); }
 });

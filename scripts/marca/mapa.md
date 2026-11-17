@@ -4,22 +4,22 @@ Gerado sem escrever nada. Ocorrencia = um achado da regra; "troca" so acontece e
 
 ## 1. Contagem por lote
 
-| Lote | Arquivos que mudam | Trocaria | Fica por excecao | Pede decisao ou reescrita manual |
-| --- | ---: | ---: | ---: | ---: |
-| M1 | 75 | 202 | 75 | 16 |
-| M3 | 41 | 120 | 8 | 52 |
-| M4 | 159 | 784 | 86 | 56 |
-| M5 | 91 | 666 | 165 | 21 |
-| sem-lote | 0 | 0 | 35 | 0 |
-| **total** | 366 | 1772 | 369 | 145 |
+| Lote | Arquivos que mudam | Trocaria | Fica por excecao | Pede decisao ou reescrita manual | Comando em codigo (fica, so conta) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| M1 | 75 | 201 | 75 | 25 | 1 |
+| M3 | 39 | 114 | 8 | 49 | 0 |
+| M4 | 160 | 824 | 86 | 91 | 874 |
+| M5 | 91 | 666 | 166 | 21 | 11 |
+| sem-lote | 0 | 0 | 35 | 0 | 0 |
+| **total** | 365 | 1805 | 370 | 186 | 886 |
 
 Por regra (todos os lotes):
 
 | Regra | Trocaria | Excecao | Manual |
 | --- | ---: | ---: | ---: |
-| barra | 21 | 7 | 71 |
-| comando | 1020 | 175 | 12 |
-| frase | 731 | 94 | 57 |
+| barra | 17 | 7 | 68 |
+| comando | 1058 | 175 | 58 |
+| frase | 730 | 95 | 55 |
 | sem-regra | 0 | 93 | 5 |
 
 Manual, por motivo:
@@ -28,11 +28,12 @@ Manual, por motivo:
 | --- | ---: |
 | barra-generica | 4 |
 | barra-inexistente | 15 |
-| barra-nao-ligada | 44 |
+| barra-nao-ligada | 41 |
 | comando-no-inicio-de-string | 6 |
-| comparacao-de-logica | 2 |
-| fora-de-contexto | 44 |
+| comparacao-de-logica | 3 |
+| fora-de-contexto | 42 |
 | sem-regra | 5 |
+| sudo-fora-de-zona | 45 |
 | tipo-nao-coberto | 25 |
 
 Arquivos sem lote no plano (o Teia atribui a um lote):
@@ -127,13 +128,6 @@ Regra do plano: skill ligada vira `/x`; skill que existe mas nao e ligada, reesc
 | skills/uninstall/SKILL.md | `/dgclaw:setup` (linha 66) | M3 | sair (a skill nao existe) |
 | templates/AGENT.md.tmpl | `/dgclaw:connect` (linha 32) | M3 | reescrever a mao (skill existe, nao e ligada ao agente) |
 | templates/AGENT.md.tmpl | `/dgclaw:agenda` (linha 91) | M3 | trocar por `/agenda` (mecanico) |
-| templates/CLAUDE.md.tmpl | `/dgclaw:aprender` (linha 78) | M3 | trocar por `/aprender` (mecanico) |
-| templates/CLAUDE.md.tmpl | `/dgclaw:connect` (linha 263) | M3 | reescrever a mao (skill existe, nao e ligada ao agente) |
-| templates/CLAUDE.md.tmpl | `/dgclaw:tela` (linha 286) | M3 | reescrever a mao (skill existe, nao e ligada ao agente) |
-| templates/CLAUDE.md.tmpl | `/dgclaw:agenda` (linha 291) | M3 | trocar por `/agenda` (mecanico) |
-| templates/CLAUDE.md.tmpl | `/dgclaw:lembretes` (linha 305) | M3 | trocar por `/lembretes` (mecanico) |
-| templates/CLAUDE.md.tmpl | `/dgclaw:mesa` (linha 330) | M3 | reescrever a mao (skill existe, nao e ligada ao agente) |
-| templates/CLAUDE.md.tmpl | `/dgclaw:foco` (linha 411) | M3 | trocar por `/foco` (mecanico) |
 | templates/CREATOR.md.tmpl | `/dgclaw:awaken` (linha 2) | M3 | sair (a skill nao existe) |
 | templates/LAWS.md.tmpl | `/dgclaw:awaken` (linha 65) | M3 | sair (a skill nao existe) |
 | templates/MEMORY.md.tmpl | `/dgclaw:awaken` (linha 1) | M3 | sair (a skill nao existe) |
@@ -149,7 +143,7 @@ Regra do plano: skill ligada vira `/x`; skill que existe mas nao e ligada, reesc
 | web/docs/COMANDOS-DE-BARRA.md | `/dgclaw:aprender` (linha 26) | M5 | trocar por `/aprender` (mecanico) |
 | web/test/casca.test.js | `/dgclaw:agente` (linha 55) | M1 | fica por excecao |
 
-Total: 99 ocorrencias em 52 arquivos.
+Total: 92 ocorrencias em 51 arquivos.
 
 ## 3. Testes que citam a marca como texto esperado
 
@@ -160,7 +154,8 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 | aceite/juncao-e-marca.mjs | 15 | 0 | 0 |
 | aceite/juncao-excecoes.json | 15 | 0 | 0 |
 | bin/test/dgclaw-agente.test.sh | 1 | 0 | 1 |
-| bin/test/dgclaw-sentinela.test.sh | 5 | 5 | 0 |
+| bin/test/dgclaw-mesa.test.sh | 1 | 0 | 1 |
+| bin/test/dgclaw-sentinela.test.sh | 6 | 5 | 0 |
 | panel/test-agents-seletor.mjs | 2 | 2 | 0 |
 | panel/test-auth.mjs | 1 | 1 | 0 |
 | panel/test-cofre-host.mjs | 5 | 3 | 4 |
@@ -172,56 +167,77 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 | qa/montar-ambiente.mjs | 2 | 2 | 0 |
 | qa/roteiro-navegacao.mjs | 2 | 1 | 1 |
 | scripts/dgchat-mcp/test-server.mjs | 4 | 3 | 1 |
-| scripts/test-canal-dgchat.sh | 3 | 0 | 3 |
+| scripts/test-canal-dgchat.sh | 3 | 2 | 1 |
 | scripts/test-falas-personalidade.sh | 1 | 1 | 0 |
-| tests/ambiente/rodar.sh | 2 | 2 | 0 |
-| tests/aviso-atualizacao/rodar.sh | 2 | 0 | 0 |
+| tests/ambiente/rodar.sh | 14 | 2 | 0 |
+| tests/aviso-atualizacao/rodar.sh | 4 | 0 | 0 |
+| tests/boletins/rodar.sh | 2 | 0 | 0 |
 | tests/changelog/rodar.sh | 2 | 2 | 0 |
+| tests/cli/_comum.sh | 3 | 0 | 0 |
+| tests/cli/api.sh | 1 | 0 | 0 |
 | tests/cli/atualizar-entre-versoes.sh | 1 | 1 | 0 |
-| tests/cli/atualizar.sh | 3 | 1 | 2 |
-| tests/cli/aviso-atualizacao.sh | 3 | 3 | 2 |
-| tests/cli/backup.sh | 1 | 3 | 0 |
+| tests/cli/atualizar.sh | 82 | 1 | 6 |
+| tests/cli/aviso-atualizacao.sh | 26 | 3 | 3 |
+| tests/cli/backup.sh | 16 | 3 | 3 |
 | tests/cli/chave-api.sh | 1 | 1 | 0 |
-| tests/cli/cofre.sh | 1 | 1 | 0 |
-| tests/cli/colaborador.sh | 1 | 1 | 0 |
-| tests/cli/criar.sh | 1 | 1 | 0 |
-| tests/cli/dominio.sh | 3 | 1 | 1 |
-| tests/cli/inotify.sh | 1 | 1 | 0 |
-| tests/cli/instalacao-remota.sh | 2 | 1 | 1 |
-| tests/cli/personalizacoes.sh | 2 | 1 | 1 |
-| tests/cli/recriar.sh | 1 | 1 | 0 |
-| tests/cli/restricoes.sh | 1 | 1 | 0 |
+| tests/cli/cofre.sh | 7 | 1 | 0 |
+| tests/cli/colaborador.sh | 22 | 1 | 0 |
+| tests/cli/criar.sh | 5 | 1 | 0 |
+| tests/cli/dominio.sh | 18 | 1 | 1 |
+| tests/cli/gestao.sh | 43 | 0 | 0 |
+| tests/cli/inotify.sh | 11 | 1 | 0 |
+| tests/cli/instalacao-remota.sh | 7 | 1 | 1 |
+| tests/cli/personalizacoes.sh | 39 | 1 | 1 |
+| tests/cli/proxy.sh | 5 | 0 | 0 |
+| tests/cli/recriar.sh | 6 | 1 | 0 |
+| tests/cli/restricoes-consulta.sh | 21 | 0 | 0 |
+| tests/cli/restricoes-conta.sh | 24 | 0 | 0 |
+| tests/cli/restricoes-ligar.sh | 20 | 0 | 0 |
+| tests/cli/restricoes-suporte.sh | 57 | 0 | 0 |
+| tests/cli/restricoes.sh | 110 | 1 | 0 |
 | tests/cli/stubs/curl | 1 | 1 | 0 |
 | tests/cli/stubs/ss | 1 | 1 | 0 |
 | tests/cli/stubs/ssh | 1 | 1 | 0 |
-| tests/cli/suporte.sh | 3 | 4 | 0 |
-| tests/cli/usuario.sh | 1 | 2 | 0 |
-| tests/cli/versao.sh | 1 | 3 | 0 |
-| tests/docs-em-dia/checar.mjs | 2 | 2 | 0 |
-| tests/docs-em-dia/rodar.sh | 2 | 2 | 0 |
-| tests/emergencia/rodar.sh | 2 | 2 | 0 |
+| tests/cli/suporte.sh | 256 | 4 | 1 |
+| tests/cli/tela-diagnostico.sh | 11 | 0 | 0 |
+| tests/cli/tela.sh | 5 | 0 | 0 |
+| tests/cli/usuario.sh | 9 | 2 | 1 |
+| tests/cli/validacao.sh | 11 | 0 | 0 |
+| tests/cli/versao.sh | 9 | 3 | 2 |
+| tests/docs-em-dia/checar.mjs | 3 | 3 | 0 |
+| tests/docs-em-dia/rodar.sh | 12 | 2 | 0 |
+| tests/emergencia/rodar.sh | 3 | 2 | 0 |
+| tests/instalador/aviso-atualizacao.sh | 2 | 0 | 0 |
+| tests/instalador/casos.sh | 4 | 0 | 3 |
 | tests/instalador/ffmpeg.sh | 1 | 1 | 0 |
-| tests/instalador/fim.sh | 1 | 1 | 0 |
+| tests/instalador/fim.sh | 18 | 1 | 6 |
+| tests/instalador/proxy.sh | 1 | 0 | 1 |
+| tests/instalador/ronda-seguranca.sh | 1 | 0 | 0 |
 | tests/instrucoes/rodar.sh | 5 | 0 | 7 |
 | tests/rodar.sh | 3 | 3 | 0 |
 | tests/ronda/test_ronda.py | 10 | 7 | 3 |
+| tests/tela/rodar.sh | 1 | 0 | 0 |
+| web/test/auth.test.js | 1 | 0 | 1 |
 | web/test/casca.test.js | 1 | 0 | 0 |
 | web/test/colaborador-painel.test.js | 2 | 2 | 0 |
-| web/test/colaboradores-correcoes3.test.js | 2 | 3 | 0 |
-| web/test/colaboradores.test.js | 1 | 1 | 0 |
+| web/test/colaboradores-correcoes3.test.js | 3 | 3 | 0 |
+| web/test/colaboradores.test.js | 2 | 1 | 1 |
 | web/test/conectar-puro.test.js | 3 | 3 | 0 |
 | web/test/diagnostico-runner-prazo.test.js | 4 | 2 | 2 |
 | web/test/diagnostico-suporte.test.js | 1 | 1 | 0 |
 | web/test/email.test.js | 4 | 3 | 1 |
 | web/test/escopo.test.js | 2 | 2 | 0 |
 | web/test/grava-anexo.test.js | 1 | 1 | 0 |
+| web/test/primeiro-acesso.test.js | 2 | 0 | 2 |
+| web/test/ronda-painel.test.js | 2 | 0 | 2 |
+| web/test/ronda-tela.test.js | 2 | 0 | 2 |
 | web/test/socket-admin.test.js | 1 | 1 | 0 |
 
-Total: 156 linhas em 59 arquivos de teste.
+Total: 1020 linhas em 81 arquivos de teste.
 
 ## 4. O que ficou manual, por lote (nao trocado; inclui as barras)
 
-### M1 (16)
+### M1 (25)
 
 | Arquivo | Motivo | Linha | Trecho |
 | --- | --- | ---: | --- |
@@ -238,11 +254,20 @@ Total: 156 linhas em 59 arquivos de teste.
 | qa/roteiro-navegacao.mjs | comparacao-de-logica | 191 | `DG Claw` |
 | web/public/chat.css | tipo-nao-coberto | 1 | `DG Claw` |
 | web/public/dgvis.js | sem-regra | 508 | `DG Telegram` |
+| web/public/seguranca.js | comparacao-de-logica | 507 | `dgclaw` |
+| web/test/auth.test.js | sudo-fora-de-zona | 103 | `dgclaw` |
+| web/test/colaboradores.test.js | sudo-fora-de-zona | 367 | `dgclaw` |
 | web/test/diagnostico-runner-prazo.test.js | comando-no-inicio-de-string | 130 | `dgclaw` |
 | web/test/diagnostico-runner-prazo.test.js | comando-no-inicio-de-string | 133 | `dgclaw` |
 | web/test/email.test.js | fora-de-contexto | 99 | `DG Claw` |
+| web/test/primeiro-acesso.test.js | sudo-fora-de-zona | 35 | `dgclaw` |
+| web/test/primeiro-acesso.test.js | sudo-fora-de-zona | 93 | `dgclaw` |
+| web/test/ronda-painel.test.js | sudo-fora-de-zona | 146 | `dgclaw` |
+| web/test/ronda-painel.test.js | sudo-fora-de-zona | 330 | `dgclaw` |
+| web/test/ronda-tela.test.js | sudo-fora-de-zona | 27 | `dgclaw` |
+| web/test/ronda-tela.test.js | sudo-fora-de-zona | 41 | `dgclaw` |
 
-### M3 (52)
+### M3 (49)
 
 | Arquivo | Motivo | Linha | Trecho |
 | --- | --- | ---: | --- |
@@ -284,9 +309,6 @@ Total: 156 linhas em 59 arquivos de teste.
 | skills/uninstall/SKILL.md | barra-nao-ligada | 7 | `/dgclaw:uninstall` |
 | skills/uninstall/SKILL.md | barra-inexistente | 66 | `/dgclaw:setup` |
 | templates/AGENT.md.tmpl | barra-nao-ligada | 32 | `/dgclaw:connect` |
-| templates/CLAUDE.md.tmpl | barra-nao-ligada | 263 | `/dgclaw:connect` |
-| templates/CLAUDE.md.tmpl | barra-nao-ligada | 286 | `/dgclaw:tela` |
-| templates/CLAUDE.md.tmpl | barra-nao-ligada | 330 | `/dgclaw:mesa` |
 | templates/CREATOR.md.tmpl | barra-inexistente | 2 | `/dgclaw:awaken` |
 | templates/LAWS.md.tmpl | barra-inexistente | 65 | `/dgclaw:awaken` |
 | templates/MEMORY.md.tmpl | barra-inexistente | 1 | `/dgclaw:awaken` |
@@ -299,12 +321,14 @@ Total: 156 linhas em 59 arquivos de teste.
 | tests/instrucoes/rodar.sh | fora-de-contexto | 64 | `/dgclaw:nome` |
 | tests/instrucoes/rodar.sh | fora-de-contexto | 76 | `/dgclaw:mesa` |
 
-### M4 (56)
+### M4 (91)
 
 | Arquivo | Motivo | Linha | Trecho |
 | --- | --- | ---: | --- |
 | .trivyignore.yaml | tipo-nao-coberto | 6 | `DG Claw` |
+| bin/dgclaw-api | sudo-fora-de-zona | 89 | `dgclaw` |
 | bin/test/dgclaw-agente.test.sh | fora-de-contexto | 130 | `DG Claw` |
+| bin/test/dgclaw-mesa.test.sh | sudo-fora-de-zona | 207 | `dgclaw` |
 | container/Containerfile | tipo-nao-coberto | 1 | `DG Claw` |
 | container/Containerfile | tipo-nao-coberto | 37 | `DG Claw` |
 | container/Containerfile | tipo-nao-coberto | 50 | `DG Claw` |
@@ -314,9 +338,22 @@ Total: 156 linhas em 59 arquivos de teste.
 | container/Containerfile | tipo-nao-coberto | 116 | `dgclaw` |
 | container/Containerfile | tipo-nao-coberto | 216 | `DG Claw` |
 | container/Containerfile | tipo-nao-coberto | 222 | `dgclaw` |
+| lib/atualizar.sh | sudo-fora-de-zona | 230 | `dgclaw` |
+| lib/aviso-atualizacao.sh | sudo-fora-de-zona | 118 | `dgclaw` |
+| lib/aviso-atualizacao.sh | sudo-fora-de-zona | 122 | `dgclaw` |
+| lib/aviso-atualizacao.sh | sudo-fora-de-zona | 128 | `dgclaw` |
+| lib/aviso-atualizacao.sh | sudo-fora-de-zona | 137 | `dgclaw` |
+| lib/backup.sh | sudo-fora-de-zona | 370 | `dgclaw` |
 | lib/emergencia.sh | fora-de-contexto | 252 | `DG Claw` |
 | lib/emergencia.sh | fora-de-contexto | 256 | `DG Claw` |
+| lib/personalizacoes.sh | sudo-fora-de-zona | 183 | `dgclaw` |
 | lib/reiniciar-admin.sh | fora-de-contexto | 50 | `DG Claw` |
+| lib/suporte.sh | sudo-fora-de-zona | 1312 | `dgclaw` |
+| lib/suporte.sh | sudo-fora-de-zona | 1319 | `dgclaw` |
+| lib/suporte.sh | sudo-fora-de-zona | 1324 | `dgclaw` |
+| lib/suporte.sh | sudo-fora-de-zona | 1350 | `dgclaw` |
+| lib/suporte.sh | sudo-fora-de-zona | 1362 | `dgclaw` |
+| lib/suporte.sh | sudo-fora-de-zona | 1376 | `dgclaw` |
 | runner/src/sessao/ciclo.ts | comando-no-inicio-de-string | 524 | `dgclaw` |
 | scripts/bootstrap-identity.sh | fora-de-contexto | 69 | `DG Claw` |
 | scripts/dgchat-mcp/test-server.mjs | fora-de-contexto | 304 | `DG Claw` |
@@ -345,17 +382,37 @@ Total: 156 linhas em 59 arquivos de teste.
 | scripts/notify-owner.sh | fora-de-contexto | 169 | `canal DG Chat` |
 | scripts/powers.py | barra-nao-ligada | 105 | `/dgclaw:powers` |
 | scripts/test-canal-dgchat.sh | fora-de-contexto | 117 | `do DG Chat` |
-| scripts/test-canal-dgchat.sh | fora-de-contexto | 151 | `DG Claw` |
-| scripts/test-canal-dgchat.sh | fora-de-contexto | 184 | `canal DG Chat` |
 | scripts/uninstall.sh | barra-inexistente | 153 | `/dgclaw:setup` |
 | scripts/watchdog.py | barra-nao-ligada | 273 | `/dgclaw:doctor` |
 | tests/cli/atualizar.sh | fora-de-contexto | 44 | `DG Claw` |
+| tests/cli/atualizar.sh | sudo-fora-de-zona | 177 | `dgclaw` |
+| tests/cli/atualizar.sh | sudo-fora-de-zona | 188 | `dgclaw` |
 | tests/cli/atualizar.sh | fora-de-contexto | 305 | `DG Claw` |
+| tests/cli/atualizar.sh | sudo-fora-de-zona | 368 | `dgclaw` |
+| tests/cli/atualizar.sh | sudo-fora-de-zona | 700 | `dgclaw` |
 | tests/cli/aviso-atualizacao.sh | fora-de-contexto | 37 | `DG Claw` |
 | tests/cli/aviso-atualizacao.sh | fora-de-contexto | 37 | `DG Claw` |
+| tests/cli/aviso-atualizacao.sh | sudo-fora-de-zona | 135 | `dgclaw` |
+| tests/cli/backup.sh | sudo-fora-de-zona | 49 | `dgclaw` |
+| tests/cli/backup.sh | sudo-fora-de-zona | 76 | `dgclaw` |
+| tests/cli/backup.sh | sudo-fora-de-zona | 120 | `dgclaw` |
 | tests/cli/dominio.sh | fora-de-contexto | 66 | `DG Claw` |
 | tests/cli/instalacao-remota.sh | fora-de-contexto | 20 | `DG Claw` |
 | tests/cli/personalizacoes.sh | fora-de-contexto | 44 | `DG Claw` |
+| tests/cli/suporte.sh | sudo-fora-de-zona | 241 | `dgclaw` |
+| tests/cli/usuario.sh | sudo-fora-de-zona | 57 | `dgclaw` |
+| tests/cli/versao.sh | sudo-fora-de-zona | 29 | `dgclaw` |
+| tests/cli/versao.sh | sudo-fora-de-zona | 32 | `dgclaw` |
+| tests/instalador/casos.sh | sudo-fora-de-zona | 330 | `dgclaw` |
+| tests/instalador/casos.sh | sudo-fora-de-zona | 1160 | `dgclaw` |
+| tests/instalador/casos.sh | sudo-fora-de-zona | 1163 | `dgclaw` |
+| tests/instalador/fim.sh | sudo-fora-de-zona | 46 | `dgclaw` |
+| tests/instalador/fim.sh | sudo-fora-de-zona | 119 | `dgclaw` |
+| tests/instalador/fim.sh | sudo-fora-de-zona | 120 | `dgclaw` |
+| tests/instalador/fim.sh | sudo-fora-de-zona | 121 | `dgclaw` |
+| tests/instalador/fim.sh | sudo-fora-de-zona | 140 | `dgclaw` |
+| tests/instalador/fim.sh | sudo-fora-de-zona | 148 | `dgclaw` |
+| tests/instalador/proxy.sh | sudo-fora-de-zona | 73 | `dgclaw` |
 | tests/ronda/test_ronda.py | comando-no-inicio-de-string | 1137 | `dgclaw` |
 | tests/ronda/test_ronda.py | comando-no-inicio-de-string | 1158 | `dgclaw` |
 | tests/ronda/test_ronda.py | comando-no-inicio-de-string | 2170 | `dgclaw` |
@@ -386,3 +443,21 @@ Total: 156 linhas em 59 arquivos de teste.
 | docs/revisao-adversarial-prompt.txt | tipo-nao-coberto | 1 | `DG Claw` |
 | web/docs/MODO-FOCO.md | sem-regra | 15 | `DG Telegram` |
 
+## 5. Arquivos gerados (a ferramenta nao toca; troque a fonte e regere)
+
+- templates/AGENTS.md.tmpl (M3)
+- templates/CLAUDE.md.tmpl (M3)
+- templates/admin/AGENTS.md (M3)
+- templates/admin/CLAUDE.md (M3)
+
+## 6. Pares teste x origem desencontrados (o teste troca, a origem deixa para tras)
+
+| Teste | Origem | Regra | Trocas no teste | Restantes na origem |
+| --- | --- | --- | ---: | ---: |
+| bin/test/dgclaw-sentinela.test.sh | bin/dgclaw-sentinela | comando | 5 | 6 |
+| tests/cli/atualizar.sh | lib/atualizar.sh | comando | 1 | 4 |
+| tests/cli/aviso-atualizacao.sh | lib/aviso-atualizacao.sh | comando | 3 | 4 |
+| tests/cli/backup.sh | lib/backup.sh | comando | 3 | 1 |
+| tests/cli/personalizacoes.sh | lib/personalizacoes.sh | comando | 1 | 1 |
+| tests/cli/restricoes.sh | lib/restricoes.sh | comando | 1 | 9 |
+| tests/cli/suporte.sh | lib/suporte.sh | comando | 4 | 6 |

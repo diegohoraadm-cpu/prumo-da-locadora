@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { analisar, carregarRegras, lerExcecoes, rodar, loteDe, listarArquivos } from './aplicar.mjs';
+import { analisar, carregarRegras, lerExcecoes, rodar, loteDe, listarArquivos, paresDesencontrados } from './aplicar.mjs';
 
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const regras = carregarRegras();
@@ -194,7 +194,7 @@ test('excecoes: todo trecho literal esta presente no arquivo (menos os marcados 
   const repo = path.join(AQUI, '..', '..');
   const mortas = [];
   for (const e of lerExcecoes(fs.readFileSync(path.join(AQUI, 'excecoes.txt'), 'utf8'))) {
-    if (e.trecho === '*' || e.trecho.startsWith('secao:') || /entra no M1/.test(e.motivo) || e.arquivo.endsWith('/')) continue;
+    if (e.trecho === '*' || e.trecho === 'preambulo:' || e.trecho.startsWith('secao:') || /entra no M1/.test(e.motivo) || e.arquivo.endsWith('/')) continue;
     const f = path.join(repo, e.arquivo);
     if (!fs.existsSync(f) || !fs.readFileSync(f, 'utf8').includes(e.trecho)) mortas.push(`${e.arquivo}: ${e.trecho}`);
   }
@@ -302,4 +302,77 @@ test('comando executado/validado: nada em web/lib/diagnostico e trocado, nem a a
 test('comando generico ("sudo dgclaw ..." e "dgclaw <comando>") tambem troca; "dgclaw tem" nao', () => {
   const r = aplica('docs/g.md', 'Rode `sudo dgclaw ...` ou `sudo dgclaw <comando>`. O dgclaw tem permissao.\n');
   assert.equal(r.novo, 'Rode `sudo prumo ...` ou `sudo prumo <comando>`. O dgclaw tem permissao.\n');
+});
+
+test('nao troca dentro de identificador nem de caminho (XDG Claw, /opt/dgclaw, $dgclaw, x.dgclaw, meu-dgclaw)', () => {
+  const src = 'XDG Claw e /opt/dgclaw agente listar, $dgclaw status, x.dgclaw status, meu-dgclaw status, dgclaw-agente canal status\n';
+  const r = aplica('docs/h.md', src);
+  assert.equal(r.novo, src);
+  assert.equal(r.ocorrencias.length, 0);
+});
+
+test('logica: literal a esquerda da comparacao, chave de objeto, .get/.has e lista nao trocam', () => {
+  const src = [
+    "if ('DG Claw' === nome) a();",
+    "const o = { 'DG Claw': 1 };",
+    "x.get('DG Claw'); y.has('DG Claw');",
+    "const msg = 'O DG Claw iniciou';",
+  ].join('\n');
+  const r = aplica('web/lib/c.js', src);
+  assert.deepEqual(estados(r), ['manual:comparacao-de-logica', 'manual:comparacao-de-logica', 'manual:comparacao-de-logica', 'manual:comparacao-de-logica', 'troca']);
+  const py = aplica('a.py', 'if x == "DG Claw":\n    d = {"DG Claw": 1}\nprint("O DG Claw")\n');
+  assert.deepEqual(estados(py), ['manual:comparacao-de-logica', 'manual:comparacao-de-logica', 'troca']);
+});
+
+test('sigilo.js: a lista de nomes liberados fica com "DG Claw" (excecao logica:)', () => {
+  const excs = fs.readFileSync(path.join(AQUI, 'excecoes.txt'), 'utf8');
+  const r = aplica('web/lib/sigilo.js', "const L = [\n  'DG Claw', 'Claude', 'Anthropic',\n];\n", excs);
+  assert.equal(r.novo, "const L = [\n  'DG Claw', 'Claude', 'Anthropic',\n];\n");
+});
+
+test('shell: $( ) com aspas proprias e ${x#"..."} dentro de aspas nao desalinham o leitor', () => {
+  const src = [
+    '#!/usr/bin/env bash',
+    'f() {',
+    '    dir="$(sed -n "s/^X=//p;T;q" "$f" | tr -d "\'\\"")"',
+    '    v="${linha#"export ${chave}=\'"}"',
+    '    v="${v%\\\'}"',
+    '    falha "o DG Claw caiu" "rode: sudo dgclaw status"',
+    '}',
+  ].join('\n');
+  const r = aplica('lib/colaborador.sh', src);
+  assert.match(r.novo, /falha "o Prumo da Locadora caiu" "rode: sudo prumo status"/);
+});
+
+test('comando em codigo conta como "deixado"; "sudo dgclaw" em funcao que a ferramenta nao le vira manual', () => {
+  const r = aplica('lib/x.sh', '#!/usr/bin/env bash\ndgclaw agente listar\ns_aviso "rode: sudo dgclaw atualizar"\n');
+  assert.deepEqual(estados(r), ['deixado:comando-em-codigo', 'manual:sudo-fora-de-zona']);
+});
+
+test('gerados: a ferramenta nao toca templates/CLAUDE.md.tmpl; troca a fonte', () => {
+  const d = arvore({ 'templates/CLAUDE.md.tmpl': 'use /dgclaw:agenda do DG Claw\n', 'templates/instrucoes-agente.md.tmpl': 'use {{SKILL:agenda}} do DG Claw\n' });
+  const a = rodar({ raiz: d, regras, excs: lerExcecoes(''), dry: false });
+  assert.equal(fs.readFileSync(path.join(d, 'templates/CLAUDE.md.tmpl'), 'utf8'), 'use /dgclaw:agenda do DG Claw\n');
+  assert.equal(fs.readFileSync(path.join(d, 'templates/instrucoes-agente.md.tmpl'), 'utf8'), 'use {{SKILL:agenda}} do Prumo da Locadora\n');
+  assert.deepEqual(a.gerados.map((g) => g.rel), ['templates/CLAUDE.md.tmpl']);
+});
+
+test('preambulo do CHANGELOG fica protegido ate o primeiro "## "', () => {
+  const excs = 'CHANGELOG.md\tpreambulo:\tmotivo\n';
+  const r = aplica('CHANGELOG.md', '# Changelog\n\nmudancas do DG Claw\n\n## [1.0.5]\n- item do DG Claw\n', excs);
+  assert.equal(r.novo, '# Changelog\n\nmudancas do DG Claw\n\n## [1.0.5]\n- item do Prumo da Locadora\n');
+});
+
+test('par teste x origem desencontrado e acusado (dgclaw-sentinela.test.sh x bin/dgclaw-sentinela)', () => {
+  const d = arvore({
+    'bin/test/dgclaw-sentinela.test.sh': '#!/usr/bin/env bash\nok "x" "$(grep -q \'sudo dgclaw atualizar\' "$R")"\nafirma "y" printf \'rode sudo dgclaw atualizar\'\n',
+    'bin/dgclaw-sentinela': '#!/usr/bin/env bash\nlog "$S: tentando: sudo dgclaw atualizar"\n',
+  });
+  const arqs = rodar({ raiz: d, regras, excs: lerExcecoes('') });
+  const pares = paresDesencontrados(arqs);
+  assert.equal(pares.length, 1);
+  assert.equal(pares[0].teste, 'bin/test/dgclaw-sentinela.test.sh');
+  assert.equal(pares[0].fonte, 'bin/dgclaw-sentinela');
+  const out = execFileSync(process.execPath, [path.join(AQUI, 'aplicar.mjs'), '--dry', '--raiz', d], { encoding: 'utf8' });
+  assert.match(out, /pares teste x origem desencontrados: 1/);
 });

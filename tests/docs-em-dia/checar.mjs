@@ -53,9 +53,12 @@ if (process.env.DOCS_INVENTARIO_ARQUIVO) {
 // pode citar qualquer um dos dois. Normalizo o texto do manual para o nome canonico antes de comparar.
 const APELIDOS = inv.apelidos_de_comando || {};
 const SEGUNDAS = new Set((inv.comandos || []).map((c) => c.id.split(' ')).filter((p) => p.length > 1).map((p) => `${p[0]} ${p[1]}`));
-const comoCanonico = (texto) => Object.entries(APELIDOS).reduce((t, [apelido, canonico]) => t.replace(
+// Sem `incondicional`, so converte quando `dgclaw <palavra>` e comando do inventario (o corpo do manual fala de "Prumo da
+// Locadora" e de prumo em prosa). Com ele (bloco de inventario da referencia, que so tem comandos), converte sempre: assim
+// `prumo xyz` inexistente e acusado como `dgclaw xyz`.
+const comoCanonico = (texto, incondicional = false) => Object.entries(APELIDOS).reduce((t, [apelido, canonico]) => t.replace(
   new RegExp(`(?<![\\w/.-])${apelido}( [a-z][a-z0-9-]*)`, 'g'),
-  (m, resto) => (SEGUNDAS.has(`${canonico}${resto}`) ? `${canonico}${resto}` : m),
+  (m, resto) => (incondicional || SEGUNDAS.has(`${canonico}${resto}`) ? `${canonico}${resto}` : m),
 ), texto);
 const LISTAS = { telas: 'tela', rotas: 'rota', comandos: 'comando', skills: 'skill', powers: 'power', canais: 'canal', provedores: 'provedor' };
 for (const k of Object.keys(LISTAS)) {
@@ -239,7 +242,7 @@ for (const [arq, texto] of textos) {
         const ok = caminhos.has(c) || (fam && familias.has(fam[0])) || prefixosLivres.some((p) => c.startsWith(p) && caminhos.has(c.split('/').slice(0, 3).join('/')));
         if (!ok) achar('rota', m[1], origem, 'codigo', 'Esta rota esta documentada no bloco de inventario, mas nao existe mais no codigo. Atualize ou remova a linha (confira o nome atual com `node scripts/docs-inventario.mjs`).');
       }
-      for (const m of comoCanonico(l.texto).matchAll(/(?<![\w-])(dgclaw(?:-agente|-card)?)((?: [a-z][a-z0-9-]*)+)/g)) {
+      for (const m of comoCanonico(l.texto, true).matchAll(/(?<![\w-])(dgclaw(?:-agente|-card)?)((?: [a-z][a-z0-9-]*)+)/g)) {
         const palavras = m[2].trim().split(' ');
         // vale se algum prefixo e um comando exato (o resto sao argumentos), ou se a citacao e so o pai
         // de comandos que existem ("dgclaw agente"); pai seguido de palavra que nao e filho nao vale.

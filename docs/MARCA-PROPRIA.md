@@ -45,7 +45,7 @@ Onde há texto, por tipo de arquivo:
 | --- | --- | --- |
 | Markdown (`.md`, `.tmpl`) | tudo, inclusive blocos de código | |
 | HTML | nó de texto, comentário, atributos `title`, `alt`, `placeholder`, `aria-label`, e os literais do `<script>` | `href`, `class`, `id`, `style`, `on...` |
-| JS e TS | literal de string, template (a parte fora do `${}`) e comentário | identificador, regex, chave de objeto, string logo depois de `.includes(`, `.startsWith(`, `===` etc. (é lógica) |
+| JS e TS | literal de string, template (a parte fora do `${}`) e comentário | identificador, regex, chave de objeto, comparação com a string de qualquer lado, `.includes(`, `.startsWith(`, `.get(`, `.has(` (é lógica) |
 | Python | literal de string, docstring, comentário | string logo depois de `.startswith(`, `==` etc. |
 | JSON | valor de string | chave |
 | Shell | o que vem depois de `printf`, `echo`, `falha`, `aviso`, `info`, `ok`, `passo` (até o `;`, `&&`, `\|\|` ou o fim da linha), comentário, e `cat <<EOF` que vai para a tela | `grep "DG Claw"`, variável, caminho, nome de serviço, `printf ... > arquivo`, `printf ... \| tee` (isso é dado) |
@@ -81,6 +81,16 @@ A própria ferramenta (`scripts/marca/`) e este documento citam o nome antigo de
 Atenção ao fechar a versão seguinte: a regra do CHANGELOG protege tudo, menos a seção `[1.0.5]`. Quando sair a 1.0.6, ajuste o
 `1\.0\.5` da exceção para a seção que ainda é nossa.
 
+## 3b. Arquivos gerados, pares teste x origem e comandos deixados
+
+- **Gerados** (`regras.json`, `gerados`): `templates/CLAUDE.md.tmpl`, `AGENTS.md.tmpl` e os dois de `templates/admin/` saem de
+  `scripts/gerar-instrucoes.sh`. A ferramenta não os toca; troca-se a fonte (`instrucoes-*.md.tmpl`) e roda-se o gerador.
+- **Par desencontrado:** o `--dry` imprime e o mapa lista (seção 6) o teste que a ferramenta troca enquanto o arquivo de origem de mesmo
+  nome (`dgclaw-sentinela.test.sh` e `bin/dgclaw-sentinela`) deixa texto do mesmo tipo para trás. Regra: produto e teste mudam
+  juntos ou ficam juntos; quem recebe o lote resolve cada par.
+- **Comando em código:** `dgclaw <sub>` que está em código (invocação de verdade) não se troca, mas é contado ("deixado" no mapa).
+  Se vier depois de `sudo `, é texto ao dono em função que a ferramenta não lê: aparece como `sudo-fora-de-zona` (manual).
+
 ## 4. O que a ferramenta NÃO faz
 
 - Não renomeia nada por baixo: caminhos (`/etc/dgclaw`), serviços (`dgclaw-web.service`), variáveis (`DGCLAW_*`), cookie,
@@ -105,9 +115,13 @@ do original, se a junção anterior foi por cherry-pick).
     BASE=<último commit do original já juntado>
     ORIGINAL=<commit novo do original>
 
-    # 1. a base e o original com a marca, em ramos temporários
-    git switch -c marca-base "$BASE"           && node scripts/marca/aplicar.mjs && git commit -qam "temp: base com a marca"
-    git switch -c marca-original "$ORIGINAL"   && node scripts/marca/aplicar.mjs && git commit -qam "temp: original com a marca"
+    # 0. a ferramenta mora no NOSSO ramo, mas não existe no checkout da base nem do original: copie-a para fora
+    FERR=$(mktemp -d)/marca && cp -r scripts/marca "$FERR"
+    REPO=$PWD
+
+    # 1. a base e o original com a marca, em ramos temporários (--raiz aponta o repositório; a ferramenta roda da cópia)
+    git switch -c marca-base "$BASE"           && node "$FERR/aplicar.mjs" --raiz "$REPO" && git commit -qam "temp: base com a marca"
+    git switch -c marca-original "$ORIGINAL"   && node "$FERR/aplicar.mjs" --raiz "$REPO" && git commit -qam "temp: original com a marca"
     git switch -                               # volta ao nosso ramo
 
     # 2. a mistura de três vias, escolhendo a base marcada
@@ -120,6 +134,8 @@ do original, se a junção anterior foi por cherry-pick).
     # 4. conferir e limpar
     node scripts/marca/aplicar.mjs --dry       # o que sobrou de nome antigo; troque e comite "Marca: ..."
     git branch -D marca-base marca-original
+
+(O `git commit -qam` falha se a ferramenta não mudar nada; nesse caso a base já estava com a marca e o passo é desnecessário.)
 
 Se o passo 2 acusar conflito (saída 1), o `$TREE` já traz os arquivos com marcas `<<<<<<<` só onde a mudança é de verdade. Resolva
 num ramo temporário limpo:
@@ -141,7 +157,7 @@ Depois da junção:
 2. Rode os testes pela caixa de memória (`bin/caixa-testes.sh bash tests/rodar.sh`).
 3. Se o original criou comando, skill ou subcomando novo: acrescente em `regras.json` (`subcomandos`, `barra.ligadas`) e rode de novo.
 
-Observação: este procedimento foi testado num repositório de brinquedo (com e sem conflito), não ainda numa junção real.
+Observação: este procedimento foi ensaiado num repositório de brinquedo com a ferramenta copiada para fora (com e sem conflito) e, pelo QA, numa junção de verdade até o `merge-tree` (448 arquivos trocados em cada lado); ainda não houve uma junção real fechada com ele.
 
 ## 6. docs-em-dia
 

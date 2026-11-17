@@ -107,6 +107,12 @@ caso "prumo agente criar vale como dgclaw agente criar (e a marca em prosa nao a
 cp -r "$TMP/m-ap" "$TMP/m-ap-xyz"; sed -i 's#^<!-- inventario:fim -->#- prumo agente sumir\n<!-- inventario:fim -->#' "$TMP/m-ap-xyz/referencia-admin.md"
 caso "prumo agente sumir (inexistente) ainda e acusado como dgclaw agente sumir" 1 "dgclaw agente sumir" DOCS_MANUAL_DIR="$TMP/m-ap-xyz" DOCS_INVENTARIO_ARQUIVO="$TMP/inv-ap.json"
 
+# comando inexistente e acusado com qualquer nome: dgclaw xyz, prumo xyz e prumo agente zzz
+for ruim in "dgclaw xyzcomando" "prumo xyzcomando" "prumo agente zzzfalso"; do
+    nome="${ruim// /-}"; cp -r "$TMP/m-ap" "$TMP/m-$nome"; sed -i "s#^<!-- inventario:fim -->#- $ruim\n<!-- inventario:fim -->#" "$TMP/m-$nome/referencia-admin.md"
+    caso "comando inexistente no inventario da referencia e acusado: $ruim" 1 "${ruim#* }" DOCS_MANUAL_DIR="$TMP/m-$nome" DOCS_INVENTARIO_ARQUIVO="$TMP/inv-ap.json"
+done
+
 # item novo no codigo, sem doc
 node -e 'const j=JSON.parse(require("fs").readFileSync(process.argv[1]));j.comandos.push({id:"dgclaw agente sumir",origem:"bin/dgclaw:99"});require("fs").writeFileSync(process.argv[2],JSON.stringify(j))' "$INV" "$TMP/inv-novo.json"
 caso "item novo sem doc reprova" 1 "dgclaw agente sumir" DOCS_MANUAL_DIR="$M" DOCS_INVENTARIO_ARQUIVO="$TMP/inv-novo.json"

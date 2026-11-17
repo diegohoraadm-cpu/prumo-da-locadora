@@ -27,7 +27,10 @@ const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 // 'string' = literal de codigo (um comando no INICIO dele pode ser executado, entao nao e trocado).
 
 // Em JS e Python, a string logo depois de comparacao ou busca e logica, nao texto.
-const LOGICA_JS = /(?:\.(?:includes|startsWith|endsWith|indexOf|lastIndexOf|match|split|test|replace|replaceAll)\(\s*|[!=]==?\s*|\bcase\s+)$/;
+const LOGICA_JS = /(?:\.(?:includes|startsWith|endsWith|indexOf|lastIndexOf|match|split|test|replace|replaceAll|get|has|set|add|delete)\(\s*|[!=]==?\s*|\bcase\s+)$/;
+// Depois da string: comparacao (`'x' === y`) ou chave de objeto/dicionario (`'x': 1`).
+const LOGICA_DEPOIS_JS = /^\s*(?:[!=]==?|:(?!:))/;
+const LOGICA_DEPOIS_PY = /^\s*(?:[!=]=|:(?!:))/;
 const LOGICA_PY = /(?:\.(?:startswith|endswith|find|rfind|count|index|split|replace)\(\s*|[!=]=\s*|\bin\s+)$/;
 
 function zonasJs(src, { json = false } = {}) {
@@ -35,7 +38,7 @@ function zonasJs(src, { json = false } = {}) {
   const n = src.length;
   const addStr = (ini, fim, antes) => {
     if (json && /^\s*:/.test(src.slice(fim + 1, fim + 40))) return; // chave de JSON
-    z.push({ ini, fim, modo: 'string', logica: LOGICA_JS.test(antes) });
+    z.push({ ini, fim, modo: 'string', logica: LOGICA_JS.test(antes) || LOGICA_DEPOIS_JS.test(src.slice(fim + 1, fim + 12)) });
   };
   // codigo(i, aninhado): le ate o fim do arquivo ou, se aninhado (dentro de ${}), ate a } que fecha.
   function codigo(i, aninhado) {
@@ -95,7 +98,7 @@ function zonasPy(src) {
       const ab = tri ? 3 : 1;
       let j = i + ab;
       while (j < n && !(tri ? src.startsWith(c.repeat(3), j) : (src[j] === c || src[j] === '\n'))) j += src[j] === '\\' ? 2 : 1;
-      z.push({ ini: i + ab, fim: j, modo: 'string', logica: LOGICA_PY.test(src.slice(Math.max(0, i - 40), i)) });
+      z.push({ ini: i + ab, fim: j, modo: 'string', logica: LOGICA_PY.test(src.slice(Math.max(0, i - 40), i)) || (!tri && LOGICA_DEPOIS_PY.test(src.slice(j + 1, j + 12))) });
       i = j + ab; continue;
     }
     i++;
@@ -112,6 +115,42 @@ function zonasSh(src, chamadas) {
   const PALAVRAS = new Set(['if', 'then', 'else', 'elif', 'do', 'while', 'until', '!', '{', 'sudo', 'time']);
   let i = 0, inicio = true, chamada = -1, cmd = '', redir = false;
   const heredocs = [];
+  // Dentro de "..." um $( ... ) pode ter aspas proprias: pula o par inteiro sem perder o fio.
+  const skipSub = (j) => {
+    let d = 1;
+    while (j < n && d > 0) {
+      const ch = src[j];
+      if (ch === '\\') { j += 2; continue; }
+      if (ch === "'") { const f = src.indexOf("'", j + 1); j = f < 0 ? n : f + 1; continue; }
+      if (ch === '"') { j = skipDq(j + 1); continue; }
+      if (ch === '(') d++; else if (ch === ')') d--;
+      j++;
+    }
+    return j;
+  };
+  const skipBrace = (j) => { // ${ ... } dentro de "...": pode ter aspas e ${ } aninhados
+    while (j < n) {
+      const ch = src[j];
+      if (ch === '\\') { j += 2; continue; }
+      if (ch === '"') { j = skipDq(j + 1); continue; }
+      if (ch === '$' && src[j + 1] === '(') { j = skipSub(j + 2); continue; }
+      if (ch === '$' && src[j + 1] === '{') { j = skipBrace(j + 2); continue; }
+      if (ch === '}') return j + 1;
+      j++;
+    }
+    return n;
+  };
+  const skipDq = (j) => {
+    while (j < n) {
+      const ch = src[j];
+      if (ch === '\\') { j += 2; continue; }
+      if (ch === '$' && src[j + 1] === '(') { j = skipSub(j + 2); continue; }
+      if (ch === '$' && src[j + 1] === '{') { j = skipBrace(j + 2); continue; }
+      if (ch === '"') return j + 1;
+      j++;
+    }
+    return n;
+  };
   const fecha = (e) => { if (chamada >= 0 && e > chamada) z.push({ ini: chamada, fim: e, modo: 'prosa' }); chamada = -1; };
   while (i < n) {
     const c = src[i];
@@ -141,7 +180,7 @@ function zonasSh(src, chamadas) {
       i = e; continue;
     }
     if (c === "'") { const f = src.indexOf("'", i + 1); i = f < 0 ? n : f + 1; if (inicio) inicio = false; continue; }
-    if (c === '"') { let j = i + 1; while (j < n && src[j] !== '"') j += src[j] === '\\' ? 2 : 1; i = j + 1; if (inicio) inicio = false; continue; }
+    if (c === '"') { i = skipDq(i + 1); if (inicio) inicio = false; continue; }
     // `cmd ... | outro` e `printf ... > arquivo` mandam o texto para um programa ou arquivo: e dado, nao tela.
     if (c === '|' && src[i + 1] !== '|' && src[i - 1] !== '|') { chamada = -1; inicio = true; redir = true; i++; continue; }
     if (c === ';' || c === '|' || c === '(' || c === ')' || (c === '&' && !/[<>]/.test(src[i - 1] || ''))) { fecha(i); inicio = true; i++; continue; }
@@ -235,7 +274,7 @@ export function tipoDe(rel, src) {
   return 'outro';
 }
 
-function zonasDe(tipo, src, regras) {
+export function zonasDe(tipo, src, regras) {
   switch (tipo) {
     case 'md': return TUDO(src);
     case 'html': return zonasHtml(src);
@@ -276,7 +315,9 @@ export function protegidas(excs, rel, src) {
   const linhas = src.split('\n');
   const set = new Set();
   for (const e of minhas) {
-    if (e.trecho.startsWith('secao:')) {
+    if (e.trecho === 'preambulo:') {
+      for (let i = 0; i < linhas.length && !/^## /.test(linhas[i]); i++) set.add(i);
+    } else if (e.trecho.startsWith('secao:')) {
       const rx = new RegExp(e.trecho.slice(6));
       let dentro = false;
       linhas.forEach((l, i) => { if (/^## /.test(l)) dentro = rx.test(l); if (dentro) set.add(i); });
@@ -327,7 +368,11 @@ export function analisar(rel, src, ctx) {
     if (prot === 'todas' || (prot !== 'todas' && prot.has(linha))) { o.estado = 'excecao'; }
     else if (c.manual === 'sem-regra') { o.estado = 'manual'; o.motivo = 'sem-regra'; }
     else if (tipo === 'outro') { o.estado = 'manual'; o.motivo = 'tipo-nao-coberto'; }
-    else if (!zona) { if (c.regra !== 'comando') { o.estado = 'manual'; o.motivo = 'fora-de-contexto'; } else continue; } // comando em codigo e invocacao de verdade
+    else if (!zona) {
+      if (c.regra !== 'comando') { o.estado = 'manual'; o.motivo = 'fora-de-contexto'; }
+      else if (/sudo $/.test(src.slice(Math.max(0, c.pos - 5), c.pos))) { o.estado = 'manual'; o.motivo = 'sudo-fora-de-zona'; } // texto ao dono em funcao que a ferramenta nao le
+      else { o.estado = 'deixado'; o.motivo = 'comando-em-codigo'; } // invocacao de verdade: fica, mas conta
+    }
     else if (zona.logica) { o.estado = 'manual'; o.motivo = 'comparacao-de-logica'; }
     else if (c.manual) { o.estado = 'manual'; o.motivo = c.manual; }
     else if (c.regra === 'comando' && zona.modo === 'string' && c.pos === zona.ini) { o.estado = 'manual'; o.motivo = 'comando-no-inicio-de-string'; }
@@ -368,8 +413,11 @@ export function rodar({ raiz, pastas = [], dry = true, regras, excs, lote = '' }
   const skillsDir = path.join(raiz, 'skills');
   const skillsExistentes = new Set(fs.existsSync(skillsDir) ? fs.readdirSync(skillsDir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name) : []);
   const arquivos = [];
+  const gerados = [];
+  arquivos.gerados = gerados;
   for (const rel of listarArquivos(raiz, pastas, regras.ignorar)) {
     if (lote && loteDe(rel, regras.lotes) !== lote) continue;
+    if ((regras.gerados || []).includes(rel)) { gerados.push({ rel, lote: loteDe(rel, regras.lotes) }); continue; } // gerado: troca a fonte e regera
     const src = fs.readFileSync(path.join(raiz, rel), 'utf8');
     if (src.includes('\0')) continue;
     const r = analisar(rel, src, { regras, excs, skillsExistentes });
@@ -379,6 +427,24 @@ export function rodar({ raiz, pastas = [], dry = true, regras, excs, lote = '' }
     arquivos.push({ rel, tipo: r.tipo, lote: loteDe(rel, regras.lotes), muda, ocorrencias: r.ocorrencias });
   }
   return arquivos;
+}
+
+// Par teste x origem: o teste que espera o texto tem de mudar junto com quem o escreve. Pareia pelo nome
+// (dgclaw-sentinela.test.sh <-> bin/dgclaw-sentinela) e acusa quando o teste troca e a origem deixa o mesmo tipo para tras.
+const stemDe = (rel) => path.basename(rel).replace(/\.[a-z]+$/i, '').replace(/\.test$/, '').replace(/^test[-_]/, '').replace(/[-_]test$/, '');
+export function paresDesencontrados(arqs) {
+  const origens = new Map();
+  for (const a of arqs) if (!ehTeste(a.rel)) origens.set(stemDe(a.rel), [...(origens.get(stemDe(a.rel)) || []), a]);
+  const out = [];
+  for (const t of arqs.filter((a) => ehTeste(a.rel))) {
+    for (const regra of new Set(t.ocorrencias.filter((o) => o.estado === 'troca').map((o) => o.regra))) {
+      for (const f of origens.get(stemDe(t.rel)) || []) {
+        const sobra = f.ocorrencias.filter((o) => o.regra === regra && o.estado !== 'troca');
+        if (sobra.length) out.push({ teste: t.rel, fonte: f.rel, regra, trocas: t.ocorrencias.filter((o) => o.regra === regra && o.estado === 'troca').length, restantes: sobra.length });
+      }
+    }
+  }
+  return out;
 }
 
 // ------------------------------------------------------------------ relatorios
@@ -395,6 +461,7 @@ export function resumo(arqs) {
       trocaria: conta(a, (o) => o.estado === 'troca'),
       excecao: conta(a, (o) => o.estado === 'excecao'),
       manual: conta(a, (o) => o.estado === 'manual'),
+      deixado: conta(a, (o) => o.estado === 'deixado'),
     });
   }
   return linhas;
@@ -407,10 +474,10 @@ export function mapaMarkdown(arqs, regras) {
   const out = [];
   const r = resumo(arqs);
   out.push('# Mapa da marca (saida do `aplicar.mjs --dry`)', '', 'Gerado sem escrever nada. Ocorrencia = um achado da regra; "troca" so acontece em contexto de texto.', '');
-  out.push('## 1. Contagem por lote', '', '| Lote | Arquivos que mudam | Trocaria | Fica por excecao | Pede decisao ou reescrita manual |', '| --- | ---: | ---: | ---: | ---: |');
-  for (const l of r) out.push(`| ${l.lote} | ${l.arquivos} | ${l.trocaria} | ${l.excecao} | ${l.manual} |`);
-  const tot = r.reduce((s, l) => ({ a: s.a + l.arquivos, t: s.t + l.trocaria, e: s.e + l.excecao, m: s.m + l.manual }), { a: 0, t: 0, e: 0, m: 0 });
-  out.push(`| **total** | ${tot.a} | ${tot.t} | ${tot.e} | ${tot.m} |`, '');
+  out.push('## 1. Contagem por lote', '', '| Lote | Arquivos que mudam | Trocaria | Fica por excecao | Pede decisao ou reescrita manual | Comando em codigo (fica, so conta) |', '| --- | ---: | ---: | ---: | ---: | ---: |');
+  for (const l of r) out.push(`| ${l.lote} | ${l.arquivos} | ${l.trocaria} | ${l.excecao} | ${l.manual} | ${l.deixado} |`);
+  const tot = r.reduce((s, l) => ({ a: s.a + l.arquivos, t: s.t + l.trocaria, e: s.e + l.excecao, m: s.m + l.manual, d: s.d + l.deixado }), { a: 0, t: 0, e: 0, m: 0, d: 0 });
+  out.push(`| **total** | ${tot.a} | ${tot.t} | ${tot.e} | ${tot.m} | ${tot.d} |`, '');
   out.push('Por regra (todos os lotes):', '');
   const regs = [...new Set(arqs.flatMap((a) => a.ocorrencias.map((o) => o.regra)))].sort();
   out.push('| Regra | Trocaria | Excecao | Manual |', '| --- | ---: | ---: | ---: |');
@@ -449,6 +516,11 @@ export function mapaMarkdown(arqs, regras) {
     if (!linhas.length) continue;
     out.push(`### ${l} (${linhas.length})`, '', '| Arquivo | Motivo | Linha | Trecho |', '| --- | --- | ---: | --- |', ...linhas, '');
   }
+  out.push('## 5. Arquivos gerados (a ferramenta nao toca; troque a fonte e regere)', '');
+  for (const g of arqs.gerados || []) out.push(`- ${g.rel} (${g.lote})`);
+  const pares = paresDesencontrados(arqs);
+  out.push('', '## 6. Pares teste x origem desencontrados (o teste troca, a origem deixa para tras)', '');
+  if (pares.length) { out.push('| Teste | Origem | Regra | Trocas no teste | Restantes na origem |', '| --- | --- | --- | ---: | ---: |'); for (const x of pares) out.push(`| ${x.teste} | ${x.fonte} | ${x.regra} | ${x.trocas} | ${x.restantes} |`); } else out.push('Nenhum.');
   void regras;
   return `${out.join('\n')}\n`;
 }
@@ -473,8 +545,12 @@ function main() {
   if (tem('--mapa')) { process.stdout.write(mapaMarkdown(arqs, regras)); return; }
   if (tem('--detalhe')) for (const a of arqs) for (const o of a.ocorrencias) console.log(`${o.estado}\t${a.rel}:${o.linha}\t${o.regra}\t${o.de}${o.para ? ` -> ${o.para}` : ''}${o.motivo ? `\t${o.motivo}` : ''}`);
   const r = resumo(arqs);
-  console.log(`${dry ? '[dry] nada foi escrito. ' : ''}lote | arquivos que mudam | trocaria | excecao | manual`);
-  for (const l of r) console.log(`${l.lote} | ${l.arquivos} | ${l.trocaria} | ${l.excecao} | ${l.manual}`);
+  console.log(`${dry ? '[dry] nada foi escrito. ' : ''}lote | arquivos que mudam | trocaria | excecao | manual | comando em codigo`);
+  for (const l of r) console.log(`${l.lote} | ${l.arquivos} | ${l.trocaria} | ${l.excecao} | ${l.manual} | ${l.deixado}`);
+  const pares = paresDesencontrados(arqs);
+  console.log(`pares teste x origem desencontrados: ${pares.length}`);
+  for (const x of pares.slice(0, tem('--detalhe') ? 1e9 : 10)) console.log(`  ${x.teste} troca ${x.trocas} (${x.regra}); ${x.fonte} deixa ${x.restantes}`);
+  if ((arqs.gerados || []).length) console.log(`gerados (nao tocados): ${arqs.gerados.map((g) => g.rel).join(', ')}`);
   const mudam = arqs.filter((a) => a.muda).length;
   console.log(`${dry ? 'mudariam' : 'mudaram'} ${mudam} arquivo(s)`);
 }

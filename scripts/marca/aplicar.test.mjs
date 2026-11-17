@@ -156,6 +156,16 @@ test('"DG Claw Lite" fica por excecao; die troca; comando do Admin nao troca (fi
   assert.equal(aplica('templates/ambiente/admin.md', 'rode dgclaw colaborador criar\n').ocorrencias.length, 0);
 });
 
+test('fica_em (Teia, achado do QA-M3): o que o socorro, o Admin ou o agente manda o Admin executar segue dgclaw', () => {
+  const soc = aplica('skills/socorro/SKILL.md', 'com o sim dele, rode `sudo dgclaw agente recriar <x> --forcar` no DG Claw; mapa: `dgclaw status`.\n');
+  assert.equal(soc.novo, 'com o sim dele, rode `sudo dgclaw agente recriar <x> --forcar` no Prumo da Locadora; mapa: `dgclaw status`.\n');
+  for (const rel of ['skills/tela/SKILL.md', 'skills/connect/SKILL.md', 'templates/AGENT.md.tmpl', 'templates/ambiente/agente.md', 'docs/EMERGENCIA.md', 'docs/ATUALIZAR.md', 'docs/BACKUP.md']) {
+    assert.equal(aplica(rel, 'peca ao Admin para rodar `dgclaw agente reiniciar x`\n').ocorrencias.length, 0, rel);
+  }
+  // texto ao dono fora do fica_em continua trocando (avisos, lembretes e mesa: "peca ao dono para rodar")
+  assert.equal(aplica('skills/avisos/SKILL.md', 'peca ao dono para rodar `sudo dgclaw agente reparar <slug>`\n').novo, 'peca ao dono para rodar `sudo prumo agente reparar <slug>`\n');
+});
+
 test('NOTICE: o titulo muda, a afirmacao do autor original e o resto ficam', () => {
   const excs = 'NOTICE\tcódigo do DG Claw foi escrito do zero\tafirmacao do autor original\n';
   const r = aplica('NOTICE', 'DG Claw\n\nO código do DG Claw foi escrito do zero para este projeto.\n', excs);

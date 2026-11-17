@@ -69,6 +69,28 @@ scripts/doctor.sh	nem do DG Telegram	outro produto do autor original; trocar afi
 web/public/dgvis.js	base dos "Visuais na conversa" do DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade (origem do arquivo)
 bin/dgclaw	  dgclaw 	logica: a ajuda() e lida por lib/uso-atualizacao.sh:80 (grep '^  dgclaw [a-z]'); o M4 pode soltar esta excecao se o grep passar a aceitar prumo tambem
 
+# Decisoes do arquiteto (QA-M4, 17/11). Motivo executa: = texto que so o Admin le e executa (fica dgclaw).
+seguranca/ronda/ronda.py	rode `sudo dgclaw seguranca resumo`, que imprime	executa: recado ao Admin (<plataforma recado=...>), que ele le e executa; fica dgclaw como o fica_em (achado A2 do QA-M4)
+seguranca/ronda/ronda.py	por `sudo dgclaw seguranca aplicar <id>`, só com o sim	executa: recado ao Admin (<plataforma recado=...>), que ele le e executa; fica dgclaw como o fica_em (achado A2 do QA-M4)
+seguranca/ronda/ronda.py	`dgclaw atualizar` também só com o sim dele	executa: recado ao Admin (<plataforma recado=...>), que ele le e executa; fica dgclaw como o fica_em (achado A2 do QA-M4)
+seguranca/ronda/ronda.py	`sudo dgclaw seguranca desfazer <registro>` volta atrás	executa: recado ao Admin (<plataforma recado=...>), que ele le e executa; fica dgclaw como o fica_em (achado A2 do QA-M4)
+seguranca/ronda/ronda.py	para rodar `sudo dgclaw seguranca desfazer {registro}`	executa: recado ao Admin (<plataforma recado=...>), que ele le e executa; fica dgclaw como o fica_em (achado A2 do QA-M4)
+seguranca/ronda/ronda.py	Reaplique com `sudo dgclaw emergencia preparar`	executa: recado ao Admin (<plataforma recado=...>), que ele le e executa; fica dgclaw como o fica_em (achado A2 do QA-M4)
+seguranca/ronda/ronda.py	`sudo dgclaw emergencia preparar` e `sudo dgclaw emergencia religar	executa: recado ao Admin (<plataforma recado=...>), que ele le e executa; fica dgclaw como o fica_em (achado A2 do QA-M4)
+seguranca/ronda/ronda.py	Rode `sudo dgclaw seguranca estado` para ver o motivo	executa: recado ao Admin (<plataforma recado=...>), que ele le e executa; fica dgclaw como o fica_em (achado A2 do QA-M4)
+seguranca/ronda/ronda.py	Só o painel e `sudo dgclaw seguranca aplicar ID`	executa: linha do seguranca resumo dirigida a quem executa ("Nunca execute comando..."), o Admin; fica dgclaw (achado A2 do QA-M4)
+scripts/checar-atualizacao.mjs	Rode `sudo dgclaw atualizar --simular`, leia o relatório inteiro	executa: recado ao Admin (<plataforma recado=...>), que ele le e executa; fica dgclaw como o fica_em (achado A2 do QA-M4)
+scripts/checar-atualizacao.mjs	Grave o seu parecer com `sudo dgclaw atualizar --parecer segura	executa: recado ao Admin (<plataforma recado=...>), que ele le e executa; fica dgclaw como o fica_em (achado A2 do QA-M4)
+scripts/checar-atualizacao.mjs	NÃO rode `dgclaw atualizar` sem o sim explícito do dono	executa: recado ao Admin (<plataforma recado=...>), que ele le e executa; fica dgclaw como o fica_em (achado A2 do QA-M4)
+scripts/checar-boletins.mjs	NUNCA rode `dgclaw atualizar` sem o sim explícito do dono	executa: recado ao Admin (<plataforma recado=...>), que ele le e executa; fica dgclaw como o fica_em (achado A2 do QA-M4)
+tests/ronda/test_ronda.py	self.assertIn("sudo dgclaw seguranca resumo", txt)	executa: o teste confere o recado ao Admin, que fica dgclaw (achado A2 do QA-M4)
+tests/ronda/test_ronda.py	self.assertIn("sudo dgclaw emergencia preparar", txt)	executa: o teste confere o recado ao Admin, que fica dgclaw (achado A2 do QA-M4)
+tests/ronda/test_ronda.py	seguranca desfazer {nomes[0]}", texto)	executa: o teste confere o recado ao Admin, que fica dgclaw (achado A2 do QA-M4)
+tests/ronda/test_ronda.py	self.assertIn("sudo dgclaw seguranca aplicar", txt)	executa: o teste confere o recado ao Admin, que fica dgclaw (achado A2 do QA-M4)
+tests/aviso-atualizacao/rodar.sh	"recado manda simular e analisar antes" "dgclaw atualizar --simular"	executa: o teste confere o recado ao Admin, que fica dgclaw (achado A2 do QA-M4)
+tests/boletins/rodar.sh	NUNCA rode `dgclaw atualizar` sem o sim explícito do dono	executa: o teste confere o recado ao Admin, que fica dgclaw (achado A2 do QA-M4)
+container/Containerfile	org.opencontainers.image.title="DG Claw agente"	logica: LABEL no estagio base, antes do apt, do nodesource e do npm -g; mudar o texto invalida o cache dessas camadas em toda instalacao que atualizar. O titulo novo vai num LABEL no fim do estagio final (achado A1 do QA-M4)
+
 # Blocos dos lotes: cada lote acrescenta so no seu, para o merge nao conflitar.
 # --- M1 ---
 #

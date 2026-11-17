@@ -6,19 +6,19 @@ Gerado sem escrever nada. Ocorrencia = um achado da regra; "troca" so acontece e
 
 | Lote | Arquivos que mudam | Trocaria | Fica por excecao | Pede decisao ou reescrita manual | Comando em codigo (fica, so conta) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| M1 | 75 | 201 | 75 | 25 | 1 |
+| M1 | 75 | 202 | 75 | 24 | 1 |
 | M3 | 39 | 114 | 8 | 49 | 0 |
 | M4 | 160 | 824 | 86 | 91 | 874 |
 | M5 | 91 | 666 | 166 | 21 | 11 |
 | sem-lote | 0 | 0 | 35 | 0 | 0 |
-| **total** | 365 | 1805 | 370 | 186 | 886 |
+| **total** | 365 | 1806 | 370 | 185 | 886 |
 
 Por regra (todos os lotes):
 
 | Regra | Trocaria | Excecao | Manual |
 | --- | ---: | ---: | ---: |
 | barra | 17 | 7 | 68 |
-| comando | 1058 | 175 | 58 |
+| comando | 1059 | 175 | 57 |
 | frase | 730 | 95 | 55 |
 | sem-regra | 0 | 93 | 5 |
 
@@ -30,7 +30,7 @@ Manual, por motivo:
 | barra-inexistente | 15 |
 | barra-nao-ligada | 41 |
 | comando-no-inicio-de-string | 6 |
-| comparacao-de-logica | 3 |
+| comparacao-de-logica | 2 |
 | fora-de-contexto | 42 |
 | sem-regra | 5 |
 | sudo-fora-de-zona | 45 |
@@ -237,7 +237,7 @@ Total: 1020 linhas em 81 arquivos de teste.
 
 ## 4. O que ficou manual, por lote (nao trocado; inclui as barras)
 
-### M1 (25)
+### M1 (24)
 
 | Arquivo | Motivo | Linha | Trecho |
 | --- | --- | ---: | --- |
@@ -254,7 +254,6 @@ Total: 1020 linhas em 81 arquivos de teste.
 | qa/roteiro-navegacao.mjs | comparacao-de-logica | 191 | `DG Claw` |
 | web/public/chat.css | tipo-nao-coberto | 1 | `DG Claw` |
 | web/public/dgvis.js | sem-regra | 508 | `DG Telegram` |
-| web/public/seguranca.js | comparacao-de-logica | 507 | `dgclaw` |
 | web/test/auth.test.js | sudo-fora-de-zona | 103 | `dgclaw` |
 | web/test/colaboradores.test.js | sudo-fora-de-zona | 367 | `dgclaw` |
 | web/test/diagnostico-runner-prazo.test.js | comando-no-inicio-de-string | 130 | `dgclaw` |

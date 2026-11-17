@@ -90,7 +90,7 @@ test('cofre da lousa: para colaborador mostra o aviso e não monta campo de chav
   const api = cc && cc.html ? cc : janela.campoCofre;
   assert.ok(api, 'a API do campo do cofre não carregou');
   const h = api.html('GROQ_API_KEY', 'Chave', 'id1');
-  assert.match(h, /O cofre é só do dono do DG Claw\./);
+  assert.match(h, /O cofre é só do dono do Prumo da Locadora\./);
   assert.doesNotMatch(h, /type="password"/);
 });
 

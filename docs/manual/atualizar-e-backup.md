@@ -83,20 +83,29 @@ pedem mais nada.
 do agente voltam ao padrão: se você mudou o horário de alguma, essa mudança se perde, e uma rotina que estava
 desligada volta a rodar. Peça de novo depois, se precisar. A memória, o cofre e as conversas ficam como estão.
 
-**Como conferir antes de trocar.** Peça ao Admin: "confere o que eu perco ao trocar a caixa do agente `<nome do agente>`,
-sem trocar". Ele roda `sudo prumo agente recriar <nome do agente>` **sem** o `--forcar`. Sem o `--forcar`, o comando não
-apaga nada que você instalou. Ele faz uma de três coisas: mostra a lista do que existe só dentro da caixa (a lista
-completa também fica no arquivo `perdido-no-recriar-<data>.txt`, na casa do agente); diz que não conseguiu conferir, e
-por quê, e para; ou confere que não há nada só dentro da caixa, e então troca. Quem decide é o que o comando disse na
-tela. Não conclua nada pelo arquivo não existir: ele só é gravado quando a conferência funcionou e achou algo.
+**Como conferir antes de trocar.** Peça ao Admin: "confere o que eu perco ao trocar a caixa do agente `<nome do agente>`".
+Ele roda `sudo prumo agente recriar <nome do agente>` **sem** o `--forcar`. Sem o `--forcar`, o comando só troca a caixa
+quando comprova que não há nada a perder. Ele pode responder de quatro jeitos, e quem decide é o que ele disse na tela:
+
+1. **Mostra a lista do que existe só dentro da caixa e para.** Nada foi trocado. A lista completa também fica no
+   arquivo `perdido-no-recriar-<data>.txt`, na casa do agente.
+2. **Diz que não conseguiu conferir, e por quê, e para.** Nada foi trocado. Por exemplo, a caixa está presa em
+   "stopping" ou não respondeu à conferência.
+3. **Comprova que não há nada só dentro da caixa e já troca.** Não perde nada.
+4. **Diz só que deixou como está**, porque a caixa não está ligada (desligada, nunca ligou ou sumiu). Nada foi trocado
+   e nada foi conferido. Peça ao Admin para ligar o agente e repetir a conferência. Se a caixa aparece como sumida
+   ("ausente"), veja o parágrafo "Agente desligado ou sem caixa" abaixo antes de qualquer troca.
+
+Não conclua nada pelo arquivo `perdido-no-recriar-<data>.txt` não existir: ele só é gravado quando a conferência
+funcionou e achou algo.
 
 Se aparecem só rotinas com nome `dgclaw-<nome do agente>-...`, é o esperado. Se aparece um programa que você instalou
 e ainda usa, você escolhe: adiar a troca (o agente continua na versão anterior) ou anotar o nome do programa, trocar e
 instalá-lo de novo depois.
 
-Se o comando disse que não conseguiu conferir (por exemplo, a caixa está presa em "stopping"), não use o `--forcar`
-ainda. Peça ao Admin para copiar para a casa do agente o que for importante e só então trocar. Em caso de dúvida, adie
-a troca: o agente continua funcionando na versão anterior.
+Se o comando disse que não conseguiu conferir, não use o `--forcar` ainda. Peça ao Admin para copiar para a casa do
+agente o que for importante e só então trocar. Em caso de dúvida, adie a troca: o agente continua funcionando na versão
+anterior.
 
 **Como saber que deu certo.** `sudo prumo agente listar` deve mostrar o agente em `running` e `ok`. O
 `sudo prumo status` não serve de prova: ele mostra a versão do sistema e só diz que o agente está de pé.
@@ -104,7 +113,9 @@ a troca: o agente continua funcionando na versão anterior.
 **Agente desligado ou sem caixa.** O agente desligado não aparece como FALHOU. Quando você quiser usá-lo, peça ao Admin
 para ligar, e na atualização seguinte ele passa por esta mesma etapa. O agente sem caixa não liga com
 `sudo prumo agente iniciar`, porque não há o que ligar: a receita é a mesma troca de caixa acima, e como não existe
-caixa, não há nada a perder.
+caixa, não há nada a perder. Mas, antes, peça ao Admin ou a quem instalou o servidor para confirmar que a caixa
+realmente não existe: a lista de agentes também mostra "ausente" quando o servidor não consegue consultar a caixa por
+algum erro. Se ele disser que o servidor está com erro, não troque: peça a quem cuida do servidor para olhar primeiro.
 
 ## Aviso de versão nova
 

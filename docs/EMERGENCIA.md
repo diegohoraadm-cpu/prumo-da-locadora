@@ -25,7 +25,7 @@
    **Exceção:** `dgclaw agente recriar <nome do agente> --forcar` troca o container de propósito. É o
    caminho quando o agente ficou de fora da atualização para a 1.0.5 ou está sem container (seção
    3.2.1), e só com o "posso?" (quando o agente tem container, com a lista do que se perde na mão; sem
-   container não há lista e nada a perder): se perde o que foi instalado à mão dentro do container, e
+   container, confirmado como na seção 3.2, não há lista e nada a perder): se perde o que foi instalado à mão dentro do container, e
    as rotinas padrão voltam ao padrão. A casa, a memória, o cofre e as conversas
    ficam.
 7. **Uma mudança por vez.** Mudou, conferiu (seção 5), só então a próxima.
@@ -40,9 +40,14 @@ root). A sessão de socorro do painel roda **dentro do container do agente**, co
 command -v podman dgclaw || echo "dentro do container"
 ```
 
-**`prumo` e `dgclaw` são o mesmo comando**, mas o instalador não cria o `prumo` num servidor que já tem outro
-programa com esse nome. Este roteiro usa `dgclaw`, que existe sempre. Ao dono, escreva o comando como `sudo prumo …`;
-a seção 3.1.1 usa `prumo` porque ali quem digita é o dono.
+**`prumo` e `dgclaw` são o mesmo programa.** Ao dono, escreva o comando como `sudo prumo …`, que é o nome que ele vê
+na tela de login. Este roteiro, que é o que você executa, usa `dgclaw`, que existe sempre. A exceção: o instalador
+não cria o `prumo` num servidor que já tem outro programa com esse nome (`install.sh:2450-2458`, que avisa "já existe
+um 'prumo' ... que não é o nosso"). Para saber em qual caso você está, rode `cat /usr/local/bin/prumo`. Se imprimir
+exatamente duas linhas, `#!/bin/sh` e `exec /usr/local/bin/dgclaw "$@"`, é o nosso apelido: ao dono vale
+`sudo prumo …`. Se imprimir outra coisa, ou o arquivo não existir, o `prumo` daquele servidor não é o nosso: ao dono,
+escreva `sudo dgclaw …`, que é o mesmo programa. Na dúvida, escreva `dgclaw`. A seção 3.1.1 usa `prumo` porque ali
+quem digita é o dono, no servidor onde a tela de login já mostra esse nome.
 
 Dentro do container não existem `podman`, `dgclaw` (nem o `prumo`) nem `sudo`. Traduza assim:
 
@@ -282,7 +287,13 @@ dgclaw agente listar
 - `CONTAINER` em `exited` (desligado): com o "posso?", `sudo dgclaw agente iniciar <nome do agente>`.
   Isso liga o container de novo e reaplica o firewall.
 - `CONTAINER` em `ausente` (o container não existe mais): o `agente iniciar` não funciona, porque não
-  há o que ligar. A receita é uma só, a da seção 3.2.1: com o "posso?",
+  há o que ligar. Antes, confirme que o container não existe de verdade: o `agente listar` também mostra `ausente`
+  quando o `podman inspect` falha por qualquer motivo (`bin/dgclaw:2097-2101`). Rode
+  `podman ps -a --format '{{.Names}}'`: tem de sair sem erro e sem `dgclaw-<nome do agente>`. Se o podman der erro,
+  não é agente ausente: não use o `--forcar`, pare e entregue a saída a quem cuida do servidor (com o podman falhando,
+  o `--forcar` ou para antes de mexer em algo, `bin/dgclaw:1842-1844`, ou segue sem conseguir conferir o que se perde
+  dentro da caixa, `:1905-1908`; a casa do agente não é afetada, porque é montada de fora, `:908-912`). Confirmado,
+  a receita é uma só, a da seção 3.2.1: com o "posso?",
   `sudo dgclaw agente recriar <nome do agente> --forcar`. Ela cria o container de novo, com a mesma
   casa, o mesmo cofre e as mesmas portas.
 - Agente que continua na versão anterior depois de uma atualização que terminou "INCOMPLETA": seção
@@ -348,7 +359,9 @@ e o comando de cada um; o item da 1.0.5 no `CHANGELOG.md` diz o mesmo.
 **Dois casos que a atualização não lista como FALHOU.** O agente **desligado** (`exited`) fica como
 está; quando o dono quiser usá-lo, `sudo dgclaw agente iniciar <nome do agente>`, e na atualização
 seguinte ele passa por esta mesma etapa. O agente **sem container** (`ausente`) não liga com
-`agente iniciar`, porque não há o que ligar. A receita é a do passo 3, a mesma do aviso do instalador:
+`agente iniciar`, porque não há o que ligar. Antes, faça a conferência da seção 3.2 (`podman ps -a --format
+'{{.Names}}'` sem erro e sem `dgclaw-<nome do agente>`; com erro, não é agente ausente e não se usa o `--forcar`).
+Confirmado, a receita é a do passo 3, a mesma do aviso do instalador:
 `sudo dgclaw agente recriar <nome do agente> --forcar` cria a caixa de novo. Como a caixa não existe,
 não há nada dentro dela para perder: aqui não há lista e o passo 1 não se aplica.
 

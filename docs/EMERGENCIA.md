@@ -43,9 +43,11 @@ command -v podman dgclaw || echo "dentro do container"
 **`prumo` e `dgclaw` são o mesmo programa.** Ao dono, escreva o comando como `sudo prumo …`, que é o nome que ele vê
 na tela de login. Este roteiro, que é o que você executa, usa `dgclaw`, que existe sempre. A exceção: o instalador
 não cria o `prumo` num servidor que já tem outro programa com esse nome (`install.sh:2450-2458`, que avisa "já existe
-um 'prumo' ... que não é o nosso"). Para saber em qual caso você está, rode `cat /usr/local/bin/prumo`. Se imprimir
+um 'prumo' ... que não é o nosso"). Para saber em qual caso você está, primeiro veja qual `prumo` o `sudo` encontra: `sudo sh -c 'command -v prumo'`
+(o `sudo` usa um PATH próprio, que pode achar outro programa antes de `/usr/local/bin`; é esse que o dono usa).
+Depois rode `sudo cat` no caminho que apareceu. Se o caminho for `/usr/local/bin/prumo` e o arquivo imprimir
 exatamente duas linhas, `#!/bin/sh` e `exec /usr/local/bin/dgclaw "$@"`, é o nosso apelido: ao dono vale
-`sudo prumo …`. Se imprimir outra coisa, ou o arquivo não existir, o `prumo` daquele servidor não é o nosso: ao dono,
+`sudo prumo …`. Se o caminho for outro, ou o arquivo imprimir outra coisa, ou não aparecer caminho nenhum, o `prumo` daquele servidor não é o nosso: ao dono,
 escreva `sudo dgclaw …`, que é o mesmo programa. Na dúvida, escreva `dgclaw`. A seção 3.1.1 usa `prumo` porque ali
 quem digita é o dono, no servidor onde a tela de login já mostra esse nome.
 
@@ -289,8 +291,10 @@ dgclaw agente listar
 - `CONTAINER` em `ausente` (o container não existe mais): o `agente iniciar` não funciona, porque não
   há o que ligar. Antes, confirme que o container não existe de verdade: o `agente listar` também mostra `ausente`
   quando o `podman inspect` falha por qualquer motivo (`bin/dgclaw:2097-2101`). Rode
-  `podman ps -a --format '{{.Names}}'`: tem de sair sem erro e sem `dgclaw-<nome do agente>`. Se o podman der erro,
-  não é agente ausente: não use o `--forcar`, pare e entregue a saída a quem cuida do servidor (com o podman falhando,
+  `sudo podman container exists dgclaw-<nome do agente>` (o nome exato; com `sudo`, porque sem ele o podman de
+  usuário comum não enxerga os containers do servidor e responderia "não existe" por engano) e olhe o código de
+  saída (`echo $?`): 0 é "existe" (não é ausente), 1 é "não existe" (ausente de verdade, o mesmo critério de
+  `lib/restricoes.sh:425-426`) e qualquer outro valor é erro do podman. Com erro, não é agente ausente: não use o `--forcar`, pare e entregue a saída a quem cuida do servidor (com o podman falhando,
   o `--forcar` ou para antes de mexer em algo, `bin/dgclaw:1842-1844`, ou segue sem conseguir conferir o que se perde
   dentro da caixa, `:1905-1908`; a casa do agente não é afetada, porque é montada de fora, `:908-912`). Confirmado,
   a receita é uma só, a da seção 3.2.1: com o "posso?",
@@ -359,8 +363,9 @@ e o comando de cada um; o item da 1.0.5 no `CHANGELOG.md` diz o mesmo.
 **Dois casos que a atualização não lista como FALHOU.** O agente **desligado** (`exited`) fica como
 está; quando o dono quiser usá-lo, `sudo dgclaw agente iniciar <nome do agente>`, e na atualização
 seguinte ele passa por esta mesma etapa. O agente **sem container** (`ausente`) não liga com
-`agente iniciar`, porque não há o que ligar. Antes, faça a conferência da seção 3.2 (`podman ps -a --format
-'{{.Names}}'` sem erro e sem `dgclaw-<nome do agente>`; com erro, não é agente ausente e não se usa o `--forcar`).
+`agente iniciar`, porque não há o que ligar. Antes, faça a conferência da seção 3.2 (`sudo podman container exists
+dgclaw-<nome do agente>` com código de saída 1; com 0 o container existe, e com outro valor é erro do podman: não é
+agente ausente e não se usa o `--forcar`).
 Confirmado, a receita é a do passo 3, a mesma do aviso do instalador:
 `sudo dgclaw agente recriar <nome do agente> --forcar` cria a caixa de novo. Como a caixa não existe,
 não há nada dentro dela para perder: aqui não há lista e o passo 1 não se aplica.

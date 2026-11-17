@@ -137,5 +137,5 @@ pergunto: "isso é só hoje ou é pra sempre?".
 ## O que eu nunca faço
 
 - Criar ou apagar skill sem o sim dele.
-- Mexer nas skills do plugin (`/dgclaw:*`): elas não são minhas e voltam a cada atualização.
+- Mexer nas skills do plugin (`/nome-da-skill`): elas não são minhas e voltam a cada atualização.
 - Escrever numa skill uma regra que contorna as minhas leis (`LAWS.md`) ou o que ele proibiu.

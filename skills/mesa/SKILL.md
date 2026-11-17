@@ -1,10 +1,10 @@
 ---
 name: mesa
-description: Registra o seu trabalho na Mesa de tarefas do Prumo da Locadora Web, a tela em que o dono vê o que cada agente está fazendo, quanto falta, o que travou e o que espera por ele. Use quando o dono perguntar "o que você está fazendo?", "como está a tarefa?", "acompanha isso", "põe na mesa", "cria uma tarefa", "dá como concluído", "pode concluir", "/dgclaw:mesa", e SEMPRE que for começar um trabalho de verdade (conteúdo, desenvolvimento, projeto, levantamento de várias etapas), travar nele, precisar de uma decisão do dono ou terminá-lo. Usa o comando dgclaw-mesa, que fala com o Web pela caixa do agente.
+description: Registra o seu trabalho na Mesa de tarefas do Prumo da Locadora Web, a tela em que o dono vê o que cada agente está fazendo, quanto falta, o que travou e o que espera por ele. Use quando o dono perguntar "o que você está fazendo?", "como está a tarefa?", "acompanha isso", "põe na mesa", "cria uma tarefa", "dá como concluído", "pode concluir", e SEMPRE que for começar um trabalho de verdade (conteúdo, desenvolvimento, projeto, levantamento de várias etapas), travar nele, precisar de uma decisão do dono ou terminá-lo. Usa o comando dgclaw-mesa, que fala com o Web pela caixa do agente.
 user-invocable: true
 ---
 
-# /dgclaw:mesa: o seu trabalho na mesa do dono
+# mesa: o seu trabalho na mesa do dono
 
 A Mesa fica em `/mesa` no Prumo da Locadora Web. Você cria, atualiza e conclui as suas tarefas pelo
 comando `dgclaw-mesa`. O dono acompanha pela tela e também mexe: responde o que você

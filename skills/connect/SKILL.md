@@ -4,7 +4,7 @@ description: Conecta o assistente Prumo da Locadora a servicos Google (Drive, Gm
 user-invocable: true
 ---
 
-# /dgclaw:connect — Conectar servicos (Google)
+# connect — Conectar servicos (Google)
 
 Liga Drive / Gmail / Google Calendar no assistente usando os **connectors
 nativos do Claude Code** (sem precisar criar projeto no Google Cloud nem mexer

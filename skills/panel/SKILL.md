@@ -1,10 +1,10 @@
 ---
 name: panel
-description: Sobe, reinicia, abre e explica o painel web do assistente Prumo da Locadora, nos dois modos (local no PC e servidor na VPS). Mostra memoria, status, personalidade, identidade, operacoes, custos e o fio da conversa, e acende as areas das extensoes instaladas. Use quando o usuario rodar /dgclaw:panel, pedir pra "abrir o painel", "subir o dashboard", "ver a memoria do agente", "reiniciar o painel", "qual a URL e a senha do painel", ou "fechar o painel".
+description: Sobe, reinicia, abre e explica o painel web do assistente Prumo da Locadora, nos dois modos (local no PC e servidor na VPS). Mostra memoria, status, personalidade, identidade, operacoes, custos e o fio da conversa, e acende as areas das extensoes instaladas. Use quando o usuario pedir pra "abrir o painel", "subir o dashboard", "ver a memoria do agente", "reiniciar o painel", "qual a URL e a senha do painel", ou "fechar o painel".
 user-invocable: true
 ---
 
-# /dgclaw:panel: o painel do assistente
+# panel: o painel do assistente
 
 Descubra o modo antes de qualquer coisa:
 

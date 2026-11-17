@@ -1,10 +1,10 @@
 ---
 name: socorro
-description: Socorro do agente Prumo da Locadora para o dono leigo: descobre por que o agente parou de responder ou ficou estranho, explica em uma frase, propõe o conserto, pede licença e confere que voltou. Use quando alguém disser "meu agente parou", "ele não responde", "não está respondendo", "deu problema no agente", "aconteceu alguma coisa com meu agente, vê aí", "o bot morreu", "ele ficou mudo", "o agente sumiu", "ele esqueceu tudo", "/dgclaw:socorro", ou quando a sessão de socorro do painel for aberta. Serve para a instalação v1 (cada agente num container, o Admin no servidor). Para uma checagem geral sem queixa, prefira rodar `prumo status`.
+description: Socorro do agente Prumo da Locadora para o dono leigo: descobre por que o agente parou de responder ou ficou estranho, explica em uma frase, propõe o conserto, pede licença e confere que voltou. Use quando alguém disser "meu agente parou", "ele não responde", "não está respondendo", "deu problema no agente", "aconteceu alguma coisa com meu agente, vê aí", "o bot morreu", "ele ficou mudo", "o agente sumiu", "ele esqueceu tudo", ou quando a sessão de socorro do painel for aberta. Serve para a instalação v1 (cada agente num container, o Admin no servidor). Para uma checagem geral sem queixa, prefira rodar `prumo status`.
 user-invocable: true
 ---
 
-# /dgclaw:socorro: o agente parou, e agora?
+# socorro: o agente parou, e agora?
 
 Quem pede socorro quase nunca é técnico e está preocupado. O seu trabalho é achar a causa
 rápido, explicar sem jargão, consertar só com licença e provar que voltou.

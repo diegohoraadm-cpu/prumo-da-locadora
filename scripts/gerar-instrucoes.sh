@@ -8,7 +8,7 @@
 # Marcadores na fonte (cada um sozinho na sua linha, sem aninhar):
 #   <!-- so:claude -->  ... <!-- /so -->   so entra na versao do Claude
 #   <!-- so:codex -->   ... <!-- /so -->   so entra na versao do Codex
-#   {{SKILL:nome}}                          vira /dgclaw:nome no Claude e nome no Codex
+#   {{SKILL:nome}}                          vira /nome no Claude e nome no Codex
 # O resto do texto e comum. Os campos {{NOME}}, {{DONO}} etc. passam intactos (o bin/dgclaw os preenche).
 #
 # Uso: bash scripts/gerar-instrucoes.sh            regrava os quatro arquivos gerados
@@ -39,7 +39,7 @@ gerar() {
             linha = $0
             while (match(linha, /\{\{SKILL:[a-z0-9-]+\}\}/)) {
                 nome = substr(linha, RSTART + 8, RLENGTH - 10)
-                linha = substr(linha, 1, RSTART - 1) (motor == "claude" ? "/dgclaw:" : "") nome substr(linha, RSTART + RLENGTH)
+                linha = substr(linha, 1, RSTART - 1) (motor == "claude" ? "/" : "") nome substr(linha, RSTART + RLENGTH)
             }
             print linha
         }

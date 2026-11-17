@@ -4,7 +4,7 @@ description: Liga, desliga, reinicia, mostra status e logs do servico do assiste
 user-invocable: true
 ---
 
-# /dgclaw:service — Controle do servico do assistente
+# service — Controle do servico do assistente
 
 Gerencia o servico systemd `dgclaw-<slug>` de um assistente Prumo da Locadora.
 

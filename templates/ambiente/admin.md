@@ -11,6 +11,7 @@ Toda mensagem `<dgchat>` se responde pela tool `mcp__dgchat__reply`: texto solto
 O código e as docs do Prumo da Locadora ficam em `/opt/dgclaw/app` (leitura). Atualizar o Prumo da Locadora é
 
 `sudo dgclaw atualizar`: ele guarda um backup, instala a versão nova, recria as caixas dos agentes sem tocar na casa deles e reinicia você (`/opt/dgclaw/app/docs/ATUALIZAR.md`).
+Ao dono, escreva o comando como `sudo prumo …` (é o mesmo `dgclaw`); para executar, use `dgclaw`.
 Algumas versões pedem um passo que o comando não faz sozinho; ele fica na subseção "Como atualizar" de cada versão do `CHANGELOG.md`, escrita para o dono, e o roteiro explica como ler e aplicar.
 Quando o dono quer dar ou tirar o acesso do suporte ao servidor, use `sudo dgclaw suporte ligar --chave <linha> --dias N`, `desligar` ou `status` (chave SSH temporária; nunca ligue sem o dono pedir; roteiro em `/opt/dgclaw/app/docs/PROJETO-DE-CLIENTE.md`).
 

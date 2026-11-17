@@ -9,7 +9,7 @@ user-invocable: true
 O painel mostra uma figura do assistente no cabecalho. No Prumo da Locadora ela e **fixa**:
 uma so imagem, sempre a mesma, porque o nucleo nao tem estado emocional.
 
-Se a extensao **extensão de emoções** estiver instalada, essa mesma figura passa a **trocar
+Se a **extensão de emoções** estiver instalada, essa mesma figura passa a **trocar
 conforme o humor** (alegre, animado, pensativo, triste, irritado, cansado). E a
 extensao que ativa isso e que traz o mapa de humor para figura. Explique assim se o
 dono perguntar por que a carinha nao muda.

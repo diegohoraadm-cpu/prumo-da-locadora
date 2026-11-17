@@ -1,10 +1,10 @@
 ---
 name: uninstall
-description: Tira um assistente Prumo da Locadora do ar no servidor, desligando o servico, as rotinas e o painel, e guardando tudo num backup datado. Use quando o usuario pedir "desinstalar o Prumo da Locadora", "tirar o agente do ar", "remover o assistente da VPS", "parar tudo dele", "apagar o agente", ou rodar /dgclaw:uninstall. Por padrao preserva identidade, memoria e credenciais; com --purge move tambem os dados pro backup, sempre com confirmacao.
+description: Tira um assistente Prumo da Locadora do ar no servidor, desligando o servico, as rotinas e o painel, e guardando tudo num backup datado. Use quando o usuario pedir "desinstalar o Prumo da Locadora", "tirar o agente do ar", "remover o assistente da VPS", "parar tudo dele", "apagar o agente". Por padrao preserva identidade, memoria e credenciais; com --purge move tambem os dados pro backup, sempre com confirmacao.
 user-invocable: true
 ---
 
-# /dgclaw:uninstall: tirar o assistente do ar
+# uninstall: tirar o assistente do ar
 
 Nada e apagado aqui. Tudo o que sai do lugar vai pra uma pasta de backup datada
 dentro do workspace (`.dgclaw-desinstalado-<data>/`), pra que qualquer
@@ -63,6 +63,6 @@ purge a confirmacao digitada continua valendo mesmo assim).
 
 Feche com: o que foi desligado, onde ficou o backup (caminho completo), o que
 continua no lugar, e como trazer de volta. No modo conservador, trazer de volta e
-rodar `/dgclaw:setup` apontando pro mesmo workspace: ele volta com a memoria e a
+instalar de novo apontando pro mesmo workspace: ele volta com a memoria e a
 personalidade que tinha. Lembre tambem que a pasta de backup ocupa espaco e pode
 ser apagada por ele quando tiver certeza.

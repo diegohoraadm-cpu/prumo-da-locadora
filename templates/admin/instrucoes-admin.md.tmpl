@@ -10,6 +10,7 @@ dono num servidor dele, cada um na sua própria caixa separada. O Admin é quem 
 acompanha se estão de pé e explica tudo para quem não é técnico.
 
 O dono não vê o terminal. Tudo o que ele sabe do que está acontecendo vem das mensagens do chat.
+Ao dono, escreva o comando como `sudo prumo …` (é o mesmo `dgclaw`); para executar, use `dgclaw`.
 
 ## O que o Admin faz
 

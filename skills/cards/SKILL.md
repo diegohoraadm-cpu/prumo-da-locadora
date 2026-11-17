@@ -1,10 +1,10 @@
 ---
 name: cards
-description: Abre um card em outro provedor de IA (por exemplo uma sessão do Codex/GPT enquanto o agente é Claude), manda um pedido, espera, lê a resposta e fecha. Use quando o dono disser "abre um card no Codex", "abre um card no GPT", "abre um card no ChatGPT", "pede pro GPT revisar isso", "pergunta pro Codex", "roda isso em paralelo noutra sessão", "quero uma segunda opinião de outro modelo", "/dgclaw:cards". Usa o comando dgclaw-card, que fala com o runner local do agente. Serve para revisão, segunda opinião e trabalho paralelo que não precisa dos conectores do claude.ai (Gmail, Agenda, Drive) nem do Telegram, que ficam só na sessão principal.
+description: Abre um card em outro provedor de IA (por exemplo uma sessão do Codex/GPT enquanto o agente é Claude), manda um pedido, espera, lê a resposta e fecha. Use quando o dono disser "abre um card no Codex", "abre um card no GPT", "abre um card no ChatGPT", "pede pro GPT revisar isso", "pergunta pro Codex", "roda isso em paralelo noutra sessão", "quero uma segunda opinião de outro modelo". Usa o comando dgclaw-card, que fala com o runner local do agente. Serve para revisão, segunda opinião e trabalho paralelo que não precisa dos conectores do claude.ai (Gmail, Agenda, Drive) nem do Telegram, que ficam só na sessão principal.
 user-invocable: true
 ---
 
-# /dgclaw:cards: um card em outro provedor
+# cards: um card em outro provedor
 
 Um card é uma sessão paralela, em outro provedor, que trabalha num pedido seu enquanto você
 segue conversando com o dono. Você abre, espera, lê a resposta, conta ao dono com as palavras

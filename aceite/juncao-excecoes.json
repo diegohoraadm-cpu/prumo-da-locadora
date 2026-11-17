@@ -54,6 +54,21 @@
       "arquivo": "docs/PROJETO-DE-CLIENTE.md",
       "linha": "Este guia é para o time DG que monta um agente para um cliente. Ele diz qual é o padrão, o passo a passo, por",
       "motivo": "\"time DG\" vira \"a equipe\" (decisão 2 do plano de marca): o guia é de quem monta o agente do cliente, não do time do autor original"
+    },
+    {
+      "arquivo": "CHANGELOG.md",
+      "linha": "você libera uma chave SSH nossa com prazo (`sudo dgclaw suporte ligar --chave '<linha>' --dias 7`, de 1 a 30",
+      "motivo": "item novo do CHANGELOG vindo do original (nenhum aluno viu): \"nossa\" trocado por \"da equipe do Prumo da Locadora\" para não ser lido como do dono (QA do M5, B5)"
+    },
+    {
+      "arquivo": "docs/ATUALIZAR.md",
+      "linha": "`/opt/dgclaw/app/...` e comandos `dgclaw ...`): uma rotina que só diz \"faça o resumo do dia\" não aparece,",
+      "motivo": "rodada 2 do M5 (QA A2): o coletor lib/uso-coletor.sh só reconhece \"dgclaw <comando>\"; a frase agora diz que \"prumo ...\" não é reconhecido"
+    },
+    {
+      "arquivo": "docs/ATUALIZAR.md",
+      "linha": "e aí vale o seu julgamento. Para ver o texto de uma rotina, abra a casa do agente, não o relatório.",
+      "motivo": "rodada 2 do M5 (QA A2): continuação da frase do coletor de uso, reescrita junto com a linha anterior"
     }
   ],
   "nossas_ausentes": [

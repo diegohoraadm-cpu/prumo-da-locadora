@@ -163,16 +163,51 @@ ganha a Sentinela no próximo `sudo dgclaw atualizar`.
   como `FALHOU`, vá à tabela 2.1 e leia o log da peça. Com o "posso?":
   `systemctl restart caddy` ou `systemctl restart dgclaw-web`. Reiniciar o Web não derruba
   nenhum agente.
-- Abre, mas pede senha e não aceita: a senha do painel se troca com
-  `sudo dgclaw senha` (a senha é digitada no terminal, sem aparecer; nunca a escreva no chat). Se a pessoa
-  nunca chegou a cadastrar a senha ou o link expirou, `sudo dgclaw primeiro-acesso` gera um link novo.
+- Abre, mas o login não aceita: siga a seção 3.1.1, na ordem. É o caso mais comum de "não consigo
+  entrar" e quase nunca é a senha.
 - Abre, mas só a tela do agente (`/p/$SLUG/`) não carrega: container ou painel do agente
   (seções 3.2 e a linha "Painel do agente" da tabela 2.2).
+
+### 3.1.1 Não consegue entrar no painel (a tela de login abre e não aceita)
+Na ordem; pare no primeiro que explicar. Quem não entra no painel não fala com o Admin: este
+caminho é todo pelo terminal do servidor.
+
+1. **Apareceu "muitas tentativas seguidas"?** São 5 erros seguidos vindos da mesma
+   internet (o mesmo IP); o bloqueio dura 15 minutos a contar do primeiro erro. A contagem vive na
+   memória do `dgclaw-web` e some quando ele reinicia. Se a pessoa tem certeza do usuário e da
+   senha e só quer destravar: `sudo systemctl restart dgclaw-web` (não derruba nenhum agente). Se
+   vai trocar a senha, o `sudo dgclaw senha` do passo 4 já reinicia o painel e zera a contagem.
+   Antes de tentar entrar de novo, confira os passos 2 e 3, senão o bloqueio volta.
+2. **Usuário ou e-mail?** O campo diz "Usuário ou e-mail", mas o **dono entra com o nome de
+   usuário** escolhido na instalação (`--usuario`), nunca com o e-mail. E-mail só vale para
+   colaborador convidado por dentro do painel. Sinal típico: a pessoa diz "é o mesmo e-mail que uso
+   em outro sistema".
+3. **Ver qual é o usuário:**
+   ```bash
+   sudo grep DGCLAW_PANEL_USER /etc/dgclaw/web.env
+   ```
+   A linha mostra o usuário exatamente como deve ser digitado (maiúsculas contam). A senha não fica
+   guardada ali, só um código embaralhado dela.
+4. **Trocar a senha:** `sudo dgclaw senha`. Pede a senha nova duas vezes, sem mostrar o que é
+   digitado; mínimo de 12 caracteres; não pede a antiga; nunca a escreva no chat. O painel
+   reinicia sozinho. Se a pessoa nunca cadastrou a senha ou o link de primeiro acesso venceu,
+   `sudo dgclaw primeiro-acesso` gera um link novo (uso único, 30 minutos).
+5. **Ainda recusa com usuário e senha certos:** teste numa janela anônima. Se ali entra, o
+   navegador guardou uma senha antiga: apague-a no gerenciador de senhas do navegador.
+6. **Não confunda as senhas.** A senha do painel não é a senha da Tela do agente (aquela, de 6 a
+   8 caracteres, só abre o navegador do agente) nem a conta do Claude.
+
+O que **não** é a causa: refazer o login do Claude no terminal (`claude` e `/login`) não muda a
+senha do painel nem liga agente parado. Só faça isso se a seção 3.4 mandar.
 
 ### 3.2 O agente aparece e o container está de pé?
 ```bash
 dgclaw agente listar
 ```
+- `CONTAINER` em `created`: o container foi criado e nunca ligou. É o caso típico logo depois de
+  instalar ou reinstalar pelo terminal; a Sentinela avisa "O agente X está desligado". Com o
+  "posso?", `dgclaw agente iniciar $SLUG`, e confira de novo: o certo é `running` e `ok` em até
+  um minuto.
 - `CONTAINER` em `exited` ou `ausente`: com o "posso?", `dgclaw agente iniciar $SLUG`. Isso
   liga o container de novo e reaplica o firewall. Se o container está `ausente` e a casa
   existe, não recrie sozinho: diga ao dono o que viu e peça a decisão (recriar é
@@ -321,6 +356,11 @@ daquela conversa, não a memória.
 7. **Confira** (seção 5) e conte o resultado: "Voltou. Manda um oi pra ele."
 8. **Registre** em uma linha no `memory/<hoje>.md` do agente o que aconteceu e o que foi feito,
    para ele saber depois por que ficou fora do ar.
+
+**Quando o socorro é uma pessoa guiando outra por chamada:** todo comando vai por escrito, no
+chat da chamada, um por mensagem, pronto para copiar e colar; nunca ditado letra a letra. Espere a
+pessoa dizer o que apareceu antes de mandar o próximo. Peça para ela compartilhar a janela do
+terminal, não só a do navegador.
 
 Se nada aqui explicou o problema: diga isso com franqueza, junte a saída de `dgclaw status`,
 de `dgclaw agente listar` e os últimos logs, e entregue a quem cuida do servidor. Não invente

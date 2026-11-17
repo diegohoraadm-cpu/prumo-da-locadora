@@ -376,3 +376,8 @@ test('par teste x origem desencontrado e acusado (dgclaw-sentinela.test.sh x bin
   const out = execFileSync(process.execPath, [path.join(AQUI, 'aplicar.mjs'), '--dry', '--raiz', d], { encoding: 'utf8' });
   assert.match(out, /pares teste x origem desencontrados: 1/);
 });
+
+test('fica_em tambem protege os testes do diagnostico (web/test/diagnostico*) para produto e teste ficarem juntos', () => {
+  const r = aplica('web/test/diagnostico-runner-prazo.test.js', "const bom = ['`dgclaw status`']; const t = 'Rode sudo dgclaw status no DG Claw';\n");
+  assert.equal(r.novo, "const bom = ['`dgclaw status`']; const t = 'Rode sudo dgclaw status no Prumo da Locadora';\n");
+});

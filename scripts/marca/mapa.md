@@ -6,19 +6,19 @@ Gerado sem escrever nada. Ocorrencia = um achado da regra; "troca" so acontece e
 
 | Lote | Arquivos que mudam | Trocaria | Fica por excecao | Pede decisao ou reescrita manual | Comando em codigo (fica, so conta) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| M1 | 75 | 202 | 75 | 24 | 1 |
+| M1 | 73 | 199 | 75 | 22 | 1 |
 | M3 | 39 | 114 | 8 | 49 | 0 |
 | M4 | 160 | 824 | 86 | 91 | 874 |
 | M5 | 91 | 666 | 166 | 21 | 11 |
 | sem-lote | 0 | 0 | 35 | 0 | 0 |
-| **total** | 365 | 1806 | 370 | 185 | 886 |
+| **total** | 363 | 1803 | 370 | 183 | 886 |
 
 Por regra (todos os lotes):
 
 | Regra | Trocaria | Excecao | Manual |
 | --- | ---: | ---: | ---: |
 | barra | 17 | 7 | 68 |
-| comando | 1059 | 175 | 57 |
+| comando | 1056 | 175 | 55 |
 | frase | 730 | 95 | 55 |
 | sem-regra | 0 | 93 | 5 |
 
@@ -29,7 +29,7 @@ Manual, por motivo:
 | barra-generica | 4 |
 | barra-inexistente | 15 |
 | barra-nao-ligada | 41 |
-| comando-no-inicio-de-string | 6 |
+| comando-no-inicio-de-string | 4 |
 | comparacao-de-logica | 2 |
 | fora-de-contexto | 42 |
 | sem-regra | 5 |
@@ -223,8 +223,6 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 | web/test/colaboradores-correcoes3.test.js | 3 | 3 | 0 |
 | web/test/colaboradores.test.js | 2 | 1 | 1 |
 | web/test/conectar-puro.test.js | 3 | 3 | 0 |
-| web/test/diagnostico-runner-prazo.test.js | 4 | 2 | 2 |
-| web/test/diagnostico-suporte.test.js | 1 | 1 | 0 |
 | web/test/email.test.js | 4 | 3 | 1 |
 | web/test/escopo.test.js | 2 | 2 | 0 |
 | web/test/grava-anexo.test.js | 1 | 1 | 0 |
@@ -233,11 +231,11 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 | web/test/ronda-tela.test.js | 2 | 0 | 2 |
 | web/test/socket-admin.test.js | 1 | 1 | 0 |
 
-Total: 1020 linhas em 81 arquivos de teste.
+Total: 1015 linhas em 79 arquivos de teste.
 
 ## 4. O que ficou manual, por lote (nao trocado; inclui as barras)
 
-### M1 (24)
+### M1 (22)
 
 | Arquivo | Motivo | Linha | Trecho |
 | --- | --- | ---: | --- |
@@ -256,8 +254,6 @@ Total: 1020 linhas em 81 arquivos de teste.
 | web/public/dgvis.js | sem-regra | 508 | `DG Telegram` |
 | web/test/auth.test.js | sudo-fora-de-zona | 103 | `dgclaw` |
 | web/test/colaboradores.test.js | sudo-fora-de-zona | 367 | `dgclaw` |
-| web/test/diagnostico-runner-prazo.test.js | comando-no-inicio-de-string | 130 | `dgclaw` |
-| web/test/diagnostico-runner-prazo.test.js | comando-no-inicio-de-string | 133 | `dgclaw` |
 | web/test/email.test.js | fora-de-contexto | 99 | `DG Claw` |
 | web/test/primeiro-acesso.test.js | sudo-fora-de-zona | 35 | `dgclaw` |
 | web/test/primeiro-acesso.test.js | sudo-fora-de-zona | 93 | `dgclaw` |

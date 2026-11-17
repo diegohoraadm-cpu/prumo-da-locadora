@@ -85,6 +85,8 @@ scripts/checar-atualizacao.mjs	NÃO rode `dgclaw atualizar` sem o sim explícito
 scripts/checar-boletins.mjs	NUNCA rode `dgclaw atualizar` sem o sim explícito do dono	executa: recado ao Admin (<plataforma recado=...>), que ele le e executa; fica dgclaw como o fica_em (achado A2 do QA-M4)
 tests/ronda/test_ronda.py	self.assertIn("sudo dgclaw seguranca resumo", txt)	executa: o teste confere o recado ao Admin, que fica dgclaw (achado A2 do QA-M4)
 tests/ronda/test_ronda.py	self.assertIn("sudo dgclaw emergencia preparar", txt)	executa: o teste confere o recado ao Admin, que fica dgclaw (achado A2 do QA-M4)
+tests/ronda/test_ronda.py	seguranca desfazer {nomes[0]}", texto)	executa: o teste confere o recado ao Admin, que fica dgclaw (achado A2 do QA-M4)
+tests/ronda/test_ronda.py	self.assertIn("sudo dgclaw seguranca aplicar", txt)	executa: o teste confere o recado ao Admin, que fica dgclaw (achado A2 do QA-M4)
 tests/aviso-atualizacao/rodar.sh	"recado manda simular e analisar antes" "dgclaw atualizar --simular"	executa: o teste confere o recado ao Admin, que fica dgclaw (achado A2 do QA-M4)
 tests/boletins/rodar.sh	NUNCA rode `dgclaw atualizar` sem o sim explícito do dono	executa: o teste confere o recado ao Admin, que fica dgclaw (achado A2 do QA-M4)
 container/Containerfile	org.opencontainers.image.title="DG Claw agente"	logica: LABEL no estagio base, antes do apt, do nodesource e do npm -g; mudar o texto invalida o cache dessas camadas em toda instalacao que atualizar. O titulo novo vai num LABEL no fim do estagio final (achado A1 do QA-M4)

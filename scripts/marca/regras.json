@@ -28,7 +28,7 @@
     "prefixo": "/dgclaw:",
     "ligadas": ["agenda", "lembretes", "aprender", "avisos", "memory", "foco", "avatar", "report", "slide-animado", "site-animado", "video-animado", "groq-audio", "gemini-gratuito", "visuais-na-conversa", "criar-agente", "trocar-dominio"]
   },
-  "shell_chamadas": ["printf", "echo", "falha", "aviso", "info", "ok", "passo", "die", "erro", "P", "W", "B", "I"],
+  "shell_chamadas": ["printf", "echo", "falha", "aviso", "info", "ok", "passo", "die", "erro", "P", "W", "B", "I", "s_ok", "s_aviso", "s_mal"],
   "gerados": ["templates/CLAUDE.md.tmpl", "templates/AGENTS.md.tmpl", "templates/admin/CLAUDE.md", "templates/admin/AGENTS.md"],
   "ignorar": ["scripts/marca/", "docs/MARCA-PROPRIA.md"],
   "lotes": {

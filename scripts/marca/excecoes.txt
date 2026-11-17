@@ -21,8 +21,6 @@ seguranca/ronda/ronda.py	"DG Claw (app)"	logica: origem do componente, comparada
 seguranca/ronda/ronda.py	startswith("DG Claw")	logica: le o prefixo do campo "onde"
 # Aceite escrito pelo Teia (cita o nome antigo de proposito). A propria ferramenta e o MARCA-PROPRIA.md ficam em "ignorar" no regras.json
 aceite/	*	aceite escrito pelo Teia: o dev nao edita
-# Preambulo do CHANGELOG: o arquiteto decidiu que troca; ate o aceite F2 aceitar o preambulo novo, fica protegido
-CHANGELOG.md	preambulo:	aceite F2 compara o cabecalho do CHANGELOG de 4be8b2f (ver DEV-M0-rodada-2.md)
 
 # Decisoes do arquiteto (M0b). Motivo que comeca por logica: e texto que codigo le.
 scripts/materialize-identity.sh	GERADO PELO DG CLAW	logica: marcador do AGENT.md, lido por grep; decide se o arquivo e regravado

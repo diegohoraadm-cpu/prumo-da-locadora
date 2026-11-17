@@ -8,18 +8,18 @@ Gerado sem escrever nada. Ocorrencia = um achado da regra; "troca" so acontece e
 | --- | ---: | ---: | ---: | ---: | ---: |
 | M1 | 73 | 199 | 75 | 22 | 1 |
 | M3 | 39 | 114 | 8 | 49 | 0 |
-| M4 | 160 | 824 | 86 | 91 | 874 |
-| M5 | 91 | 666 | 166 | 21 | 11 |
-| sem-lote | 0 | 0 | 35 | 0 | 0 |
-| **total** | 363 | 1803 | 370 | 183 | 886 |
+| M4 | 160 | 841 | 86 | 81 | 867 |
+| M5 | 91 | 667 | 165 | 21 | 11 |
+| sem-lote | 0 | 0 | 37 | 0 | 0 |
+| **total** | 363 | 1821 | 371 | 173 | 879 |
 
 Por regra (todos os lotes):
 
 | Regra | Trocaria | Excecao | Manual |
 | --- | ---: | ---: | ---: |
-| barra | 17 | 7 | 68 |
-| comando | 1056 | 175 | 55 |
-| frase | 730 | 95 | 55 |
+| barra | 17 | 8 | 68 |
+| comando | 1073 | 175 | 45 |
+| frase | 731 | 95 | 55 |
 | sem-regra | 0 | 93 | 5 |
 
 Manual, por motivo:
@@ -33,7 +33,7 @@ Manual, por motivo:
 | comparacao-de-logica | 2 |
 | fora-de-contexto | 42 |
 | sem-regra | 5 |
-| sudo-fora-de-zona | 45 |
+| sudo-fora-de-zona | 35 |
 | tipo-nao-coberto | 25 |
 
 Arquivos sem lote no plano (o Teia atribui a um lote):
@@ -41,7 +41,7 @@ Arquivos sem lote no plano (o Teia atribui a um lote):
 | Arquivo | Trocaria | Excecao | Manual |
 | --- | ---: | ---: | ---: |
 | NOTICE.md | 0 | 1 | 0 |
-| aceite/juncao-e-marca.mjs | 0 | 18 | 0 |
+| aceite/juncao-e-marca.mjs | 0 | 20 | 0 |
 | aceite/juncao-excecoes.json | 0 | 16 | 0 |
 
 ## 2. Ocorrencias de `/dgclaw:` (decisao de cada uma)
@@ -51,9 +51,10 @@ Regra do plano: skill ligada vira `/x`; skill que existe mas nao e ligada, reesc
 | Arquivo | Ocorrencia | Lote | Decisao |
 | --- | --- | --- | --- |
 | CHANGELOG.md | `/dgclaw:setup` (linha 1175) | M5 | fica por excecao |
-| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 456) | sem-lote | fica por excecao |
-| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 566) | sem-lote | fica por excecao |
-| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 575) | sem-lote | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 180) | sem-lote | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 477) | sem-lote | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 587) | sem-lote | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 596) | sem-lote | fica por excecao |
 | docs/MEMORIA-SEMANTICA.md | `/dgclaw:setup` (linha 27) | M5 | sair (a skill nao existe) |
 | docs/MEMORIA-SEMANTICA.md | `/dgclaw:doctor` (linha 69) | M5 | reescrever a mao (skill existe, nao e ligada ao agente) |
 | docs/MESA-DE-TAREFAS.md | `/dgclaw:mesa` (linha 29) | M5 | reescrever a mao (skill existe, nao e ligada ao agente) |
@@ -143,7 +144,7 @@ Regra do plano: skill ligada vira `/x`; skill que existe mas nao e ligada, reesc
 | web/docs/COMANDOS-DE-BARRA.md | `/dgclaw:aprender` (linha 26) | M5 | trocar por `/aprender` (mecanico) |
 | web/test/casca.test.js | `/dgclaw:agente` (linha 55) | M1 | fica por excecao |
 
-Total: 92 ocorrencias em 51 arquivos.
+Total: 93 ocorrencias em 51 arquivos.
 
 ## 3. Testes que citam a marca como texto esperado
 
@@ -151,7 +152,7 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 
 | Arquivo | Linhas | Trocaria | Manual |
 | --- | ---: | ---: | ---: |
-| aceite/juncao-e-marca.mjs | 15 | 0 | 0 |
+| aceite/juncao-e-marca.mjs | 17 | 0 | 0 |
 | aceite/juncao-excecoes.json | 15 | 0 | 0 |
 | bin/test/dgclaw-agente.test.sh | 1 | 0 | 1 |
 | bin/test/dgclaw-mesa.test.sh | 1 | 0 | 1 |
@@ -231,7 +232,7 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 | web/test/ronda-tela.test.js | 2 | 0 | 2 |
 | web/test/socket-admin.test.js | 1 | 1 | 0 |
 
-Total: 1015 linhas em 79 arquivos de teste.
+Total: 1017 linhas em 79 arquivos de teste.
 
 ## 4. O que ficou manual, por lote (nao trocado; inclui as barras)
 
@@ -316,7 +317,7 @@ Total: 1015 linhas em 79 arquivos de teste.
 | tests/instrucoes/rodar.sh | fora-de-contexto | 64 | `/dgclaw:nome` |
 | tests/instrucoes/rodar.sh | fora-de-contexto | 76 | `/dgclaw:mesa` |
 
-### M4 (91)
+### M4 (81)
 
 | Arquivo | Motivo | Linha | Trecho |
 | --- | --- | ---: | --- |
@@ -334,21 +335,11 @@ Total: 1015 linhas em 79 arquivos de teste.
 | container/Containerfile | tipo-nao-coberto | 216 | `DG Claw` |
 | container/Containerfile | tipo-nao-coberto | 222 | `dgclaw` |
 | lib/atualizar.sh | sudo-fora-de-zona | 230 | `dgclaw` |
-| lib/aviso-atualizacao.sh | sudo-fora-de-zona | 118 | `dgclaw` |
-| lib/aviso-atualizacao.sh | sudo-fora-de-zona | 122 | `dgclaw` |
-| lib/aviso-atualizacao.sh | sudo-fora-de-zona | 128 | `dgclaw` |
-| lib/aviso-atualizacao.sh | sudo-fora-de-zona | 137 | `dgclaw` |
 | lib/backup.sh | sudo-fora-de-zona | 370 | `dgclaw` |
 | lib/emergencia.sh | fora-de-contexto | 252 | `DG Claw` |
 | lib/emergencia.sh | fora-de-contexto | 256 | `DG Claw` |
 | lib/personalizacoes.sh | sudo-fora-de-zona | 183 | `dgclaw` |
 | lib/reiniciar-admin.sh | fora-de-contexto | 50 | `DG Claw` |
-| lib/suporte.sh | sudo-fora-de-zona | 1312 | `dgclaw` |
-| lib/suporte.sh | sudo-fora-de-zona | 1319 | `dgclaw` |
-| lib/suporte.sh | sudo-fora-de-zona | 1324 | `dgclaw` |
-| lib/suporte.sh | sudo-fora-de-zona | 1350 | `dgclaw` |
-| lib/suporte.sh | sudo-fora-de-zona | 1362 | `dgclaw` |
-| lib/suporte.sh | sudo-fora-de-zona | 1376 | `dgclaw` |
 | runner/src/sessao/ciclo.ts | comando-no-inicio-de-string | 524 | `dgclaw` |
 | scripts/bootstrap-identity.sh | fora-de-contexto | 69 | `DG Claw` |
 | scripts/dgchat-mcp/test-server.mjs | fora-de-contexto | 304 | `DG Claw` |
@@ -457,7 +448,7 @@ Total: 1015 linhas em 79 arquivos de teste.
 | scripts/dgchat-mcp/test-server.mjs | web/server.js | frase | 3 / 1 | 1 / 0 |
 | tests/cli/atualizar.sh | lib/atualizar.sh | comando | 1 / 79 | 53 / 4 |
 | tests/cli/atualizar.sh | lib/atualizar.sh | frase | 0 / 2 | 7 / 0 |
-| tests/cli/aviso-atualizacao.sh | lib/aviso-atualizacao.sh | comando | 3 / 23 | 14 / 4 |
+| tests/cli/aviso-atualizacao.sh | lib/aviso-atualizacao.sh | comando | 3 / 23 | 18 / 0 |
 | tests/cli/aviso-atualizacao.sh | lib/aviso-atualizacao.sh | frase | 0 / 2 | 2 / 0 |
 | tests/cli/backup.sh | lib/backup.sh | comando | 3 / 15 | 28 / 1 |
 | tests/cli/cofre.sh | web/bin/cofre.js | comando | 1 / 6 | 1 / 0 |
@@ -466,11 +457,11 @@ Total: 1015 linhas em 79 arquivos de teste.
 | tests/cli/personalizacoes.sh | lib/personalizacoes.sh | frase | 0 / 1 | 1 / 0 |
 | tests/cli/restricoes-conta.sh | runner/src/restricoes-conta.ts | comando | 0 / 24 | 4 / 0 |
 | tests/cli/restricoes.sh | lib/restricoes.sh | comando | 1 / 109 | 35 / 9 |
-| tests/cli/suporte.sh | lib/suporte.sh | comando | 4 / 255 | 30 / 6 |
+| tests/cli/suporte.sh | lib/suporte.sh | comando | 4 / 255 | 36 / 0 |
 | tests/cli/tela.sh | panel/lib/tela.js | comando | 0 / 5 | 5 / 0 |
 | tests/cli/tela.sh | panel/public/js/tela.js | comando | 0 / 5 | 1 / 0 |
 | tests/cli/versao.sh | lib/versao.sh | comando | 3 / 12 | 5 / 0 |
-| tests/instalador/aviso-atualizacao.sh | lib/aviso-atualizacao.sh | comando | 0 / 2 | 14 / 4 |
+| tests/instalador/aviso-atualizacao.sh | lib/aviso-atualizacao.sh | comando | 0 / 2 | 18 / 0 |
 | tests/instalador/ronda-seguranca.sh | lib/ronda-seguranca.sh | comando | 0 / 1 | 20 / 0 |
 | tests/ronda/test_ronda.py | seguranca/ronda/ronda.py | comando | 7 / 3 | 39 / 0 |
 | web/test/auth.test.js | web/lib/auth.js | comando | 0 / 1 | 1 / 0 |

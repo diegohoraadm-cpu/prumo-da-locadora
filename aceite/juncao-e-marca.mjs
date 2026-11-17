@@ -156,12 +156,29 @@ const casaExcecao = (lista, arquivo, linhaCrua) => lista.find((x) => x.arquivo =
 // ---- normalização de marca ----------------------------------------------------------------------
 // As duas pontas passam pela mesma troca, então "DG Claw" do original e "Prumo da Locadora" nosso, ou
 // o {{MARCA_NOME}} do #104, contam como a mesma linha. Só nome; nada de lógica.
+// Normalização da marca, igual nos DOIS lados (linha do original e linha nossa): só mapeia nome antigo
+// para nome novo, nunca apaga linha. Uma linha que sumiu continua sumida depois da normalização, então
+// o F1 segue acusando linha ausente (provado por sabotagem em 17/11: ver TEIA-F4-e-despachos.md).
+// As frases vêm do scripts/marca/regras.json (as mesmas que a ferramenta troca), sem a leitura de
+// contexto da ferramenta: a regra é textual e não depende de zona, para não esconder diferença de código.
+const FRASES_MARCA = (() => {
+  let r = null;
+  try { r = JSON.parse(ler('scripts/marca/regras.json') || 'null'); } catch { r = null; }
+  const fr = ((r && r.frases) || []).filter((f) => f.de && typeof f.para === 'string').sort((a, b) => b.de.length - a.de.length);
+  if (!fr.length) return null;
+  const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const mapa = new Map(fr.map((f) => [f.de, f.para]));
+  return { rx: new RegExp(`(?<![\\w])(?:${fr.map((f) => esc(f.de)).join('|')})(?![\\w])`, 'g'), mapa };
+})();
 function norm(l) {
-  return l.trim()
+  let t = l.trim();
+  if (FRASES_MARCA) t = t.replace(FRASES_MARCA.rx, (m) => FRASES_MARCA.mapa.get(m));
+  return t
     .replace(/DGatoM\/DG-Claw|diegohoraadm-cpu\/prumo-da-locadora/g, '§REPO§')
     .replace(/\{\{MARCA_NOME\}\}|Prumo da Locadora|DG Claw/g, '§M§')
     .replace(/[Ss]uporte DG\b/g, 'suporte')
-    .replace(/\b(dgclaw|prumo) (?=[a-z])/g, '§CLI§ ')
+    .replace(/(?<![\w.-])\/dgclaw:([a-z][a-z0-9-]*)/g, '/$1')
+    .replace(/(?<![\w/.$=-])(dgclaw|prumo)(?= (?:[a-z<.]|--))/g, '§CLI§')
     .replace(/\s+/g, ' ');
 }
 const trivial = (l) => norm(l).length < 4;
@@ -358,6 +375,10 @@ function blocoF2() {
       const sumidas = texto.split('\n').filter((l) => l.trim() && !nas.has(l));
       if (sumidas.length === 0) iguais++; else faltam.push(`${titulo}: ${sumidas.length} linha(s) antiga(s) sumiram, a 1ª: ${sumidas[0].slice(0, 100)}`);
     } else if (novo.has(titulo) && sha256(novo.get(titulo)) === sha256(texto)) {
+      iguais++;
+    } else if (titulo === '(cabeçalho)' && novo.has(titulo) && sha256(novo.get(titulo)) === sha256(texto.replaceAll('DG Claw', 'Prumo da Locadora'))) {
+      // Decisão 4 do PLANO-marca-M1-M5.md: o preâmbulo troca o nome. Ele não tem item "- ", então não entra no
+      // digest de novidades; aceita só a troca exata do nome, nada mais. As seções "## " seguem exigindo digest idêntico.
       iguais++;
     } else {
       faltam.push(`${titulo}: ${novo.has(titulo) ? 'digest diferente (o texto mudou, até num espaço)' : 'seção ausente'}`);

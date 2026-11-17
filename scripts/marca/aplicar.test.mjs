@@ -345,8 +345,11 @@ test('shell: $( ) com aspas proprias e ${x#"..."} dentro de aspas nao desalinham
 });
 
 test('comando em codigo conta como "deixado"; "sudo dgclaw" em funcao que a ferramenta nao le vira manual', () => {
-  const r = aplica('lib/x.sh', '#!/usr/bin/env bash\ndgclaw agente listar\ns_aviso "rode: sudo dgclaw atualizar"\n');
+  const r = aplica('lib/x.sh', '#!/usr/bin/env bash\ndgclaw agente listar\nlog "rode: sudo dgclaw atualizar"\n');
   assert.deepEqual(estados(r), ['deixado:comando-em-codigo', 'manual:sudo-fora-de-zona']);
+  // decisao do Teia (17/11): s_ok, s_aviso e s_mal imprimem linha de status ao dono (bin/dgclaw:2798-2800), entao trocam
+  const s = aplica('lib/x.sh', '#!/usr/bin/env bash\ns_aviso "rode: sudo dgclaw atualizar"\n');
+  assert.deepEqual(estados(s), ['troca']);
 });
 
 test('gerados: a ferramenta nao toca templates/CLAUDE.md.tmpl; troca a fonte', () => {

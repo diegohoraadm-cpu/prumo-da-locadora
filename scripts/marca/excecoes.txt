@@ -91,6 +91,10 @@ tests/aviso-atualizacao/rodar.sh	"recado manda simular e analisar antes" "dgclaw
 tests/boletins/rodar.sh	NUNCA rode `dgclaw atualizar` sem o sim explícito do dono	executa: o teste confere o recado ao Admin, que fica dgclaw (achado A2 do QA-M4)
 container/Containerfile	org.opencontainers.image.title="DG Claw agente"	logica: LABEL no estagio base, antes do apt, do nodesource e do npm -g; mudar o texto invalida o cache dessas camadas em toda instalacao que atualizar. O titulo novo vai num LABEL no fim do estagio final (achado A1 do QA-M4)
 
+# Decisao do arquiteto (C4b, 17/11). O aviso do `prumo` alheio manda o dono usar dgclaw: e a unica linha de bin, lib e install.sh
+# em que o comando ao dono fica dgclaw de proposito. Trecho = a linha inteira (sem o recuo), para nao proteger outra linha do arquivo.
+bin/dgclaw	if prumo_alheio; then s_aviso "o comando 'prumo' deste servidor nao e o do Prumo da Locadora. Onde as mensagens disserem 'sudo prumo ...', use 'sudo dgclaw ...'"; fi	executa: aviso do status quando o 'prumo' do PATH e outro programa (C4b, J2 do QA-JUNCAO): o comando que se manda executar e 'sudo dgclaw', que existe sempre; trocar por prumo desfaria o aviso
+
 # Blocos dos lotes: cada lote acrescenta so no seu, para o merge nao conflitar.
 # --- M1 ---
 #

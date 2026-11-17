@@ -1,10 +1,10 @@
-# Como o DG Claw funciona (explicado pra qualquer pessoa)
+# Como o Prumo da Locadora funciona (explicado pra qualquer pessoa)
 
 Sem jargao. Se voce nunca programou, este texto e pra voce.
 
 ---
 
-## 1. O que e o DG Claw, em uma frase
+## 1. O que e o Prumo da Locadora, em uma frase
 
 > Um assistente pessoal SEU, que mora no Telegram, lembra das suas coisas,
 > e fica ligado 24 horas por dia.

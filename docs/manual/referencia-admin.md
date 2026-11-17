@@ -17,7 +17,7 @@ esta lista ser corrigida.
 | Colab | Um colaborador convidado para **um** agente | Cookie de sessão de colaborador. O Web só deixa passar o agente dele (`web/lib/escopo.js`) |
 | Caixa | Um agente de trabalho, de dentro do container | `dgclaw-api`, que deixa um pedido na pasta `~/.dgclaw/caixa/` ([CAIXA-DO-AGENTE.md](../CAIXA-DO-AGENTE.md)). Só as rotas liberadas com `caixa.permitir` |
 | Chave | Outro assistente (o Admin, por exemplo) operando o painel de **um** agente | `Authorization: Bearer dgc_...`, criada na aba Cofre daquele agente ([COFRE-POR-API.md](../COFRE-POR-API.md)) |
-| Root | Quem roda como root no servidor: o Admin ou o dono no terminal | `sudo dgclaw ...` |
+| Root | Quem roda como root no servidor: o Admin ou o dono no terminal | `sudo prumo ...` |
 | Público | Qualquer um que alcance o endereço | Sem login |
 
 Regras que valem para tudo:
@@ -31,101 +31,101 @@ Regras que valem para tudo:
 
 <!-- inventario:inicio -->
 
-## Comandos do servidor (`dgclaw`)
+## Comandos do servidor (`prumo`)
 
-Rodam como root: `sudo dgclaw <comando>`. A opção `--ensaio` vale em qualquer um e mostra o que seria feito sem
-mudar nada. Quem: Root. Detalhe geral em [ATUALIZAR.md](../ATUALIZAR.md) e no `dgclaw --ajuda`. A exceção é o `dgclaw emergencia`, que ignora o `--ensaio` e age de verdade: para ver o plano sem mudar nada, use `dgclaw emergencia simular`.
+Rodam como root: `sudo prumo <comando>`. A opção `--ensaio` vale em qualquer um e mostra o que seria feito sem
+mudar nada. Quem: Root. Detalhe geral em [ATUALIZAR.md](../ATUALIZAR.md) e no `prumo --ajuda`. A exceção é o `prumo emergencia`, que ignora o `--ensaio` e age de verdade: para ver o plano sem mudar nada, use `prumo emergencia simular`.
 
 ### Agentes
 
 | Comando | Para que serve | Detalhe |
 | --- | --- | --- |
-| `dgclaw agente criar` | Cria um agente de trabalho: máquina própria, painel e conversa. Aceita `--nome`, `--provedor`, `--auth`, `--modelo`, `--papel`, `--jeito`, `--dono`, `--canal`, `--avatar`, `--cor`. Rodar de novo continua de onde parou | [ARQUITETURA.md](../ARQUITETURA.md) |
-| `dgclaw agente listar` | Lista os agentes e diz se estão de pé (`--json` para máquina) | [ARQUITETURA.md](../ARQUITETURA.md) |
-| `dgclaw agente parar` | Para o agente. Pede o `slug` | [ARQUITETURA.md](../ARQUITETURA.md) |
-| `dgclaw agente iniciar` | Liga um agente parado | [ARQUITETURA.md](../ARQUITETURA.md) |
-| `dgclaw agente reiniciar` | Desliga e liga de novo. Serve para um agente travado; não use para atualizar | [ATUALIZAR.md](../ATUALIZAR.md) |
-| `dgclaw agente reparar` | Regrava o `config.sh` e refaz a parte de dentro (runner, painel e rotinas) | [ATUALIZAR.md](../ATUALIZAR.md) |
-| `dgclaw agente recriar` | Troca o container pelo da imagem nova e mantém casa, cofre, portas e rotinas. `--forcar` recria mesmo com a imagem igual | [ATUALIZAR.md](../ATUALIZAR.md) |
-| `dgclaw agente identidade` | Regrava só o `identidade.md`; vale na próxima sessão | [PERSONALIZAR.md](../PERSONALIZAR.md) |
-| `dgclaw agente cofre` | Guarda, revoga, lista ou aplica chaves de API do agente (`guardar`, `revogar`, `listar`, `aplicar`). O valor vem sempre pelo STDIN | [COFRE-POR-API.md](../COFRE-POR-API.md) |
-| `dgclaw agente tela` | Confere a Tela do agente e diz, linha a linha, o que falta | [TELA-DO-AGENTE.md](../TELA-DO-AGENTE.md) |
-| `dgclaw agente tela-senha` | Troca a senha da Tela (6 a 8 caracteres ASCII, pelo STDIN) | [TELA-DO-AGENTE.md](../TELA-DO-AGENTE.md) |
-| `dgclaw agente restricoes` | Mostra ou muda as travas do agente (`--sem-bash`, `--sem-enviar-arquivo`, `--escrita-so-em` ou `--escrita-livre`). Ficam fora da caixa e voltam sozinhas ao criar, reparar, recriar e atualizar. Não vale para o Admin nem, nesta versão, para agentes no Codex | [RESTRICOES-DO-AGENTE.md](../RESTRICOES-DO-AGENTE.md) |
-| `dgclaw agente remover` | Tira o agente do ar sem apagar: a casa vai para `/var/lib/dgclaw/aposentados/`. Pede confirmação, ou `--sim` | [ATUALIZAR.md](../ATUALIZAR.md) |
+| `prumo agente criar` | Cria um agente de trabalho: máquina própria, painel e conversa. Aceita `--nome`, `--provedor`, `--auth`, `--modelo`, `--papel`, `--jeito`, `--dono`, `--canal`, `--avatar`, `--cor`. Rodar de novo continua de onde parou | [ARQUITETURA.md](../ARQUITETURA.md) |
+| `prumo agente listar` | Lista os agentes e diz se estão de pé (`--json` para máquina) | [ARQUITETURA.md](../ARQUITETURA.md) |
+| `prumo agente parar` | Para o agente. Pede o `slug` | [ARQUITETURA.md](../ARQUITETURA.md) |
+| `prumo agente iniciar` | Liga um agente parado | [ARQUITETURA.md](../ARQUITETURA.md) |
+| `prumo agente reiniciar` | Desliga e liga de novo. Serve para um agente travado; não use para atualizar | [ATUALIZAR.md](../ATUALIZAR.md) |
+| `prumo agente reparar` | Regrava o `config.sh` e refaz a parte de dentro (runner, painel e rotinas) | [ATUALIZAR.md](../ATUALIZAR.md) |
+| `prumo agente recriar` | Troca o container pelo da imagem nova e mantém casa, cofre, portas e rotinas. `--forcar` recria mesmo com a imagem igual | [ATUALIZAR.md](../ATUALIZAR.md) |
+| `prumo agente identidade` | Regrava só o `identidade.md`; vale na próxima sessão | [PERSONALIZAR.md](../PERSONALIZAR.md) |
+| `prumo agente cofre` | Guarda, revoga, lista ou aplica chaves de API do agente (`guardar`, `revogar`, `listar`, `aplicar`). O valor vem sempre pelo STDIN | [COFRE-POR-API.md](../COFRE-POR-API.md) |
+| `prumo agente tela` | Confere a Tela do agente e diz, linha a linha, o que falta | [TELA-DO-AGENTE.md](../TELA-DO-AGENTE.md) |
+| `prumo agente tela-senha` | Troca a senha da Tela (6 a 8 caracteres ASCII, pelo STDIN) | [TELA-DO-AGENTE.md](../TELA-DO-AGENTE.md) |
+| `prumo agente restricoes` | Mostra ou muda as travas do agente (`--sem-bash`, `--sem-enviar-arquivo`, `--escrita-so-em` ou `--escrita-livre`). Ficam fora da caixa e voltam sozinhas ao criar, reparar, recriar e atualizar. Não vale para o Admin nem, nesta versão, para agentes no Codex | [RESTRICOES-DO-AGENTE.md](../RESTRICOES-DO-AGENTE.md) |
+| `prumo agente remover` | Tira o agente do ar sem apagar: a casa vai para `/var/lib/dgclaw/aposentados/`. Pede confirmação, ou `--sim` | [ATUALIZAR.md](../ATUALIZAR.md) |
 
 ### Colaboradores: convidar quem vai usar um agente
 
 | Comando | Para que serve | Detalhe |
 | --- | --- | --- |
-| `dgclaw colaborador criar` | Cria o acesso de uma pessoa a um agente (`<agente> <email>`) e mostra o convite pronto para copiar, com endereço, login e senha temporária | [agentes.md](agentes.md) |
-| `dgclaw colaborador listar` | Lista os colaboradores e os agentes a que cada um tem acesso | [agentes.md](agentes.md) |
-| `dgclaw colaborador reenviar` | Gera uma senha temporária nova e mostra o convite de novo | [agentes.md](agentes.md) |
-| `dgclaw colaborador revogar` | Tira o acesso e derruba as sessões da pessoa. Se ela conectou a conta de IA do agente, a conta continua conectada e o comando avisa | [agentes.md](agentes.md) |
-| `dgclaw colaborador ajuda` | Mostra o uso do comando | [agentes.md](agentes.md) |
+| `prumo colaborador criar` | Cria o acesso de uma pessoa a um agente (`<agente> <email>`) e mostra o convite pronto para copiar, com endereço, login e senha temporária | [agentes.md](agentes.md) |
+| `prumo colaborador listar` | Lista os colaboradores e os agentes a que cada um tem acesso | [agentes.md](agentes.md) |
+| `prumo colaborador reenviar` | Gera uma senha temporária nova e mostra o convite de novo | [agentes.md](agentes.md) |
+| `prumo colaborador revogar` | Tira o acesso e derruba as sessões da pessoa. Se ela conectou a conta de IA do agente, a conta continua conectada e o comando avisa | [agentes.md](agentes.md) |
+| `prumo colaborador ajuda` | Mostra o uso do comando | [agentes.md](agentes.md) |
 
-### Suporte DG: acesso temporário por chave SSH
+### Suporte: acesso temporário por chave SSH
 
 | Comando | Para que serve | Detalhe |
 | --- | --- | --- |
-| `dgclaw suporte ligar` | Libera o time de suporte por uma chave SSH temporária (`--chave '<linha>' [--dias N]`, padrão 7 dias, máximo 30). Depois do prazo o servidor recusa a chave sozinho | [PROJETO-DE-CLIENTE.md](../PROJETO-DE-CLIENTE.md) |
-| `dgclaw suporte desligar` | Tira as chaves do suporte e lista as sessões SSH de root abertas. Com `--derrubar-sessoes` encerra todas, menos a de quem roda o comando | [PROJETO-DE-CLIENTE.md](../PROJETO-DE-CLIENTE.md) |
-| `dgclaw suporte status` | Mostra as chaves do suporte, até quando valem, as vencidas e as sessões de root abertas | [PROJETO-DE-CLIENTE.md](../PROJETO-DE-CLIENTE.md) |
-| `dgclaw suporte limpar` | Tira só as chaves vencidas (um timer diário já faz isso) | [PROJETO-DE-CLIENTE.md](../PROJETO-DE-CLIENTE.md) |
+| `prumo suporte ligar` | Libera o time de suporte por uma chave SSH temporária (`--chave '<linha>' [--dias N]`, padrão 7 dias, máximo 30). Depois do prazo o servidor recusa a chave sozinho | [PROJETO-DE-CLIENTE.md](../PROJETO-DE-CLIENTE.md) |
+| `prumo suporte desligar` | Tira as chaves do suporte e lista as sessões SSH de root abertas. Com `--derrubar-sessoes` encerra todas, menos a de quem roda o comando | [PROJETO-DE-CLIENTE.md](../PROJETO-DE-CLIENTE.md) |
+| `prumo suporte status` | Mostra as chaves do suporte, até quando valem, as vencidas e as sessões de root abertas | [PROJETO-DE-CLIENTE.md](../PROJETO-DE-CLIENTE.md) |
+| `prumo suporte limpar` | Tira só as chaves vencidas (um timer diário já faz isso) | [PROJETO-DE-CLIENTE.md](../PROJETO-DE-CLIENTE.md) |
 
 ### Painel: domínio, senha e primeiro acesso
 
 | Comando | Para que serve | Detalhe |
 | --- | --- | --- |
-| `dgclaw dominio mostrar` | Mostra o domínio atual do painel e o IP público da VPS | [atualizar-e-backup.md](atualizar-e-backup.md) |
-| `dgclaw dominio trocar` | Passa o painel para um domínio próprio. Confere o DNS antes e não muda nada se não apontar (`--sem-conferir-dns` pula a conferência) | [atualizar-e-backup.md](atualizar-e-backup.md) |
-| `dgclaw senha trocar` | Troca a senha do painel (mínimo de 12 caracteres, nova senha pelo STDIN) e reinicia o Web | [atualizar-e-backup.md](atualizar-e-backup.md) |
-| `dgclaw usuario` | Mostra o usuário do painel e o endereço (nunca a senha). A troca de senha também termina com essas duas linhas | [atualizar-e-backup.md](atualizar-e-backup.md) |
-| `dgclaw primeiro-acesso` | Gera um link novo de primeiro acesso (uso único, vale 30 minutos); o anterior deixa de valer | [SEGURANCA.md](../SEGURANCA.md) |
-| `dgclaw instalacao-remota` | Para a equipe que instalou na VPS de outra pessoa: troca a senha por uma forte e mostra a mensagem de entrega uma única vez. Não rode numa instalação feita pelo próprio dono | [INSTALL.md](../../INSTALL.md) |
+| `prumo dominio mostrar` | Mostra o domínio atual do painel e o IP público da VPS | [atualizar-e-backup.md](atualizar-e-backup.md) |
+| `prumo dominio trocar` | Passa o painel para um domínio próprio. Confere o DNS antes e não muda nada se não apontar (`--sem-conferir-dns` pula a conferência) | [atualizar-e-backup.md](atualizar-e-backup.md) |
+| `prumo senha trocar` | Troca a senha do painel (mínimo de 12 caracteres, nova senha pelo STDIN) e reinicia o Web | [atualizar-e-backup.md](atualizar-e-backup.md) |
+| `prumo usuario` | Mostra o usuário do painel e o endereço (nunca a senha). A troca de senha também termina com essas duas linhas | [atualizar-e-backup.md](atualizar-e-backup.md) |
+| `prumo primeiro-acesso` | Gera um link novo de primeiro acesso (uso único, vale 30 minutos); o anterior deixa de valer | [SEGURANCA.md](../SEGURANCA.md) |
+| `prumo instalacao-remota` | Para a equipe que instalou na VPS de outra pessoa: troca a senha por uma forte e mostra a mensagem de entrega uma única vez. Não rode numa instalação feita pelo próprio dono | [INSTALL.md](../../INSTALL.md) |
 
 ### Imagem, estado e versão
 
 | Comando | Para que serve | Detalhe |
 | --- | --- | --- |
-| `dgclaw imagem status` | Diz se a imagem dos agentes está pronta, construindo ou falhou (`--exigir-pronta` sai com erro se não estiver) | [ATUALIZAR.md](../ATUALIZAR.md) |
-| `dgclaw imagem construir` | Constrói a imagem em segundo plano, ou na hora com `--agora` | [ATUALIZAR.md](../ATUALIZAR.md) |
-| `dgclaw status` | Confere se tudo o que é essencial está de pé; sai com erro se algo caiu | [atualizar-e-backup.md](atualizar-e-backup.md) |
-| `dgclaw versao` | Mostra a versão e o commit instalados | [atualizar-e-backup.md](atualizar-e-backup.md) |
+| `prumo imagem status` | Diz se a imagem dos agentes está pronta, construindo ou falhou (`--exigir-pronta` sai com erro se não estiver) | [ATUALIZAR.md](../ATUALIZAR.md) |
+| `prumo imagem construir` | Constrói a imagem em segundo plano, ou na hora com `--agora` | [ATUALIZAR.md](../ATUALIZAR.md) |
+| `prumo status` | Confere se tudo o que é essencial está de pé; sai com erro se algo caiu | [atualizar-e-backup.md](atualizar-e-backup.md) |
+| `prumo versao` | Mostra a versão e o commit instalados | [atualizar-e-backup.md](atualizar-e-backup.md) |
 
 ### Atualizar, backup e restaurar
 
 | Comando | Para que serve | Detalhe |
 | --- | --- | --- |
-| `dgclaw atualizar` | Baixa a versão nova, faz backup, reinstala e recria os agentes. Opções: `--simular`, `--repo`, `--forcar-local`, `--sem-baixar`, `--sem-backup-agentes`, `--sem-voltar-sozinho`, `--ok-do-dono`, `--segundo-plano`, `--checar`, `--aviso ligar` ou `desligar`, `--voltar <pasta>` | [ATUALIZAR.md](../ATUALIZAR.md), [AVISO-DE-ATUALIZACAO.md](../AVISO-DE-ATUALIZACAO.md) |
-| `dgclaw backup` | Faz um backup conferido em `/var/backups/dgclaw/<data>-manual`. Opções: `--sem-casas` (deixa de fora a memória e as conversas dos agentes) e `--simular` | [BACKUP.md](../BACKUP.md) |
-| `dgclaw backup listar` | Lista os backups: data, motivo, versão, tamanho e se as casas dos agentes entraram | [BACKUP.md](../BACKUP.md) |
-| `dgclaw restaurar` | Devolve configuração, dados e Admin de um backup, depois de guardar o estado de agora. `--simular` e `--mesmo-assim` | [BACKUP.md](../BACKUP.md) |
-| `dgclaw personalizacoes levantar` | Lista o que foi personalizado no programa (registro, clone, cópias do instalador, conversas do Admin) | [PERSONALIZAR.md](../PERSONALIZAR.md) |
-| `dgclaw personalizacoes conferir` | Confere o registro contra a versão nova e diz se algo cruza; não muda nada | [PERSONALIZAR.md](../PERSONALIZAR.md) |
-| `dgclaw personalizacoes concluir` | Marca o levantamento pendente como concluído | [PERSONALIZAR.md](../PERSONALIZAR.md) |
+| `prumo atualizar` | Baixa a versão nova, faz backup, reinstala e recria os agentes. Opções: `--simular`, `--repo`, `--forcar-local`, `--sem-baixar`, `--sem-backup-agentes`, `--sem-voltar-sozinho`, `--ok-do-dono`, `--segundo-plano`, `--checar`, `--aviso ligar` ou `desligar`, `--voltar <pasta>` | [ATUALIZAR.md](../ATUALIZAR.md), [AVISO-DE-ATUALIZACAO.md](../AVISO-DE-ATUALIZACAO.md) |
+| `prumo backup` | Faz um backup conferido em `/var/backups/dgclaw/<data>-manual`. Opções: `--sem-casas` (deixa de fora a memória e as conversas dos agentes) e `--simular` | [BACKUP.md](../BACKUP.md) |
+| `prumo backup listar` | Lista os backups: data, motivo, versão, tamanho e se as casas dos agentes entraram | [BACKUP.md](../BACKUP.md) |
+| `prumo restaurar` | Devolve configuração, dados e Admin de um backup, depois de guardar o estado de agora. `--simular` e `--mesmo-assim` | [BACKUP.md](../BACKUP.md) |
+| `prumo personalizacoes levantar` | Lista o que foi personalizado no programa (registro, clone, cópias do instalador, conversas do Admin) | [PERSONALIZAR.md](../PERSONALIZAR.md) |
+| `prumo personalizacoes conferir` | Confere o registro contra a versão nova e diz se algo cruza; não muda nada | [PERSONALIZAR.md](../PERSONALIZAR.md) |
+| `prumo personalizacoes concluir` | Marca o levantamento pendente como concluído | [PERSONALIZAR.md](../PERSONALIZAR.md) |
 
 ### Chaves de API e suporte remoto
 
 | Comando | Para que serve | Detalhe |
 | --- | --- | --- |
-| `dgclaw chave-api criar` | Cria uma chave de API (`--nome "<nome>" --escopo diagnostico`); o valor aparece uma vez só | [DIAGNOSTICO-REMOTO.md](../../web/docs/DIAGNOSTICO-REMOTO.md) |
-| `dgclaw chave-api listar` | Lista as chaves: nome, final, último acesso e se foi revogada (`--json`) | [DIAGNOSTICO-REMOTO.md](../../web/docs/DIAGNOSTICO-REMOTO.md) |
-| `dgclaw chave-api revogar <id>` | A chave deixa de valer na hora; o registro continua na lista, com a data | [DIAGNOSTICO-REMOTO.md](../../web/docs/DIAGNOSTICO-REMOTO.md) |
+| `prumo chave-api criar` | Cria uma chave de API (`--nome "<nome>" --escopo diagnostico`); o valor aparece uma vez só | [DIAGNOSTICO-REMOTO.md](../../web/docs/DIAGNOSTICO-REMOTO.md) |
+| `prumo chave-api listar` | Lista as chaves: nome, final, último acesso e se foi revogada (`--json`) | [DIAGNOSTICO-REMOTO.md](../../web/docs/DIAGNOSTICO-REMOTO.md) |
+| `prumo chave-api revogar <id>` | A chave deixa de valer na hora; o registro continua na lista, com a data | [DIAGNOSTICO-REMOTO.md](../../web/docs/DIAGNOSTICO-REMOTO.md) |
 
 ### Ronda de segurança
 
 | Comando | Para que serve | Detalhe |
 | --- | --- | --- |
-| `dgclaw seguranca ajuda` | Mostra a ajuda da ronda | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
-| `dgclaw seguranca estado` | Última rodada, próxima, se ficou parcial e quantos achados por nível (`--json`) | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
-| `dgclaw seguranca resumo` | Os achados novos, já limpos para ler (`--todos` traz todos) | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
-| `dgclaw seguranca rodar` | Faz uma rodada agora (`--sem-avisar` não manda recado ao Admin) | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
-| `dgclaw seguranca aplicar` | Aplica a ação do catálogo para um achado. Só com o sim do dono | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
-| `dgclaw seguranca desfazer` | Volta atrás numa ação aplicada, pelo número do registro | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
-| `dgclaw seguranca inventario` | O que a ronda sabe desta instalação (`--json`, `--refazer`) | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
-| `dgclaw seguranca pedido` | Executa um pedido do painel guardado em arquivo. É a unidade do systemd que chama; não é para uso manual | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
-| `dgclaw seguranca pedido-todos` | Executa a fila de pedidos do painel. Também é chamado pelo systemd | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
+| `prumo seguranca ajuda` | Mostra a ajuda da ronda | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
+| `prumo seguranca estado` | Última rodada, próxima, se ficou parcial e quantos achados por nível (`--json`) | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
+| `prumo seguranca resumo` | Os achados novos, já limpos para ler (`--todos` traz todos) | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
+| `prumo seguranca rodar` | Faz uma rodada agora (`--sem-avisar` não manda recado ao Admin) | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
+| `prumo seguranca aplicar` | Aplica a ação do catálogo para um achado. Só com o sim do dono | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
+| `prumo seguranca desfazer` | Volta atrás numa ação aplicada, pelo número do registro | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
+| `prumo seguranca inventario` | O que a ronda sabe desta instalação (`--json`, `--refazer`) | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
+| `prumo seguranca pedido` | Executa um pedido do painel guardado em arquivo. É a unidade do systemd que chama; não é para uso manual | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
+| `prumo seguranca pedido-todos` | Executa a fila de pedidos do painel. Também é chamado pelo systemd | [RONDA-DE-SEGURANCA.md](../RONDA-DE-SEGURANCA.md) |
 
 ### Botão de emergência
 
@@ -134,12 +134,12 @@ A ordem é `simular`, `preparar`, `cortar --codigo <c>`, `confirmar`, e `religar
 
 | Comando | Para que serve | Detalhe |
 | --- | --- | --- |
-| `dgclaw emergencia estado` | Diz se está cortado ou normal, e o que está parado | [EMERGENCIA.md](../EMERGENCIA.md) |
-| `dgclaw emergencia simular` | Mostra o plano e o arquivo do firewall, sem mudar nada | [EMERGENCIA.md](../EMERGENCIA.md) |
-| `dgclaw emergencia preparar` | Gera o código de uso único (vale 2 minutos) e mostra o plano | [EMERGENCIA.md](../EMERGENCIA.md) |
-| `dgclaw emergencia cortar` | Tira o servidor do ar. Exige o código; `--isolar-saida` também bloqueia a saída | [EMERGENCIA.md](../EMERGENCIA.md) |
-| `dgclaw emergencia confirmar` | Cancela o religar automático | [EMERGENCIA.md](../EMERGENCIA.md) |
-| `dgclaw emergencia religar` | Volta ao normal e testa que tudo voltou. Exige um código novo | [EMERGENCIA.md](../EMERGENCIA.md) |
+| `prumo emergencia estado` | Diz se está cortado ou normal, e o que está parado | [EMERGENCIA.md](../EMERGENCIA.md) |
+| `prumo emergencia simular` | Mostra o plano e o arquivo do firewall, sem mudar nada | [EMERGENCIA.md](../EMERGENCIA.md) |
+| `prumo emergencia preparar` | Gera o código de uso único (vale 2 minutos) e mostra o plano | [EMERGENCIA.md](../EMERGENCIA.md) |
+| `prumo emergencia cortar` | Tira o servidor do ar. Exige o código; `--isolar-saida` também bloqueia a saída | [EMERGENCIA.md](../EMERGENCIA.md) |
+| `prumo emergencia confirmar` | Cancela o religar automático | [EMERGENCIA.md](../EMERGENCIA.md) |
+| `prumo emergencia religar` | Volta ao normal e testa que tudo voltou. Exige um código novo | [EMERGENCIA.md](../EMERGENCIA.md) |
 
 ## Comandos de dentro do agente
 
@@ -304,7 +304,7 @@ sem o cofre, as chaves de API, a conta de IA, a Tela, as credenciais de canal, o
 | `GET /api/config` | Configuração do painel e quais blocos acender | Sem documento próprio |
 | `GET /api/overview` | Resumo de humor, sessão, posts do dia e pendências para a aba Status | Sem documento próprio |
 | `GET /api/powers` | Lista dos poderes (powers) e se estão instalados | Sem documento próprio |
-| `GET /api/emotions` | Estado das emoções; vazio se a extensão DG Alive não estiver instalada | Sem documento próprio |
+| `GET /api/emotions` | Estado das emoções; vazio se a extensão de emoções não estiver instalada | Sem documento próprio |
 | `GET /api/thoughts` | Pensamentos (presente, passado recente e futuro), metas e proatividade do agente | Sem documento próprio |
 | `GET /api/saude` | Diagnóstico da resposta do agente (`ativo`, `atencao`, `inativo`, `indeterminado`) | [SAUDE-E-MODO-SEGURO.md](../SAUDE-E-MODO-SEGURO.md) |
 | `POST /api/saude/reiniciar` | Reinicia o agente, normal ou em modo de segurança | [SAUDE-E-MODO-SEGURO.md](../SAUDE-E-MODO-SEGURO.md) (a tela do botão; a rota não está listada) |

@@ -84,7 +84,7 @@ feat(painel): mostra a cobertura de testes na aba Saúde
 fix(runner): recusa token com quebra de linha no meio
 docs: explica como restaurar um backup
 refactor(web): separa a leitura do cofre em função própria
-test(cli): cobre o dgclaw atualizar com a raiz falsa
+test(cli): cobre o prumo atualizar com a raiz falsa
 ci: fixa as actions pelo SHA do commit
 chore: remove nomes pessoais de comentários
 perf(web): lê a lista de conversas uma vez só
@@ -102,7 +102,7 @@ Antes de abrir, procure se já existe uma igual. Na issue, inclua:
 - a versão do Prumo da Locadora e o sistema do servidor (por exemplo, Ubuntu 24.04);
 - o que você fez, passo a passo;
 - o que você esperava que acontecesse e o que aconteceu de fato;
-- a saída de `dgclaw status`.
+- a saída de `prumo status`.
 
 Antes de colar qualquer saída, leia com atenção e apague senhas, chaves de API, tokens e endereços
 que você não quer expor.

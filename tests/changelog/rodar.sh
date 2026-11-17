@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# O CHANGELOG fala com a pessoa dona do DG Claw, nunca com o modelo. O Admin lê as subseções
+# O CHANGELOG fala com a pessoa dona do Prumo da Locadora, nunca com o modelo. O Admin lê as subseções
 # "Como atualizar" antes de aplicar uma versão (docs/ATUALIZAR.md), e o aviso de novidades mostra o
 # CHANGELOG aos agentes: frase que dá ordem a um assistente ali tem cara de injeção de prompt.
 # Regra em CLAUDE.md ("Passo manual de atualização vai no CHANGELOG").
@@ -42,7 +42,7 @@ principal() {
         fi
     done
     if [ "$falhas" -gt 0 ]; then
-        printf '\n%d frase(s) dirigida(s) ao modelo. Reescreva falando com a pessoa dona do DG Claw, com o porquê em uma frase (ver a regra no CLAUDE.md).\n' "$falhas"
+        printf '\n%d frase(s) dirigida(s) ao modelo. Reescreva falando com a pessoa dona do Prumo da Locadora, com o porquê em uma frase (ver a regra no CLAUDE.md).\n' "$falhas"
         return 1
     fi
     echo "changelog: tudo certo"

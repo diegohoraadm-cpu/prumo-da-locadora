@@ -1,7 +1,7 @@
 # Paridade da conversa com a interface da VPS (19/10/2026)
 
 O dono usa uma cópia da interface de conversa rodando na VPS dele (repositório `dg-telegram`). Entre
-15 e 18/10 essa cópia ganhou melhorias que não tinham chegado ao DG Claw oficial. Esta tabela confere
+15 e 18/10 essa cópia ganhou melhorias que não tinham chegado ao Prumo da Locadora oficial. Esta tabela confere
 cada commit de interface daquele período contra o `main` do oficial (cc4cda5) e diz o que foi feito com ele.
 
 Estados: **já tinha** (o comportamento existe no oficial, às vezes com outro nome), **portado** (entrou
@@ -39,9 +39,9 @@ decisão antes de portar).
 | ba7e767 | Corpo com a altura da tela física no iPhone | não se aplica (desfeito pelo cf10f2d) |
 | cf10f2d | Fileira de agentes volta a aparecer no iPhone | não se aplica (só desfaz o ba7e767) |
 | 280495b | Conversa com a Carla escondida por padrão | não se aplica (regra pessoal do dono) |
-| 81eb951 | Casca do DG Claw como cópia travada na VPS | não se aplica (o oficial é a origem) |
+| 81eb951 | Casca do Prumo da Locadora como cópia travada na VPS | não se aplica (o oficial é a origem) |
 | bf1eb16 | Lembretes com a casca e visita guiada | já tinha |
-| 2be2462 | Conversa com o menu do DG Claw e a seção Mais | já tinha (a seção Mais é só da VPS) |
+| 2be2462 | Conversa com o menu do Prumo da Locadora e a seção Mais | já tinha (a seção Mais é só da VPS) |
 | 0b35048 | Sessões respeitam a barra do menu no computador | não se aplica (no oficial Sessões é aba do painel) |
 | 03d573a | Painel abre em `/p/<id>/` na mesma aba | já tinha |
 | 988bd29 | Hora da última mensagem de cada agente na lista do menu | portado (o `/api/v1/agents` ganhou `ultima_ts`) |
@@ -52,7 +52,7 @@ decisão antes de portar).
 | 1883934 | Fundo verde parado no elástico do iOS | portado |
 | faae5b8 | Pular em todo tutorial e zoom banido | já tinha; faltava o zoom próprio da foto aberta no visor: portado |
 | e59ddce | Zoom banido na página de erro e nos visuais | já tinha |
-| 8a3a973 | `sem-zoom.js` e `tour.js` iguais aos do DG Claw | já tinha (arquivos idênticos) |
+| 8a3a973 | `sem-zoom.js` e `tour.js` iguais aos do Prumo da Locadora | já tinha (arquivos idênticos) |
 | 6900c27 | Faixa branca embaixo some no app instalado | portado (a parte da conversa; a Mesa da VPS não existe aqui) |
 | 09cf57e | Modo foco: botão Concluir quando tudo está ticado | portado |
 | 97a8f00 | Mídias das agentes copiadas para `data/midias` | não entra, decisão do Danilo 19/10 (no oficial a mídia continua servida da casa do agente) |

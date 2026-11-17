@@ -127,7 +127,7 @@ const ONDE = { rota: 'docs/manual/referencia-admin.md', comando: 'docs/manual/re
 const FORMA = {
   tela: 'pelo caminho (ex.: /mesa) ou, para abas do painel, por aba:<nome>',
   rota: 'pelo caminho (a familia /api/v1/<nome> basta para o web; no painel, o caminho exato)',
-  comando: 'com o comando inteiro (ex.: dgclaw agente criar)',
+  comando: 'com o comando inteiro (ex.: prumo agente criar)',
   skill: 'pelo nome entre crases', power: 'pelo nome entre crases', canal: 'pelo nome entre crases', provedor: 'pelo nome entre crases',
 };
 for (const [lista, tipo] of Object.entries(LISTAS)) {

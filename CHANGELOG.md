@@ -1,6 +1,6 @@
 # Changelog
 
-Todas as mudanças importantes do DG Claw ficam neste arquivo.
+Todas as mudanças importantes do Prumo da Locadora ficam neste arquivo.
 
 O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto adota o
 [Versionamento Semântico](https://semver.org/lang/pt-BR/).
@@ -9,7 +9,7 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 Base do original: f4efccc (#129).
 
-- Atualizando da versão anterior para a 1.0.5, a tela termina com "Atualizacao INCOMPLETA" e uma linha FALHOU para cada agente, pedindo `dgclaw agente recriar <slug> --forcar`. Isso é esperado só desta vez: a 1.0.5 passou a conferir o que existe só dentro da caixa de cada agente antes de trocá-la, e os agentes antigos ainda não têm a referência dessa conferência. Enquanto você não roda o comando, cada agente segue funcionando na versão anterior. A casa do agente, a memória, o cofre e as conversas não são tocados. O `--forcar` troca a caixa pela versão nova e perde só o que foi instalado à mão dentro dela; a lista fica em `/var/lib/dgclaw/agentes/<slug>/perdido-no-recriar-<data>.txt`. As rotinas padrão do agente voltam ao padrão (se você tinha pedido para mudar o horário de alguma, peça de novo depois). Depois do `--forcar`, as próximas atualizações não pedem mais nada.
+- Atualizando da versão anterior para a 1.0.5, a tela termina com "Atualizacao INCOMPLETA" e uma linha FALHOU para cada agente, pedindo `prumo agente recriar <slug> --forcar`. Isso é esperado só desta vez: a 1.0.5 passou a conferir o que existe só dentro da caixa de cada agente antes de trocá-la, e os agentes antigos ainda não têm a referência dessa conferência. Enquanto você não roda o comando, cada agente segue funcionando na versão anterior. A casa do agente, a memória, o cofre e as conversas não são tocados. O `--forcar` troca a caixa pela versão nova e perde só o que foi instalado à mão dentro dela; a lista fica em `/var/lib/dgclaw/agentes/<slug>/perdido-no-recriar-<data>.txt`. As rotinas padrão do agente voltam ao padrão (se você tinha pedido para mudar o horário de alguma, peça de novo depois). Depois do `--forcar`, as próximas atualizações não pedem mais nada.
 
 ## [Não lançado]
 
@@ -76,7 +76,7 @@ Falhas reportadas por Renato Gracie (divulgação responsável).
    decisões em `data/rodada/respostas.json` e o cron faz o scrape, o envio e o aviso.
 
 **Correção: o instalador não para por repositório de terceiro.** Se o `apt-get update` falhava por causa de um repositório do
-servidor que não é do DG Claw (um de terceiro, fora do ar ou com chave vencida), a instalação inteira abortava. Agora vira um
+servidor que não é do Prumo da Locadora (um de terceiro, fora do ar ou com chave vencida), a instalação inteira abortava. Agora vira um
 aviso e a instalação segue; se algum pacote realmente faltar, o passo de instalar dele avisa com a mensagem do próprio apt, e o
 instalador confere que o Node ficou na versão 22 ou mais antes de seguir (se o repositório dele falhou e o Node ficou velho,
 ele para e explica o que fazer).
@@ -126,7 +126,7 @@ atualização. Refaça uma vez, pelo comando novo, cada trava que você quer man
 precisam ser repetidas. Confira com `sudo dgclaw agente restricoes <agente>`.
 
 Contas Team e Enterprise do claude.ai não são compatíveis com as restrições nesta versão: uma organização pode passar a
-mandar uma política própria a qualquer momento, e ela substitui a configuração do DG Claw. Se o agente usa uma conta
+mandar uma política própria a qualquer momento, e ela substitui a configuração do Prumo da Locadora. Se o agente usa uma conta
 dessas, o comando `restricoes` recusa e para o agente; conecte uma conta pessoal (Pro ou Max) ou uma chave de API no painel
 do agente e rode o comando de novo. Um token OAuth ou login por assinatura sem plano Pro ou Max legível também é recusado, porque pode ser de uma organização. A consulta (`sudo dgclaw agente restricoes <agente>`) também passa a comparar o que está
 aplicado com o que você pediu, e mostra `NAO VALE` quando uma restrição foi gravada e não chegou a ser aplicada.
@@ -139,13 +139,13 @@ mensagem pede para recriar. Quem deixou um agente parado com restrições e uma 
 Com o terminal travado, o `Monitor` também fica negado, porque ele executa comandos por conta própria.
 
 Se a conta de IA conectada a um agente pertence a uma organização do claude.ai (planos Team ou Enterprise) com política
-administrada remota, essa política substitui a configuração do DG Claw e as restrições deixam de valer. Para um agente
+administrada remota, essa política substitui a configuração do Prumo da Locadora e as restrições deixam de valer. Para um agente
 com restrições, o `iniciar`, o `reiniciar` e a consulta passam a detectar isso, param o agente e explicam. A saída é conectar
 nele uma conta pessoal (Pro ou Max) ou uma chave de API. Como o agente fica parado, a ordem é: desligar as restrições
 (`sudo dgclaw agente restricoes <agente> --sem-bash nao --sem-enviar-arquivo nao --escrita-livre`), ligar o agente
 (`sudo dgclaw agente iniciar <agente>`), trocar a conta no painel do agente e ligar as restrições de novo com o mesmo comando `restricoes`. Conta de organização com política administrada remota não é compatível com as
 restrições nesta versão, nem quando a política pede para combinar com a local, porque a própria organização pode desligar os
-ganchos nela. Quando o DG Claw para o agente por esse motivo, ele só considera o container parado quando o podman confirma isso; sem
+ganchos nela. Quando o Prumo da Locadora para o agente por esse motivo, ele só considera o container parado quando o podman confirma isso; sem
 confirmação, a mensagem diz que o agente pode estar ligado sem a trava e como pará-lo na mão.
 
 A conta de IA também é conferida depois que o agente já está ligado. Antes, quem conectava uma conta Team ou Enterprise pelo
@@ -170,7 +170,7 @@ prévia. O `dgclaw status` ganhou uma linha dizendo se o ffmpeg está instalado.
 
 ### Como atualizar (ffmpeg para as prévias)
 
-Peça ao Admin, no chat: "atualiza o DG Claw". A atualização instala o ffmpeg sozinha; agentes, conversas e
+Peça ao Admin, no chat: "atualiza o Prumo da Locadora". A atualização instala o ffmpeg sozinha; agentes, conversas e
 configurações ficam como estão. Se preferir instalar na hora, rode no servidor: `sudo apt-get install -y ffmpeg`.
 As prévias dos arquivos que já estavam na conversa aparecem na próxima vez que você abrir a conversa.
 
@@ -184,7 +184,7 @@ claro, e o verde de sucesso ficou um pouco mais escuro para o texto passar do m�
 muda para quem não personalizou as cores, e o `dgclaw atualizar` padrão basta.
 
 **Suporte remoto: chave de diagnóstico só-leitura.** Quando algo para de funcionar, quem dá suporte
-ao seu DG Claw precisa saber o que está parado e por quê, e você não quer entregar a senha da sua
+ao seu Prumo da Locadora precisa saber o que está parado e por quê, e você não quer entregar a senha da sua
 máquina para isso. Agora você cria uma chave de suporte que faz uma coisa só: ler o diagnóstico de
 saúde (`GET /api/v1/diagnostico`), que lista quais serviços, agentes e rotinas estão funcionando e o
 motivo de cada falha. A chave não lê conversas, memória nem arquivos, e não consegue mudar nada: em
@@ -196,19 +196,19 @@ uma única vez, na criação. Quem erra a chave 20 vezes em 10 minutos fica bloq
 
 ### Como atualizar (diagnóstico remoto)
 
-Nada precisa ser feito para o resto do DG Claw continuar como está. Com a instalação padrão, também
+Nada precisa ser feito para o resto do Prumo da Locadora continuar como está. Com a instalação padrão, também
 não há mudança de rede: o Caddy já repassa o cabeçalho da chave ao painel. Para usar o suporte remoto:
 
-1. **Crie a chave.** Pela tela: abra **Suporte remoto** no menu, deixe o nome "Suporte DG" (ou escolha
+1. **Crie a chave.** Pela tela: abra **Suporte remoto** no menu, deixe o nome "Suporte" (ou escolha
    outro) e toque em **Criar chave**. Pelo terminal da máquina:
-   `sudo dgclaw chave-api criar --escopo diagnostico --nome "Suporte DG"`. Em qualquer caminho o token
+   `sudo prumo chave-api criar --escopo diagnostico --nome "Suporte"`. Em qualquer caminho o token
    aparece uma única vez: copie na hora e passe só para quem vai dar o suporte. Se perder, revogue e
    crie outra.
 2. **Para revogar**, toque em **Revogar** ao lado da chave na tela, ou rode `sudo dgclaw chave-api listar`
    para ver o código e `sudo dgclaw chave-api revogar <código>`. A chave para de valer na hora.
 3. **Se você colocou o Cloudflare Access (ou outro porteiro) na frente do painel**, libere o caminho
    `/api/v1/diagnostico` para a chave passar. Sem isso o porteiro barra o pedido antes de ele chegar ao
-   DG Claw e o suporte recebe uma tela de login no lugar do diagnóstico. Quem usa a instalação padrão
+   Prumo da Locadora e o suporte recebe uma tela de login no lugar do diagnóstico. Quem usa a instalação padrão
    não precisa fazer nada aqui.
 
 **Face ID no painel: uma trava opcional, ligada aparelho por aparelho.** Nova tela **Face ID** (no menu ☰, em `/face-id`).
@@ -223,7 +223,7 @@ biometria pronta) e explica que a passkey fica presa ao endereço do painel. O g
 
 ### Como atualizar (Face ID)
 
-1. **Peça ao Admin, no chat: "atualiza o DG Claw".** O painel reinicia por alguns segundos para carregar a trava. Nada é
+1. **Peça ao Admin, no chat: "atualiza o Prumo da Locadora".** O painel reinicia por alguns segundos para carregar a trava. Nada é
    ligado sozinho: depois de atualizar, ninguém tem Face ID até ligar na tela nova.
 2. **Cada pessoa liga no próprio aparelho.** Abra **Face ID** no menu ☰ e toque em "Ligar neste aparelho". O recurso é por
    aparelho: ligar no celular não trava o computador, e quem usa o painel em mais de um aparelho liga em cada um.
@@ -240,7 +240,7 @@ mantém o papel de parede verde e os balões de hoje.
 **Menu do agente em grupos.** O menu lateral tinha mais de vinte itens em fila. Agora a Conversa, a Mesa e a Pasta do agente ficam sempre à vista, e o resto está em grupos que abrem e fecham: Perfil do agente, Dia a dia, Ferramentas, Operação e Segurança. Como funciona e Socorro ficam soltos no fim, e um grupo Conexões (Navegador, Posts, Seguidores, Reuniões) só aparece quando algum deles está ligado. O grupo da página em que você está abre sozinho, o menu lembra neste aparelho o que você deixou aberto, e uma bolinha no nome do grupo fechado avisa quando há algo esperando você lá dentro. Nenhum item foi removido: Conectar conta e Anonimizar ficam em Ferramentas, e Convidar colaborador em Segurança. O painel do agente rodando sozinho, sem o
 Web na frente, também mostra os ícones.
 
-**Marca própria (white label).** Quem quiser o DG Claw com o próprio nome, logo, favicon, cores e fontes cria um `marca.json` na
+**Marca própria (white label).** Quem quiser o Prumo da Locadora com o próprio nome, logo, favicon, cores e fontes cria um `marca.json` na
 pasta `/etc/dgclaw/marca/` (o instalador a cria se faltar e nunca a esvazia). A mudança vale sem reiniciar. O passo a passo está
 em `docs/WHITE-LABEL.md` e a explicação das cores, dos ícones e do carregamento em `docs/DESIGN-SYSTEM.md`. O Admin sabe fazer a
 troca quando você pedir.
@@ -737,25 +737,25 @@ aprovar sem querer o comando que surgiu em seguida, e o botão Aprovar de uma te
 
 ### Adicionado
 
-- **Análise obrigatória antes de instalar uma atualização.** O relatório do `sudo dgclaw atualizar --simular`
-  ganhou a seção "O que este DG Claw usa e o que a versão nova toca": para cada agente, as rotinas, os
+- **Análise obrigatória antes de instalar uma atualização.** O relatório do `sudo prumo atualizar --simular`
+  ganhou a seção "O que este Prumo da Locadora usa e o que a versão nova toca": para cada agente, as rotinas, os
   scripts próprios, as skills e os canais ligados, mais as personalizações registradas (só contagens, ids e nomes no padrão, nunca o texto livre de dentro das casas), cruzados com os
-  arquivos que a versão nova muda ou remove e com os comandos do `dgclaw` que saíram ou mudaram de nome. Cada
+  arquivos que a versão nova muda ou remove e com os comandos do `prumo` que saíram ou mudaram de nome. Cada
   cruzamento aparece como ponto de atenção ("a rotina X do agente Y chama scripts/foo.sh, que muda nesta
   versão"). Além disso, a instalação agora exige um parecer: o Admin lê o relatório, cruza com o que você usa no
   dia a dia, diz a você se a atualização é segura e se vale a pena, e grava o veredito com
-  `sudo dgclaw atualizar --parecer segura|arriscada --motivo "<frase>"`. O `--ok-do-dono` só passa com parecer
+  `sudo prumo atualizar --parecer segura|arriscada --motivo "<frase>"`. O `--ok-do-dono` só passa com parecer
   `segura` para aquela mesma versão. Parecer `arriscada` bloqueia a instalação, e só `--ok-do-dono
   --apesar-do-alerta` a libera, quando você, depois de ouvir o alerta, pedir. Tudo fica em
   `/var/log/dgclaw/atualizar-pareceres.log`. O recado do aviso de versão nova ao Admin agora manda fazer essa
   análise. O aviso continua sendo uma checagem a cada 6 horas, e não um webhook, para o seu servidor não precisar abrir porta
   nem ser cadastrado em lugar nenhum.
-- **Guia de projeto de cliente** (`docs/PROJETO-DE-CLIENTE.md`): o padrão de instalar o DG Claw oficial completo na VPS do próprio cliente, o passo a passo com o acesso temporário do suporte, a comparação com as outras formas de acesso e o checklist de onboarding e entrega.
-- **Acesso temporário do suporte DG: `dgclaw suporte`.** Quando o time DG precisa ajustar a sua instalação,
-  você libera uma chave SSH nossa com prazo (`sudo dgclaw suporte ligar --chave '<linha>' --dias 7`, de 1 a 30
+- **Guia de projeto de cliente** (`docs/PROJETO-DE-CLIENTE.md`): o padrão de instalar o Prumo da Locadora completo na VPS do próprio cliente, o passo a passo com o acesso temporário do suporte, a comparação com as outras formas de acesso e o checklist de onboarding e entrega.
+- **Acesso temporário do suporte: `prumo suporte`.** Quando a equipe de suporte precisa ajustar a sua instalação,
+  você libera uma chave SSH da equipe do Prumo da Locadora com prazo (`sudo prumo suporte ligar --chave '<linha>' --dias 7`, de 1 a 30
   dias). O servidor recusa a chave sozinho quando o prazo acaba, e um timer diário tira a linha vencida do
-  arquivo. `sudo dgclaw suporte desligar` tira o acesso na hora e lista as sessões SSH de root abertas naquele momento, marcando a sua (se ainda houver outra, avisa que o acesso não está totalmente desligado; `--derrubar-sessoes` encerra todas as outras, menos a sua), `sudo dgclaw suporte status` mostra o que está
-  ligado e até quando, e o `dgclaw status` ganhou a linha "suporte: desligado" ou "suporte: ligado até ...". Só as
+  arquivo. `sudo prumo suporte desligar` tira o acesso na hora e lista as sessões SSH de root abertas naquele momento, marcando a sua (se ainda houver outra, avisa que o acesso não está totalmente desligado; `--derrubar-sessoes` encerra todas as outras, menos a sua), `sudo prumo suporte status` mostra o que está
+  ligado e até quando, e o `prumo status` ganhou a linha "suporte: desligado" ou "suporte: ligado até ...". Só as
   chaves do suporte são tocadas; as suas ficam como estão. Cada ligar e desligar fica em
   `/var/log/dgclaw/suporte.log`, só com o fingerprint, nunca com a chave inteira. Exige OpenSSH 8.2 ou mais novo
   (o Ubuntu 24.04 já tem). O Admin conhece o comando e só liga quando você pede.
@@ -831,7 +831,7 @@ A partir desta versão o `--ok-do-dono` só funciona depois de um parecer gravad
 atualizar, nada muda na conversa: ele vai analisar, contar o que achou, e só então pedir o seu sim. Se você
 roda o comando na mão, grave antes o parecer sobre a versão que vai instalar, com
 `sudo dgclaw atualizar --parecer segura --commit <commit do DESTINO> --motivo "<uma frase>"`. Se o `CLAUDE.md` ou o `AGENTS.md` do Admin
-estiverem personalizados, leve do `.novo` para o seu arquivo a parte "Atualizar o DG Claw", sem apagar o que
+estiverem personalizados, leve do `.novo` para o seu arquivo a parte "Atualizar o Prumo da Locadora", sem apagar o que
 você escreveu, para o Admin saber fazer a análise.
 
 ### Como atualizar (voz)

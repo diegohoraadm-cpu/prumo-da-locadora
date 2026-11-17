@@ -27,8 +27,8 @@ gravar, a tela abre sozinha.
  dono (navegador)
    |  HTTPS + login do painel
    v
- painel / web do DG Claw  --- proxy autenticado: <base>/tela/websockify
-   |  (a web/ do DG Claw já repassa WebSocket em /p/<agente>/)
+ painel / web do Prumo da Locadora  --- proxy autenticado: <base>/tela/websockify
+   |  (a web/ do Prumo da Locadora já repassa WebSocket em /p/<agente>/)
    v
  container do agente
    websockify (noVNC)   127.0.0.1:6080   <- só localhost
@@ -53,17 +53,17 @@ chega no proxy) e a **senha da Tela** (a do VNC, guardada no `rfbauth`).
 
 ## A senha da Tela
 
-- **Nasce na criação.** O `dgclaw agente criar` gera uma senha aleatória de 8 caracteres (sem
+- **Nasce na criação.** O `prumo agente criar` gera uma senha aleatória de 8 caracteres (sem
   caracteres ambíguos como 0, O, 1, I e l) para cada agente e mostra **uma vez**, num bloco no fim:
   "anote a senha da Tela". Rodar o `criar` de novo não gera outra nem mostra de novo.
-- **Agente sem senha.** O `dgclaw agente recriar`, o `reparar` e o `atualizar` **não inventam senha**:
+- **Agente sem senha.** O `prumo agente recriar`, o `reparar` e o `atualizar` **não inventam senha**:
   uma senha escondida seria uma senha que ninguém conhece. Se o agente tem a Tela e a casa dele ainda não
   tem o arquivo da senha, eles imprimem uma linha dizendo que a senha ainda não foi definida e como
-  definir (aba Tela do painel, ou `printf '%s\n' "Senha8ch" | dgclaw agente tela-senha <slug>`). O
+  definir (aba Tela do painel, ou `printf '%s\n' "Senha8ch" | prumo agente tela-senha <slug>`). O
   `atualizar` junta essas linhas no resumo final, uma por agente ("Tela sem senha: ..."). Enquanto não
   houver senha, a aba Tela do painel abre no formulário para o dono definir.
 - **Troca.** O dono troca no painel, aba Tela, ou por API (`PUT <base>/api/tela/senha`). Quem
-  administra o servidor troca com `printf '%s\n' "NovaSenha" | dgclaw agente tela-senha <slug>`.
+  administra o servidor troca com `printf '%s\n' "NovaSenha" | prumo agente tela-senha <slug>`.
   A senha nova vale na hora e a anterior deixa de abrir.
 - **Limite de 8 caracteres.** O VNC só usa os 8 primeiros. Por isso a regra é de 6 a 8 caracteres
   ASCII, e mais que isso é recusado com o motivo (em vez de truncar sem avisar).
@@ -113,7 +113,7 @@ A aba Tela já mostra a conferência (caixa "Situação" e, embaixo, o que fazer
 conferência sai com:
 
 ```bash
-dgclaw agente tela <slug>
+prumo agente tela <slug>
 ```
 
 Uma linha por item, `ok` ou `FALTA` com o que fazer, saída 0 quando está tudo bem, 1 quando algo falta e 2 quando o
@@ -122,8 +122,8 @@ agente está desligado. A API `GET <painel>/api/tela` devolve o mesmo em `proble
 
 | Causa | O que a conferência diz | O que fazer |
 | --- | --- | --- |
-| A imagem do agente não tem a Tela | `sem-navegador` | Reconstruir a imagem (`dgclaw imagem construir --agora`) e `dgclaw agente recriar <slug> --forcar`. |
-| Senha da Tela nunca definida (o caso mais comum em agente de antes da Tela) | `senha-nao-definida` | Definir na aba Tela do painel, ou `printf '%s\n' "Senha8ch" \| dgclaw agente tela-senha <slug>`. |
+| A imagem do agente não tem a Tela | `sem-navegador` | Reconstruir a imagem (`prumo imagem construir --agora`) e `prumo agente recriar <slug> --forcar`. |
+| Senha da Tela nunca definida (o caso mais comum em agente de antes da Tela) | `senha-nao-definida` | Definir na aba Tela do painel, ou `printf '%s\n' "Senha8ch" \| prumo agente tela-senha <slug>`. |
 | O x11vnc está parado, mesmo com a senha | `vnc-parado` | Esperar uns segundos (ele religa depois de trocar a senha); se continuar, `podman exec dgclaw-<slug> systemctl restart dgclaw-tela-vnc`. |
 | O noVNC (websockify) não responde | `websockify-parado` | `systemctl restart dgclaw-tela-web` dentro do agente. |
 | O navegador não responde no CDP | `cdp-parado` | `systemctl restart dgclaw-tela-chrome` dentro do agente. |
@@ -134,7 +134,7 @@ Em todos os casos o log da unidade diz o resto: `podman exec dgclaw-<slug> journ
 ## Variáveis do painel
 
 O painel que roda dentro do agente lê estas variáveis (no `painel.env`). Os valores entre parênteses
-são os esperados na imagem do DG Claw.
+são os esperados na imagem do Prumo da Locadora.
 
 | Variável | O que é |
 | --- | --- |
@@ -148,7 +148,7 @@ são os esperados na imagem do DG Claw.
 
 ## Fachadas sem WebSocket: a decisão
 
-O noVNC precisa de WebSocket de ponta a ponta. A web do DG Claw (`/p/<agente>/`) repassa WebSocket,
+O noVNC precisa de WebSocket de ponta a ponta. A web do Prumo da Locadora (`/p/<agente>/`) repassa WebSocket,
 então a Tela abre normalmente no proxy do painel.
 
 Na VPS do Danilo a fachada dos clientes é outra: o **agents-web** (Next, rota
@@ -163,12 +163,12 @@ O agente conecta no Chrome da Tela por `playwright connect_over_cdp('http://127.
 reaproveita `browser.contexts[0]` (onde estão os logins), abre uma página nova e fecha **só a página**,
 nunca o navegador. Antes de usar, confere `curl -s 127.0.0.1:9222/json/version`. Quando trava em um
 login, pede ao dono que entre pela Tela e nunca pede a senha na conversa. O roteiro completo é a
-skill `skills/tela/SKILL.md` (`/dgclaw:tela`), e o `CLAUDE.md` do agente aponta para ela.
+skill `skills/tela/SKILL.md`, e o `CLAUDE.md` do agente aponta para ela.
 
 ## Memória
 
 O Chrome pesa. Com a Tela ligada, conte de 1 a 2 GB só para o navegador e as abas, além do runner,
-do painel e do Claude Code. O `--memory 2g` que o `dgclaw agente criar` aplica hoje pode apertar; para
+do painel e do Claude Code. O `--memory 2g` que o `prumo agente criar` aplica hoje pode apertar; para
 um agente com Tela, 3 GB é um ponto de partida mais seguro (`podman update --memory 3g
 dgclaw-<slug>`). **Meça antes de padronizar:** `podman stats dgclaw-<slug>` com os sites reais abertos.
 As flags do Chrome já são econômicas: sem GPU, sem `/dev/shm`, no máximo 4 processos de renderização.
@@ -191,14 +191,14 @@ As flags do Chrome já são econômicas: sem GPU, sem `/dev/shm`, no máximo 4 p
 O `install.sh` já constrói a imagem com `COM_NAVEGADOR=1` (o padrão desde 17/10/2026), então a
 Tela vem na imagem de todo agente. Um agente criado antes desta versão ganha a Tela assim:
 
-1. Atualize o DG Claw, para que a imagem nova seja construída (em arm64 a Tela usa o Chromium; ver
+1. Atualize o Prumo da Locadora, para que a imagem nova seja construída (em arm64 a Tela usa o Chromium; ver
    acima). A instalação padrão, sem flags, prepara o painel e o Admin e **adia a imagem para a criação do
    primeiro agente**; nessa hora a imagem é construída com `COM_NAVEGADOR=1`, ou seja, com a Tela, antes de
-   o agente ficar pronto, e o `dgclaw agente criar` gera e mostra a senha da Tela uma vez.
-2. `dgclaw agente recriar <slug>`: troca o container pelo da imagem atual sem tocar na casa.
+   o agente ficar pronto, e o `prumo agente criar` gera e mostra a senha da Tela uma vez.
+2. `prumo agente recriar <slug>`: troca o container pelo da imagem atual sem tocar na casa.
 3. Defina a primeira senha da Tela. Pode ser pelo painel (a aba Tela abre direto em "Defina a senha da
    tela" quando ainda não há senha) ou pelo terminal:
-   `printf '%s\n' "Senha8ch" | dgclaw agente tela-senha <slug>`. Enquanto não houver senha, o
+   `printf '%s\n' "Senha8ch" | prumo agente tela-senha <slug>`. Enquanto não houver senha, o
    x11vnc não sobe.
 4. Dê mais memória, se precisar: `podman update --memory 3g dgclaw-<slug>`. O Chrome pesa, e o
    padrão de 2 GB pode apertar.
@@ -208,5 +208,5 @@ Tela vem na imagem de todo agente. Um agente criado antes desta versão ganha a 
 Os agentes da VPS do Danilo, em `/srv/agents-jaula`, usam o `Containerfile.tela` próprio e guardam o
 rfbauth em `/home/agente/.plataforma/segredos/vnc.senha`. O painel aceita esse caminho por
 `DGCLAW_TELA_SENHA_ARQUIVO`. As unidades de lá têm nomes sem o prefixo `dgclaw-` (`tela-vnc.service`
-e companhia). Quem migrar um agente da jaula para a imagem do DG Claw troca o caminho para
+e companhia). Quem migrar um agente da jaula para a imagem do Prumo da Locadora troca o caminho para
 `/home/agente/.dgclaw/tela/vnc.senha`.

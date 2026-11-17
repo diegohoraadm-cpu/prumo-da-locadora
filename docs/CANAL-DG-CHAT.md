@@ -1,6 +1,6 @@
-# O canal DG Chat dentro do DG Claw
+# O canal do chat do painel dentro do Prumo da Locadora
 
-Escrito em 11/08/2026, quando o servidor MCP do DG Chat foi portado da plataforma
+Escrito em 11/08/2026, quando o servidor MCP do chat do painel foi portado da plataforma
 (DG AI Bunker) para o plugin. Requisito da release v0.5.
 
 ## O buraco que isto fecha
@@ -58,7 +58,7 @@ Por isso o servidor tem dois modos, decididos por ambiente:
 
 | Modo | Quando | O que a tool responde |
 | --- | --- | --- |
-| `transcript` | sem `DGCHAT_URL` (aluna, DG Claw sozinho) | `Entregue.` |
+| `transcript` | sem `DGCHAT_URL` (aluna, Prumo da Locadora sozinho) | `Entregue.` |
 | `plataforma` | com `DGCHAT_URL` (card do Bunker) | `Entregue.` ou, se o empurrão falhar, o aviso de atraso |
 
 ## As peças
@@ -68,7 +68,7 @@ Por isso o servidor tem dois modos, decididos por ambiente:
 | servidor MCP | `scripts/dgchat-mcp/server.mjs` | as tools `reply` e `send_file`, só builtins do node |
 | bancada | `scripts/dgchat-mcp/test-server.mjs` | fala JSON-RPC no stdio do servidor de verdade |
 | fiação | `scripts/launch.sh` | escreve o `.dgclaw/dgchat.mcp.json` e passa `--mcp-config` |
-| a regra | `scripts/bootstrap-identity.sh` | a REGRA ZERO do DG Chat entra sempre; a do Telegram, só se plugado |
+| a regra | `scripts/bootstrap-identity.sh` | a REGRA ZERO do chat do painel entra sempre; a do Telegram, só se plugado |
 | leitura | `scripts/_lib/thread_log.py` | já casava as duas tools por sufixo, não mudou |
 
 ## Armadilhas

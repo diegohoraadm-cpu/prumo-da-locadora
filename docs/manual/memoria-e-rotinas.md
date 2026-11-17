@@ -79,7 +79,7 @@ Os lembretes que insistem até o dono confirmar têm a página própria em [conv
 **Como pedir.** "Todo dia às 9h me manda o resumo das tarefas." Para ser lembrado de algo, o certo é um lembrete; a agenda serve para trabalho do agente. A skill entende que "Chrome" e "crome" num áudio querem dizer "cron".
 **Onde ver.** Aba `aba:rotinas`: as rotinas e lembretes que o agente marcou a pedido do dono, com a próxima hora e como foi a última vez. A lista se atualiza sozinha.
 **Limites.** Os compromissos vivem no servidor, não na sessão: fechar a conversa não os cancela. Para o agente agendar algo "só durante o trabalho de agora", é outro mecanismo.
-**Se der erro.** Se um compromisso não dispara, o Admin confere a unidade em `aba:operations` e roda `dgclaw agente reparar <slug>`.
+**Se der erro.** Se um compromisso não dispara, o Admin confere a unidade em `aba:operations` e roda `prumo agente reparar <slug>`.
 
 ## Custos
 

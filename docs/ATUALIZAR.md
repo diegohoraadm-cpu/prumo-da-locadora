@@ -138,7 +138,7 @@ Opções que você usa só quando preciso:
 
 | Opção | Quando |
 |---|---|
-| `--repo <pasta>` | o instalador não anotou onde está o clone (instalação antiga). Procure com `find / -name install.sh -path '*DG-Claw*' 2>/dev/null` |
+| `--repo <pasta>` | o instalador não anotou onde está o clone (instalação antiga). Procure com `find / -name install.sh -path '*prumo-da-locadora*' 2>/dev/null` (se você instalou a versão anterior, a pasta pode se chamar `DG-Claw`: troque o nome no `-path`) |
 | `--forcar-local` | o clone tem alteração local e o dono autorizou guardá-la num stash datado |
 | `--parecer segura\|arriscada --motivo "<texto curto>"` | grava o seu parecer sobre a versão de destino (`/var/lib/dgclaw/web/atualizacao/parecer.json`, modo 600). Não instala nada |
 | `--ok-do-dono` | o dono leu o relatório "o que muda" e disse sim. Vale para a versão que ele viu: se a versão de destino mudou desde o relatório, o comando para e mostra o novo. **Exige parecer `segura` para a mesma versão**; sem parecer, ou com parecer de outra versão, para antes do backup |
@@ -152,7 +152,7 @@ Opções que você usa só quando preciso:
 ## O que o comando faz, na ordem
 
 1. **Acha o clone** (onde está o `install.sh` que instalou): `--repo`, ou `DGCLAW_REPO` do `dgclaw.env`
-   (o instalador anota sozinho), ou `/root/DG-Claw`.
+   (o instalador anota sozinho), ou `/root/prumo-da-locadora`, ou, em quem instalou a versão anterior, `/root/DG-Claw` (nessa ordem).
 2. **Pré-checagem do clone**: `git status --porcelain`. Com qualquer alteração local ele **para** e lista
    os arquivos. Com `--forcar-local` guarda tudo em `git stash push -u -m dgclaw-atualizar-<data>` e
    avisa o nome do stash. Nunca faz `reset --hard` nem `clean`.
@@ -258,7 +258,7 @@ O `dgclaw atualizar` força esse passo:
    grava o relatório `/var/log/dgclaw/dgclaw-atualizar-<data>.o-que-muda.txt`: os commits novos, o tamanho
    da mudança, os itens novos do CHANGELOG, os **pontos de atenção** (arquivos alterados em áreas
    sensíveis: instalador, firewall, caixa dos agentes, ganchos de segurança, credenciais, banco de dados,
-   rotas do painel, arquivos que você personalizou) e a seção **"O que este DG Claw usa e o que a versão
+   rotas do painel, arquivos que você personalizou) e a seção **"O que este Prumo da Locadora usa e o que a versão
    nova toca"**.
 2. Essa seção levanta, para cada agente, quantas rotinas e scripts próprios (da casa e das skills próprias) ele
    tem, quais skills e canais (WhatsApp, Telegram) estão ligados, mais a contagem das personalizações
@@ -274,8 +274,9 @@ O `dgclaw atualizar` força esse passo:
    limites (manifesto de rotinas até 256 KB, até 200 rotinas e 500 scripts por agente, arquivos de até
    256 KB, seção de até 40 KB). O que passar do limite aparece como "limite atingido: ..." nos pontos de
    atenção, sem derrubar a atualização. O cruzamento só enxerga o que está escrito (caminhos em
-   `/opt/dgclaw/app/...` e comandos `dgclaw ...`): uma rotina que só diz "faça o resumo do dia" não aparece,
-   e aí vale o seu julgamento. Para ver o texto de uma rotina, abra a casa do agente, não o relatório.
+   `/opt/dgclaw/app/...` e comandos escritos como `dgclaw ...`; o nome `prumo ...` não é reconhecido aqui, porque o
+   coletor lê o texto das rotinas e só procura `dgclaw`): uma rotina que só diz "faça o resumo do dia" ou que
+   cita o comando como `prumo ...` não aparece, e aí vale o seu julgamento. Para ver o texto de uma rotina, abra a casa do agente, não o relatório.
 3. Você lê o relatório e, nos pontos de atenção, o próprio diff
    (`git -C <clone> diff <commit instalado> <versão nova> -- <arquivo>`). Pense no que o dono faz no dia a
    dia: as rotinas, os scripts, os crons, os dados que os agentes acessam, os fluxos que ele depende.
@@ -350,8 +351,8 @@ Depois dessa atualização vem o levantamento, antes de qualquer outra mudança 
 `sudo dgclaw personalizacoes levantar` junta o que foi mudado direto no programa, o que está alterado ou
 commitado no clone, os stashes `dgclaw-atualizar-*` e os arquivos que o Admin editou segundo as conversas
 dele. O passo a passo com o dono (confirmar cada mudança, reaplicar na branch do jeito mais compatível,
-registrar, testar e rodar `sudo dgclaw personalizacoes concluir`) está no capítulo "Quem já tinha o DG
-Claw antes desta versão" do `PERSONALIZAR.md`.
+registrar, testar e rodar `sudo dgclaw personalizacoes concluir`) está no capítulo "Quem já tinha o Prumo da
+Locadora antes desta versão" do `PERSONALIZAR.md`.
 
 ## Atualização INCOMPLETA (algum agente não foi recriado)
 
@@ -549,7 +550,7 @@ O que fazer:
 
 1. **Faça a análise antes de falar em instalar** (capítulo "Ler o que muda antes de instalar"): rode
    `sudo dgclaw atualizar --simular`, leia o relatório, o diff dos pontos de atenção e a seção do que este
-   DG Claw usa, e cruze com o que o dono faz no dia a dia.
+   Prumo da Locadora usa, e cruze com o que o dono faz no dia a dia.
 2. Conte ao dono, pelo chat e em palavras simples, que saiu uma versão nova, se ela é segura e o que ele
    ganha, e pergunte se quer instalar agora. Grave o parecer (`--parecer segura` ou `--parecer arriscada`).
    Se não for segura, levante o alerta, grave `arriscada` e não instale.

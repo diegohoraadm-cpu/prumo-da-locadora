@@ -59,7 +59,7 @@ direto, sem o procedimento da branch.
 | Uma habilidade nova para o Admin | `/opt/dgclaw/admin/.claude/skills/<nome>/SKILL.md`, com um nome que não seja de nenhuma habilidade de fábrica | "Admin, cria uma habilidade que me manda todo dia um resumo da saúde do servidor" |
 | Uma habilidade nova para um agente | `~/.claude/skills/<nome>` dentro da casa dele | "Cria uma habilidade para a Bia montar o relatório de vendas do jeito que eu gosto" |
 | Mudar o jeito do Admin trabalhar | `CLAUDE.md` ou `AGENTS.md` em `/opt/dgclaw/admin` | "Admin, daqui para frente sempre me avise antes de reiniciar um agente" |
-| Identidade e personalidade de um agente | `AGENT.md` na casa dele; o dono edita pela aba Quem sou do painel do agente, e o Admin regrava a identidade (`dgclaw agente identidade <nome>`) para valer na próxima sessão | "Deixa a Bia mais direta e menos formal" |
+| Identidade e personalidade de um agente | `AGENT.md` na casa dele; o dono edita pela aba Quem sou do painel do agente, e o Admin regrava a identidade (`prumo agente identidade <nome>`) para valer na próxima sessão | "Deixa a Bia mais direta e menos formal" |
 | Rotinas de um agente | Pelo próprio agente (ficam na casa, em `.dgclaw/self-crons.json`) | "Todo dia útil às 8h, a Bia me manda a agenda" |
 | Chaves de voz, limites de envio, fuso, endereços permitidos | `/etc/dgclaw/web.env` (a linha certa, sem apagar as outras) | "Admin, liga o microfone com a minha chave do Groq" |
 | Configuração de um agente (assinatura, conexões, memória, arquivos) | Painel do próprio agente, em `/p/<nome>/` | "Conecta o Telegram da Bia" |
@@ -108,7 +108,7 @@ sua. Em outubro de 2026, as mais mexidas foram:
 Quanto menor e mais isolada a mudança, menor a chance de conflito. Um arquivo novo quase nunca esbarra em
 nada. Um ajuste no meio de `conversa.js` esbarra com frequência.
 
-## Mudanças na base do DG Claw: pode, com aviso
+## Mudanças na base do Prumo da Locadora: pode, com aviso
 
 Você pode pedir mudanças no nível do sistema, por exemplo uma nova forma de gerar agentes ou um ajuste no
 comando `dgclaw`, no instalador (`install.sh` e a pasta `lib/`) ou no `runner/`. Essas peças sabem refazer
@@ -116,7 +116,7 @@ tudo na ordem certa, com backup, então uma mudança nelas tem mais chance de at
 
 O combinado é este:
 
-1. O Admin avisa, em linguagem simples, que o pedido mexe na base do DG Claw e pode dar problema nas
+1. O Admin avisa, em linguagem simples, que o pedido mexe na base do Prumo da Locadora e pode dar problema nas
    próximas atualizações.
 2. Se você mantiver o pedido, o Admin faz a mudança, na branch `personalizacoes`, como qualquer outra
    personalização.
@@ -166,7 +166,7 @@ git -C <clone> add web/public/conversa.js web/public/conversa.css
 git -C <clone> commit -m "Personalizacao: botao Resumo do dia na conversa"
 
 # 4. Colocar no ar, usando o que está no clone (sem baixar nada)
-sudo dgclaw atualizar --sem-baixar --ok-do-dono --segundo-plano
+sudo prumo atualizar --sem-baixar --ok-do-dono --segundo-plano
 ```
 
 O passo 4 faz backup, reinstala o que está no clone, reconstrói a imagem e recria os agentes. É o
@@ -178,7 +178,7 @@ repete o "Como testar" da entrada no registro e conta o resultado a você.
 Cada mudança ganha uma entrada em `/opt/dgclaw/admin/PERSONALIZACOES.md`. Esse arquivo fica fora do
 programa (a atualização não o toca) e entra no backup `admin.tar.gz`. Na primeira personalização, o Admin
 copia o modelo de `templates/admin/PERSONALIZACOES.md` para lá. O formato é este, e o
-`dgclaw atualizar` o lê:
+`prumo atualizar` o lê:
 
 ```
 ## 2026-10-19 - Botão "Resumo do dia" na conversa
@@ -199,7 +199,7 @@ copia o modelo de `templates/admin/PERSONALIZACOES.md` para lá. O formato é es
 
 ## Quando chega uma atualização
 
-Com o clone na branch `personalizacoes`, o `dgclaw atualizar` busca a versão nova e cruza os arquivos que
+Com o clone na branch `personalizacoes`, o `prumo atualizar` busca a versão nova e cruza os arquivos que
 ela muda com os arquivos personalizados (pelo git e pelo registro). Duas situações:
 
 **Sem cruzamento.** O comando faz o backup, guarda uma cópia da sua branch em
@@ -220,8 +220,8 @@ para antes do backup, porque instalaria a versão oficial sem elas. O Admin volt
 `git switch personalizacoes`. Só se você decidir instalar sem as personalizações é que ele usa
 `--sem-personalizacoes`.
 
-Para ver o cruzamento sem mudar nada, o Admin roda `sudo dgclaw atualizar --simular` (ou
-`sudo dgclaw personalizacoes conferir`). Depois do seu sim, o ajuste segue o capítulo "Personalização
+Para ver o cruzamento sem mudar nada, o Admin roda `sudo prumo atualizar --simular` (ou
+`sudo prumo personalizacoes conferir`). Depois do seu sim, o ajuste segue o capítulo "Personalização
 que cruza com a versão nova" do `docs/ATUALIZAR.md`.
 
 ## Quem já tinha o Prumo da Locadora antes desta versão
@@ -239,7 +239,7 @@ lembradas nas conversas com o Admin.
 Na conversa seguinte, o Admin faz o levantamento:
 
 ```bash
-sudo dgclaw personalizacoes levantar
+sudo prumo personalizacoes levantar
 ```
 
 O comando junta o que foi mudado direto no programa, as alterações e os commits no clone, os stashes
@@ -252,15 +252,15 @@ personalização:
 3. reaplica na branch `personalizacoes` do jeito mais compatível, preferindo ponto de extensão ou
    arquivo novo;
 4. registra no `PERSONALIZACOES.md`;
-5. aplica com `sudo dgclaw atualizar --sem-baixar --ok-do-dono --segundo-plano` e testa;
-6. no fim, roda `sudo dgclaw personalizacoes concluir`.
+5. aplica com `sudo prumo atualizar --sem-baixar --ok-do-dono --segundo-plano` e testa;
+6. no fim, roda `sudo prumo personalizacoes concluir`.
 
 Nada é apagado: as cópias ficam na pasta da migração. Quem instalou do zero já nasce com o registro
 criado e não passa por isso. Para ver, a qualquer momento, como as suas personalizações ficam diante da
 versão nova, o Admin usa:
 
 ```bash
-sudo dgclaw personalizacoes conferir
+sudo prumo personalizacoes conferir
 ```
 
 ## Desfazer uma personalização
@@ -269,7 +269,7 @@ O Admin desfaz com `git revert`, que cria um commit novo que anula o antigo e pr
 
 ```bash
 git -C <clone> revert <commit>
-sudo dgclaw atualizar --sem-baixar --ok-do-dono --segundo-plano
+sudo prumo atualizar --sem-baixar --ok-do-dono --segundo-plano
 ```
 
 Nunca com `git reset --hard`, que apaga trabalho sem volta. Depois, a entrada no registro muda para

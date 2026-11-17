@@ -1,4 +1,4 @@
-# Segurança do DG Claw: segredos no histórico, análise estática do código, e a imagem dos agentes
+# Segurança do Prumo da Locadora: segredos no histórico, análise estática do código, e a imagem dos agentes
 # (vulnerabilidades e lista de componentes). Roda em todo PR, em todo push na main e uma vez por
 # semana (CVE novo aparece mesmo sem commit novo).
 #

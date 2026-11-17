@@ -49,6 +49,41 @@
       "arquivo": "tests/cli/restricoes-suporte.sh",
       "linha": "cmds=\"$(grep -oE 'dgclaw agente (reiniciar|iniciar|restricoes) ana( --[a-z-]+( (sim|nao))?)*' \"$TMP/m-$caso.txt\" | sort -u)\"",
       "motivo": "a extracao aceita os dois nomes, (prumo|dgclaw), para o teste nao ignorar em silencio uma mensagem que volte a citar dgclaw (QA-M4, B1)"
+    },
+    {
+      "arquivo": "CHANGELOG.md",
+      "linha": "arquivos que a versão nova muda ou remove e com os comandos do `dgclaw` que saíram ou mudaram de nome. Cada",
+      "motivo": "linha de item novo do CHANGELOG vindo do original (nenhum aluno viu): reescrita à mão no M5, `dgclaw` virou `prumo` (decisão 4 do plano de marca)"
+    },
+    {
+      "arquivo": "CHANGELOG.md",
+      "linha": "- **Guia de projeto de cliente** (`docs/PROJETO-DE-CLIENTE.md`): o padrão de instalar o DG Claw oficial completo na VPS do próprio cliente, o passo a passo com o acesso temporário do suporte, a comparação com as outras formas de acesso e o checklist de onboarding e entrega.",
+      "motivo": "item novo do CHANGELOG vindo do original: \"DG Claw oficial\" virou \"Prumo da Locadora\" (decisão 4 do plano de marca)"
+    },
+    {
+      "arquivo": "CHANGELOG.md",
+      "linha": "- **Acesso temporário do suporte DG: `dgclaw suporte`.** Quando o time DG precisa ajustar a sua instalação,",
+      "motivo": "item novo do CHANGELOG vindo do original: \"suporte DG\" e \"time DG\" viraram \"suporte\" e \"equipe de suporte\"; `dgclaw suporte` virou `prumo suporte`"
+    },
+    {
+      "arquivo": "docs/PROJETO-DE-CLIENTE.md",
+      "linha": "Este guia é para o time DG que monta um agente para um cliente. Ele diz qual é o padrão, o passo a passo, por",
+      "motivo": "\"time DG\" vira \"a equipe\" (decisão 2 do plano de marca): o guia é de quem monta o agente do cliente, não do time do autor original"
+    },
+    {
+      "arquivo": "CHANGELOG.md",
+      "linha": "você libera uma chave SSH nossa com prazo (`sudo dgclaw suporte ligar --chave '<linha>' --dias 7`, de 1 a 30",
+      "motivo": "item novo do CHANGELOG vindo do original (nenhum aluno viu): \"nossa\" trocado por \"da equipe do Prumo da Locadora\" para não ser lido como do dono (QA do M5, B5)"
+    },
+    {
+      "arquivo": "docs/ATUALIZAR.md",
+      "linha": "`/opt/dgclaw/app/...` e comandos `dgclaw ...`): uma rotina que só diz \"faça o resumo do dia\" não aparece,",
+      "motivo": "rodada 2 do M5 (QA A2): o coletor lib/uso-coletor.sh só reconhece \"dgclaw <comando>\"; a frase agora diz que \"prumo ...\" não é reconhecido"
+    },
+    {
+      "arquivo": "docs/ATUALIZAR.md",
+      "linha": "e aí vale o seu julgamento. Para ver o texto de uma rotina, abra a casa do agente, não o relatório.",
+      "motivo": "rodada 2 do M5 (QA A2): continuação da frase do coletor de uso, reescrita junto com a linha anterior"
     }
   ],
   "nossas_ausentes": [
@@ -176,6 +211,26 @@
       "arquivo": "templates/MEMORY.md.tmpl",
       "linha": "<!-- MEMORY.md — ESQUELETO biografico de {{NOME}}. Gerado por Prumo da Locadora no /dgclaw:awaken.",
       "motivo": "marca M3 (decisão 11): a skill awaken não existe em lugar nenhum do repositório; a referência sai e a frase fica sem ela"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "Dentro do container não existem `podman`, `dgclaw` nem `sudo`. Traduza assim:",
+      "motivo": "acrescentei \"(nem o `prumo`)\": o manual usa `prumo` nos exemplos e dentro do container nenhum dos dois comandos existe"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "uma versão antiga do `dgclaw`) e o modo de segurança não vai funcionar por aqui: use o botão",
+      "motivo": "\"versão antiga do `dgclaw`\" fala do programa, e o manual chama o programa de Prumo da Locadora"
+    },
+    {
+      "arquivo": "docs/MESA-DE-TAREFAS.md",
+      "linha": "(`templates/CLAUDE.md.tmpl`; o agente Codex le o mesmo arquivo, mandado pelo `templates/AGENTS.md.tmpl`) e na skill `mesa`",
+      "motivo": "a frase perdeu o \"(`/dgclaw:mesa`)\": nome que não existe, a skill é chamada por `/mesa` (F4.5 do plano de marca)"
+    },
+    {
+      "arquivo": "docs/manual/personalizar.md",
+      "linha": "Você pode pedir mudanças na base do Prumo da Locadora, como uma nova forma de gerar agentes, um ajuste no comando `dgclaw`, no",
+      "motivo": "manual do dono: \"ajuste no comando `dgclaw`\" virou \"`prumo`\" (decisão do dono: limpar o dg* até no manual)"
     }
   ],
   "emergencia_novas": [

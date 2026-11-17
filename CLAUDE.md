@@ -1,6 +1,6 @@
-# DG Claw: estrutura do repositório
+# Prumo da Locadora: estrutura do repositório
 
-O DG Claw instala um painel web com chat, um Admin e a infraestrutura para agentes de trabalho
+O Prumo da Locadora instala um painel web com chat, um Admin e a infraestrutura para agentes de trabalho
 em containers separados. O [README](README.md) apresenta o produto e o [INSTALL.md](INSTALL.md)
 contém o procedimento de instalação.
 
@@ -25,7 +25,7 @@ A [arquitetura](docs/ARQUITETURA.md) descreve o funcionamento e os limites entre
 
 ## Contexto de uso
 
-- **Onde o repositório é clonado.** O caminho normal é clonar o DG Claw direto na VPS em que ele vai
+- **Onde o repositório é clonado.** O caminho normal é clonar o Prumo da Locadora direto na VPS em que ele vai
   rodar e instalar ali mesmo, com `sudo ./install.sh`. A pasta clonada na VPS é, portanto, a
   instalação de destino, e não uma cópia de desenvolvimento.
 - **Quem instala.** Na maioria dos casos é uma pessoa que não é programadora, seguindo uma aula ou o
@@ -47,7 +47,7 @@ A [arquitetura](docs/ARQUITETURA.md) descreve o funcionamento e os limites entre
 ## Regras do projeto
 
 - **Segurança: toda mudança é feita, testada e revisada pelo Codex em modo adversarial antes do
-  merge.** O DG Claw roda na VPS de quem não é programador, com um Admin root; uma vulnerabilidade
+  merge.** O Prumo da Locadora roda na VPS de quem não é programador, com um Admin root; uma vulnerabilidade
   expõe servidor, chaves e conversas de quem confiou no projeto. Todo PR (inclusive de documentação)
   segue [docs/REVISAO-ADVERSARIAL.md](docs/REVISAO-ADVERSARIAL.md): teste verde e conferido de
   verdade; revisão adversarial do Codex com foco em injeção, exposição de segredo, permissão, rota sem
@@ -68,7 +68,7 @@ A [arquitetura](docs/ARQUITETURA.md) descreve o funcionamento e os limites entre
   *Por quê:* em 17/10/2026 o instalador regravava o `web.env` só com o usuário e a senha do
   painel, e cada atualização desligava o microfone dos agentes. O Admin percebeu antes de aplicar.
 
-- **Paridade de motores: toda mudança funciona no Claude e no Codex.** O DG Claw tem dois motores
+- **Paridade de motores: toda mudança funciona no Claude e no Codex.** O Prumo da Locadora tem dois motores
   pela assinatura, o Claude (Claude Code) e o ChatGPT (Codex CLI), e o agente tem que se comportar
   igual nos dois. Todo commit, PR, feature ou correção nova é feita e testada nos dois motores. Se o
   recurso depende de algo que só o Claude Code tem (hook, transcript JSONL em `.claude/projects`,
@@ -88,10 +88,10 @@ A [arquitetura](docs/ARQUITETURA.md) descreve o funcionamento e os limites entre
   (o teste `tests/ambiente` confere que cada um está citado no `agente.md`).
 
 - **Passo manual de atualização vai no CHANGELOG, escrito para a pessoa.** Toda mudança que pede
-  algo além do `dgclaw atualizar` padrão (instrução nova para juntar a um arquivo que o dono pode ter
+  algo além do `prumo atualizar` padrão (instrução nova para juntar a um arquivo que o dono pode ter
   personalizado, arquivo que não pode ser substituído, chave nova, regravar a identidade, reparar ou
   reiniciar um agente) leva, no `CHANGELOG.md`, uma subseção `### Como atualizar` dentro da versão (ou
-  de `[Não lançado]`). O texto fala com a pessoa dona do DG Claw, com o porquê em uma frase, por
+  de `[Não lançado]`). O texto fala com a pessoa dona do Prumo da Locadora, com o porquê em uma frase, por
   exemplo: "Nesta versão há uma instrução nova para o seu agente entender o áudio transcrito. Ela
   precisa entrar nas instruções dele sem apagar o que você já personalizou." ou "Não substitua o
   arquivo X, porque ele guarda Y." Nunca escreva para o modelo ("você é um agente, faça X",

@@ -1,6 +1,6 @@
-# Provedores: Claude e Codex no DG Claw
+# Provedores: Claude e Codex no Prumo da Locadora
 
-Esta página explica quais motores o DG Claw sabe usar, como cada um é pago e o que
+Esta página explica quais motores o Prumo da Locadora sabe usar, como cada um é pago e o que
 mudou de verdade quando o motor é o Codex. A segunda metade guarda os testes que
 fizemos em 12/10/2026, com o comando exato, para ninguém precisar descobrir de novo.
 
@@ -192,7 +192,7 @@ sessões do runner já usam.
 
 O agente principal (Claude) abre uma sessão paralela em outro provedor, por exemplo o Codex (GPT),
 manda um pedido, espera, lê a resposta e fecha. O dono diz "abre um card no GPT para revisar isso" e
-o agente cuida do resto. É a skill `cards` (`/dgclaw:cards`) usando o comando `bin/dgclaw-card`
+o agente cuida do resto. É a skill `cards`, usando o comando `bin/dgclaw-card`
 (`abrir`, `mandar`, `estado`, `esperar`, `ler`, `listar`, `fechar`), que fala com as rotas
 `POST /api/sessoes`, `/input`, `/conversation` e `DELETE /api/sessoes/<id>` do runner.
 

@@ -23,7 +23,7 @@ permite à atualização conferir se a sua mudança cruza com a versão nova.
 
 ## Mudança no nível do sistema: pode, com aviso
 
-Você pode pedir mudanças na base do Prumo da Locadora, como uma nova forma de gerar agentes, um ajuste no comando `dgclaw`, no
+Você pode pedir mudanças na base do Prumo da Locadora, como uma nova forma de gerar agentes, um ajuste no comando `prumo`, no
 instalador ou no `runner/`. O combinado:
 
 1. O Admin avisa, em linguagem simples, que o pedido mexe na base e pode dar problema nas próximas atualizações.
@@ -47,10 +47,10 @@ Se o pedido esbarra em algum deles, o Admin explica o risco e propõe outro cami
 
 | Comando | Para que serve |
 | --- | --- |
-| `sudo dgclaw personalizacoes levantar` | Lista o que foi personalizado: registro, clone, cópias do instalador e conversas do Admin |
-| `sudo dgclaw personalizacoes conferir` | Confere o registro contra a versão nova e diz se algo cruza. Não muda nada |
-| `sudo dgclaw personalizacoes concluir` | Marca o levantamento pendente como concluído |
-| `sudo dgclaw atualizar --simular` | Mostra, entre outras coisas, o cruzamento das personalizações com a versão nova |
+| `sudo prumo personalizacoes levantar` | Lista o que foi personalizado: registro, clone, cópias do instalador e conversas do Admin |
+| `sudo prumo personalizacoes conferir` | Confere o registro contra a versão nova e diz se algo cruza. Não muda nada |
+| `sudo prumo personalizacoes concluir` | Marca o levantamento pendente como concluído |
+| `sudo prumo atualizar --simular` | Mostra, entre outras coisas, o cruzamento das personalizações com a versão nova |
 
 ## Se der erro
 

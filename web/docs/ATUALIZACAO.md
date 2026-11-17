@@ -1,9 +1,9 @@
-# Aviso de nova versão do DG Claw
+# Aviso de nova versão do Prumo da Locadora
 
-Quando o repositório oficial do DG Claw ganha uma versão nova, o servidor percebe sozinho
+Quando o repositório oficial do Prumo da Locadora ganha uma versão nova, o servidor percebe sozinho
 (uma consulta de leitura ao GitHub a cada 6 horas) e o painel mostra uma faixa discreta:
-"Nova versão do DG Claw disponível". Nada é baixado nem instalado sem o ok do dono: a
-atualização continua sendo `sudo dgclaw atualizar`.
+"Nova versão do Prumo da Locadora disponível". Nada é baixado nem instalado sem o ok do dono: a
+atualização continua sendo `sudo prumo atualizar`.
 
 Estas rotas são **só do dono, pelo painel** (sessão do navegador). Agente em container não
 as acessa: pela caixa do agente elas respondem 403. Quem cuida da checagem, do desligamento e

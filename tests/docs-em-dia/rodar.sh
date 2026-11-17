@@ -186,7 +186,7 @@ if [ ! -f "$MANUAL/README.md" ]; then
         echo "docs-em-dia: aviso: ainda nao existe $MANUAL/README.md (o manual esta sendo escrito). Rodei so a bancada." >&2
         exit 0
     fi
-    echo "docs-em-dia: falta $MANUAL/README.md. O manual do DG Claw precisa ter um README.md que apresente as demais paginas; crie-o." >&2
+    echo "docs-em-dia: falta $MANUAL/README.md. O manual do Prumo da Locadora precisa ter um README.md que apresente as demais paginas; crie-o." >&2
     exit 1
 fi
 node "${CHECAR[0]}" "${JSON[@]}"

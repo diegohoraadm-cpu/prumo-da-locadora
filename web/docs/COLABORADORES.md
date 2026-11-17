@@ -1,8 +1,8 @@
 # Colaboradores
 
-Um **colaborador** é uma pessoa que você convida para conversar com **um** agente de trabalho do seu DG Claw. Ela recebe um e-mail com o link, o login e uma senha temporária, cria a própria senha no primeiro acesso e passa a usar aquele agente por inteiro, e só ele.
+Um **colaborador** é uma pessoa que você convida para conversar com **um** agente de trabalho do seu Prumo da Locadora. Ela recebe um e-mail com o link, o login e uma senha temporária, cria a própria senha no primeiro acesso e passa a usar aquele agente por inteiro, e só ele.
 
-Este documento tem duas partes: a primeira é para você, dono do DG Claw; a segunda, "API", é para o agente que opera o painel por você (o Admin, por exemplo).
+Este documento tem duas partes: a primeira é para você, dono do Prumo da Locadora; a segunda, "API", é para o agente que opera o painel por você (o Admin, por exemplo).
 
 ## Para o dono
 
@@ -23,12 +23,12 @@ Isso vale no servidor, não só na tela: o endereço de qualquer outro agente ou
 
 | Fica com o dono | Por quê |
 |---|---|
-| O **cofre** do agente (as chaves de serviço) | São credenciais que você pôs. Na tela e na lousa o colaborador lê: "O cofre é só do dono do DG Claw." |
+| O **cofre** do agente (as chaves de serviço) | São credenciais que você pôs. Na tela e na lousa o colaborador lê: "O cofre é só do dono do Prumo da Locadora." |
 | As **chaves de API do painel** | Dão acesso ao painel, e nenhuma chave gerencia chaves. |
 | A **conta de IA já conectada** do agente (trocar, desconectar, reconectar um login expirado, mesmo que a conta tenha sido ele quem conectou) e o painel de provedor do agente (`/p/<agente>/api/provedor`) | Quem paga a assinatura é você, e o link de login autentica a conta de quem o abre. Só quando o agente está **sem conta** o colaborador pode conectar a dele (próxima seção); com a conta conectada ele vê só "Este agente já está conectado." |
-| **Gravar no painel** memória (`MEMORY.md` e outros), arquivos da casa, apps, custos, reinício e qualquer rota nova | O painel registra como se fosse você, e a memória e os arquivos viram instrução permanente do agente. Recebe "Isso muda o agente de forma permanente ... é só do dono do DG Claw". Em `/p/<agente>/` a escrita dele passa só por uma lista de permissão: transcrever áudio e, em Sessões, arquivar, desarquivar, renomear e marcar favorito. |
+| **Gravar no painel** memória (`MEMORY.md` e outros), arquivos da casa, apps, custos, reinício e qualquer rota nova | O painel registra como se fosse você, e a memória e os arquivos viram instrução permanente do agente. Recebe "Isso muda o agente de forma permanente ... é só do dono do Prumo da Locadora". Em `/p/<agente>/` a escrita dele passa só por uma lista de permissão: transcrever áudio e, em Sessões, arquivar, desarquivar, renomear e marcar favorito. |
 | As **credenciais dos canais** (token de bot do Telegram, WhatsApp) | Quem controla o canal fala em nome do agente com o mundo. Colar um token na conversa também é recusado para ele. |
-| A **Tela** do agente (a página, o noVNC, o WebSocket e a senha) | O navegador da Tela roda como o agente e abre arquivos do servidor, como as credenciais da assinatura. Ele lê: "A Tela do agente dá acesso aos arquivos e às contas dele, por isso é só do dono do DG Claw." |
+| A **Tela** do agente (a página, o noVNC, o WebSocket e a senha) | O navegador da Tela roda como o agente e abre arquivos do servidor, como as credenciais da assinatura. Ele lê: "A Tela do agente dá acesso aos arquivos e às contas dele, por isso é só do dono do Prumo da Locadora." |
 | **Mandar mensagem, instrução ou decisão pelo painel**: o chat do painel, a sessão de socorro e, em Sessões, criar, mandar recado, decidir pedido, retomar, passar o bastão, anexar e apagar | O painel não sabe quem é o colaborador e trataria a mensagem como sua. Ele conversa e confirma permissões só pela conversa do agente, onde cada mensagem e cada confirmação leva o nome dele. Em Sessões ele só acompanha, arquiva, renomeia e marca favorito. |
 
 Um agente pode ter **vários** colaboradores ao mesmo tempo, e cada pessoa acessa **um** agente só. As mensagens de cada um chegam ao agente marcadas como vindas de um colaborador (`colaborador: Nome (e-mail)`), para o agente saber quem falou e que não é você.
@@ -52,7 +52,7 @@ A senha temporária vale por 7 dias. Passado o prazo, o login dela avisa que a s
 
 ### E-mail (opcional)
 
-Sem configurar nada, o convite sai pelo texto da tela e você manda por WhatsApp. Para o DG Claw mandar o e-mail sozinho, coloque estas linhas no `/etc/dgclaw/web.env` (uma linha por vez, sem apagar as outras) e reinicie o painel:
+Sem configurar nada, o convite sai pelo texto da tela e você manda por WhatsApp. Para o Prumo da Locadora mandar o e-mail sozinho, coloque estas linhas no `/etc/dgclaw/web.env` (uma linha por vez, sem apagar as outras) e reinicie o painel:
 
 | Variável | O que é |
 |---|---|
@@ -60,7 +60,7 @@ Sem configurar nada, o convite sai pelo texto da tela e você manda por WhatsApp
 | `DGCLAW_SMTP_PORTA` | `465` abre a conexão já criptografada; `587` exige STARTTLS. Padrão: `587`. |
 | `DGCLAW_SMTP_USUARIO` | O login do servidor de e-mail. |
 | `DGCLAW_SMTP_SENHA` | A senha desse login. |
-| `DGCLAW_SMTP_REMETENTE` | De quem o e-mail parece vir, por exemplo `DG Claw <voce@exemplo.com>`. |
+| `DGCLAW_SMTP_REMETENTE` | De quem o e-mail parece vir, por exemplo `Prumo da Locadora <voce@exemplo.com>`. |
 
 Exemplo com uma conta do Gmail, que exige uma **senha de app** (ative a verificação em duas etapas na conta Google e crie a senha de app em "Segurança"):
 
@@ -69,10 +69,10 @@ DGCLAW_SMTP_HOST=smtp.gmail.com
 DGCLAW_SMTP_PORTA=587
 DGCLAW_SMTP_USUARIO=voce@gmail.com
 DGCLAW_SMTP_SENHA=senha-de-app-de-16-letras
-DGCLAW_SMTP_REMETENTE=DG Claw <voce@gmail.com>
+DGCLAW_SMTP_REMETENTE=Prumo da Locadora <voce@gmail.com>
 ```
 
-O DG Claw confere o certificado do servidor e só manda a senha por conexão criptografada. A senha do e-mail nunca aparece em tela nem em log.
+O Prumo da Locadora confere o certificado do servidor e só manda a senha por conexão criptografada. A senha do e-mail nunca aparece em tela nem em log.
 
 ### Quando o e-mail não sai
 
@@ -92,18 +92,18 @@ As regras, todas conferidas no servidor (na dúvida, ele recusa):
 - **A tentativa do colaborador é gravada antes de começar** (`conta-agentes.json`, chave `<agente>:pendente`). Se não der para gravar, o login não começa (503). Ao revogar, o servidor reconcilia com o runner sem cache: conta conectada e tentativa dele grava a autoria com `revogado:true` e avisa o dono; estado que não dá para confirmar também avisa ("confira a conta do agente"). Cancelar o login no runner não prova que não há conta.
 - **Quando o dono começa um login** (pela página ou pelo painel do agente), a autoria de qualquer colaborador sobre a conta daquele agente é apagada na hora, em gravação durável: se não der para apagar, o login do dono não começa (503, pela página e pelo painel). A reserva só se resolve quando a tentativa conclui de verdade; enquanto o login está em andamento ela continua, mesmo que a credencial antiga ainda esteja conectada. O painel do agente respeita a reserva do colaborador (409).
 - **Revogar o colaborador (ou reenviar o convite) cancela o login que ele deixou em andamento** no agente. Se o cancelamento falhar, a resposta traz `avisos`, o agente entra em `contas_de_ia`, e se a conta entrar depois ela fica registrada como de colaborador revogado.
-- **Revogar o colaborador não desconecta a conta.** Se ele tinha conectado a conta do agente, o comando `dgclaw colaborador revogar` e o log do Web avisam que a conta continua conectada. Se você quiser trocar, entre com a sua conta em **Conectar conta**.
+- **Revogar o colaborador não desconecta a conta.** Se ele tinha conectado a conta do agente, o comando `prumo colaborador revogar` e o log do Web avisam que a conta continua conectada. Se você quiser trocar, entre com a sua conta em **Conectar conta**.
 - O link de login e o código nunca vão para log nem para o aviso da conversa.
 
-### Convidar pelo servidor: `dgclaw colaborador`
+### Convidar pelo servidor: `prumo colaborador`
 
 Quem tem acesso ao servidor (o Admin, por exemplo) convida sem passar pela tela:
 
 ```
-sudo dgclaw colaborador criar <agente> <email> [--nome "Nome"] [--json]
-sudo dgclaw colaborador listar [agente] [--json]
-sudo dgclaw colaborador reenviar <id-ou-email> [--json]
-sudo dgclaw colaborador revogar <id-ou-email> [--json]
+sudo prumo colaborador criar <agente> <email> [--nome "Nome"] [--json]
+sudo prumo colaborador listar [agente] [--json]
+sudo prumo colaborador reenviar <id-ou-email> [--json]
+sudo prumo colaborador revogar <id-ou-email> [--json]
 ```
 
 `criar` e `reenviar` imprimem o texto do convite pronto para copiar (endereço, login e a senha temporária, que vale 7 dias). O Admin nunca é compartilhado. O link usa o domínio do Prumo da Locadora (`DGCLAW_DOMINIO` do `dgclaw.env`); sem domínio, o link é o endereço local, só abre no servidor, e o comando avisa.
@@ -175,7 +175,7 @@ Vale para qualquer sessão: `{ok, usuario, papel, agente, nome, trocar_senha}`. 
 
 ### `POST /api/v1/eu/senha`
 
-Só o colaborador troca a própria senha (o dono recebe `403` e é mandado para `sudo dgclaw senha`). Corpo: `{"atual": "…", "nova": "…", "confirmacao": "…"}`. A `atual` só é exigida depois que a senha temporária já foi trocada. A `nova` tem de 10 a 128 caracteres, é diferente da atual (ou da temporária) e igual à `confirmacao`.
+Só o colaborador troca a própria senha (o dono recebe `403` e é mandado para `sudo prumo senha`). Corpo: `{"atual": "…", "nova": "…", "confirmacao": "…"}`. A `atual` só é exigida depois que a senha temporária já foi trocada. A `nova` tem de 10 a 128 caracteres, é diferente da atual (ou da temporária) e igual à `confirmacao`.
 
 Resposta `200`: `{"ok": true, "destino": "/a/ana"}`, e um cookie novo substitui o da sessão (as outras sessões da pessoa caem). Erros: `400` (regra da senha), `403` (senha atual errada), `429` (muitas senhas sendo processadas ao mesmo tempo).
 
@@ -205,14 +205,14 @@ Regras que o servidor aplica por cima:
 - O Web manda ao painel, em todo pedido, os cabeçalhos `X-DGClaw-Papel` (`dono` ou `colaborador`) e `X-DGClaw-Colaborador` (o id, só para colaborador), e apaga os que o navegador mandar. O painel ainda não os usa.
 - Repetir um envio com o mesmo `cliente_id` devolve a resposta guardada e nunca muda quem é o autor do turno; o `cliente_id` de uma pessoa não vale para a outra.
 - Comandos de barra não existem para ele: `/comando` e `/comandos` são negados, e um texto que começa com `/` segue como mensagem comum, dentro do envelope com `from="colaborador: …"`.
-- Ele só responde a pedido de permissão ou pergunta do agente se a pendência foi aberta por um turno que **ele** iniciou, e precisa mandar o `tool_use_id` dela. Uma mensagem que só entrou na fila (o agente estava ocupado ou esperando confirmação) não inicia turno, e uma mensagem do dono na fila tira dele a confirmação. Senão recebe "Essa confirmação é do dono do DG Claw".
+- Ele só responde a pedido de permissão ou pergunta do agente se a pendência foi aberta por um turno que **ele** iniciou, e precisa mandar o `tool_use_id` dela. Uma mensagem que só entrou na fila (o agente estava ocupado ou esperando confirmação) não inicia turno, e uma mensagem do dono na fila tira dele a confirmação. Senão recebe "Essa confirmação é do dono do Prumo da Locadora".
 - Além da memória do Web, a autoria é provada pela transcrição da sessão, que é o que o runner de fato executou. Cada mensagem do colaborador leva no envelope `colaborador_id="…"`, gravado só pelo servidor (o texto dele não consegue fechar nem forjar o envelope). A pendência é dele somente se a última mensagem de usuário antes dela é um envelope com o id dele e nenhuma outra mensagem de usuário (do dono pelo painel, Telegram, canal ou rotina) aparece depois. Qualquer dúvida, como transcrição ilegível ou agente em Codex, deixa a pendência com o dono.
 - O texto, a legenda e o nome de arquivo dele não podem ter caracteres de controle (todos os de código abaixo de 32 menos a quebra de linha e o tab, o Enter `\r`, ESC, DEL e os de 128 a 159), porque o terminal do agente os entenderia como teclas apertadas. O envio é recusado com `400` dizendo qual caractere e em que posição. O dono tem a mesma regra, com o `\r` virando quebra de linha.
 - A sessão dele é conferida de novo depois de o corpo do pedido chegar inteiro e antes de qualquer ação (`send`, `upload`, `permissao`, `pergunta`, login e demais). Quem foi revogado, ou teve o convite reenviado, enquanto mandava um corpo lento recebe `401` e nada é feito.
 - O login da conta de IA do agente dele (`GET`, `POST` e `DELETE` em `/api/v1/agents/<agente>/login`, mais `login/codigo` e `login/oi`) chega ao handler, que decide em `web/lib/conta-colaborador.js`: só com o agente sem conta de verdade, uma pessoa por vez (reserva de 15 minutos por agente) e com resposta em lista de campos permitidos. `/p/<agente>/api/provedor` inteiro continua `403` em qualquer método. Detalhes em `web/docs/CONECTAR-CONTA.md`. A atividade que ele recebe diz que falta conta e que ele pode conectar em Conectar conta (ou, no login expirado, que o dono precisa reconectar), sem o texto do runner.
 - Os arquivos que ele sobe vão para `uploads/<dia>/colaborador-<id>/`, com um prefixo aleatório no nome, e nunca para a pasta dos seus arquivos. Para todos (você inclusive), nomes de instrução ou configuração (`CLAUDE.md`, `CLAUDE.local.md`, `AGENTS.md`, `SKILL.md`, `AGENT.md`, ou começando com ponto) ganham o prefixo `anexo-` ao serem gravados; o nome original aparece na resposta.
 - Todo anexo (seu e dele) é gravado na casa do agente por um processo filho com o uid e o gid do dono da casa, não como root: as pastas são criadas uma a uma e o arquivo abre com `O_CREAT|O_EXCL|O_NOFOLLOW`. Se o agente trocar `uploads/<dia>` por um atalho para `/etc/cron.d`, o kernel recusa a gravação. Casa de root ou casa que é atalho é recusada com `500` e explicação, exceto a do Admin, que é do root por padrão e é gravada pelo próprio Web com as mesmas proteções (o colaborador nunca chega ao Admin). Em instalações antigas, a pasta `uploads/` criada como root passa sozinha ao dono do agente no primeiro anexo (`fchown` no descritor, sem seguir atalho); uma pasta do dia que ainda é do root não é tocada, e o anexo vai para `<dia>-2`.
-- O convite vale para a **instância** do agente (o campo `instancia` do `agentes.json`, gravado pelo `dgclaw agente criar`; para agentes mais antigos, o uid e o inode da casa). Se o agente for removido e recriado com o mesmo nome, a sessão do colaborador cai e o login responde "Este convite era de um agente que foi removido. Peça um convite novo ao dono." Agente que sai do `agentes.json` (o `dgclaw agente remover`) também derruba as sessões e recusa o login, com a mesma mensagem; só o Web escreve o `colaboradores.json`. Convidar de novo revoga os convites de instância antiga. Convite sem `instancia` (gravado à mão) não vale: não loga e não mantém sessão. Convidar é recusado, com a explicação e o `dgclaw agente reparar <agente>`, quando o Web não consegue identificar a instância (sem o campo no registro e com a casa ilegível).
+- O convite vale para a **instância** do agente (o campo `instancia` do `agentes.json`, gravado pelo `prumo agente criar`; para agentes mais antigos, o uid e o inode da casa). Se o agente for removido e recriado com o mesmo nome, a sessão do colaborador cai e o login responde "Este convite era de um agente que foi removido. Peça um convite novo ao dono." Agente que sai do `agentes.json` (o `prumo agente remover`) também derruba as sessões e recusa o login, com a mesma mensagem; só o Web escreve o `colaboradores.json`. Convidar de novo revoga os convites de instância antiga. Convite sem `instancia` (gravado à mão) não vale: não loga e não mantém sessão. Convidar é recusado, com a explicação e o `prumo agente reparar <agente>`, quando o Web não consegue identificar a instância (sem o campo no registro e com a casa ilegível).
 - O stream, o `wait` e qualquer pedido dele conferem a sessão de novo a cada passo: se ela expirou, saiu ou foi revogada, o stream avisa (`sessao_encerrada`) e fecha em menos de um segundo.
 - O stream e as mensagens dele não trazem o modo foco nem os avisos técnicos do servidor.
 - Um `[anexo: caminho]` digitado na conversa (pelo dono ou pelo colaborador) só vira mídia se o arquivo estiver na pasta `uploads/` do agente.
@@ -221,7 +221,7 @@ Regras que o servidor aplica por cima:
 
 ### Socket do servidor (`admin.sock`)
 
-Além da porta HTTP, o Web escuta em um socket Unix local, `<DGCLAW_WEB_DATA>/admin.sock` (a pasta é 700 e o socket é 600, do root). Ele é o canal do comando `dgclaw colaborador` e atende **somente** `/api/v1/colaboradores` e `/api/v1/colaboradores/*`, com as mesmas regras e as mesmas respostas desta API; qualquer outra rota responde `404` explicando. Quem chega por ali é tratado como o dono (sem cookie), e `criado_por` fica `"admin"`. O link do convite não pode vir do cabeçalho `Host` (não há navegador): vale o campo opcional `base` do corpo (`https://painel.exemplo.com`), senão `DGCLAW_DOMINIO` do ambiente do Web, senão a primeira origem `https` de `DGCLAW_WEB_ORIGENS`, senão o endereço local e um campo `aviso` na resposta. Se o socket não puder ser criado, o Web continua de pé e o log explica. O caminho HTTP segue fechado: sem sessão `401`, caixa de agente e colaborador `403`.
+Além da porta HTTP, o Web escuta em um socket Unix local, `<DGCLAW_WEB_DATA>/admin.sock` (a pasta é 700 e o socket é 600, do root). Ele é o canal do comando `prumo colaborador` e atende **somente** `/api/v1/colaboradores` e `/api/v1/colaboradores/*`, com as mesmas regras e as mesmas respostas desta API; qualquer outra rota responde `404` explicando. Quem chega por ali é tratado como o dono (sem cookie), e `criado_por` fica `"admin"`. O link do convite não pode vir do cabeçalho `Host` (não há navegador): vale o campo opcional `base` do corpo (`https://painel.exemplo.com`), senão `DGCLAW_DOMINIO` do ambiente do Web, senão a primeira origem `https` de `DGCLAW_WEB_ORIGENS`, senão o endereço local e um campo `aviso` na resposta. Se o socket não puder ser criado, o Web continua de pé e o log explica. O caminho HTTP segue fechado: sem sessão `401`, caixa de agente e colaborador `403`.
 
 ### Onde ficam os dados
 

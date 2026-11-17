@@ -24,7 +24,6 @@ Vem **ligada de fábrica, sem conta, sem chave e sem custo**: um modelo pequeno 
 | Momento | Onde | O que acontece |
 | --- | --- | --- |
 | Instalação | `install.sh`, passo 7b | Baixa o modelo para a máquina toda. Se falhar, avisa e segue: a busca em conversas funciona sem ele. |
-| Wizard | `/dgclaw:setup`, passo 9.3 | Confere o modelo, faz o primeiro índice do agente e diz ao dono se a memória semântica ficou ligada. |
 | Toda madrugada | timer `dgclaw-<slug>-memory-reindex`, 04:20 | Reindex incremental, com `nice` e `ionice`, para não disputar a CPU com a conversa. |
 | Cada mensagem do dono | `hooks/memory-recall.sh` | Só quando a busca em conversas não acha nada e a mensagem tem palavra estranha: roda a busca rápida, com teto de 3 s e no máximo ~700 caracteres de lembrete. `DGCLAW_SEMANTIC_RECALL=off` desliga. |
 | Toda noite com conversa | `scripts/reflection.sh` | "Eco do passado": busca o que a working-memory de hoje lembra do passado e entrega à reflexão. |
@@ -66,7 +65,7 @@ modelo; padrão, todos).
 
 ## O que o dono decide com isto
 
-Nada no dia a dia. O `/dgclaw:doctor` diz se a memória semântica está ligada, com qual
+Nada no dia a dia. A skill `doctor` diz se a memória semântica está ligada, com qual
 modelo, e quantos trechos o índice tem. Se aparecer desligada, o próprio aviso traz o
 comando que liga.
 

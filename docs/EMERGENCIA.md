@@ -3,7 +3,7 @@
 > Manual para o CLAUDE executar (o Admin ou a sessão de socorro), não para um humano ler
 > inteiro. Quem chama é o dono do agente, geralmente leigo, dizendo "aconteceu alguma coisa
 > com o meu agente, vê aí". Siga a ordem. Os comandos e caminhos daqui foram conferidos no
-> código do DG Claw v1. Se um nome não existir na máquina, NÃO invente outro: diga o que
+> código do Prumo da Locadora v1. Se um nome não existir na máquina, NÃO invente outro: diga o que
 > achou e o que esperava achar.
 
 ## 0. Regras do socorro (valem para tudo abaixo)
@@ -25,7 +25,7 @@
    **Exceção:** `dgclaw agente recriar <nome do agente> --forcar` troca o container de propósito. É o
    caminho quando o agente ficou de fora da atualização para a 1.0.5 ou está sem container (seção
    3.2.1), e só com o "posso?" (quando o agente tem container, com a lista do que se perde na mão; sem
-   container não há lista e nada a perder): se perde o que foi instalado à mão dentro do container, e
+   container, confirmado como na seção 3.2, não há lista e nada a perder): se perde o que foi instalado à mão dentro do container, e
    as rotinas padrão voltam ao padrão. A casa, a memória, o cofre e as conversas
    ficam.
 7. **Uma mudança por vez.** Mudou, conferiu (seção 5), só então a próxima.
@@ -40,7 +40,18 @@ root). A sessão de socorro do painel roda **dentro do container do agente**, co
 command -v podman dgclaw || echo "dentro do container"
 ```
 
-Dentro do container não existem `podman`, `dgclaw` nem `sudo`. Traduza assim:
+**`prumo` e `dgclaw` são o mesmo programa.** Ao dono, escreva o comando como `sudo prumo …`, que é o nome que ele vê
+na tela de login. Este roteiro, que é o que você executa, usa `dgclaw`, que existe sempre. A exceção: o instalador
+não cria o `prumo` num servidor que já tem outro programa com esse nome (`install.sh:2450-2458`, que avisa "já existe
+um 'prumo' ... que não é o nosso"). Para saber em qual caso você está, primeiro veja qual `prumo` o `sudo` encontra: `sudo sh -c 'command -v prumo'`
+(o `sudo` usa um PATH próprio, que pode achar outro programa antes de `/usr/local/bin`; é esse que o dono usa).
+Depois rode `sudo cat` no caminho que apareceu. Se o caminho for `/usr/local/bin/prumo` e o arquivo imprimir
+exatamente duas linhas, `#!/bin/sh` e `exec /usr/local/bin/dgclaw "$@"`, é o nosso apelido: ao dono vale
+`sudo prumo …`. Se o caminho for outro, ou o arquivo imprimir outra coisa, ou não aparecer caminho nenhum, o `prumo` daquele servidor não é o nosso: ao dono,
+escreva `sudo dgclaw …`, que é o mesmo programa. Na dúvida, escreva `dgclaw`. A seção 3.1.1 usa `prumo` porque ali
+quem digita é o dono, no servidor onde a tela de login já mostra esse nome.
+
+Dentro do container não existem `podman`, `dgclaw` (nem o `prumo`) nem `sudo`. Traduza assim:
 
 | No servidor | Dentro do container |
 |---|---|
@@ -50,7 +61,7 @@ Dentro do container não existem `podman`, `dgclaw` nem `sudo`. Traduza assim:
 | `modo-seguro.sh` pelo `podman exec` (3.6) | `bash /opt/dgclaw/app/scripts/modo-seguro.sh /home/agente/.dgclaw/config.sh --motivo "..." --origem manual --dry-run` |
 | `dgclaw agente reiniciar $SLUG` (3.7) | `python3 /opt/dgclaw/app/scripts/_lib/reinicio.py normal --origem manual --json` (volta na mesma conversa) |
 
-O que só se resolve no servidor (container desligado, login pelo terminal, Caddy, DG Claw Web,
+O que só se resolve no servidor (container desligado, login pelo terminal, Caddy, Prumo da Locadora Web,
 imagem, firewall): explique ao dono o que achou e diga que quem cuida do servidor precisa agir,
 com o comando da seção correspondente. Se o container estivesse desligado, aliás, esta sessão
 nem abriria: ela roda dentro dele.
@@ -83,7 +94,7 @@ no `listar` como container. Se o problema é com ele, vá à seção 2.2.
 ## 2. O mapa: cada peça, como checar em um comando, o normal e o quebrado
 
 O caminho de uma mensagem do dono é: navegador, depois o **Caddy** (porta 443, HTTPS), depois o
-**DG Claw Web** (127.0.0.1:8300), depois o **container do agente** (porta publicada só em
+**Prumo da Locadora Web** (127.0.0.1:8300), depois o **container do agente** (porta publicada só em
 127.0.0.1, a partir da 4311), onde o **runner** (porta 4300 lá dentro) é o dono do `claude`.
 Uma visão geral de tudo de uma vez:
 
@@ -101,7 +112,7 @@ atenção. Ele sai com erro se algo essencial caiu.
 | Peça | Checar | Normal | Quebrado |
 |---|---|---|---|
 | **Caddy** (HTTPS) | `systemctl is-active caddy` | `active` | `failed`: o site não abre. Motivo: `journalctl -u caddy -n 30 --no-pager` |
-| **DG Claw Web** (login, chat, painéis em `/p/<slug>/`) | `systemctl is-active dgclaw-web` e `curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8300/` | `active` e um código HTTP (200 ou 302) | `failed`, ou o `curl` sem resposta. Motivo: `journalctl -u dgclaw-web -n 50 --no-pager` |
+| **Prumo da Locadora Web** (login, chat, painéis em `/p/<slug>/`) | `systemctl is-active dgclaw-web` e `curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8300/` | `active` e um código HTTP (200 ou 302) | `failed`, ou o `curl` sem resposta. Motivo: `journalctl -u dgclaw-web -n 50 --no-pager` |
 | **Admin** (agente de sistema, roda como root em `/opt/dgclaw/admin`) | `systemctl is-active dgclaw-admin` e `curl -s http://127.0.0.1:4300/api/saude` | `active` e um JSON com `"ok":true` | `failed` ou sem resposta. Logs: `journalctl -u dgclaw-admin -n 50 --no-pager` e `/var/log/dgclaw/admin-runner.log` |
 | **Imagem dos agentes** | `dgclaw imagem status` | "imagem dos agentes pronta" | construindo ou falhou: `tail -n 30 /var/log/dgclaw/imagem.log` |
 | **Firewall dos containers** | `systemctl is-active dgclaw-firewall` | `active` | `failed`: reaplique com `bash /opt/dgclaw/app/lib/firewall.sh` (com o "posso?") |
@@ -195,8 +206,8 @@ na frente de cada comando, como nos exemplos abaixo. Se o dono não lembra como 
 outra pessoa que instalou, ele precisa pedir a ela o acesso ao servidor: pelo painel não há outro
 caminho, porque é justamente o painel que não abre.
 
-**`prumo` e `dgclaw` são o mesmo comando** (o instalador cria o `prumo` como atalho). Os exemplos desta
-seção usam `prumo`, que é o que a tela de login mostra; `sudo dgclaw usuario` faz a mesma coisa.
+Como na seção 0.1, `prumo` e `dgclaw` são o mesmo comando. Os exemplos desta seção usam `prumo`, que é o
+que a tela de login mostra; `sudo dgclaw usuario` faz a mesma coisa.
 
 1. **Apareceu "muitas tentativas seguidas"?** São 5 erros seguidos vindos da mesma
    internet (o mesmo IP); o bloqueio dura 15 minutos a contar do primeiro erro. A contagem vive na
@@ -278,7 +289,15 @@ dgclaw agente listar
 - `CONTAINER` em `exited` (desligado): com o "posso?", `sudo dgclaw agente iniciar <nome do agente>`.
   Isso liga o container de novo e reaplica o firewall.
 - `CONTAINER` em `ausente` (o container não existe mais): o `agente iniciar` não funciona, porque não
-  há o que ligar. A receita é uma só, a da seção 3.2.1: com o "posso?",
+  há o que ligar. Antes, confirme que o container não existe de verdade: o `agente listar` também mostra `ausente`
+  quando o `podman inspect` falha por qualquer motivo (`bin/dgclaw:2097-2101`). Rode
+  `sudo podman container exists dgclaw-<nome do agente>` (o nome exato; com `sudo`, porque sem ele o podman de
+  usuário comum não enxerga os containers do servidor e responderia "não existe" por engano) e olhe o código de
+  saída (`echo $?`): 0 é "existe" (não é ausente), 1 é "não existe" (ausente de verdade, o mesmo critério de
+  `lib/restricoes.sh:425-426`) e qualquer outro valor é erro do podman. Com erro, não é agente ausente: não use o `--forcar`, pare e entregue a saída a quem cuida do servidor (com o podman falhando,
+  o `--forcar` ou para antes de mexer em algo, `bin/dgclaw:1842-1844`, ou segue sem conseguir conferir o que se perde
+  dentro da caixa, `:1905-1908`; a casa do agente não é afetada, porque é montada de fora, `:908-912`). Confirmado,
+  a receita é uma só, a da seção 3.2.1: com o "posso?",
   `sudo dgclaw agente recriar <nome do agente> --forcar`. Ela cria o container de novo, com a mesma
   casa, o mesmo cofre e as mesmas portas.
 - Agente que continua na versão anterior depois de uma atualização que terminou "INCOMPLETA": seção
@@ -296,6 +315,7 @@ dgclaw agente listar
   `dgclaw imagem status`.
 
 ### 3.2.1 Agente de fora da atualização para a 1.0.5, ou sem container
+O texto para o dono, em linguagem simples, está em [manual/atualizar-e-backup.md](manual/atualizar-e-backup.md#atualização-incompleta-na-105); o que segue é o roteiro para você executar.
 Você (o Admin ou a sessão de socorro) fala com o dono; ele costuma ser leigo. Palavras que ele vai
 ouvir: **caixa** é o container do agente, o espaço isolado onde ele roda; **casa** é a pasta do agente
 no servidor (`/var/lib/dgclaw/agentes/<nome do agente>/`), onde ficam a memória, o cofre e as
@@ -315,15 +335,17 @@ atualização roda, antes do FALHOU, a tela já mostrou o "AVISO DA VERSÃO 1.0.
 e o comando de cada um; o item da 1.0.5 no `CHANGELOG.md` diz o mesmo.
 
 **Para cada agente da lista FALHOU, um de cada vez, com o "posso?":**
-1. **Veja se há algo a perder:** `sudo sh -c 'ls /var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-*.txt'`.
-   Use exatamente assim, com o `sh -c` e as aspas: a pasta do agente é fechada para o usuário comum, e
-   sem o `sh -c` o `*` é expandido antes do `sudo`, não acha nada e dá "No such file" mesmo quando a
-   lista existe. A atualização só grava esse arquivo quando acha, dentro da caixa, algo que não está
-   na casa. Duas saídas possíveis:
-   - Aparece o nome de um arquivo `perdido-no-recriar-<data>.txt`: há algo a perder. Leia com
-     `sudo sh -c 'cat /var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-*.txt'`. Se só
-     aparecem rotinas com o nome `dgclaw-<nome do agente>-...`, é o esperado.
-   - Aparece "No such file or directory": nada a perder, siga para o passo 2.
+1. **Confira o que há a perder, sem trocar:** `sudo dgclaw agente recriar <nome do agente>`, **sem** o `--forcar`.
+   Sem o `--forcar` ele não apaga nada: ou mostra a lista do que existe só dentro da caixa (e grava a lista
+   completa em `perdido-no-recriar-<data>.txt`, na casa do agente), ou diz que não conseguiu conferir e por quê
+   (caixa em `stopping`, `podman exec` que falha, etc.) e para com "nada foi mexido", ou confere que não há nada
+   só dentro da caixa e troca. **Não conclua "nada a perder" por o arquivo não existir:** ele só é gravado
+   quando a conferência funcionou e achou algo. Para ler um arquivo que existe:
+   `sudo sh -c 'cat /var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-*.txt'` (com o `sh -c` e as
+   aspas: a pasta do agente é fechada para o usuário comum). Se só aparecem rotinas com o nome
+   `dgclaw-<nome do agente>-...`, é o esperado. Se o comando disse que não conseguiu conferir, **não use o
+   `--forcar` ainda**: diga ao dono, copie para a casa do agente o que ele quiser guardar e só então siga.
+   Na dúvida, adie: o agente segue funcionando na versão anterior.
 2. **Diga ao dono o que o `--forcar` perde**, em palavras simples. Exemplo: "Vou trocar a caixa do
    agente pela versão nova. A memória, o cofre e as conversas ficam como estão. Perde-se só o que
    alguém instalou à mão dentro da caixa. As rotinas padrão voltam ao padrão: se você editou ou
@@ -341,7 +363,10 @@ e o comando de cada um; o item da 1.0.5 no `CHANGELOG.md` diz o mesmo.
 **Dois casos que a atualização não lista como FALHOU.** O agente **desligado** (`exited`) fica como
 está; quando o dono quiser usá-lo, `sudo dgclaw agente iniciar <nome do agente>`, e na atualização
 seguinte ele passa por esta mesma etapa. O agente **sem container** (`ausente`) não liga com
-`agente iniciar`, porque não há o que ligar. A receita é a do passo 3, a mesma do aviso do instalador:
+`agente iniciar`, porque não há o que ligar. Antes, faça a conferência da seção 3.2 (`sudo podman container exists
+dgclaw-<nome do agente>` com código de saída 1; com 0 o container existe, e com outro valor é erro do podman: não é
+agente ausente e não se usa o `--forcar`).
+Confirmado, a receita é a do passo 3, a mesma do aviso do instalador:
 `sudo dgclaw agente recriar <nome do agente> --forcar` cria a caixa de novo. Como a caixa não existe,
 não há nada dentro dela para perder: aqui não há lista e o passo 1 não se aplica.
 
@@ -424,7 +449,7 @@ daquela conversa, não a memória.
   Se o plano estiver certo, rode o mesmo comando sem o `--dry-run`. O script lê do
   `config.sh` o endereço do runner do agente (`DGCLAW_BUNKER_URL`, `DGCLAW_BUNKER_CARD`). Se o
   plano disser que vai usar `systemctl`, o `config.sh` está sem essas linhas (foi gerado por
-  uma versão antiga do `dgclaw`) e o modo de segurança não vai funcionar por aqui: use o botão
+  uma versão antiga do Prumo da Locadora) e o modo de segurança não vai funcionar por aqui: use o botão
   do painel e avise quem cuida do servidor.
 
 ### 3.7 A sessão está travada (de pé, sem erro, sem responder)

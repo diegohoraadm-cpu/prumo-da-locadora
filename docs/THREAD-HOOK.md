@@ -65,12 +65,12 @@ Log: `<ws>/.dgclaw/logs/hook-telegram-thread.log`.
 
 ---
 
-## Nota: outbound log dos crons (diferenca pro DG Claw base)
+## Nota: outbound log dos crons (diferenca pro Prumo da Locadora base)
 
 Nos assistentes do autor, os crons postam via um script próprio que grava um arquivo `*-outbound.jsonl`, a
 fonte que o hook mescla pra pegar posts de cron que NAO passam pela tool de reply da sessao.
 
-No DG Claw, os crons falam com o dono via `scripts/notify-owner.sh` (Bot API direto), que
+No Prumo da Locadora, os crons falam com o dono via `scripts/notify-owner.sh` (Bot API direto), que
 **nao grava outbound log**. Consequencias:
 
 - Envios do assistente que passam pela **tool de reply da sessao viva** (resposta direta e a

@@ -2,14 +2,14 @@
 
 ## Por que existe
 
-O Danilo entrega agentes DG Claw para clientes, cada um na VPS do próprio cliente. Quando algo
+O Danilo entrega agentes Prumo da Locadora para clientes, cada um na VPS do próprio cliente. Quando algo
 quebra, ele quer saber o que está parado e por quê, **sem senha da VPS e sem poder operar nada**.
 Depois da entrega a máquina é do cliente: a chave de suporte só lê metadados de saúde, e o
 cliente revoga quando quiser.
 
 ## Onde fica
 
-No `web/` (o DG Claw Web, `dgclaw-web.service`, root, `127.0.0.1:8300` atrás do Caddy). É a única
+No `web/` (o Prumo da Locadora Web, `dgclaw-web.service`, root, `127.0.0.1:8300` atrás do Caddy). É a única
 peça que enxerga a máquina inteira: serviços do host, o Admin, cada container, os runners e as
 casas dos agentes (`home_host` do `/etc/dgclaw/agentes.json`). O Caddy já repassa tudo para o Web,
 inclusive o cabeçalho `Authorization`, então a instalação padrão não precisa de mudança de rede.
@@ -43,7 +43,7 @@ O `panel/` (painel por agente, dentro do container) **não muda** neste PR.
   mostra o diagnóstico atual renderizado ("isto é exatamente o que o suporte vê"). Texto claro de
   que a chave só lê saúde, não lê conversas nem memória, não opera nada, e que o cliente pode
   revogar quando quiser. Modo tutorial (`web/public/tour.js`). Link no menu.
-- CLI no host: `dgclaw chave-api criar --escopo diagnostico --nome "<nome>"` | `listar` |
+- CLI no host: `prumo chave-api criar --escopo diagnostico --nome "<nome>"` | `listar` |
   `revogar <id>` (bash chamando `web/bin/chave-api.js`). `criar` imprime só o token no stdout.
 - CHANGELOG ("Como atualizar", escrito pra pessoa) e INSTALL.
 
@@ -72,7 +72,7 @@ O `panel/` (painel por agente, dentro do container) **não muda** neste PR.
       "estado": "quebrado", "ultimo_sinal": "2026-10-20T03:10:00Z",
       "motivo": "O login do Claude expirou em 20/10 às 00h10 e a Tina parou de responder.",
       "evidencia": { "horario": "...", "codigo_saida": null, "sinal": "runner:login-expirado", "ocorrencias": null },
-      "o_que_fazer": "Abra a conversa da Tina no DG Claw e clique em Entrar de novo.",
+      "o_que_fazer": "Abra a conversa da Tina no Prumo da Locadora e clique em Entrar de novo.",
       "prompt_sugerido": null }
   ]
 }

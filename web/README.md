@@ -1,4 +1,4 @@
-# DG Claw Web
+# Prumo da Locadora Web
 
 Servidor Node 22, sem nenhuma dependência npm (só módulos nativos), que roda uma vez no host e entrega:
 
@@ -44,7 +44,7 @@ Valem as do processo e, por baixo delas, as do arquivo `DGCLAW_WEB_ENV` (formato
 | `DGCLAW_SMTP_HOST` | vazio | Servidor de e-mail para mandar o convite do colaborador. Sem ele o convite sai só pelo texto da tela. Opcional. |
 | `DGCLAW_SMTP_PORTA` | `587` | `465` abre TLS direto; `587` exige STARTTLS; outra porta só funciona se o servidor oferecer STARTTLS. |
 | `DGCLAW_SMTP_USUARIO`, `DGCLAW_SMTP_SENHA` | vazio | Login do servidor de e-mail (AUTH PLAIN ou LOGIN, sempre com criptografia). |
-| `DGCLAW_SMTP_REMETENTE` | o usuário, se for um e-mail | De quem o convite parece vir, por exemplo `DG Claw <voce@exemplo.com>`. |
+| `DGCLAW_SMTP_REMETENTE` | o usuário, se for um e-mail | De quem o convite parece vir, por exemplo `Prumo da Locadora <voce@exemplo.com>`. |
 
 Sem chave de voz, `voz` e `microfone` saem `false` em `/api/v1/agents` (a tela esconde os botões) e as rotas respondem 503 com o motivo.
 
@@ -151,7 +151,7 @@ node web/bin/cofre.js listar  <agente> [--json]
 node web/bin/cofre.js aplicar <agente> [--json]
 ```
 
-O valor do `guardar` entra sempre pelo stdin; valor em argumento e stdin de teclado são recusados. Usa `DGCLAW_WEB_ENV`, `DGCLAW_AGENTES` e `DGCLAW_WEB_DATA`. Saída 0 (deu certo), 1 (recusa, com o motivo), 2 (uso errado). É o que `dgclaw agente cofre` chama.
+O valor do `guardar` entra sempre pelo stdin; valor em argumento e stdin de teclado são recusados. Usa `DGCLAW_WEB_ENV`, `DGCLAW_AGENTES` e `DGCLAW_WEB_DATA`. Saída 0 (deu certo), 1 (recusa, com o motivo), 2 (uso errado). É o que `prumo agente cofre` chama.
 
 ## Segurança
 

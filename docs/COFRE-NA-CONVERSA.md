@@ -1,7 +1,7 @@
 # Caixa de cofre na conversa
 
 Como o agente pede uma chave (senha, token de API) ao dono sem que o valor passe pela conversa.
-Vale no DG Claw Web. A mesma ideia existe no outro app da DG, com os mesmos textos.
+Vale no Prumo da Locadora Web. A mesma ideia existe no outro app da DG, com os mesmos textos.
 
 ## Duas portas, a mesma caixa
 

@@ -26,7 +26,7 @@ Toda ronda boa tem os mesmos cinco passos, nesta ordem:
 
 Checkpoint é o marcador de "li até aqui", como o marcador de página de um livro.
 
-## O que o DG Claw oferece hoje
+## O que o Prumo da Locadora oferece hoje
 
 | Recurso | O que faz | O que você precisa saber |
 | --- | --- | --- |

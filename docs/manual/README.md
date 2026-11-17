@@ -53,10 +53,10 @@ Os caminhos de teste são relativos à raiz do repositório.
 | Tela (navegador do agente) | Pronto | Menu "Navegador", `aba:tela` | teste: `tests/tela/rodar.sh`, `tests/cli/tela.sh`, `panel/test-tela.mjs` | [agentes.md](agentes.md) |
 | Sessões e cards (mini-Bunker) | Pronto | `aba:sessoes`, "abre um card" | teste: `panel/test-sessoes-local.mjs`, `bin/test/dgclaw-card.test.sh`, `runner/src/sessoes-modo.test.ts` | [agentes.md](agentes.md) |
 | Modo monitor dos cards | Pronto | O agente liga sozinho | teste: `tests/monitor/rodar.sh` | [agentes.md](agentes.md) |
-| Cofre e chaves de API do painel | Pronto | `aba:cofre`, `dgclaw agente cofre` | teste: `panel/test-cofre.mjs`, `panel/test-chaves-api.mjs`, `tests/cli/cofre.sh` | [agentes.md](agentes.md) |
+| Cofre e chaves de API do painel | Pronto | `aba:cofre`, `prumo agente cofre` | teste: `panel/test-cofre.mjs`, `panel/test-chaves-api.mjs`, `tests/cli/cofre.sh` | [agentes.md](agentes.md) |
 | Socorro (ajudante de plantão) | Parcial (só Claude) | `aba:socorro` | teste: `panel/test-saude.mjs`; uso exclusivo do Claude lido em `panel/lib/socorro.js` | [agentes.md](agentes.md) |
 | Colaborador convidado pelo dono | Pronto | `/colaboradores` | teste: `web/test/colaboradores.test.js`, `web/test/colaboradores-revisao.test.js` | [agentes.md](agentes.md) |
-| Colaborador criado pelo Admin (`dgclaw colaborador`) | Em desenvolvimento | Ainda não existe | não verificado: o comando não existe na CLI desta branch | [em-desenvolvimento.md](em-desenvolvimento.md) |
+| Colaborador criado pelo Admin (`prumo colaborador`) | Em desenvolvimento | Ainda não existe | não verificado: o comando não existe na CLI desta branch | [em-desenvolvimento.md](em-desenvolvimento.md) |
 | 14 skills ligadas ao agente na criação | Parcial (sem teste automático) | Pedir em português ou `/` na conversa | lido no código (`bin/dgclaw`, laço de skills); `lista-rapida` e `foco` têm teste próprio | [agentes.md](agentes.md) |
 | Skills no repositório sem ligação automática (`canais`, `cards`, `mesa`, `tela`, `socorro`, `lista-rapida` e as do plugin antigo) | Parcial | Conferir antes de prometer | lido no código; `scripts/_lib/test_lista_rapida.py` cobre só a lista rápida | [agentes.md](agentes.md) |
 | Poder `instagram` | Parcial | "Ativa o Instagram" | teste só dos timers: `scripts/_lib/test_install_ig_timers.py`; resto lido no código | [agentes.md](agentes.md) |
@@ -66,7 +66,7 @@ Os caminhos de teste são relativos à raiz do repositório.
 
 | Recurso | Estado | Onde pedir | Como foi verificado | Página |
 | --- | --- | --- | --- | --- |
-| Chat do painel (DG Chat) | Pronto | `/a/<slug>` | teste: `scripts/dgchat-mcp/test-server.mjs` | [canais.md](canais.md) |
+| Chat do painel | Pronto | `/a/<slug>` | teste: `scripts/dgchat-mcp/test-server.mjs` | [canais.md](canais.md) |
 | Telegram | Pronto (só Claude) | "Quero falar com você no Telegram" | teste: `bin/test/dgclaw-agente.test.sh`, `runner/src/canais.test.ts`, `web/test/token-telegram.test.js` | [canais.md](canais.md) |
 | `whatsapp` | Parcial | "Conecta meu WhatsApp" | teste com WhatsApp falso: `canais/whatsapp/test/ponte.test.mjs`, `bin/test/dgclaw-agente.test.sh`; sem teste ao vivo | [canais.md](canais.md) |
 | Gmail, Agenda e Drive pelos conectores do Claude | Parcial (só Claude na assinatura) | "Resume os meus últimos e-mails" | teste da trava de envio: `scripts/test-gmail-permissao.sh` (fora da bateria); conectores lidos em `docs/GMAIL-NO-AGENTE.md` | [canais.md](canais.md) |
@@ -100,7 +100,7 @@ Os caminhos de teste são relativos à raiz do repositório.
 | --- | --- | --- | --- | --- |
 | Ronda de segurança | Pronto | `/seguranca` | teste: `tests/ronda/rodar.sh`, `web/test/ronda-painel.test.js` | [seguranca.md](seguranca.md) |
 | Boletins de segurança | Pronto | `/seguranca` | teste: `tests/boletins/rodar.sh`, `web/test/seguranca.test.js` | [seguranca.md](seguranca.md) |
-| Botão de emergência | Pronto | `/seguranca`, `dgclaw emergencia` | teste: `tests/emergencia/rodar.sh` | [seguranca.md](seguranca.md) |
+| Botão de emergência | Pronto | `/seguranca`, `prumo emergencia` | teste: `tests/emergencia/rodar.sh` | [seguranca.md](seguranca.md) |
 | Saúde do agente e modo de segurança | Parcial (só Claude) | Selo do agente, `aba:socorro` | teste: `scripts/_lib/test_saude_sessao.py`, `scripts/_lib/test_reinicio.py`, `scripts/_lib/test_quarentena.py`, `panel/test-saude.mjs` | [seguranca.md](seguranca.md) |
 | Isolamento entre agentes e firewall | Pronto | Automático na criação | teste em raiz falsa: `tests/instalador/rodar.sh`; a prova real é no servidor, como diz [../ARQUITETURA.md](../ARQUITETURA.md) | [seguranca.md](seguranca.md) |
 | Revisão adversarial das mudanças | Pronto | Processo do projeto | teste: `tests/revisao-adversarial/rodar.sh` | [seguranca.md](seguranca.md) |
@@ -111,10 +111,10 @@ Os caminhos de teste são relativos à raiz do repositório.
 | Recurso | Estado | Onde pedir | Como foi verificado | Página |
 | --- | --- | --- | --- | --- |
 | Atualizar o Prumo da Locadora | Pronto | Admin: "atualiza o Prumo da Locadora" | teste: `tests/cli/atualizar.sh` | [atualizar-e-backup.md](atualizar-e-backup.md) |
-| Backup e restauração | Pronto | `dgclaw backup`, `dgclaw restaurar` | teste: `tests/cli/backup.sh` | [atualizar-e-backup.md](atualizar-e-backup.md) |
+| Backup e restauração | Pronto | `prumo backup`, `prumo restaurar` | teste: `tests/cli/backup.sh` | [atualizar-e-backup.md](atualizar-e-backup.md) |
 | Aviso de versão nova | Pronto | Faixa no painel | teste: `tests/aviso-atualizacao/rodar.sh`, `web/test/atualizacao.test.js` | [atualizar-e-backup.md](atualizar-e-backup.md) |
 | Novidades depois de atualizar | Pronto | Automático | teste: `tests/novidades/rodar.sh` | [atualizar-e-backup.md](atualizar-e-backup.md) |
-| Instalação e instalação remota | Pronto | `install.sh`, `dgclaw instalacao-remota` | teste: `tests/instalador/rodar.sh`, `tests/cli/instalacao-remota.sh` | [atualizar-e-backup.md](atualizar-e-backup.md) |
+| Instalação e instalação remota | Pronto | `install.sh`, `prumo instalacao-remota` | teste: `tests/instalador/rodar.sh`, `tests/cli/instalacao-remota.sh` | [atualizar-e-backup.md](atualizar-e-backup.md) |
 
 ### Personalização
 

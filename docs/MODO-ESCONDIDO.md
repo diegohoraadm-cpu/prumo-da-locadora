@@ -35,7 +35,7 @@ ao Admin: "liga o modo escondido completo". Ele copia a chave do cofre para o `w
 | `DGCLAW_SIGILO_LIBERADOS` | Nomes que nunca são escondidos, separados por vírgula (o seu nome, por exemplo). |
 
 Os nomes liberados também incluem, sem configurar nada, o campo `dono` e o `nome` e o `slug` de cada agente do
-`agentes.json`, e plataformas comuns (DG Claw, Claude, Anthropic, OpenAI, ChatGPT, Telegram, WhatsApp, Google,
+`agentes.json`, e plataformas comuns (Prumo da Locadora, Claude, Anthropic, OpenAI, ChatGPT, Telegram, WhatsApp, Google,
 GitHub e outras). A comparação ignora maiúsculas.
 
 ## A rota

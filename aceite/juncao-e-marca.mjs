@@ -171,7 +171,8 @@ const FRASES_MARCA = (() => {
   return { rx: new RegExp(`(?<![\\w])(?:${fr.map((f) => esc(f.de)).join('|')})(?![\\w])`, 'g'), mapa };
 })();
 function norm(l) {
-  let t = l.trim();
+  // "Suporte DG"/"suporte DG" vira "suporte" ANTES das frases: as nossas strings antigas já usavam "suporte" minúsculo.
+  let t = l.trim().replace(/[Ss]uporte DG\b/g, 'suporte');
   if (FRASES_MARCA) t = t.replace(FRASES_MARCA.rx, (m) => FRASES_MARCA.mapa.get(m));
   return t
     .replace(/DGatoM\/DG-Claw|diegohoraadm-cpu\/prumo-da-locadora/g, '§REPO§')

@@ -1,129 +1,39 @@
 {
   "frases": [
-    {
-      "de": "suporte DG",
-      "para": "suporte"
-    },
-    {
-      "de": "Suporte DG",
-      "para": "Suporte"
-    },
-    {
-      "de": "DG Claw",
-      "para": "Prumo da Locadora"
-    },
-    {
-      "de": "DG Chat",
-      "para": "Prumo Chat",
-      "variante": true
-    },
-    {
-      "de": "DG Telegram",
-      "para": "Prumo Telegram",
-      "variante": true
-    },
-    {
-      "de": "DG Alive",
-      "para": "Prumo Alive",
-      "variante": true
-    }
+    { "de": "suporte DG", "para": "suporte" },
+    { "de": "Suporte DG", "para": "Suporte" },
+    { "de": "DG Claw", "para": "Prumo da Locadora" },
+    { "de": "Chat do painel (DG Chat)", "para": "Chat do painel" },
+    { "de": "canal DG Chat", "para": "canal do chat do painel" },
+    { "de": "pelo DG Chat", "para": "pelo chat do painel" },
+    { "de": "do DG Chat", "para": "do chat do painel" },
+    { "de": "o DG Chat", "para": "o chat do painel" },
+    { "de": "DG Chat", "para": "chat do painel" },
+    { "de": "extensão DG Alive", "para": "extensão de emoções" },
+    { "de": "extensao DG Alive", "para": "extensao de emocoes" },
+    { "de": "com o DG Alive", "para": "com a extensão de emoções" },
+    { "de": "sem o DG Alive", "para": "sem a extensão de emoções" },
+    { "de": "do DG Alive", "para": "da extensão de emoções" },
+    { "de": "o DG Alive", "para": "a extensão de emoções" },
+    { "de": "DG Alive", "para": "extensão de emoções" },
+    { "de": "DG Telegram", "para": null, "vigiar": true }
   ],
   "comando": {
     "de": "dgclaw",
     "para": "prumo",
-    "subcomandos": [
-      "agente",
-      "atualizar",
-      "backup",
-      "chave-api",
-      "colaborador",
-      "dominio",
-      "emergencia",
-      "imagem",
-      "instalacao-remota",
-      "personalizacoes",
-      "primeiro-acesso",
-      "restaurar",
-      "seguranca",
-      "senha",
-      "status",
-      "suporte",
-      "usuario",
-      "versao"
-    ]
+    "subcomandos": ["agente", "atualizar", "backup", "chave-api", "colaborador", "dominio", "emergencia", "imagem", "instalacao-remota", "personalizacoes", "primeiro-acesso", "restaurar", "seguranca", "senha", "status", "suporte", "usuario", "versao"],
+    "fica_em": ["templates/admin/", "templates/ambiente/admin.md", "skills/criar-agente/", "skills/trocar-dominio/"]
   },
   "barra": {
     "prefixo": "/dgclaw:",
-    "ligadas": [
-      "agenda",
-      "lembretes",
-      "aprender",
-      "avisos",
-      "memory",
-      "foco",
-      "avatar",
-      "report",
-      "slide-animado",
-      "site-animado",
-      "video-animado",
-      "groq-audio",
-      "gemini-gratuito",
-      "visuais-na-conversa",
-      "criar-agente",
-      "trocar-dominio"
-    ]
+    "ligadas": ["agenda", "lembretes", "aprender", "avisos", "memory", "foco", "avatar", "report", "slide-animado", "site-animado", "video-animado", "groq-audio", "gemini-gratuito", "visuais-na-conversa", "criar-agente", "trocar-dominio"]
   },
-  "shell_chamadas": [
-    "printf",
-    "echo",
-    "falha",
-    "aviso",
-    "info",
-    "ok",
-    "passo"
-  ],
+  "shell_chamadas": ["printf", "echo", "falha", "aviso", "info", "ok", "passo", "die", "erro", "P", "W", "B", "I"],
+  "ignorar": ["scripts/marca/", "docs/MARCA-PROPRIA.md"],
   "lotes": {
-    "M5": [
-      "docs",
-      "web/docs",
-      "panel/docs",
-      "README.md",
-      "INSTALL.md",
-      "NOTICE",
-      "tests/docs-em-dia",
-      "tests/changelog"
-    ],
-    "M3": [
-      "templates",
-      "skills",
-      "tests/ambiente",
-      "tests/instrucoes"
-    ],
-    "M1": [
-      "web/public",
-      "web/lib",
-      "web/server.js",
-      "web/test",
-      "panel/public",
-      "panel/lib",
-      "panel/server.js",
-      "panel/test-*"
-    ],
-    "M4": [
-      "bin",
-      "lib",
-      "install.sh",
-      "scripts",
-      "runner/src",
-      "hooks",
-      "canais",
-      "container",
-      "seguranca",
-      "tests"
-    ]
-  },
-  "ignorar": [
-    "scripts/marca/",
-    "docs/MARCA-PROPRIA.md"
-  ]
+    "M3": ["scripts/gerar-instrucoes.sh", "templates", "skills", "powers", "tests/instrucoes"],
+    "M5": ["docs", "web/docs", "panel/docs", "README.md", "INSTALL.md", "NOTICE", "CHANGELOG.md", "AGENTS.md", "CLAUDE.md", "CONTRIBUTING.md", "SECURITY.md", "web/README.md", ".github", "tests/docs-em-dia", "tests/changelog"],
+    "M1": ["web/public", "web/lib", "web/server.js", "web/test", "panel/public", "panel/lib", "panel/server.js", "panel/test-*", "panel/rotas", "panel/bin", "panel/package.json", "qa"],
+    "M4": ["bin", "lib", "install.sh", "scripts", "runner", "hooks", "canais", "container", "seguranca", "web/bin", "anonimizar", "tests", "package.json", "eslint.config.js", ".trivyignore.yaml"]
+  }
 }

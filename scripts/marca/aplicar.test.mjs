@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { analisar, carregarRegras, lerExcecoes, rodar } from './aplicar.mjs';
+import { analisar, carregarRegras, lerExcecoes, rodar, loteDe, listarArquivos } from './aplicar.mjs';
 
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const regras = carregarRegras();
@@ -133,9 +133,72 @@ test('barras: ligada vira /x; nao ligada e inexistente ficam para a mao', () => 
   assert.deepEqual(estados(r), ['troca', 'manual:barra-nao-ligada', 'manual:barra-inexistente', 'manual:barra-generica']);
 });
 
-test('variantes (DG Chat, DG Telegram, DG Alive) e "suporte DG"', () => {
-  const r = aplica('docs/d.md', 'O DG Chat, o DG Telegram e o DG Alive. Chame o suporte DG.\n');
-  assert.equal(r.novo, 'O Prumo Chat, o Prumo Telegram e o Prumo Alive. Chame o suporte.\n');
+test('DG Chat e DG Alive viram descricao; "DG Telegram" nao tem regra (vai para a mao)', () => {
+  const r = aplica('docs/d.md', 'Chat do painel (DG Chat). Pelo canal DG Chat, do DG Chat e sem o DG Alive; com a extensão DG Alive. Chame o suporte DG. O DG Telegram.\n');
+  assert.equal(r.novo, 'Chat do painel. Pelo canal do chat do painel, do chat do painel e sem a extensão de emoções; com a extensão de emoções. Chame o suporte. O DG Telegram.\n');
+  assert.deepEqual(estados(r).slice(-1), ['manual:sem-regra']);
+  assert.doesNotMatch(r.novo, /Prumo (Chat|Alive|Telegram)/);
+});
+
+test('barra: bin/dgclaw:5 e bin/README "bin/dgclaw: a linha" nao sao /dgclaw:', () => {
+  const r = aplica('docs/e.md', 'Veja bin/dgclaw:5 e bin/dgclaw: a linha de comando. Use /dgclaw:agenda.\n');
+  assert.equal(r.novo, 'Veja bin/dgclaw:5 e bin/dgclaw: a linha de comando. Use /agenda.\n');
+  assert.equal(r.ocorrencias.length, 1);
+});
+
+test('"DG Claw Lite" fica por excecao; die troca; comando do Admin nao troca (fica_em)', () => {
+  const excs = 'skills/importar/SKILL.md\tDG Claw Lite\toutro produto\n';
+  assert.equal(aplica('skills/importar/SKILL.md', 'versao DG Claw Lite\n', excs).novo, 'versao DG Claw Lite\n');
+  const sh = aplica('bin/x', '#!/usr/bin/env bash\ndie "o DG Claw caiu"\nW "rode dgclaw agente listar"\nI "o DG Alive esta ligado"\n');
+  assert.equal(sh.novo, '#!/usr/bin/env bash\ndie "o Prumo da Locadora caiu"\nW "rode prumo agente listar"\nI "a extensão de emoções esta ligado"\n');
+  const adm = aplica('skills/criar-agente/SKILL.md', 'Rode `sudo dgclaw colaborador criar` no DG Claw.\n');
+  assert.equal(adm.novo, 'Rode `sudo dgclaw colaborador criar` no Prumo da Locadora.\n');
+  assert.equal(aplica('templates/ambiente/admin.md', 'rode dgclaw colaborador criar\n').ocorrencias.length, 0);
+});
+
+test('NOTICE: o titulo muda, a afirmacao do autor original e o resto ficam', () => {
+  const excs = 'NOTICE\tcódigo do DG Claw foi escrito do zero\tafirmacao do autor original\n';
+  const r = aplica('NOTICE', 'DG Claw\n\nO código do DG Claw foi escrito do zero para este projeto.\n', excs);
+  assert.equal(r.novo, 'Prumo da Locadora\n\nO código do DG Claw foi escrito do zero para este projeto.\n');
+});
+
+test('lotes: cada arquivo tem um dono so (--lote nao se cruza)', () => {
+  const d = (rel) => loteDe(rel, regras.lotes);
+  assert.equal(d('tests/ambiente/rodar.sh'), 'M4');
+  assert.equal(d('scripts/gerar-instrucoes.sh'), 'M3');
+  assert.equal(d('scripts/doctor.sh'), 'M4');
+  assert.equal(d('tests/instrucoes/rodar.sh'), 'M3');
+  assert.equal(d('tests/docs-em-dia/checar.mjs'), 'M5');
+  assert.equal(d('powers/crm/POWER.md'), 'M3');
+  assert.equal(d('panel/rotas/nucleo.js'), 'M1');
+  assert.equal(d('web/bin/cofre.js'), 'M4');
+  assert.equal(d('web/docs/MODO-FOCO.md'), 'M5');
+  assert.equal(d('NOTICE'), 'M5');
+  assert.equal(d('NOTICE.md'), 'sem-lote');
+  const repo = path.join(AQUI, '..', '..');
+  const todos = listarArquivos(repo, [], regras.ignorar);
+  const semDono = todos.filter((r) => d(r) === 'sem-lote' && !r.startsWith('aceite/') && r !== 'NOTICE.md' && r !== 'LICENSE');
+  const comOcorrencia = rodar({ raiz: repo, regras, excs: lerExcecoes(fs.readFileSync(path.join(AQUI, 'excecoes.txt'), 'utf8')) }).filter((a) => a.lote === 'sem-lote').map((a) => a.rel);
+  assert.deepEqual(comOcorrencia.filter((r) => !r.startsWith('aceite/') && r !== 'NOTICE.md'), []);
+  void semDono;
+});
+
+test('--lote M3 nao lista tests/ambiente/rodar.sh e M4 sim', () => {
+  const d = arvore({ 'tests/ambiente/rodar.sh': 'echo "DG Claw"\n', 'templates/a.md': 'DG Claw\n' });
+  const excs = lerExcecoes('');
+  assert.deepEqual(rodar({ raiz: d, regras, excs, lote: 'M3' }).map((a) => a.rel), ['templates/a.md']);
+  assert.deepEqual(rodar({ raiz: d, regras, excs, lote: 'M4' }).map((a) => a.rel), ['tests/ambiente/rodar.sh']);
+});
+
+test('excecoes: todo trecho literal esta presente no arquivo (menos os marcados "entra no M1")', () => {
+  const repo = path.join(AQUI, '..', '..');
+  const mortas = [];
+  for (const e of lerExcecoes(fs.readFileSync(path.join(AQUI, 'excecoes.txt'), 'utf8'))) {
+    if (e.trecho === '*' || e.trecho.startsWith('secao:') || /entra no M1/.test(e.motivo) || e.arquivo.endsWith('/')) continue;
+    const f = path.join(repo, e.arquivo);
+    if (!fs.existsSync(f) || !fs.readFileSync(f, 'utf8').includes(e.trecho)) mortas.push(`${e.arquivo}: ${e.trecho}`);
+  }
+  assert.deepEqual(mortas, []);
 });
 
 test('excecao por trecho, por secao e por arquivo inteiro', () => {

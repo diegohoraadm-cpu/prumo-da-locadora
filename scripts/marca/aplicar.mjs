@@ -5,6 +5,7 @@
 //
 // Uso: node scripts/marca/aplicar.mjs [--dry] [--pasta <caminho>]... [--raiz <pasta>] [--detalhe] [--mapa]
 //   sem --dry   grava os arquivos; --dry so lista (nada e escrito).
+//   --lote      so os arquivos do lote (M1, M3, M4 ou M5, conforme "lotes" do regras.json).
 //   --pasta     so esta pasta ou arquivo (relativo a raiz; repete); e como cada lote M1..M5 roda a sua.
 //   --detalhe   uma linha por ocorrencia.   --mapa  tabela em Markdown (o scripts/marca/mapa.md).
 // Saida: 0 = ok. 2 = uso errado ou regra/excecao mal escrita.
@@ -217,6 +218,7 @@ const TUDO = (src) => [{ ini: 0, fim: src.length, modo: 'prosa' }];
 
 export function tipoDe(rel, src) {
   const ext = path.extname(rel).toLowerCase();
+  if (['NOTICE', 'LICENSE'].includes(path.basename(rel))) return 'md';
   if (['.md', '.tmpl'].includes(ext)) return 'md';
   if (ext === '.html') return 'html';
   if (['.js', '.mjs', '.cjs', '.ts'].includes(ext)) return 'js';
@@ -268,7 +270,7 @@ export function lerExcecoes(texto) {
 const casaArquivo = (e, rel) => (e.arquivo.endsWith('/') ? rel.startsWith(e.arquivo) : e.arquivo === rel);
 
 // Linhas protegidas por excecao no arquivo: Set de indices de linha (0-based) ou 'todas'.
-function protegidas(excs, rel, src) {
+export function protegidas(excs, rel, src) {
   const minhas = excs.filter((e) => casaArquivo(e, rel));
   if (minhas.some((e) => e.trecho === '*')) return 'todas';
   const linhas = src.split('\n');
@@ -294,15 +296,16 @@ export function analisar(rel, src, ctx) {
   const zonaDe = (pos) => zonas.find((x) => pos >= x.ini && pos < x.fim);
   const cands = [];
 
-  for (const f of regras.frases) for (const m of src.matchAll(new RegExp(`(?<![\\w])${esc(f.de)}(?![\\w])`, 'g'))) cands.push({ pos: m.index, len: m[0].length, regra: f.variante ? 'variante' : 'frase', de: m[0], para: f.para });
+  for (const f of regras.frases) for (const m of src.matchAll(new RegExp(`(?<![\\w])${esc(f.de)}(?![\\w])`, 'g'))) cands.push({ pos: m.index, len: m[0].length, regra: f.vigiar ? 'sem-regra' : f.variante ? 'variante' : 'frase', de: m[0], para: f.para, manual: f.vigiar ? 'sem-regra' : undefined });
 
   const cmd = regras.comando;
   const subs = cmd.subcomandos.map(esc).join('|');
   const rxCmd = new RegExp(`(?<![\\w/.\\-=$])${esc(cmd.de)}(?= (?:${subs})(?![\\w-])| --[a-z])`, 'g');
-  for (const m of src.matchAll(rxCmd)) cands.push({ pos: m.index, len: m[0].length, regra: 'comando', de: m[0], para: cmd.para });
+  const ficaEm = (cmd.fica_em || []).some((p) => rel === p || rel.startsWith(p.endsWith('/') ? p : `${p}/`));
+  if (!ficaEm) for (const m of src.matchAll(rxCmd)) cands.push({ pos: m.index, len: m[0].length, regra: 'comando', de: m[0], para: cmd.para });
 
   const ligadas = new Set(regras.barra.ligadas);
-  for (const m of src.matchAll(new RegExp(`${esc(regras.barra.prefixo)}([a-z][a-z0-9-]*|\\*)?`, 'g'))) {
+  for (const m of src.matchAll(new RegExp(`(?<![\\w.-])${esc(regras.barra.prefixo)}([a-z][a-z0-9-]*|\\*)?`, 'g'))) {
     const nome = m[1] || '';
     const sk = nome && skillsExistentes.has(nome);
     const aqui = { pos: m.index, len: m[0].length, regra: 'barra', de: m[0], para: null, nome };
@@ -322,6 +325,7 @@ export function analisar(rel, src, ctx) {
     const o = { linha: linha + 1, regra: c.regra, de: c.de, para: c.para, estado: 'troca', motivo: '' };
     const zona = zonaDe(c.pos);
     if (prot === 'todas' || (prot !== 'todas' && prot.has(linha))) { o.estado = 'excecao'; }
+    else if (c.manual === 'sem-regra') { o.estado = 'manual'; o.motivo = 'sem-regra'; }
     else if (tipo === 'outro') { o.estado = 'manual'; o.motivo = 'tipo-nao-coberto'; }
     else if (!zona) { if (c.regra !== 'comando') { o.estado = 'manual'; o.motivo = 'fora-de-contexto'; } else continue; } // comando em codigo e invocacao de verdade
     else if (zona.logica) { o.estado = 'manual'; o.motivo = 'comparacao-de-logica'; }
@@ -360,11 +364,12 @@ export function loteDe(rel, lotes) {
   return 'sem-lote';
 }
 
-export function rodar({ raiz, pastas = [], dry = true, regras, excs }) {
+export function rodar({ raiz, pastas = [], dry = true, regras, excs, lote = '' }) {
   const skillsDir = path.join(raiz, 'skills');
   const skillsExistentes = new Set(fs.existsSync(skillsDir) ? fs.readdirSync(skillsDir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name) : []);
   const arquivos = [];
   for (const rel of listarArquivos(raiz, pastas, regras.ignorar)) {
+    if (lote && loteDe(rel, regras.lotes) !== lote) continue;
     const src = fs.readFileSync(path.join(raiz, rel), 'utf8');
     if (src.includes('\0')) continue;
     const r = analisar(rel, src, { regras, excs, skillsExistentes });
@@ -438,8 +443,12 @@ export function mapaMarkdown(arqs, regras) {
   }
   out.push('', `Total: ${nl} linhas em ${ts.length} arquivos de teste.`);
 
-  out.push('', '## 4. Pede decisao humana (nao trocado), por arquivo', '', '| Arquivo | Lote | Motivo | Linha | Trecho |', '| --- | --- | --- | ---: | --- |');
-  for (const a of arqs) for (const o of a.ocorrencias.filter((x) => x.estado === 'manual' && x.regra !== 'barra')) out.push(`| ${a.rel} | ${a.lote} | ${o.motivo} | ${o.linha} | \`${o.de}\` |`);
+  out.push('', '## 4. O que ficou manual, por lote (nao trocado; inclui as barras)', '');
+  for (const l of [...new Set(arqs.map((a) => a.lote))].sort()) {
+    const linhas = arqs.filter((a) => a.lote === l).flatMap((a) => a.ocorrencias.filter((o) => o.estado === 'manual').map((o) => `| ${a.rel} | ${o.motivo} | ${o.linha} | \`${o.de}\` |`));
+    if (!linhas.length) continue;
+    out.push(`### ${l} (${linhas.length})`, '', '| Arquivo | Motivo | Linha | Trecho |', '| --- | --- | ---: | --- |', ...linhas, '');
+  }
   void regras;
   return `${out.join('\n')}\n`;
 }
@@ -449,8 +458,10 @@ function main() {
   const args = process.argv.slice(2);
   const tem = (f) => args.includes(f);
   const valores = (f) => args.flatMap((a, i) => (a === f && args[i + 1] ? [args[i + 1]] : []));
-  const desconhecido = args.filter((a) => a.startsWith('--') && !['--dry', '--detalhe', '--mapa', '--pasta', '--raiz', '--regras', '--excecoes'].includes(a));
-  if (desconhecido.length) { console.error(`opcao desconhecida: ${desconhecido.join(' ')}. Uso: aplicar.mjs [--dry] [--pasta <caminho>]... [--raiz <pasta>] [--detalhe] [--mapa]`); process.exit(2); }
+  const desconhecido = args.filter((a) => a.startsWith('--') && !['--dry', '--detalhe', '--mapa', '--pasta', '--lote', '--raiz', '--regras', '--excecoes'].includes(a));
+  if (desconhecido.length) { console.error(`opcao desconhecida: ${desconhecido.join(' ')}. Uso: aplicar.mjs [--dry] [--lote M1|M3|M4|M5] [--pasta <caminho>]... [--raiz <pasta>] [--detalhe] [--mapa]`); process.exit(2); }
+  const lote = valores('--lote')[0] || '';
+  if (args.includes('--lote') && !['M1', 'M3', 'M4', 'M5'].includes(lote)) { console.error('--lote precisa ser M1, M3, M4 ou M5'); process.exit(2); }
   const raiz = path.resolve(valores('--raiz')[0] || path.join(AQUI, '..', '..'));
   let regras, excs;
   try {
@@ -458,7 +469,7 @@ function main() {
     excs = lerExcecoes(fs.readFileSync(valores('--excecoes')[0] || path.join(AQUI, 'excecoes.txt'), 'utf8'));
   } catch (e) { console.error(`aplicar: ${e.message}`); process.exit(2); }
   const dry = tem('--dry') || tem('--mapa');
-  const arqs = rodar({ raiz, pastas: valores('--pasta'), dry, regras, excs });
+  const arqs = rodar({ raiz, pastas: valores('--pasta'), dry, regras, excs, lote });
   if (tem('--mapa')) { process.stdout.write(mapaMarkdown(arqs, regras)); return; }
   if (tem('--detalhe')) for (const a of arqs) for (const o of a.ocorrencias) console.log(`${o.estado}\t${a.rel}:${o.linha}\t${o.regra}\t${o.de}${o.para ? ` -> ${o.para}` : ''}${o.motivo ? `\t${o.motivo}` : ''}`);
   const r = resumo(arqs);

@@ -7,7 +7,7 @@
 #
 # Credito e licenca (MIT exige o aviso; o install.sh copia LICENSE e NOTICE para a instalacao)
 LICENSE	*	licenca MIT: o aviso de copyright do autor original nao se troca
-NOTICE	*	credito ao autor original e ao Orca; install.sh copia este arquivo para a instalacao
+NOTICE	código do DG Claw foi escrito do zero	afirmacao do autor original sobre o codigo dele (aviso do Orca, MIT); o titulo da linha 1 muda
 NOTICE.md	*	credito ao autor original (achado 2 do Esquadro)
 README.md	[DG Claw](https://github.com/DGatoM/DG-Claw)	credito do README: nome do projeto original com o link dele
 README.md	sobre o DG Claw, de DG Medeiros	credito do README: nome do projeto original
@@ -21,3 +21,58 @@ seguranca/ronda/ronda.py	"DG Claw (app)"	origem do componente, comparada por igu
 seguranca/ronda/ronda.py	startswith("DG Claw")	le o prefixo do campo "onde"
 # Aceite escrito pelo Teia (cita o nome antigo de proposito). A propria ferramenta e o MARCA-PROPRIA.md ficam em "ignorar" no regras.json
 aceite/	*	aceite escrito pelo Teia: o dev nao edita
+# Decisoes do arquiteto (M0b). Motivo que comeca por logica: e texto que codigo le.
+scripts/materialize-identity.sh	GERADO PELO DG CLAW	logica: marcador do AGENT.md, lido por grep; decide se o arquivo e regravado
+scripts/doctor.sh	GERADO PELO DG CLAW	logica: marcador do AGENT.md, lido por grep
+scripts/install-core.sh	GERADO PELO DG CLAW	logica: marcador do AGENT.md, lido por grep
+bin/dgclaw	REGRA ZERO DO CANAL DG CHAT	logica: cabecalho da identidade conferido por teste (test-canal-dgchat.sh e tests/ambiente); o dono nao le a identidade
+scripts/bootstrap-identity.sh	REGRA ZERO DO CANAL DG CHAT	logica: cabecalho da identidade conferido por teste (test-canal-dgchat.sh e tests/ambiente); o dono nao le a identidade
+scripts/test-canal-dgchat.sh	REGRA ZERO DO CANAL DG CHAT	logica: cabecalho da identidade conferido por teste (test-canal-dgchat.sh e tests/ambiente); o dono nao le a identidade
+tests/ambiente/rodar.sh	REGRA ZERO DO CANAL DG CHAT	logica: cabecalho da identidade conferido por teste (test-canal-dgchat.sh e tests/ambiente); o dono nao le a identidade
+panel/lib/operacoes.js	DG Claw|Prumo da Locadora	logica: regex dos dois prefixos do Description (entra no M1)
+web/lib/sigilo.js	'DG Claw', 'Claude'	logica: lista de nomes que nunca somem; o M1 acrescenta Prumo da Locadora e mantem DG Claw para conversas antigas
+web/test/casca.test.js	dgclaw:agente	logica: chave do localStorage
+install.sh	# DG Claw: cada agente gasta	logica: comentario dentro do /etc/sysctl.d, comparado byte a byte
+panel/test-operacoes.mjs	Description=DG Claw	logica: caso do prefixo antigo do Description
+tests/cli/dominio.sh	# DG Claw: antigo	logica: reproduz o Caddyfile antigo
+tests/aviso-atualizacao/rodar.sh	sem \"DG Claw\"	logica: o teste confere que o recado nao diz o nome antigo
+tests/aviso-atualizacao/rodar.sh	nao diz DG Claw	logica: o teste confere que o recado nao diz o nome antigo
+tests/aviso-atualizacao/rodar.sh	"DG Claw" "$RECADO"	logica: o teste confere que o recado nao diz o nome antigo
+skills/importar/SKILL.md	DG Claw Lite	outro produto do autor original (versao de computador); trocar criaria "Prumo da Locadora Lite", que nao existe
+panel/public/js/sessoes.js	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+panel/lib/sessoes-proxy.js	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+panel/lib/sessoes-local.js	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+panel/server.js	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+panel/test-sessoes.mjs	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+panel/test-sessoes-local.mjs	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+panel/docs/SESSOES.md	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+panel/bin/instalar-aba-sessoes.py	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+panel/public/js/app.js	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+web/lib/avisos.js	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+web/lib/media.js	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+web/public/dgvis.css	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+hooks/avisos.py	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+docs/VISUAIS.md	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+docs/PLANO-APP-INTEGRADO.md	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+docs/QUADRO-DE-AVISOS.md	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+web/docs/MODO-FOCO.md	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+scripts/install-core.sh	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+scripts/notify-owner.sh	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+skills/lista-rapida/	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+docs/MESA-DE-TAREFAS.md	secao:^## Integração antiga	outro produto do autor original; trocar afirmaria o que nao e verdade (mesa antiga, so com DGCLAW_MESA_URL)
+scripts/doctor.sh	Nao depende do DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade (so o trecho DGCLAW_MESA e comentarios; a linha da integracao antiga e reescrita a mao)
+scripts/doctor.sh	Mesa de tarefas do DG Telegram (opcional	outro produto do autor original; trocar afirmaria o que nao e verdade (so o trecho DGCLAW_MESA e comentarios; a linha da integracao antiga e reescrita a mao)
+scripts/doctor.sh	o DG Telegram recusou	outro produto do autor original; trocar afirmaria o que nao e verdade (so o trecho DGCLAW_MESA e comentarios; a linha da integracao antiga e reescrita a mao)
+scripts/doctor.sh	o DG Telegram respondeu 503	outro produto do autor original; trocar afirmaria o que nao e verdade (so o trecho DGCLAW_MESA e comentarios; a linha da integracao antiga e reescrita a mao)
+scripts/doctor.sh	DG Telegram f	outro produto do autor original; trocar afirmaria o que nao e verdade (so o trecho DGCLAW_MESA e comentarios; a linha da integracao antiga e reescrita a mao)
+scripts/doctor.sh	nem do DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade (so o trecho DGCLAW_MESA e comentarios; a linha da integracao antiga e reescrita a mao)
+web/public/dgvis.js	base dos "Visuais na conversa" do DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade (origem do arquivo)
+
+# Blocos dos lotes: cada lote acrescenta so no seu, para o merge nao conflitar.
+# --- M1 ---
+#
+# --- M3 ---
+#
+# --- M4 ---
+#
+# --- M5 ---

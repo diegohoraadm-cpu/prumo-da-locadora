@@ -15,6 +15,12 @@
 # e a 1a de novo; 5) `agente recriar <slug> --forcar` em cada agente; 6) 2a atualizacao, para um commit trivial
 # novo, ja com o atualizar.sh novo (parecer antes do --ok-do-dono).
 #
+# LIMITES DECLARADOS (o aceite repete os dois na saida):
+#  - O manifesto das rotinas padrao (.dgclaw/unidades-padrao.sha256) e EMULADO pelo embrulho do podman abaixo.
+#    `forcar_com_manifesto=4` conta o EMBRULHO gravando uma linha por unidade, nao o container de verdade gravando
+#    o manifesto: nao prova hash, nem o caminho ABS_CONFIG, nem o que roda dentro do container.
+#  - A fotografia nao cobre /opt/dgclaw/admin, /etc/dgclaw/marca nem home/.claude/skills (ver fotografar()).
+#
 # Imprime, alem do que as verificacoes dizem, as linhas `R1 nome=valor` que o aceite
 # (aceite/juncao-e-marca.mjs --bloco R1) le. Uma verificacao que falha deixa o codigo de saida != 0.
 set -uo pipefail
@@ -125,6 +131,9 @@ printf '[{"id":"c1","email":"joana@exemplo.org","agente":"ana","estado":"ativo"}
 printf '{"principal":"ana"}\n' >"$LIB/web/principal.json"
 printf '{"c_ana":{"sessao":"abc"}}\n' >"$LIB/web/sessoes.json"
 
+# LIMITE: nao cobre /opt/dgclaw/admin (o instalador regrava o AGENT.md e as skills do Admin de proposito),
+# /etc/dgclaw/marca nem home/.claude/skills/* das casas (o instalador as regrava): uma skill que o dono criou la
+# e sumisse nao seria vista por esta fotografia.
 # O que NAO pode mudar na 1a atualizacao: o dgclaw.env sem as duas chaves que mudam por definicao, o web.env
 # (usuario e hash do painel, chaves), o cofre, as casas, o principal.json e o resto do que e do dono.
 fotografar() {
@@ -214,8 +223,14 @@ igual "--voltar: os dados do dono iguais aos de antes (fotografia)" "0" "$VOLTAR
 [ "$VOLTAR_DIF" -eq 0 ] || diff "$TMP/foto-antes.txt" "$TMP/foto-voltar.txt" | head -n 12 | sed 's/^/      | /'
 igual "--voltar: o commit instalado volta a ser o anterior" "$ANT" "$VOLTAR_COMMIT"
 igual "--voltar: nenhum arquivo das casas foi apagado" "0" "$(casas_apagadas)"
-# O --voltar deixa o clone numa branch temporaria (dgclaw-volta-<data>) sem upstream, e o atualizar seguinte para
-# pedindo um upstream (comportamento do original, que este teste so contorna): o clone volta para a main antes.
+# DEFEITO HERDADO DO ORIGINAL (nao corrigido aqui, a decisao e do dono): o --voltar deixa o clone numa branch
+# temporaria (dgclaw-volta-<data>, lib/atualizar.sh:863) SEM upstream, e o atualizar seguinte recusa branch sem
+# upstream (lib/atualizar.sh:790-792) e para em "baixando a versao nova". Ja era assim em 4be8b2f. O `git checkout
+# main` abaixo CONTORNA o defeito para a suite seguir; nao o testa. Aqui so REGISTRA o estado atual (sem upstream
+# = sim); no dia em que o --voltar for corrigido a chave vira nao e o aceite avisa, para tirar o contorno.
+VOLTAR_RAMO="$(git -C "$CLONE" rev-parse --abbrev-ref HEAD)"
+git -C "$CLONE" rev-parse --abbrev-ref '@{upstream}' >/dev/null 2>&1 && VOLTAR_SEM_UPSTREAM=nao || VOLTAR_SEM_UPSTREAM=sim
+echo "  (registro, nao verificacao: depois do --voltar o clone esta em '$VOLTAR_RAMO' e sem upstream = $VOLTAR_SEM_UPSTREAM)"
 # O --voltar tambem recriou os containers (com o recriar do codigo antigo, sem conferencia) na imagem de entao;
 # a 1a de novo constroi uma imagem nova, que e a imagem "velha" dos containers que ficarem de fora.
 git -C "$CLONE" checkout -q main
@@ -298,6 +313,8 @@ R1 voltar_fotografia_diferencas "$VOLTAR_DIF"
 R1 voltar_commit "$VOLTAR_COMMIT"
 R1 forcar_na_versao_nova_pct "$FORCAR_PCT"
 R1 forcar_com_manifesto "$COM_MANIFESTO"
+R1 manifesto_emulado sim   # forcar_com_manifesto conta o embrulho do podman, nao o container
+R1 voltar_sem_upstream "$VOLTAR_SEM_UPSTREAM"   # defeito herdado do original, so registrado
 R1 versao_instalada "$VERSAO_INST"
 R1 prumo_igual_dgclaw "$PRUMO_IGUAL"
 R1 segunda_resultado "$SEGUNDA"

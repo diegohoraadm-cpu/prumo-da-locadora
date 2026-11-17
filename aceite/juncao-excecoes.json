@@ -3,7 +3,7 @@
     {
       "arquivo": "README.md",
       "linha": "- **Projeto de cliente**: o DG Claw oficial na VPS do cliente, com acesso temporário do suporte por chave SSH ([docs/PROJETO-DE-CLIENTE.md](docs/PROJETO-DE-CLIENTE.md)).",
-      "motivo": "README e o nosso (regra do plano F1); docs/PROJETO-DE-CLIENTE.md entra como veio e nao e linkado em tela nem manual nosso"
+      "motivo": "README e o nosso (regra do plano F1, J3); a linha do original nao entra nele. docs/PROJETO-DE-CLIENTE.md entra como veio e E linkado pelo manual (docs/manual/referencia-admin.md:71-74, 4 linhas de dgclaw suporte); texto do time DG, pendente de decisao (aceitar ate o M5 ou neutralizar os links)"
     },
     {
       "arquivo": "panel/public/index.html",

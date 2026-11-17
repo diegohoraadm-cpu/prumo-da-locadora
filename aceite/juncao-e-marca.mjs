@@ -43,6 +43,10 @@
 //   R1 voltar_commit=<40 hex do DGCLAW_COMMIT depois do --voltar>
 //   R1 forcar_na_versao_nova_pct=<0..100> agentes na imagem nova depois do --forcar em cada um
 //   R1 forcar_com_manifesto=<n>           agentes com .dgclaw/unidades-padrao.sha256 depois do --forcar
+//                                         ATENCAO: conta o EMBRULHO do podman falso gravando o manifesto, não o container
+//   R1 manifesto_emulado=sim              declara o limite acima (o manifesto é emulado)
+//   R1 voltar_sem_upstream=sim|nao        defeito herdado do original: depois do --voltar o clone fica sem upstream
+//                                         (lib/atualizar.sh:790-792 e :863). "sim" = defeito ainda presente (registro, não falha de produto)
 //   R1 versao_instalada=<DGCLAW_VERSAO depois>
 //   R1 prumo_igual_dgclaw=sim|nao|na      "na" só enquanto o install.sh não cria /usr/local/bin/prumo (lote C4)
 //   R1 segunda_resultado=INCOMPLETA|concluida
@@ -366,11 +370,16 @@ function blocoR1() {
     voltar_commit: ANTERIOR,
     forcar_na_versao_nova_pct: '100',
     forcar_com_manifesto: '4',
+    manifesto_emulado: 'sim',
+    voltar_sem_upstream: 'sim',
     versao_instalada: versao,
     prumo_igual_dgclaw: temPrumo ? 'sim' : 'na',
     segunda_resultado: 'concluida',
     segunda_de_fora: '0',
   }, 'R1');
+  info('LIMITE: o manifesto das rotinas padrão é EMULADO pelo embrulho do podman; forcar_com_manifesto=4 conta o embrulho, não o container (sem prova de hash, de ABS_CONFIG nem do que roda dentro do container).');
+  info('LIMITE: a fotografia não cobre /opt/dgclaw/admin, /etc/dgclaw/marca nem home/.claude/skills das casas.');
+  info('REGISTRO: voltar_sem_upstream=sim é defeito do original (--voltar deixa o clone sem upstream; o atualizar seguinte para). O teste contorna com git checkout main. Não corrigido aqui.');
 }
 
 console.log(`Aceite juncao-e-marca: bloco ${BLOCO}, alvo ${COMMIT || 'árvore de trabalho'} (${git(['rev-parse', '--short', ALVO]).trim()}), repositório ${REPO}`);

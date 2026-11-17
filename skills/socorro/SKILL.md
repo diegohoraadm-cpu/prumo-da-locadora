@@ -57,7 +57,11 @@ Os comandos `sudo prumo ...` (entrar no painel) o dono digita no terminal do ser
 3.1.1, "Como chegar ao terminal do servidor"): quem não entra no painel não fala com o Admin. Se ele
 não sabe chegar lá, peça o acesso a quem instalou; não invente outro caminho.
 
-Agente sem container (`ausente`): `agente iniciar` não funciona. A receita é uma só, com o sim do dono:
+Agente sem container (`ausente`): `agente iniciar` não funciona. Antes, confirme que o container não existe
+de verdade: o `dgclaw agente listar` também mostra `ausente` quando o `podman inspect` falha por qualquer
+motivo. Rode `podman ps -a --format '{{.Names}}'`: tem de sair sem erro e sem `dgclaw-<nome do agente>`.
+Se o podman der erro, não é agente ausente: não use o `--forcar`, pare e entregue a saída a quem cuida do
+servidor. Confirmado, a receita é uma só, com o sim do dono:
 `sudo dgclaw agente recriar <nome do agente> --forcar` (manual 3.2.1). Como não existe caixa, não há
 lista nem nada a perder. Para conferir, veja se
 `/var/lib/dgclaw/agentes/<nome do agente>/home/.dgclaw/unidades-padrao.sha256` passou a existir

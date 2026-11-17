@@ -2444,6 +2444,71 @@ atualizar_identidades() {
     ok "identidade conferida em $n agente(s)"
 }
 
+# --- 9c. atalho `prumo` e fim da instalacao (agentes, aviso da versao, primeiro backup) --------
+# O atalho /usr/local/bin/prumo (sob DGCLAW_RAIZ nos testes) e um script (nao um link): o `exec` mantem o nome "dgclaw" na linha de comando, de que as
+# travas por nome de processo dependem. Se ja existe um `prumo` que nao e o nosso, fica como esta.
+criar_atalho_prumo() {
+    local alvo="$DG_BIN/prumo" esperado
+    esperado="$(printf '#!/bin/sh\nexec %s/dgclaw "$@"\n' "$DG_BIN")"
+    if [ -L "$alvo" ] || { [ -e "$alvo" ] && [ "$(cat "$alvo" 2>/dev/null)" != "$esperado" ]; }; then
+        aviso "ja existe um 'prumo' em ${alvo#"$R"} que nao e o nosso; deixei como esta. Use o comando 'dgclaw', que faz o mesmo."
+        return 0
+    fi
+    [ -e "$alvo" ] || printf '%s\n' "$esperado" | escrever_arquivo "$alvo" 755
+    ok "comando prumo em ${alvo#"$R"} (igual ao dgclaw)"
+}
+
+# agente_sem_manifesto <slug>: so leitura, sem seguir link. Verdadeiro quando a casa nao tem o manifesto
+# das rotinas padrao como arquivo comum; link em qualquer ponto do caminho conta como "sem".
+agente_sem_manifesto() {
+    local h="$DG_LIB/agentes/$1/home" p
+    for p in "$DG_LIB/agentes/$1" "$h" "$h/.dgclaw" "$h/.dgclaw/unidades-padrao.sha256"; do
+        [ ! -L "$p" ] || return 0
+    done
+    [ ! -f "$h/.dgclaw/unidades-padrao.sha256" ]
+}
+
+# fim_agentes: lista os agentes; so o `created` ganha um `agente iniciar` (`exited` pode ter sido desligado
+# de proposito); imprime o aviso da 1.0.5 se algum agente ainda nao tem o manifesto. Nada e gravado nas casas.
+fim_agentes() {
+    passo "Conferindo os agentes"
+    local cli="$DG_APP/bin/dgclaw" slug estado sem=""
+    if [ "$ENSAIO" = 1 ]; then
+        info "[ensaio] listaria os agentes e ligaria os que estao em 'created'"
+        return 0
+    fi
+    if ! tem_jq || [ ! -s "$DG_AGENTES_JSON" ]; then info "nenhum agente ainda"; return 0; fi
+    while IFS= read -r slug; do
+        [[ "$slug" =~ ^[a-z0-9][a-z0-9-]{1,30}$ ]] || continue
+        estado="$(podman inspect -f '{{.State.Status}}' "dgclaw-$slug" 2>/dev/null)" || estado=ausente
+        info "agente $slug: ${estado:-ausente}"
+        if [ "$estado" = created ]; then
+            "$cli" agente iniciar "$slug" >/dev/null 2>&1 \
+                && ok "agente $slug estava criado e parado; liguei" \
+                || aviso "nao consegui ligar o agente $slug. Ligue com: sudo dgclaw agente iniciar $slug"
+        fi
+        if agente_sem_manifesto "$slug"; then sem+=" $slug"; fi
+    done < <(jq -r '.agentes[] | select(.tipo == "agente") | .slug' "$DG_AGENTES_JSON")
+    if [ -n "$sem" ]; then
+        printf '\n%sAVISO DA VERSÃO 1.0.5%s\n' "$_C_AV" "$_C_0"
+        printf '   Estes agentes ainda nao tem a referencia que a versao nova usa para conferir o que existe so dentro da caixa deles:%s\n' "$sem"
+        printf '   Na etapa seguinte da atualizacao eles vao aparecer como FALHOU e a tela vai terminar com "Atualizacao INCOMPLETA".\n'
+        printf '   Isso e esperado nesta versao. Os agentes seguem funcionando na versao anterior; a casa, a memoria, o cofre e as conversas nao sao tocados.\n'
+        printf '   Para passar cada um para a versao nova (um por vez):\n'
+        for slug in $sem; do printf '      sudo dgclaw agente recriar %s --forcar\n' "$slug"; done
+    fi
+}
+
+# primeiro_backup: instalacao sem nenhum backup (a atualizacao ja faz o seu antes de chegar aqui) faz o primeiro.
+primeiro_backup() {
+    [ "$ENSAIO" != 1 ] || return 0
+    [ ! -d "$R/var/backups/dgclaw" ] || [ -z "$(find "$R/var/backups/dgclaw" -mindepth 1 -maxdepth 1 -type d -print -quit)" ] || return 0
+    passo "Fazendo o primeiro backup"
+    "$DG_APP/bin/dgclaw" backup >"$DG_LOG/primeiro-backup.log" 2>&1 \
+        && ok "primeiro backup feito (veja: sudo dgclaw backup listar)" \
+        || aviso "nao consegui fazer o primeiro backup (detalhes em $DG_LOG/primeiro-backup.log). Faca depois: sudo dgclaw backup"
+}
+
 # --- main -----------------------------------------------------------------------
 main() {
     parse_args "$@"
@@ -2479,6 +2544,7 @@ main() {
     configurar_inotify
     configurar_senha
     configurar_web
+    criar_atalho_prumo
     configurar_admin
     ligar_web
     configurar_aviso_atualizacao
@@ -2490,6 +2556,8 @@ main() {
     configurar_anonimizar
     construir_imagem
     testar_fim
+    fim_agentes
+    primeiro_backup
     mensagem_final
 }
 

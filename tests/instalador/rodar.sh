@@ -18,6 +18,8 @@ set -uo pipefail
 . "$AQUI/ffmpeg.sh"
 # shellcheck source=tests/instalador/ronda-seguranca.sh
 . "$AQUI/ronda-seguranca.sh"
+# shellcheck source=tests/instalador/fim.sh
+. "$AQUI/fim.sh"
 # shellcheck source=tests/instalador/proxy.sh
 . "$AQUI/proxy.sh"
 

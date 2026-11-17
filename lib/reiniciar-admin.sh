@@ -47,7 +47,7 @@ if [ ! -r "$TOKEN_ARQ" ]; then
 fi
 command -v jq >/dev/null 2>&1 || { log "falta o jq, entao nao montei o aviso. O resumo esta em $RESUMO."; exit 1; }
 
-texto="<plataforma recado=\"atualizacao-terminou\">A atualizacao do DG Claw terminou e voce acabou de reiniciar com o codigo novo. Este e um aviso da plataforma, nao uma mensagem escrita pelo dono. Leia o resumo em $RESUMO (o log completo esta em $LOG) e conte ao dono, pelo chat e em palavras simples, o resultado: a versao de antes e a nova, onde ficou o backup, como voltar atras, e quais agentes ficaram bem e quais ficaram com problema (e o que fazer com eles). Se algum agente ficou com problema, ofereca consertar agora.</plataforma>"
+texto="<plataforma recado=\"atualizacao-terminou\">A atualizacao do Prumo da Locadora terminou e voce acabou de reiniciar com o codigo novo. Este e um aviso da plataforma, nao uma mensagem escrita pelo dono. Leia o resumo em $RESUMO (o log completo esta em $LOG) e conte ao dono, pelo chat e em palavras simples, o resultado: a versao de antes e a nova, onde ficou o backup, como voltar atras, e quais agentes ficaram bem e quais ficaram com problema (e o que fazer com eles). Se algum agente ficou com problema, ofereca consertar agora.</plataforma>"
 corpo="$(jq -n --arg t "$texto" '{text: $t, submit: true}')"
 
 cfg="$(mktemp)"; chmod 600 "$cfg"

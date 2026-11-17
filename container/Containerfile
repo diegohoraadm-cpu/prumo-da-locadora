@@ -1,4 +1,4 @@
-# Imagem do agente do DG Claw v1: uma "VPS pequena" (systemd, cron, sudo) com as
+# Imagem do agente do Prumo da Locadora v1: uma "VPS pequena" (systemd, cron, sudo) com as
 # ferramentas que os agentes de verdade usam, o runner e o plugin já dentro.
 #
 # Contexto de build = raiz do repositório:
@@ -34,7 +34,7 @@ COPY runner/ ./
 RUN npm ci && npm run build && npm prune --omit=dev && npm cache clean --force
 
 # ---------------------------------------------------------------------------
-# Estágio 2 (base): tudo da máquina, sem o código do DG Claw. Dá para construir
+# Estágio 2 (base): tudo da máquina, sem o código do Prumo da Locadora. Dá para construir
 # só até aqui com --target base (útil para validar a imagem sem o runner).
 # ---------------------------------------------------------------------------
 FROM docker.io/library/ubuntu:24.04 AS base
@@ -47,7 +47,7 @@ ARG CLAUDE_CODE_VERSAO=2.1.296
 ARG CODEX_VERSAO=0.162.1
 ARG BUN_VERSAO=1.4.3
 
-LABEL org.opencontainers.image.title="DG Claw agente" \
+LABEL org.opencontainers.image.title="Prumo da Locadora agente" \
       org.opencontainers.image.version="${DGCLAW_VERSAO}" \
       org.opencontainers.image.source="https://github.com/diegohoraadm-cpu/prumo-da-locadora"
 
@@ -213,7 +213,7 @@ STOPSIGNAL SIGRTMIN+3
 CMD ["/sbin/init"]
 
 # ---------------------------------------------------------------------------
-# Estágio 3 (final): o código do DG Claw por cima da máquina.
+# Estágio 3 (final): o código do Prumo da Locadora por cima da máquina.
 # ---------------------------------------------------------------------------
 FROM base AS final
 

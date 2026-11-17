@@ -431,7 +431,7 @@ main() {
     [ "$achou" = 1 ] || erro_ambiente "o slug '$slug_arg' nao esta em $REGISTRO" \
       "confira os agentes existentes com 'cut -f1 $REGISTRO'"
     rodando "dgclaw-$slug_arg" || erro_ambiente "o container dgclaw-$slug_arg nao esta rodando" \
-      "suba o agente (dgclaw agente iniciar $slug_arg) e rode o teste de novo"
+      "suba o agente (prumo agente iniciar $slug_arg) e rode o teste de novo"
     testar "dgclaw-$slug_arg" "$slug_arg" "$iphost" "$(ip_do_container "dgclaw-$slug_arg")"
   else
     local testou=0 i

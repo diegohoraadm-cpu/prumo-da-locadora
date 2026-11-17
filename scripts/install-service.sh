@@ -87,7 +87,7 @@ CFGDIR="${DGCLAW_CLAUDE_CONFIG_DIR:-/root/.claude}"
 UNIT="/etc/systemd/system/dgclaw-${DGCLAW_SLUG}.service"
 cat > "$UNIT" <<EOF
 [Unit]
-Description=DG Claw assistente: ${DGCLAW_NAME} (${DGCLAW_SLUG})
+Description=Prumo da Locadora assistente: ${DGCLAW_NAME} (${DGCLAW_SLUG})
 After=network-online.target
 Wants=network-online.target
 

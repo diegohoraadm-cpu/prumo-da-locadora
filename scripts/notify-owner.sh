@@ -110,7 +110,7 @@ fi
 RETIDO=""
 if [ "${DGCLAW_AVISOS_RETIDOS:-0}" = "1" ]; then
     RETIDO=1
-    FALHAS+=("dg chat: avisos ao dono retidos de proposito (DGCLAW_AVISOS_RETIDOS=1 no config.sh; para liberar, apague essa linha)")
+    FALHAS+=("chat do painel: avisos ao dono retidos de proposito (DGCLAW_AVISOS_RETIDOS=1 no config.sh; para liberar, apague essa linha)")
 fi
 
 # ── 3. ponte HTTP do app (DGCHAT_URL) ──
@@ -158,15 +158,15 @@ except OSError as e:
     sys.exit(1)
 PY
     then
-        registrar "entregue ao carteiro do DG Chat ($CHAT_ID): $CURTO"
+        registrar "entregue ao carteiro do chat do painel ($CHAT_ID): $CURTO"
         echo "entregue: canal do painel ($CHAT_ID)"
         exit 0
     fi
-    FALHAS+=("dg chat: nao consegui gravar em $OUTBOUND")
+    FALHAS+=("chat do painel: nao consegui gravar em $OUTBOUND")
 fi
 
 if [ ${#FALHAS[@]} -eq 0 ]; then
-    FALHAS+=("nenhum canal configurado: sem DGCLAW_NOTIFY_CMD, sem TELEGRAM_STATE_DIR, sem DGCHAT_URL e sem o canal DG Chat da plataforma")
+    FALHAS+=("nenhum canal configurado: sem DGCLAW_NOTIFY_CMD, sem TELEGRAM_STATE_DIR, sem DGCHAT_URL e sem o canal do chat do painel da plataforma")
 fi
 for f in "${FALHAS[@]}"; do echo "notify-owner: NAO entregue: $f" >&2; done
 registrar "NAO ENTREGUE ($(IFS='; '; echo "${FALHAS[*]}")): $CURTO"

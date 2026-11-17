@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Servidor MCP do DG CHAT (Prumo da Locadora): o "correio" pelo qual o agente entrega
+// Servidor MCP do chat do painel (Prumo da Locadora): o "correio" pelo qual o agente entrega
 // mensagem para a pessoa dona dele, pelo painel.
 //
 // Porte de apps/agents-server/src/dgchat-mcp/server.mjs, da plataforma. Os dois

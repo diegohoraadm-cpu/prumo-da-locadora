@@ -45,7 +45,7 @@ chmod +x "$PRESTART"
 mkdir -p "$DROPDIR"
 cat > "$DROPIN" <<EOF
 # Mitiga regressao do Claude Code: limpa a chave needs-auth do canal telegram
-# antes de cada start (senao o bot fica mudo a partir do 2o start). Instalado pelo DG Claw.
+# antes de cada start (senao o bot fica mudo a partir do 2o start). Instalado pelo Prumo da Locadora.
 [Service]
 ExecStartPre=-/bin/bash ${PRESTART} ${CFGDIR}
 EOF

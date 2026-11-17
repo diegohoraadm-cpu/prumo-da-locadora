@@ -150,7 +150,7 @@ fi
 echo
 echo "== pronto. O agente '$NOME' esta fora do ar. =="
 if [ "$PURGE" = "0" ]; then
-    echo "   Pra trazer de volta: rode /dgclaw:setup apontando pro mesmo workspace ($WS)."
+    echo "   O workspace ($WS) foi preservado."
     echo "   Os dados continuam la, entao ele volta com a memoria e a personalidade que tinha."
 fi
 echo "   O usuario do sistema (se houver um dedicado) NAO foi removido, de proposito."

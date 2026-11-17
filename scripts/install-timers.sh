@@ -109,7 +109,7 @@ if [ "${DGCLAW_AUTO_RECOVERY:-on}" != "off" ]; then
     )
     echo "==> auto-recovery LIGADO (DGCLAW_AUTO_RECOVERY=${DGCLAW_AUTO_RECOVERY:-on}): incluindo timers watchdog (5min) + auto-compact (30min)"
 else
-    echo "==> auto-recovery DESLIGADO (DGCLAW_AUTO_RECOVERY=off): NAO instalo watchdog/auto-compact (da pra religar depois pelo /dgclaw:setup)"
+    echo "==> auto-recovery DESLIGADO (DGCLAW_AUTO_RECOVERY=off): NAO instalo watchdog/auto-compact (da pra religar depois com: sudo prumo agente reparar $SLUG)"
 fi
 
 # Helper: gera um par service(oneshot)+timer
@@ -117,7 +117,7 @@ make_unit() {
     local name="$1" desc="$2" exec="$3" cal="$4" active="$5"
     cat > "/etc/systemd/system/dgclaw-${SLUG}-${name}.service" <<EOF
 [Unit]
-Description=DG Claw ${desc}: ${SLUG}
+Description=Prumo da Locadora ${desc}: ${SLUG}
 
 [Service]
 Type=oneshot
@@ -174,7 +174,7 @@ done
 make_monitor_unit() {
     cat > "/etc/systemd/system/dgclaw-${SLUG}-monitor.service" <<UNIT
 [Unit]
-Description=DG Claw modo monitor dos cards: ${SLUG}
+Description=Prumo da Locadora modo monitor dos cards: ${SLUG}
 
 [Service]
 Type=oneshot

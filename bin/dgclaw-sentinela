@@ -143,7 +143,7 @@ while IFS=$'\t' read -r SLUG NOME URL H TD PROV COFRE; do
     if [ "$prob" = parado ] && [ "$(podman inspect -f '{{.State.Status}}' "dgclaw-$SLUG" 2>/dev/null)" = created ] \
         && { [ ! -f "$mc" ] || [ $(( $(date +%s) - $(cat "$mc") )) -ge "$JANELA" ]; }; then
         date +%s >"$mc"
-        log "$SLUG: container em 'created'; tentando uma vez: dgclaw agente iniciar $SLUG"
+        log "$SLUG: container em 'created'; tentando uma vez: prumo agente iniciar $SLUG"
         dgclaw agente iniciar "$SLUG" >>"$LOGF" 2>&1
         fim=$(( $(date +%s) + ESPERA ))
         while diagnosticar 0; [ -n "$PROB" ] && [ "$(date +%s)" -lt "$fim" ]; do sleep 5; done
@@ -162,7 +162,7 @@ while IFS=$'\t' read -r SLUG NOME URL H TD PROV COFRE; do
         *) acao="" ;;
     esac
     if [ -n "$acao" ]; then
-        log "$SLUG: '$prob'; tentando uma vez: dgclaw agente $acao $SLUG"
+        log "$SLUG: '$prob'; tentando uma vez: prumo agente $acao $SLUG"
         dgclaw agente "$acao" "$SLUG" >>"$LOGF" 2>&1
         fim=$(( $(date +%s) + ESPERA ))
         while diagnosticar 1; [ -n "$PROB" ] && [ "$(date +%s)" -lt "$fim" ]; do sleep 5; done
@@ -178,7 +178,7 @@ while IFS=$'\t' read -r SLUG NOME URL H TD PROV COFRE; do
         fi
     fi
     log "$SLUG: avisando o dono ($prob${acao:+, reparo: $acao}${depois:+, nao resolveu})"
-    avisar "$texto" "$prob" "$([ -z "$acao" ] && echo "sem conserto automatico" || { [ -z "$depois" ] && echo "consertado com dgclaw agente $acao" || echo "dgclaw agente $acao nao resolveu"; })"
+    avisar "$texto" "$prob" "$([ -z "$acao" ] && echo "sem conserto automatico" || { [ -z "$depois" ] && echo "consertado com prumo agente $acao" || echo "prumo agente $acao nao resolveu"; })"
 done < <(agentes_ler | jq -r '.agentes[] | select(.tipo == "agente")
     | [.slug, .nome, .runner, .home_host, .transcripts_dir, (.provedor // "claude"), (.cofre_arquivo // "-")] | @tsv')
 exit 0

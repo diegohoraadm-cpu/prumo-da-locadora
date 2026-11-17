@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-avisos.py: hook do DG Claw pro QUADRO DE AVISOS DA EQUIPE (versao sem DG Telegram, 17/10/2026).
+avisos.py: hook do Prumo da Locadora pro QUADRO DE AVISOS DA EQUIPE (versao sem DG Telegram, 17/10/2026).
 
 O QUE FAZ
   Os agentes da equipe (e o dono, pela tela /avisos do Prumo da Locadora Web) postam avisos de 1 ou 2

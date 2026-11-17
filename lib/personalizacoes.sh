@@ -180,7 +180,7 @@ personalizacoes_conferir() {
     local msg_cruza="a versao nova mexe em arquivo que uma personalizacao sua tambem mexeu, entao nao reaplico sozinho:
 ${lista%$'\n'}
    Frase pronta para o Admin repassar ao dono: \"$frase\""
-    local oque_fazer="leia o capitulo \"Personalizacao que cruza com a versao nova\" em $DG_OPT/app/docs/ATUALIZAR.md; em resumo, guarde uma copia (git -C $ATU_REPO branch $ramo_pers-antes-\$(date +%Y%m%d)), reaplique a mao com git -C $ATU_REPO rebase $oficial resolvendo o conflito, atualize a entrada no registro ($reg) e rode sudo dgclaw atualizar de novo."
+    local oque_fazer="leia o capitulo \"Personalizacao que cruza com a versao nova\" em $DG_OPT/app/docs/ATUALIZAR.md; em resumo, guarde uma copia (git -C $ATU_REPO branch $ramo_pers-antes-\$(date +%Y%m%d)), reaplique a mao com git -C $ATU_REPO rebase $oficial resolvendo o conflito, atualize a entrada no registro ($reg) e rode sudo prumo atualizar de novo."
     if [ "${PERS_SO_CONFERIR:-0}" = 1 ]; then
         aviso "$msg_cruza"
         info "O que fazer: $oque_fazer Nada foi mudado."

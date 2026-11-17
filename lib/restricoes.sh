@@ -392,7 +392,7 @@ _restricoes_classificar_conta() {
 # passo de ligar.
 _restricoes_receita_remota() {
     local slug="$1" passo2 n=3
-    passo2=" 2) ligue o agente: dgclaw agente iniciar $slug ;"
+    passo2=" 2) ligue o agente: prumo agente iniciar $slug ;"
     if [ "${2:-}" = ligado ]; then passo2=""; n=2; fi
     printf '%s' "1) desligue as restricoes: prumo agente restricoes $slug --sem-bash nao --sem-enviar-arquivo nao --escrita-livre ;$passo2 $n) no painel do agente, conecte uma conta pessoal (Pro ou Max) ou uma chave de API no lugar da conta da organizacao ; $((n + 1))) ligue as restricoes de novo com o mesmo comando restricoes e as opcoes que voce quer, por exemplo: prumo agente restricoes $slug --sem-bash sim --sem-enviar-arquivo sim (ele confere de novo e para o agente se a politica remota continuar)"
 }
@@ -799,7 +799,7 @@ agente_restricoes() {
     [ -n "$obj" ] || falha "o agente '$slug' nao esta no agentes.json." "veja os que existem com: prumo agente listar"
 
     local casa="$DG_CASAS/$slug" h="$DG_CASAS/$slug/home" rs="$DG_CASAS/$slug/runner/restricoes.json" atual='{"versao":1}'
-    exigir_casa_sem_link "$casa" "$h" "$slug" "dgclaw agente restricoes $slug --sem-bash sim|nao ..."
+    exigir_casa_sem_link "$casa" "$h" "$slug" "prumo agente restricoes $slug --sem-bash sim|nao ..."
 
     if [ -z "$sem_bash$sem_env$pastas_arg" ] && [ "$livre" = 0 ]; then
         if [ -e "$rs" ] || [ -L "$rs" ]; then
@@ -945,7 +945,7 @@ restricoes_mostrar() {
     fi
     ligada="$(printf '%s' "$json" | jq -r '(.sem_bash // false) or (.sem_enviar_arquivo // false) or ((.escrita_so_em // null) != null)')"
     if [ "$ENSAIO" != 1 ] && [ "$(podman inspect -f '{{.State.Status}}' "$c" 2>/dev/null || true)" = running ]; then estado=ligado; fi
-    if [ "$estado" = ligado ]; then quem_liga="dgclaw agente reiniciar $slug"; else quem_liga="dgclaw agente iniciar $slug"; fi
+    if [ "$estado" = ligado ]; then quem_liga="prumo agente reiniciar $slug"; else quem_liga="prumo agente iniciar $slug"; fi
     if [ "$ENSAIO" != 1 ]; then
         while IFS='|' read -r marcador txt; do
             [ -n "$marcador" ] || continue
@@ -953,7 +953,7 @@ restricoes_mostrar() {
                 restricoes-transacao.pendente) cmd="$quem_liga (refaz os arquivos aplicados a partir do restricoes.json)" ;;
                 restricoes.pendente) cmd="$quem_liga (reinicia o runner com as travas novas)" ;;
                 restricoes-suporte.pendente) cmd="$quem_liga (confere se a imagem carrega a configuracao administrada)" ;;
-                *) cmd="dgclaw agente reparar $slug (tira o gancho antigo do settings.json; o agente precisa estar ligado)" ;;
+                *) cmd="prumo agente reparar $slug (tira o gancho antigo do settings.json; o agente precisa estar ligado)" ;;
             esac
             pend_linhas+=("$txt. Resolve: $cmd")
         done < <(_restricoes_pendencias "$slug")
@@ -966,9 +966,9 @@ restricoes_mostrar() {
             esperado="$(jq -c . "$casa/runner/managed-settings.json" 2>/dev/null || true)"
             if ! _restricoes_conferir_suporte "$slug" "$esperado"; then
                 if [ "${RESTRICOES_SUPORTE_CAUSA:-}" = remota ]; then
-                    motivo="$RESTRICOES_SUPORTE_MOTIVO. O agente esta ligado SEM a trava (pare com: dgclaw agente parar $slug). Resolve, em ordem: $(_restricoes_receita_remota "$slug" ligado)"
+                    motivo="$RESTRICOES_SUPORTE_MOTIVO. O agente esta ligado SEM a trava (pare com: prumo agente parar $slug). Resolve, em ordem: $(_restricoes_receita_remota "$slug" ligado)"
                 else
-                    motivo="$RESTRICOES_SUPORTE_MOTIVO. O agente esta ligado SEM a trava (pare com: dgclaw agente parar $slug). Resolve: dgclaw agente recriar $slug (se a imagem do servidor tambem estiver velha, antes: dgclaw imagem construir --agora)"
+                    motivo="$RESTRICOES_SUPORTE_MOTIVO. O agente esta ligado SEM a trava (pare com: prumo agente parar $slug). Resolve: prumo agente recriar $slug (se a imagem do servidor tambem estiver velha, antes: prumo imagem construir --agora)"
                 fi
             fi
         fi

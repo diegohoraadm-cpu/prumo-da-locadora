@@ -521,7 +521,7 @@ export async function recusarPorRestricaoComContencao(s: Sessao, mensagem: strin
     recusarPorRestricao(s, mensagem, comoResolver);
     return;
   }
-  const quemReiniciar = `dgclaw agente reiniciar ${s.descritor.slug}`;
+  const quemReiniciar = `prumo agente reiniciar ${s.descritor.slug}`;
   const detalhe = `Recusei a conta incompatível com as restrições, mas não consegui confirmar que o processo do agente (pid ${pid}) parou: ele pode continuar trabalhando com a conta nova.`;
   s.mudar({
     status: "errored",

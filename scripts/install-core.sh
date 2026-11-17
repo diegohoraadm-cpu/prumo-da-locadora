@@ -1,7 +1,7 @@
 #!/bin/bash
 # install-core.sh — Mecanica da instalacao do Prumo da Locadora servidor (a parte nao-conversacional).
 #
-# O wizard /dgclaw:setup conduz a entrevista com o dono e escreve o conteudo rico
+# A entrevista com o dono escreve o conteudo rico
 # (IDENTITY.md, PERSONALITY.md, MEMORY.md). Este script faz o trabalho mecanico em volta:
 #   bootstrap        cria .dgclaw/, copia o plugin (copia estavel), gera config.sh e agent.json
 #   seed-persona     instancia os templates de estado/memoria (powers.json, working-memory, JSONs)
@@ -199,7 +199,7 @@ cmd_bootstrap() {
 
     # config.sh do agente: tudo que os crons e o painel precisam saber.
     cat > "$AL/config.sh" <<EOF
-# Config da camada DG Claw de ${name} (${slug}). Gerado por /dgclaw:setup.
+# Config da camada Prumo da Locadora de ${name} (${slug}). Gerado pelo instalador.
 # Herda tudo do config de base (DGCLAW_*, TELEGRAM_STATE_DIR, BUN_BIN_DIR, IS_SANDBOX).
 source "${base}"
 

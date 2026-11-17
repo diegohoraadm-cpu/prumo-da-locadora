@@ -270,7 +270,7 @@ def observe_only(service, reason, state, state_path) -> str:
         notify_owner(
             f"⚠️ Watchdog Prumo da Locadora: a sessao viva {reason}, mas o auto-recovery esta DESLIGADO "
             f"(DGCLAW_AUTO_RECOVERY=off), entao NAO vou reiniciar sozinho. Reinicie pelo botao "
-            f"Reiniciar do painel (ou rode /dgclaw:doctor --fix)."
+            f"Reiniciar do painel (ou rode sudo prumo agente reparar <slug>)."
         )
         state["warned_off"] = True
         save_state(state_path, state)

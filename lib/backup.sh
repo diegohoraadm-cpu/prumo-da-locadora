@@ -367,7 +367,7 @@ restaurar_main() {
     log_arq="${DGCLAW_ATUALIZAR_LOG:-$DG_LOG/dgclaw-restaurar-$(date +%Y%m%d-%H%M%S).log}"
     resumo_arq="${log_arq%.log}.resumo.txt"
     ( umask 027; mkdir -p "$DG_LOG"
-      printf 'Restaurei o backup %s (feito em %s, versao %s).\n  Backup do estado de antes de restaurar: %s\n  Para desfazer esta restauracao: sudo dgclaw restaurar %s\n  Se o painel (dgclaw-web) ainda mostrar valores antigos, reinicie-o de fora do chat: sudo systemctl restart dgclaw-web\n' \
+      printf 'Restaurei o backup %s (feito em %s, versao %s).\n  Backup do estado de antes de restaurar: %s\n  Para desfazer esta restauracao: sudo prumo restaurar %s\n  Se o painel (dgclaw-web) ainda mostrar valores antigos, reinicie-o de fora do chat: sudo systemctl restart dgclaw-web\n' \
           "$b" "$(_env_de "$b/MANIFESTO.txt" criado_em)" "$versao_backup" "$antes" "$antes" >"$resumo_arq" ) \
         || falha "nao consegui gravar o resumo em $resumo_arq." "confira o espaco e a permissao de $DG_LOG; a restauracao em si ja terminou."
 

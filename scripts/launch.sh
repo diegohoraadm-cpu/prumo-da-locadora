@@ -15,7 +15,7 @@
 #   Os dois caem na MESMA sessao, entao a aba Conversa mostra a thread inteira,
 #   em ordem, sem sincronizar nada (quem le e o _lib/thread_log.py).
 #
-# A config (gerada pelo wizard /dgclaw:setup) deve exportar pelo menos:
+# A config (gerada pelo instalador) deve exportar pelo menos:
 #   DGCLAW_NAME, DGCLAW_SLUG, DGCLAW_WORKSPACE
 # E opcionalmente:
 #   TELEGRAM_STATE_DIR         (liga o canal Telegram; vazio = so o painel)

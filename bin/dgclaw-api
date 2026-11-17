@@ -86,7 +86,7 @@ trap 'rm -f "$TMP"' EXIT
 # O filtro joga o corpo (qualquer JSON, inclusive grande) para dentro do pedido sem passar por argv.
 # shellcheck disable=SC2016 # $id, $m e $r sao variaveis do jq, nao do bash
 FILTRO='if length == 1 then {v: 1, id: $id, metodo: $m, rota: $r, corpo: .[0]} else error("o corpo precisa ser exatamente um valor JSON") end'
-SEM_CAIXA="nao consegui gravar o pedido em $ENTRADA. Peca ao dono para rodar 'sudo dgclaw agente reparar <slug>'."
+SEM_CAIXA="nao consegui gravar o pedido em $ENTRADA. Peca ao dono para rodar 'sudo prumo agente reparar <slug>'."
 : > "$TMP" 2>/dev/null || CODIGO=3 die "$SEM_CAIXA"
 if [ "$TEM_CORPO" -eq 0 ]; then
   jq -nc --arg id "$ID" --arg m "$METODO" --arg r "$ROTA" '{v: 1, id: $id, metodo: $m, rota: $r}' > "$TMP"

@@ -76,4 +76,5 @@ bin/dgclaw	  dgclaw 	logica: a ajuda() e lida por lib/uso-atualizacao.sh:80 (gre
 #
 # --- M4 ---
 #
+lib/uso-atualizacao.sh	usa o comando \"dgclaw $alvo\"	logica: cita o comando como esta escrito na rotina do dono, que o rotulo \"cli\" compara com a ajuda das duas versoes (a ajuda ainda diz dgclaw)
 # --- M5 ---

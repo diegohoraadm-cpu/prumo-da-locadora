@@ -397,7 +397,7 @@ EXTRA_ENV=""
 
 cat > "$UNIT_FILE" <<UNIT
 [Unit]
-Description=DG Claw Painel Robusto: ${SLUG}
+Description=Prumo da Locadora Painel Robusto: ${SLUG}
 After=network.target
 
 [Service]

@@ -77,7 +77,7 @@ fi
 source "$PLUGIN/scripts/_lib/inject.sh"
 if ! is_session_alive "$SLUG"; then
     HORA="$(date '+%H:%M')"
-    MSG="a sessão do agente não estava no ar às ${HORA}, então o batimento não pôde conferir nem avisar nada. O que fazer: ligar o agente (no painel, ou com 'dgclaw agente iniciar ${SLUG}' no servidor) e conferir de novo no Pulso"
+    MSG="a sessão do agente não estava no ar às ${HORA}, então o batimento não pôde conferir nem avisar nada. O que fazer: ligar o agente (no painel, ou com 'prumo agente iniciar ${SLUG}' no servidor) e conferir de novo no Pulso"
     echo "[$(date '+%F %T')] heartbeat: FALHA, ${MSG}" >> "$LOG"
     declare -F pulso >/dev/null && pulso erro "$MSG"
     exit 2

@@ -1085,7 +1085,7 @@ troca o programa inteiro, ele guardou aqui o que havia:
                     instalador nao guardar a mesma copia de novo se nada mudou
 
 Nada disto foi reaplicado sozinho. O Admin levanta o que era personalizacao e, com o seu sim, refaz
-por cima da versao nova: dgclaw personalizacoes levantar
+por cima da versao nova: prumo personalizacoes levantar
 LEIA
 }
 

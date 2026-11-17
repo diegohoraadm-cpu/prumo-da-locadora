@@ -121,7 +121,7 @@ make_post_unit() {
     local label="$1" hhmm="$2"   # label ex: 8h ; hhmm ex: 08:00
     cat > "${UNIT_DIR}/dgclaw-${SLUG}-post-${label}.service" <<EOF
 [Unit]
-Description=DG Claw Instagram post ${label}: ${SLUG}
+Description=Prumo da Locadora Instagram post ${label}: ${SLUG}
 
 [Service]
 Type=oneshot
@@ -133,7 +133,7 @@ ExecStart=/bin/bash ${CRON_DIR}/dgclaw-post.sh ${ABS_CONFIG} ${label}
 EOF
     cat > "${UNIT_DIR}/dgclaw-${SLUG}-post-${label}.timer" <<EOF
 [Unit]
-Description=DG Claw Instagram post ${label} (timer): ${SLUG}
+Description=Prumo da Locadora Instagram post ${label} (timer): ${SLUG}
 
 [Timer]
 OnCalendar=*-*-* ${hhmm}:00
@@ -162,7 +162,7 @@ COMMENT_ONCALENDAR+=("*-*-* *:05:00")
 # ---------- timer de comentarios (multiplos OnCalendar) ----------
 cat > "${UNIT_DIR}/dgclaw-${SLUG}-comments.service" <<EOF
 [Unit]
-Description=DG Claw Instagram comentarios: ${SLUG}
+Description=Prumo da Locadora Instagram comentarios: ${SLUG}
 
 [Service]
 Type=oneshot

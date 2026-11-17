@@ -12,7 +12,7 @@
 # Raiz falsa (testes): DGCLAW_RAIZ=<pasta>, igual ao resto do Prumo da Locadora.
 set -euo pipefail
 
-PROG="dgclaw emergencia"
+PROG="prumo emergencia"
 SELF="$(readlink -f "${BASH_SOURCE[0]}")"
 RAIZ="${DGCLAW_RAIZ:-}"
 RAIZ="${RAIZ%/}"
@@ -249,11 +249,11 @@ prechecagens() {
     PROBLEMAS+=("não está rodando como root. Rode com sudo.")
   fi
   if [[ "$SELF" =~ [[:space:]] || ! "$SELF" =~ ^[A-Za-z0-9._/@:+-]+$ ]]; then
-    PROBLEMAS+=("o caminho do script ('$SELF') tem caracteres que o agendamento do religar não aceita. Mova o DG Claw para um caminho simples.")
+    PROBLEMAS+=("o caminho do script ('$SELF') tem caracteres que o agendamento do religar não aceita. Mova o Prumo da Locadora para um caminho simples.")
   fi
 
   if ! command -v nft >/dev/null 2>&1; then
-    PROBLEMAS+=("o nft não está instalado. Sem ele não há como fechar a rede com segurança: instale (apt install nftables) e rode o instalador do DG Claw de novo.")
+    PROBLEMAS+=("o nft não está instalado. Sem ele não há como fechar a rede com segurança: instale (apt install nftables) e rode o instalador do Prumo da Locadora de novo.")
   fi
 
   local ts_ok=0 ts_saida="tailscale não instalado" i estado if_up=()

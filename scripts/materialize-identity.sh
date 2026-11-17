@@ -41,7 +41,7 @@ for a in "$@"; do
     esac
 done
 
-MARKER="<!-- GERADO PELO DG CLAW a partir de LAWS/PERSONALITY/IDENTITY/ETHICS/CREATOR. Nao edite a mao: edite os arquivos-fonte e rode /dgclaw:doctor. -->"
+MARKER="<!-- GERADO PELO DG CLAW a partir de LAWS/PERSONALITY/IDENTITY/ETHICS/CREATOR. Nao edite a mao: edite os arquivos-fonte e rode o doctor do agente com --fix. -->"
 AGENT="$WS/AGENT.md"
 BAK="$WS/AGENT.md.bak"
 

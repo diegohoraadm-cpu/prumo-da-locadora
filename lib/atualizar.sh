@@ -227,7 +227,7 @@ atualizar_rodar_install() {
     info "rodando: bash $ATU_REPO/install.sh ${args[*]}  (sem pergunta nenhuma; a senha atual do painel continua valendo)"
     # O link de primeiro acesso, se o instalador gerar um, e credencial: nao vai para o log.
     set +e
-    bash "$ATU_REPO/install.sh" "${args[@]}" </dev/null 2>&1 | sed 's|primeiro-acesso#[A-Za-z0-9_-]*|primeiro-acesso#(oculto; gere outro com: sudo dgclaw primeiro-acesso)|'
+    bash "$ATU_REPO/install.sh" "${args[@]}" </dev/null 2>&1 | sed 's|primeiro-acesso#[A-Za-z0-9_-]*|primeiro-acesso#(oculto; gere outro com: sudo prumo primeiro-acesso)|'
     rc="${PIPESTATUS[0]}"
     set -e
     [ "$rc" -eq 0 ] || falha "o instalador ($ATU_REPO/install.sh) terminou com codigo $rc." \
@@ -287,12 +287,12 @@ atualizar_checar_vida() {
     "$DGCLAW_BIN_REAL" status
     local rc=$?
     set -e
-    if [ "$rc" -ne 0 ]; then _atu_problema "o dgclaw status acusou servico essencial fora do ar (veja as linhas FALHOU acima)"; fi
+    if [ "$rc" -ne 0 ]; then _atu_problema "o prumo status acusou servico essencial fora do ar (veja as linhas FALHOU acima)"; fi
     while IFS=$'\t' read -r slug runner; do
         [ -n "$slug" ] || continue
         estado="$(estado_container "$slug")"
         if [ "$estado" = stopping ]; then
-            _atu_problema "agente $slug: o container esta preso em 'stopping'. Refaca com: dgclaw agente recriar $slug --forcar"
+            _atu_problema "agente $slug: o container esta preso em 'stopping'. Refaca com: prumo agente recriar $slug --forcar"
             ATU_AGENTES_FALHOS+=" $slug"
             continue
         fi
@@ -305,7 +305,7 @@ atualizar_checar_vida() {
         saude="$(saude_runner "${runner##*:}" "$estado")"
         if [ "$saude" = ok ]; then ok "agente $slug responde"
         else
-            _atu_problema "agente $slug: o container esta de pe, mas o runner nao responde. Tente: dgclaw agente reparar $slug"
+            _atu_problema "agente $slug: o container esta de pe, mas o runner nao responde. Tente: prumo agente reparar $slug"
             ATU_AGENTES_FALHOS+=" $slug"
         fi
     done < <(agentes_ler | jq -r '.agentes[] | select(.tipo == "agente") | [.slug, .runner] | @tsv')

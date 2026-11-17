@@ -158,7 +158,7 @@ Painel
       No fim mostra "Usuário do painel: X" e o endereço do painel.
   dgclaw usuario                         mostra o usuario e o endereco do painel (nunca a senha)
       Exemplo:  sudo prumo usuario
-  dgclaw instalacao-remota               entrega pronto um DG Claw instalado na VPS de outra pessoa
+  dgclaw instalacao-remota               entrega pronto um Prumo da Locadora instalado na VPS de outra pessoa
       Troca a senha do painel por uma forte, reinicia o painel e mostra UMA vez a mensagem pronta
       (endereco, usuario e senha) para mandar ao dono. Pode rodar de novo: gera outra senha.
       Exemplo:  sudo prumo instalacao-remota
@@ -1323,7 +1323,7 @@ agente_criar() {
     ok "faixa de uid $C_UID_BASE (numero $C_N); portas: runner $C_PORTA_RUNNER, painel $C_PORTA_PAINEL"
 
     etapa "Montando a casa do agente"
-    exigir_casa_sem_link "$C_CASA" "$C_HOME" "$C_SLUG" "dgclaw agente criar $C_SLUG ..."
+    exigir_casa_sem_link "$C_CASA" "$C_HOME" "$C_SLUG" "prumo agente criar $C_SLUG ..."
     montar_casa
     etapa "Escrevendo a identidade e a configuracao"
     montar_identidade
@@ -1510,7 +1510,7 @@ regravar_config_sh() {
     [ -n "$v" ] || v="$(printf '%s' "$obj" | jq -r '.modelo // empty')"
     C_MODELO="$v"
 
-    exigir_casa_sem_link "$C_CASA" "$C_HOME" "$slug" "dgclaw agente reparar $slug"
+    exigir_casa_sem_link "$C_CASA" "$C_HOME" "$slug" "prumo agente reparar $slug"
 
     if [ "${3:-}" = identidade ]; then
         regravar_identidade_md
@@ -2208,11 +2208,11 @@ agente_cofre() {
     local slug="${1:-}" acao="${2:-}"
     ( exigir_slug "$slug" cofre ) || exit 2
     [ -n "$acao" ] || falha_uso "faltou dizer o que fazer com o cofre do agente $slug." \
-        "use: guardar, revogar, listar ou aplicar. Exemplo: dgclaw agente cofre $slug listar"
+        "use: guardar, revogar, listar ou aplicar. Exemplo: prumo agente cofre $slug listar"
     case "$acao" in
         guardar|revogar|listar|aplicar) ;;
         *) falha_uso "'$acao' nao e uma acao do cofre." \
-            "use: guardar, revogar, listar ou aplicar. Exemplo: dgclaw agente cofre $slug listar" ;;
+            "use: guardar, revogar, listar ou aplicar. Exemplo: prumo agente cofre $slug listar" ;;
     esac
     shift 2
     exigir_ferramentas node
@@ -2240,9 +2240,9 @@ chave_api() {
     case "$acao" in
         criar|listar|revogar) ;;
         '') falha_uso "faltou dizer o que fazer com as chaves de API." \
-            "use: criar, listar ou revogar. Exemplo: dgclaw chave-api criar --nome \"suporte\" --escopo diagnostico" ;;
+            "use: criar, listar ou revogar. Exemplo: prumo chave-api criar --nome \"suporte\" --escopo diagnostico" ;;
         *) falha_uso "'$acao' nao e uma acao das chaves de API." \
-            "use: criar, listar ou revogar. Exemplo: dgclaw chave-api listar" ;;
+            "use: criar, listar ou revogar. Exemplo: prumo chave-api listar" ;;
     esac
     exigir_ferramentas node
     local chave_js="$DG_APP/web/bin/chave-api.js"
@@ -2305,7 +2305,7 @@ tela_sem_senha() {
 
 # tela_texto_sem_senha <slug>: a frase unica usada pelo reparar/recriar e pelo resumo do atualizar.
 tela_texto_sem_senha() {
-    local cmd="printf '%s\\n' \"Senha8ch\" | dgclaw agente tela-senha $1"
+    local cmd="printf '%s\\n' \"Senha8ch\" | prumo agente tela-senha $1"
     printf 'a senha da Tela do agente %s ainda nao foi definida, e sem ela o navegador do agente nao abre pelo painel. Defina na aba Tela do painel do agente ou com: %s' "$1" "$cmd"
 }
 
@@ -2343,7 +2343,7 @@ agente_tela() {
 
     if ! tela_no_container "$slug"; then
         t_falta "este agente nao tem a Tela na imagem (as unidades dgclaw-tela* nao estao ligadas)" \
-            "reconstrua a imagem com navegador (dgclaw imagem construir --agora) e recrie o agente: dgclaw agente recriar $slug --forcar"
+            "reconstrua a imagem com navegador (prumo imagem construir --agora) e recrie o agente: prumo agente recriar $slug --forcar"
         printf '\nA Tela de %s nao esta pronta: %s item(ns) a resolver.\n' "$slug" "$faltas" >&2
         return 1
     fi
@@ -2359,7 +2359,7 @@ agente_tela() {
         t_ok "a senha da Tela esta definida"
     else
         t_falta "a senha da Tela ainda nao foi definida (sem ela o VNC nao sobe)" \
-            "defina na aba Tela do painel ou com: printf '%s\\n' \"Senha8ch\" | dgclaw agente tela-senha $slug"
+            "defina na aba Tela do painel ou com: printf '%s\\n' \"Senha8ch\" | prumo agente tela-senha $slug"
     fi
 
     if t_unidade dgclaw-tela.service; then t_ok "a tela virtual (Xvfb) esta de pe"
@@ -2924,7 +2924,7 @@ main() {
     fi
 
     if [ -z "$R" ] && [ "$(id -u)" -ne 0 ]; then
-        falha "o dgclaw precisa rodar como root (voce e o uid $(id -u))." "rode com sudo: sudo dgclaw ${args[*]}"
+        falha "o dgclaw precisa rodar como root (voce e o uid $(id -u))." "rode com sudo: sudo prumo ${args[*]}"
     fi
 
     local cmd="${args[0]}"

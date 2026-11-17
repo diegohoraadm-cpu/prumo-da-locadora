@@ -219,7 +219,7 @@ fi
 
 # ─────────────────────────────────────────────────────────────────────────────
 TITULO "4. Arquivos do agente"
-[ -f "$WS/.dgclaw/agent.json" ] && P "agent.json presente" || B "agent.json ausente (a instalacao nao chegou ao fim) -> /dgclaw:setup"
+[ -f "$WS/.dgclaw/agent.json" ] && P "agent.json presente" || B "agent.json ausente (a instalacao nao chegou ao fim)"
 [ -f "$WS/.dgclaw/config.sh" ]  && P "config.sh presente" || B "config.sh ausente"
 [ -f "$WS/.dgclaw/powers.json" ] && P "powers.json presente" || W "powers.json ausente (o catalogo de poderes some do painel)"
 [ -d "$WS/.dgclaw/plugin/scripts" ] && P "copia estavel do plugin presente" \
@@ -532,7 +532,7 @@ if systemctl is-active --quiet "dgclaw-panel-${SLUG}.service" 2>/dev/null; then
         | tr ' ' '\n' | grep '^DGCLAW_PANEL_PORT=' | cut -d= -f2)
     P "painel no ar (porta ${PPORT:-8300})"
 else
-    W "painel fora do ar -> /dgclaw:panel"
+    W "painel fora do ar -> rode: sudo prumo agente reparar $SLUG"
 fi
 if systemctl is-active --quiet "dgclaw-${SLUG}-panel.service" 2>/dev/null; then
     W "o painel simples antigo (8200) ainda esta ligado; ele e substituido pelo painel completo"
@@ -579,7 +579,7 @@ for p in ligados:
         if u in r.stdout:
             print(f"  [ ok ]  poder {p['id']}: rotina {u} instalada")
         else:
-            print(f"  [aviso] poder {p['id']} esta ligado mas a rotina {u} nao existe -> /dgclaw:powers install {p['id']}")
+            print(f"  [aviso] poder {p['id']} esta ligado mas a rotina {u} nao existe -> peca ao agente para instalar o poder {p['id']}")
 PY
 else
     I "sem powers.json, entao nao ha poderes pra checar"
@@ -647,7 +647,7 @@ fi
 # padrao (nem a lista de processos mostra) e so o codigo HTTP volta pra tela.
 MESA_URL="${DGCLAW_MESA_URL:-}"; MESA_KEY="${DGCLAW_MESA_KEY:-}"
 if [ -z "$MESA_URL" ] && [ -z "$MESA_KEY" ]; then
-    I "integracao antiga com o DG Telegram: desligada (sem DGCLAW_MESA_URL no config). E opcional e a mesa de tarefas local nao depende dela"
+    I "integracao antiga da mesa de tarefas (app externo): desligada (sem DGCLAW_MESA_URL no config). E opcional e a mesa de tarefas local nao depende dela"
 elif [ -z "$MESA_URL" ] || [ -z "$MESA_KEY" ]; then
     if [ -z "$MESA_URL" ]; then MESA_FALTA="DGCLAW_MESA_URL"; else MESA_FALTA="DGCLAW_MESA_KEY"; fi
     B "mesa de tarefas pela metade: falta $MESA_FALTA no config.sh, e sem as duas o agente nao usa a mesa -> docs/MESA-DE-TAREFAS.md"

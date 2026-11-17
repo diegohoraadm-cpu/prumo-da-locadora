@@ -102,7 +102,7 @@ def main():
         if not p:
             print(f"poder desconhecido: {pid}", file=sys.stderr); sys.exit(1)
         p["enabled"] = False
-        p["locked_reason"] = "Desativado pelo dono. Reative com /dgclaw:powers install " + pid
+        p["locked_reason"] = "Desativado pelo dono. Reative pedindo ao agente para instalar o poder " + pid
         save(d)
         print(json.dumps(p, ensure_ascii=False)); return
 

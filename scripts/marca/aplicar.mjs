@@ -300,7 +300,7 @@ export function analisar(rel, src, ctx) {
 
   const cmd = regras.comando;
   const subs = cmd.subcomandos.map(esc).join('|');
-  const rxCmd = new RegExp(`(?<![\\w/.\\-=$])${esc(cmd.de)}(?= (?:${subs})(?![\\w-])| --[a-z])`, 'g');
+  const rxCmd = new RegExp(`(?<![\\w/.\\-=$])${esc(cmd.de)}(?= (?:${subs})(?![\\w-])| --[a-z]| \\.\\.\\.| <[a-z])`, 'g');
   const ficaEm = (cmd.fica_em || []).some((p) => rel === p || rel.startsWith(p.endsWith('/') ? p : `${p}/`));
   if (!ficaEm) for (const m of src.matchAll(rxCmd)) cands.push({ pos: m.index, len: m[0].length, regra: 'comando', de: m[0], para: cmd.para });
 

@@ -8,17 +8,17 @@ Gerado sem escrever nada. Ocorrencia = um achado da regra; "troca" so acontece e
 | --- | ---: | ---: | ---: | ---: |
 | M1 | 75 | 202 | 75 | 16 |
 | M3 | 41 | 120 | 8 | 52 |
-| M4 | 159 | 783 | 86 | 56 |
-| M5 | 91 | 661 | 165 | 21 |
-| sem-lote | 0 | 0 | 33 | 0 |
-| **total** | 366 | 1766 | 367 | 145 |
+| M4 | 159 | 784 | 86 | 56 |
+| M5 | 91 | 666 | 165 | 21 |
+| sem-lote | 0 | 0 | 35 | 0 |
+| **total** | 366 | 1772 | 369 | 145 |
 
 Por regra (todos os lotes):
 
 | Regra | Trocaria | Excecao | Manual |
 | --- | ---: | ---: | ---: |
 | barra | 21 | 7 | 71 |
-| comando | 1014 | 173 | 12 |
+| comando | 1020 | 175 | 12 |
 | frase | 731 | 94 | 57 |
 | sem-regra | 0 | 93 | 5 |
 
@@ -41,7 +41,7 @@ Arquivos sem lote no plano (o Teia atribui a um lote):
 | --- | ---: | ---: | ---: |
 | NOTICE.md | 0 | 1 | 0 |
 | aceite/juncao-e-marca.mjs | 0 | 18 | 0 |
-| aceite/juncao-excecoes.json | 0 | 14 | 0 |
+| aceite/juncao-excecoes.json | 0 | 16 | 0 |
 
 ## 2. Ocorrencias de `/dgclaw:` (decisao de cada uma)
 
@@ -158,7 +158,7 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 | Arquivo | Linhas | Trocaria | Manual |
 | --- | ---: | ---: | ---: |
 | aceite/juncao-e-marca.mjs | 15 | 0 | 0 |
-| aceite/juncao-excecoes.json | 13 | 0 | 0 |
+| aceite/juncao-excecoes.json | 15 | 0 | 0 |
 | bin/test/dgclaw-agente.test.sh | 1 | 0 | 1 |
 | bin/test/dgclaw-sentinela.test.sh | 5 | 5 | 0 |
 | panel/test-agents-seletor.mjs | 2 | 2 | 0 |
@@ -198,7 +198,7 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 | tests/cli/usuario.sh | 1 | 2 | 0 |
 | tests/cli/versao.sh | 1 | 3 | 0 |
 | tests/docs-em-dia/checar.mjs | 2 | 2 | 0 |
-| tests/docs-em-dia/rodar.sh | 1 | 1 | 0 |
+| tests/docs-em-dia/rodar.sh | 2 | 2 | 0 |
 | tests/emergencia/rodar.sh | 2 | 2 | 0 |
 | tests/instalador/ffmpeg.sh | 1 | 1 | 0 |
 | tests/instalador/fim.sh | 1 | 1 | 0 |
@@ -217,7 +217,7 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 | web/test/grava-anexo.test.js | 1 | 1 | 0 |
 | web/test/socket-admin.test.js | 1 | 1 | 0 |
 
-Total: 153 linhas em 59 arquivos de teste.
+Total: 156 linhas em 59 arquivos de teste.
 
 ## 4. O que ficou manual, por lote (nao trocado; inclui as barras)
 

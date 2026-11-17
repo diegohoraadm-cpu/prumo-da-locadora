@@ -12,7 +12,7 @@
      qualquer outro vira a frase genérica (texto vindo da barra de endereço
      nunca é mostrado como está). */
   const ERRADO = 'Usuário ou senha incorretos. Confira e tente de novo.';
-  const LIMITE = 'Muitas tentativas seguidas. Espere alguns minutos e tente de novo.';
+  const LIMITE = 'Muitas tentativas seguidas. Espere até 15 minutos e tente de novo.';
   const FRASES = {
     credenciais: ERRADO,
     invalido: ERRADO,
@@ -27,12 +27,26 @@
     vencida: 'A senha temporária venceu. Peça ao dono do ' + (typeof dsMarca !== 'undefined' ? dsMarca.nome : 'Prumo da Locadora') + ' um convite novo.',
     origem: 'Não deu para confirmar de onde veio o pedido. Recarregue a página e tente de novo.',
   };
+  /* O "@" é conferido aqui, no navegador, no que a própria pessoa digitou (o servidor volta o usuário na barra
+     de endereço): o servidor nunca diz se um e-mail existe. */
+  const DICA_ARROBA = ' O dono entra com o nome de usuário (sem @); e-mail é só para convidado.';
   if (q.has('erro')) {
     const cod = (q.get('erro') || '').toLowerCase();
     const caixa = document.getElementById('erro');
-    caixa.textContent = FRASES[cod] || 'Não foi possível entrar. Confira os dados e tente de novo.';
+    const digitado = q.get('usuario') || '';
+    caixa.textContent = (FRASES[cod] || 'Não foi possível entrar. Confira os dados e tente de novo.')
+      + (FRASES[cod] === ERRADO && digitado.indexOf('@') >= 0 ? DICA_ARROBA : '');
     caixa.hidden = false;
   }
+
+  /* "Não consigo entrar": abre e fecha o painel de ajuda na própria página. */
+  const naoConsigo = document.getElementById('naoConsigo');
+  const ajuda = document.getElementById('ajudaEntrar');
+  naoConsigo.addEventListener('click', () => {
+    const abrir = ajuda.hidden;
+    ajuda.hidden = !abrir;
+    naoConsigo.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+  });
   /* O link do convite traz ?usuario=<e-mail>: o campo já vem preenchido, e a pessoa só digita a senha temporária. */
   const u = q.get('usuario');
   if (u && u.length < 80) {

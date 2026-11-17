@@ -325,7 +325,7 @@ function rodarTeste(cmd, rotulo, tetoMs) {
   criterio(r.status === 0, `${rotulo} terminou com código ${r.status}${motivo}`, saida.split('\n').filter((l) => /FALH|erro|Error/i.test(l)).slice(-20));
   const chaves = new Map();
   for (const l of saida.split('\n')) {
-    const m = /^R1 ([a-z_]+)=(\S*)$/.exec(l.trim());
+    const m = /^R1 ([a-z0-9_]+)=(\S*)$/.exec(l.trim());
     if (m) chaves.set(m[1], m[2]);
   }
   return chaves;

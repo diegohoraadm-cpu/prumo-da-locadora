@@ -134,6 +134,20 @@ roda
 igual "segunda rodada: sai 0" 0 "$RC"
 igual "segunda rodada: sem novo recado para o mesmo commit" 1 "$(recados)"
 
+echo "versao propria: instalado 1.0.0, publicado 1.0.5, sem \"DG Claw\" no recado"
+raiz_nova
+sed -i 's/^DGCLAW_VERSAO=.*/DGCLAW_VERSAO=1.0.0/' "$RAIZ/etc/dgclaw/dgclaw.env"
+define "{compare: {status: 200, body: $(comparacao ahead 1 "$NOVO|Versao 1.0.5")}, raw: {\"CHANGELOG.md\": {body: $(printf '%s' "$CL_NOVO" | jq -R -s .)}, \"VERSION\": {body: \"1.0.5\n\"}}}"
+roda
+igual "1.0.0 -> 1.0.5: sai 0" 0 "$RC"
+igual "1.0.0 -> 1.0.5: publicado 1.0.5" "1.0.5" "$(campo .publicado.versao)"
+RECADO="$(jq -r '.corpo | fromjson | .text' "$ADMINLOG")"
+tem "1.0.0 -> 1.0.5: o recado cita a instalada 1.0.0" "a instalada é 1.0.0" "$RECADO"
+tem "1.0.0 -> 1.0.5: o recado cita a publicada 1.0.5" "a publicada é 1.0.5" "$RECADO"
+tem "1.0.0 -> 1.0.5: o recado fala do Prumo da Locadora" "versão nova do Prumo da Locadora" "$RECADO"
+nao_tem "1.0.0 -> 1.0.5: o recado nao diz DG Claw" "DG Claw" "$RECADO"
+tem "1.0.0 -> 1.0.5: a tela mostra 1.0.0 -> 1.0.5" "1.0.0 -> 1.0.5" "$OUT"
+
 echo "a frente, sem item novo no CHANGELOG (usa os commits)"
 raiz_nova
 define "{compare: {status: 200, body: $(comparacao ahead 3 "$(sha 3)|Primeira mudanca" "$(sha 4)|Merge pull request #7 from x/y" "$NOVO|Ultima mudanca")},

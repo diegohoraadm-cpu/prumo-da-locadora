@@ -15,18 +15,18 @@ igual "runner/package-lock.json (raiz) esta na versao do VERSION" "$V" "$(jq -r 
 igual "runner/package-lock.json (pacote da raiz) esta na versao do VERSION" "$V" "$(jq -r '.packages[""].version' "$REPO/runner/package-lock.json")"
 
 echo "versao registrada"
-printf 'DGCLAW_DOMINIO=teste.exemplo.org\nDGCLAW_VERSAO=1.0.0\nDGCLAW_COMMIT=abc123def4567890abc123def4567890abc12345\n' >"$ETC/dgclaw.env"
-igual "dgclaw versao" "1.0.0 (commit abc123def456)" "$(dgclaw versao 2>&1)"
-igual "dgclaw --version" "1.0.0 (commit abc123def456)" "$(dgclaw --version 2>&1)"
-igual "a primeira linha do status e a versao" "DG Claw 1.0.0 (commit abc123def456)" "$(dgclaw status 2>&1 | head -n 1)"
+printf 'DGCLAW_DOMINIO=teste.exemplo.org\nDGCLAW_VERSAO=1.0.5\nDGCLAW_COMMIT=abc123def4567890abc123def4567890abc12345\n' >"$ETC/dgclaw.env"
+igual "dgclaw versao" "1.0.5 (commit abc123def456)" "$(dgclaw versao 2>&1)"
+igual "dgclaw --version" "1.0.5 (commit abc123def456)" "$(dgclaw --version 2>&1)"
+igual "a primeira linha do status e a versao" "Prumo da Locadora 1.0.5 (commit abc123def456)" "$(dgclaw status 2>&1 | head -n 1)"
 
 echo "so a versao, sem commit (instalou de um zip)"
-printf 'DGCLAW_VERSAO=1.0.0\n' >"$ETC/dgclaw.env"
-igual "dgclaw versao sem commit" "1.0.0" "$(dgclaw versao 2>&1)"
+printf 'DGCLAW_VERSAO=1.0.5\n' >"$ETC/dgclaw.env"
+igual "dgclaw versao sem commit" "1.0.5" "$(dgclaw versao 2>&1)"
 
 echo "versao nao registrada"
 printf 'DGCLAW_DOMINIO=teste.exemplo.org\n' >"$ETC/dgclaw.env"
-igual "a primeira linha do status avisa" "DG Claw: versao nao registrada: rode sudo dgclaw atualizar ou ./install.sh de novo" "$(dgclaw status 2>&1 | head -n 1)"
+igual "a primeira linha do status avisa" "Prumo da Locadora: versao nao registrada: rode sudo dgclaw atualizar ou ./install.sh de novo" "$(dgclaw status 2>&1 | head -n 1)"
 dgclaw versao >"$TMP/o.txt" 2>&1; rc=$?
 igual "dgclaw versao falha (1)" "1" "$rc"
 afirma "e diz o que fazer" grep -q 'sudo dgclaw atualizar ou ./install.sh' "$TMP/o.txt"

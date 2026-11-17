@@ -1,6 +1,6 @@
-# Aviso de versão nova do DG Claw
+# Aviso de versão nova do Prumo da Locadora
 
-Quando o repositório oficial ganha uma versão nova (um PR mergeado na `main`), o DG Claw instalado
+Quando o repositório oficial ganha uma versão nova (um PR mergeado na `main`), o Prumo da Locadora instalado
 percebe sozinho e avisa o dono: uma faixa discreta no painel ("Nova versão disponível") com o resumo
 do que mudou, e um recado ao Admin, que conta ao dono no chat e pergunta se ele quer instalar.
 
@@ -49,9 +49,9 @@ recado ao Admin** (veja abaixo): o resumo existe só no painel.
 
 ## O que o dono vê
 
-- **A faixa no painel**, no alto de todas as telas, numa linha: "Nova versão do DG Claw disponível
+- **A faixa no painel**, no alto de todas as telas, numa linha: "Nova versão do Prumo da Locadora disponível
   (X → Y)". "Ver o que mudou" abre a lista, "Instalar" leva ao chat do Admin com o pedido "Quero instalar a
-  atualização do DG Claw" já escrito no campo (ele só envia) e "Agora não" esconde o aviso até sair uma
+  atualização do Prumo da Locadora" já escrito no campo (ele só envia) e "Agora não" esconde o aviso até sair uma
   versão mais nova. Rotas em `web/docs/ATUALIZACAO.md`.
 - **O recado ao Admin**, uma vez por versão publicada e com pelo menos 20 horas entre dois recados. O Admin
   roda com permissão total, então o recado tem **só texto fixo e dados já validados** (versão instalada,

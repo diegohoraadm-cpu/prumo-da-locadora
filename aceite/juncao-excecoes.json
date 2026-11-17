@@ -29,6 +29,11 @@
       "arquivo": "web/test/marca.test.js",
       "linha": "assert.equal(lg.texto, '<meta name=\"marca-nome\" content=\"DG Claw\"><p>Seus agentes, no seu servidor.</p>');",
       "motivo": "teste da marca de fabrica espera o slogan nosso (plano F1, J1)"
+    },
+    {
+      "arquivo": "tests/cli/rodar.sh",
+      "linha": "for t in \"$AQUI\"/versao.sh \"$AQUI\"/backup.sh \"$AQUI\"/criar.sh \"$AQUI\"/validacao.sh \"$AQUI\"/gestao.sh \"$AQUI\"/cofre.sh \"$AQUI\"/chave-api.sh \"$AQUI\"/tela.sh \"$AQUI\"/tela-diagnostico.sh \"$AQUI\"/inotify.sh \"$AQUI\"/dominio.sh \"$AQUI\"/proxy.sh \"$AQUI\"/api.sh \"$AQUI\"/recriar.sh \"$AQUI\"/atualizar.sh \"$AQUI\"/aviso-atualizacao.sh \"$AQUI\"/personalizacoes.sh \"$AQUI\"/instalacao-remota.sh \"$AQUI\"/restricoes.sh \"$AQUI\"/restricoes-suporte.sh \"$AQUI\"/restricoes-consulta.sh \"$AQUI\"/restricoes-conta.sh \"$AQUI\"/restricoes-ligar.sh \"$AQUI\"/restricoes-gancho.sh \"$AQUI\"/restricoes-rotinas.sh \"$AQUI\"/rotinas-seguras.sh \"$AQUI\"/suporte.sh \"$AQUI\"/grupo-diario.sh \"$AQUI\"/colaborador.sh; do",
+      "motivo": "o lote C2 (3e3d355) acrescentou \"$AQUI\"/usuario.sh no fim desta linha para a suite rodar o teste novo do comando dgclaw usuario; todos os arquivos que o original lista nela continuam, na mesma ordem, so ha um a mais no fim"
     }
   ],
   "nossas_ausentes": [
@@ -76,6 +81,21 @@
       "arquivo": "web/public/primeiro-acesso.html",
       "linha": "<div class=\"marca\"><span class=\"emoji\" aria-hidden=\"true\">⚙️</span><h1>Primeiro acesso</h1></div>",
       "motivo": "o #104 troca o cabecalho por logo + {{MARCA_NOME}} (de fabrica, Prumo da Locadora)"
+    },
+    {
+      "arquivo": "bin/dgclaw-sentinela",
+      "linha": "#   parado     o container nao esta de pe                      (sem reparo: pode ter sido desligado de proposito)",
+      "motivo": "o lote C3 (30a3cca) reescreveu este comentario do cabecalho em duas linhas: agora diz que so o container em \"created\" ganha um agente iniciar (marca de 6 h) e que \"exited\" segue sem reparo; o significado antigo (nao desligar nada de proposito) continua na segunda linha"
+    },
+    {
+      "arquivo": "bin/dgclaw-sentinela",
+      "linha": "parado) echo \"O agente $NOME está desligado. Se não foi você, peça ao Admin no painel: \\\"ligue o agente $NOME de novo\\\".\" ;;",
+      "motivo": "o lote C3 (30a3cca) acrescentou ao fim da frase do aviso de parado o comando do servidor \"sudo prumo agente iniciar $SLUG\"; o resto da frase, ate o pedido ao Admin, e igual; a linha nova esta no resultado"
+    },
+    {
+      "arquivo": "bin/test/dgclaw-sentinela.test.sh",
+      "linha": "[ -e \"$T/conserta\" ] && { printf '{\"ok\":true,\"agente\":{\"status\":\"idle\",\"ptyVivo\":true},\"sessionId\":\"s1\",\"ultimaSaidaEm\":null}' >\"$SAUDE\"; touch \"$T/bun-vivo\"; }",
+      "motivo": "o lote C3 (30a3cca) mudou a linha \"conserta\" do dgclaw falso do teste para tambem gravar \"running\" no estado do container, senao o teste do created que sobe nao enxerga a subida; o que ela ja fazia (saude e bun vivo) continua na linha nova"
     }
   ],
   "emergencia_novas": []

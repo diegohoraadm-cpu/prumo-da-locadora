@@ -9,12 +9,13 @@
 // Uso, da raiz do repositório e sempre pela caixa de memória:
 //   /home/prumo/AgentePrumo/bin/caixa-testes.sh node aceite/juncao-e-marca.mjs --bloco F1
 //   /home/prumo/AgentePrumo/bin/caixa-testes.sh node aceite/juncao-e-marca.mjs --bloco R1
-//   ... --bloco tudo            (F1 e R1 em sequência)
+//   /home/prumo/AgentePrumo/bin/caixa-testes.sh node aceite/juncao-e-marca.mjs --bloco F2
+//   ... --bloco tudo            (F1, F2 e R1 em sequência)
 // Opções:
 //   --commit <rev>   confere o conteúdo de um commit em vez da árvore de trabalho (útil ao QA)
 //   --mostrar <n>    quantos exemplos listar por critério que falhou (padrão 15)
 // Saída: uma linha por critério, "OK" ou "FALHA", com o número medido. Código 0 = tudo OK;
-// 1 = algum critério falhou; 2 = uso errado ou bloco ainda não escrito (F2, F3, F4 vêm depois).
+// 1 = algum critério falhou; 2 = uso errado ou bloco ainda não escrito (F3 e F4 vêm depois).
 //
 // Exceções justificadas: aceite/juncao-excecoes.json (o dev cria quando precisar), no formato
 //   { "original_ausentes":  [ { "arquivo": "x", "linha": "<linha exata, sem espaços nas pontas>" | "*", "motivo": "..." } ],
@@ -55,6 +56,7 @@
 // created fica created e não entra na conta de "de fora"; com o C4, ele é ligado pelo install.sh novo ANTES
 // do recriar e fica de fora como os outros.
 import { execFileSync, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -90,18 +92,19 @@ function opcao(nome, padrao) { const i = args.indexOf(nome); return i >= 0 && ar
 const BLOCO = opcao('--bloco', '');
 const COMMIT = opcao('--commit', '');
 const MOSTRAR = Number(opcao('--mostrar', '15')) || 15;
-const BLOCOS_VALIDOS = ['F1', 'R1', 'tudo'];
+const BLOCOS_VALIDOS = ['F1', 'F2', 'R1', 'tudo'];
 if (!BLOCOS_VALIDOS.includes(BLOCO)) {
-  if (['F2', 'F3', 'F4'].includes(BLOCO)) {
+  if (['F3', 'F4'].includes(BLOCO)) {
     console.error(`O bloco ${BLOCO} ainda não foi escrito: o Teia escreve antes do lote correspondente.`);
   } else {
-    console.error('Uso: node aceite/juncao-e-marca.mjs --bloco F1|R1|tudo [--commit <rev>] [--mostrar <n>]');
+    console.error('Uso: node aceite/juncao-e-marca.mjs --bloco F1|F2|R1|tudo [--commit <rev>] [--mostrar <n>]');
   }
   process.exit(2);
 }
 
 const REPO = execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
 const ALVO = COMMIT || 'HEAD';
+const sha256 = (t) => createHash('sha256').update(t).digest('hex');
 const git = (a, opts = {}) => execFileSync('git', ['-C', REPO, ...a], { encoding: 'utf8', maxBuffer: 512 * 1024 * 1024, ...opts });
 const gitOk = (a) => spawnSync('git', ['-C', REPO, ...a], { encoding: 'utf8' }).status === 0;
 
@@ -321,6 +324,61 @@ function blocoF1() {
 }
 
 // ================================================================================================
+/** CHANGELOG em partes: o cabeçalho (antes do 1º "## ") e uma parte por "## ", do título até o título seguinte. */
+function secoesChangelog(texto) {
+  const partes = new Map();
+  let titulo = '(cabeçalho)';
+  let corpo = [];
+  for (const l of texto.split('\n')) {
+    if (l.startsWith('## ')) { partes.set(titulo, corpo.join('\n')); titulo = l.trim(); corpo = []; }
+    corpo.push(l);
+  }
+  partes.set(titulo, corpo.join('\n'));
+  return partes;
+}
+
+function blocoF2() {
+  console.log('\n== F2: versão própria 1.0.5 ==');
+  criterio((ler('VERSION') || '').trim() === '1.0.5', `VERSION = ${(ler('VERSION') || '(não existe)').trim()} (esperado 1.0.5)`);
+
+  const antigo = secoesChangelog(git(['show', `${ANTERIOR}:CHANGELOG.md`]));
+  const novo = secoesChangelog(ler('CHANGELOG.md') || '');
+  const faltam = [];
+  let iguais = 0;
+  for (const [titulo, texto] of antigo) {
+    if (titulo === '## [Não lançado]') {
+      // a seção aberta cresce a cada junção: confere linha por linha (nenhuma linha antiga pode sumir)
+      const nas = new Set((novo.get(titulo) || '').split('\n'));
+      const sumidas = texto.split('\n').filter((l) => l.trim() && !nas.has(l));
+      if (sumidas.length === 0) iguais++; else faltam.push(`${titulo}: ${sumidas.length} linha(s) antiga(s) sumiram, a 1ª: ${sumidas[0].slice(0, 100)}`);
+    } else if (novo.has(titulo) && sha256(novo.get(titulo)) === sha256(texto)) {
+      iguais++;
+    } else {
+      faltam.push(`${titulo}: ${novo.has(titulo) ? 'digest diferente (o texto mudou, até num espaço)' : 'seção ausente'}`);
+    }
+  }
+  criterio(faltam.length === 0, `CHANGELOG: ${iguais} de ${antigo.size} partes de ${ANTERIOR.slice(0, 7)} presentes com o mesmo digest (cabeçalho e seções; [Não lançado] por linha)`, faltam);
+  criterio([...novo.keys()].some((t) => t.startsWith('## [1.0.5]')), 'CHANGELOG tem a seção [1.0.5]');
+
+  if (COMMIT) { criterio(false, 'o recado do F2 roda um teste; use sem --commit'); return; }
+  const t = 'tests/aviso-atualizacao/rodar.sh';
+  info(`rodando: bash ${t}`);
+  const r = spawnSync('bash', [t], { cwd: REPO, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, timeout: 10 * 60000 });
+  const saida = `${r.stdout || ''}\n${r.stderr || ''}`;
+  criterio(r.status === 0, `${t} terminou com código ${r.status}`, saida.split('\n').filter((l) => /FALHOU/.test(l)).slice(0, 20));
+  const exigidos = [
+    '1.0.0 -> 1.0.5: o recado cita a instalada 1.0.0',
+    '1.0.0 -> 1.0.5: o recado cita a publicada 1.0.5',
+    '1.0.0 -> 1.0.5: o recado fala do Prumo da Locadora',
+    '1.0.0 -> 1.0.5: o recado nao diz DG Claw',
+    '1.0.0 -> 1.0.5: a tela mostra 1.0.0 -> 1.0.5',
+  ];
+  const linhas = new Set(saida.split('\n').map((l) => l.trim()));
+  const ausentes = exigidos.filter((e) => !linhas.has(`ok     ${e}`));
+  criterio(ausentes.length === 0, `recado 1.0.0 -> 1.0.5 sem "DG Claw": ${exigidos.length - ausentes.length} de ${exigidos.length} verificações nomeadas passaram`, ausentes);
+}
+
+// ================================================================================================
 function rodarTeste(cmd, rotulo, tetoMs) {
   info(`rodando: ${cmd.join(' ')}`);
   const r = spawnSync(cmd[0], cmd.slice(1), { cwd: REPO, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, timeout: tetoMs });
@@ -384,6 +442,7 @@ function blocoR1() {
 
 console.log(`Aceite juncao-e-marca: bloco ${BLOCO}, alvo ${COMMIT || 'árvore de trabalho'} (${git(['rev-parse', '--short', ALVO]).trim()}), repositório ${REPO}`);
 if (BLOCO === 'F1' || BLOCO === 'tudo') blocoF1();
+if (BLOCO === 'F2' || BLOCO === 'tudo') blocoF2();
 if (BLOCO === 'R1' || BLOCO === 'tudo') blocoR1();
 console.log(`\n${falhas === 0 ? 'ACEITE OK' : `ACEITE COM ${falhas} FALHA(S)`}`);
 process.exit(falhas === 0 ? 0 : 1);

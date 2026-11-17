@@ -7,18 +7,18 @@ Gerado sem escrever nada. Ocorrencia = um achado da regra; "troca" so acontece e
 | Lote | Arquivos que mudam | Trocaria | Fica por excecao | Pede decisao ou reescrita manual | Comando em codigo (fica, so conta) |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | M1 | 73 | 199 | 75 | 22 | 1 |
-| M3 | 39 | 114 | 8 | 49 | 0 |
+| M3 | 39 | 97 | 8 | 49 | 0 |
 | M4 | 160 | 841 | 86 | 84 | 871 |
-| M5 | 91 | 667 | 165 | 21 | 11 |
+| M5 | 91 | 551 | 165 | 21 | 11 |
 | sem-lote | 0 | 0 | 40 | 0 | 0 |
-| **total** | 363 | 1821 | 374 | 176 | 883 |
+| **total** | 363 | 1688 | 374 | 176 | 883 |
 
 Por regra (todos os lotes):
 
 | Regra | Trocaria | Excecao | Manual |
 | --- | ---: | ---: | ---: |
 | barra | 17 | 8 | 68 |
-| comando | 1073 | 176 | 48 |
+| comando | 940 | 176 | 48 |
 | frase | 731 | 97 | 55 |
 | sem-regra | 0 | 93 | 5 |
 
@@ -52,10 +52,10 @@ Regra do plano: skill ligada vira `/x`; skill que existe mas nao e ligada, reesc
 | Arquivo | Ocorrencia | Lote | Decisao |
 | --- | --- | --- | --- |
 | CHANGELOG.md | `/dgclaw:setup` (linha 1175) | M5 | fica por excecao |
-| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 181) | sem-lote | fica por excecao |
-| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 478) | sem-lote | fica por excecao |
-| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 588) | sem-lote | fica por excecao |
-| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 597) | sem-lote | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 182) | sem-lote | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 479) | sem-lote | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 609) | sem-lote | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 618) | sem-lote | fica por excecao |
 | docs/MEMORIA-SEMANTICA.md | `/dgclaw:setup` (linha 27) | M5 | sair (a skill nao existe) |
 | docs/MEMORIA-SEMANTICA.md | `/dgclaw:doctor` (linha 69) | M5 | reescrever a mao (skill existe, nao e ligada ao agente) |
 | docs/MESA-DE-TAREFAS.md | `/dgclaw:mesa` (linha 29) | M5 | reescrever a mao (skill existe, nao e ligada ao agente) |

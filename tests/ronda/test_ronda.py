@@ -804,7 +804,7 @@ class Niveis(Base):
         self.assertIsNone(reg["desfeito_em"], "a reversão falhou: não pode constar como concluída")
         self.assertIn("apt não conseguiu voltar", reg["desfazer_falhou"]["motivo"])
         self.assertIn("não consegui desfazer", a["como_corrigir"])
-        self.assertIn(f"sudo dgclaw seguranca desfazer {nomes[0]}", a["como_corrigir"])
+        self.assertIn(f"sudo prumo seguranca desfazer {nomes[0]}", a["como_corrigir"])
         texto = " ".join(r["text"] for r in S["recados"])
         self.assertIn('recado="ronda-de-seguranca-desfazer-falhou"', texto)
         self.assertIn(f"sudo dgclaw seguranca desfazer {nomes[0]}", texto)
@@ -1588,7 +1588,7 @@ class Paliativos(Base):
         self.assertIs(a["paliativo"]["verificado"], False)
         self.assertIsNone(a["paliativo"]["verificado_em"])
         self.assertIn("Existe uma proteção provisória enquanto a correção oficial não sai", a["como_corrigir"])
-        self.assertIn(f"sudo dgclaw seguranca aplicar {self.ID}", a["como_corrigir"])
+        self.assertIn(f"sudo prumo seguranca aplicar {self.ID}", a["como_corrigir"])
         self.assertEqual(self.sysctl_valor(), "1")
         self.assertIn(self.ID, self.texto_recados(), "pede ação: vai ao Admin")
 
@@ -2143,7 +2143,7 @@ class EstadoEDesligar(Base):
 
 
 class CLI(Base):
-    """O `dgclaw seguranca` do bin/dgclaw chama o motor; raiz falsa dispensa o root."""
+    """O `prumo seguranca` do bin/dgclaw chama o motor; raiz falsa dispensa o root."""
 
     def dgclaw(self, *args):
         r = subprocess.run(["bash", os.path.join(AQUI, "..", "..", "bin", "dgclaw"), *args], capture_output=True, text=True, env=self.env(), timeout=120)
@@ -2167,7 +2167,7 @@ class CLI(Base):
     def test_ajuda_e_subcomando_desconhecido(self):
         r = self.dgclaw("seguranca")
         self.assertEqual(r.returncode, 0)
-        self.assertIn("dgclaw seguranca aplicar <id>", r.stdout)
+        self.assertIn("prumo seguranca aplicar <id>", r.stdout)
         r = self.dgclaw("seguranca", "pedido-todos")
         self.assertEqual(r.returncode, 0, r.stderr)
         r = self.dgclaw("seguranca", "apagar-tudo")

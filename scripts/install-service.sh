@@ -1,5 +1,5 @@
 #!/bin/bash
-# install-service.sh — Cria e sobe o servico systemd do assistente DG Claw.
+# install-service.sh — Cria e sobe o servico systemd do assistente Prumo da Locadora.
 #
 # Uso:  sudo bash install-service.sh <config.sh> [<launch.sh>]
 #
@@ -87,7 +87,7 @@ CFGDIR="${DGCLAW_CLAUDE_CONFIG_DIR:-/root/.claude}"
 UNIT="/etc/systemd/system/dgclaw-${DGCLAW_SLUG}.service"
 cat > "$UNIT" <<EOF
 [Unit]
-Description=DG Claw assistente: ${DGCLAW_NAME} (${DGCLAW_SLUG})
+Description=Prumo da Locadora assistente: ${DGCLAW_NAME} (${DGCLAW_SLUG})
 After=network-online.target
 Wants=network-online.target
 

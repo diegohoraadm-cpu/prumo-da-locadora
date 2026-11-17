@@ -1,5 +1,5 @@
 [Unit]
-Description=DG Claw painel (a tela do dono do agente)
+Description=Prumo da Locadora painel (a tela do dono do agente)
 After=network.target
 # O painel.env é gerado pelo "dgclaw agente criar". Sem ele a unidade fica quieta.
 ConditionPathExists=/run/dgclaw/config/painel.env

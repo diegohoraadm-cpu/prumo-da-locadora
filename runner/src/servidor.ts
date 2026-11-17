@@ -1,7 +1,7 @@
 // A porta do runner: HTTP e WebSocket, no mesmo dialeto do bunker-server.
 //
 // Falar o MESMO protocolo é a decisão central deste trabalho. Quem consome um
-// agente hoje (o `agents-server` pelo `bunker-client.ts`, o painel do DG Claw
+// agente hoje (o `agents-server` pelo `bunker-client.ts`, o painel do Prumo da Locadora
 // pelo `bunkerUrl` do `config.json`, e o `inject.py` das rotinas pelo
 // `DGCLAW_BUNKER_URL`) continua falando exatamente o que já fala: muda o
 // endereço, não o vocabulário. A alternativa (protocolo novo) obrigaria a mexer
@@ -217,7 +217,7 @@ export function criarServidor(gerente: GerenteDeSessoes): http.Server {
             success: false,
             error:
               "Este runner serve UM agente, que já existe. Criar agente é papel de quem provisiona " +
-              "(o agents-server, ou o instalador do DG Claw na máquina do cliente): ele escreve o " +
+              "(o agents-server, ou o instalador do Prumo da Locadora na máquina do cliente): ele escreve o " +
               "descritor e sobe a unidade dgclaw-agent-<slug>.",
             code: "RUNNER_DE_UM_AGENTE",
           },

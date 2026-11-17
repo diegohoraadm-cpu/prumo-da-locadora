@@ -115,7 +115,7 @@ try {
   // (inclusive um arquivo que sumiu) não pode virar "sem trava": tiraria a proteção em silêncio.
   bloqueia(
     `O dono limitou onde você pode gravar, mas não consegui ler ${ARQUIVO} (${e.message}). ` +
-      'Por segurança nada foi gravado. Avise o dono; quem conserta é ele, com: dgclaw agente restricoes <seu-nome>.',
+      'Por segurança nada foi gravado. Avise o dono; quem conserta é ele, com: prumo agente restricoes <seu-nome>.',
   );
 }
 
@@ -124,7 +124,7 @@ const soProtegidos = pastas === null || pastas === undefined;
 if (!soProtegidos && (!Array.isArray(pastas) || pastas.some((p) => typeof p !== 'string'))) {
   bloqueia(
     `O dono limitou onde você pode gravar, mas "escrita_so_em" em ${ARQUIVO} não é uma lista de pastas. ` +
-      'Por segurança nada foi gravado. Avise o dono para conferir com: dgclaw agente restricoes <seu-nome>.',
+      'Por segurança nada foi gravado. Avise o dono para conferir com: prumo agente restricoes <seu-nome>.',
   );
 }
 

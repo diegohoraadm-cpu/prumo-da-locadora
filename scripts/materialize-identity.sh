@@ -1,7 +1,7 @@
 #!/bin/bash
 # materialize-identity.sh — Gera o AGENT.md (system prompt) a partir da identidade rica.
 #
-# O DG Claw monta o system prompt fazendo `cat AGENT.md` (bootstrap-identity.sh). Como a
+# O Prumo da Locadora monta o system prompt fazendo `cat AGENT.md` (bootstrap-identity.sh). Como a
 # identidade mora repartida em varios arquivos editaveis, este script MATERIALIZA todos eles
 # num AGENT.md gerado, com um marcador no topo. Um AGENT.md escrito a mao (instalacao antiga)
 # vai pra AGENT.md.bak antes, e so na primeira vez.
@@ -15,7 +15,7 @@
 # Com a flag --include-ops, anexa tambem o AGENTS.md (manual operacional do workspace).
 #
 # Extensoes instaladas em .dgclaw/ext/<nome>/ podem acrescentar as proprias secoes pelo
-# gancho hooks/identity.sh (e assim que o DG Alive encaixa o SOUL.md, sem que o nucleo
+# gancho hooks/identity.sh (e assim que a extensão de emoções encaixa o SOUL.md, sem que o nucleo
 # precise saber que existe alma).
 #
 # A secao "Onde voce esta e o que voce consegue fazer" NAO entra aqui. Em container ela vem
@@ -41,7 +41,7 @@ for a in "$@"; do
     esac
 done
 
-MARKER="<!-- GERADO PELO DG CLAW a partir de LAWS/PERSONALITY/IDENTITY/ETHICS/CREATOR. Nao edite a mao: edite os arquivos-fonte e rode /dgclaw:doctor. -->"
+MARKER="<!-- GERADO PELO DG CLAW a partir de LAWS/PERSONALITY/IDENTITY/ETHICS/CREATOR. Nao edite a mao: edite os arquivos-fonte e rode o doctor do agente com --fix. -->"
 AGENT="$WS/AGENT.md"
 BAK="$WS/AGENT.md.bak"
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dgclaw chave-api: o embrulho fino de web/bin/chave-api.js, com o programa de verdade numa raiz falsa.
+# prumo chave-api: o embrulho fino de web/bin/chave-api.js, com o programa de verdade numa raiz falsa.
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh
 . "$(dirname "$0")/_comum.sh"

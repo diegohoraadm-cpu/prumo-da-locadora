@@ -1,5 +1,5 @@
 #!/bin/bash
-# cron-audit.sh (DG Claw) — auditoria noturna (23:55) dos crons/timers da pessoa virtual.
+# cron-audit.sh (Prumo da Locadora) — auditoria noturna (23:55) dos crons/timers da pessoa virtual.
 #
 # Generalizacao da auditoria de cron do ClaudeClaw. NADA e hardcoded com nomes de um agente
 # especifico: a LISTA de componentes a monitorar e DESCOBERTA dinamicamente de tres fontes:

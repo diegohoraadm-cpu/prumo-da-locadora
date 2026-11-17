@@ -1,5 +1,5 @@
 #!/bin/bash
-# dgclaw-post.sh — Cron de POST no Instagram da pessoa virtual (DG Claw).
+# dgclaw-post.sh — Cron de POST no Instagram da pessoa virtual (Prumo da Locadora).
 #
 # Cron generico/parametrizado de post. ZERO id hardcoded:
 # tudo (workspace, conta IG, modelo, persona, voz) sai de .dgclaw/config.sh +
@@ -10,8 +10,8 @@
 #
 # Notas de integracao (mesmas dos crons de vida):
 #   - oneshot via claude --print (NAO usa PTY/`script`; so o canal precisa de pty).
-#   - root + IS_SANDBOX=1 vem do config.sh do DG Claw (claude --print como root exige).
-#   - config.sh do DG Claw ja faz `unset CLAUDE_CONFIG_DIR`.
+#   - root + IS_SANDBOX=1 vem do config.sh do Prumo da Locadora (claude --print como root exige).
+#   - config.sh do Prumo da Locadora ja faz `unset CLAUDE_CONFIG_DIR`.
 #   - notify-owner.sh no inicio e no fim; ext-event.sh post_success ao concluir.
 #   - so roda se o poder instagram estiver enabled (powers.py is-enabled).
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # lib/agentes.sh: leitura e escrita do /etc/dgclaw/agentes.json.
 #
-# O agentes.json e o que o DG Claw Web le para montar o seletor de agentes (ele
+# O agentes.json e o que o Prumo da Locadora Web le para montar o seletor de agentes (ele
 # rele sozinho quando o arquivo muda). Quem escreve sao o instalador (o Admin) e
-# o `dgclaw agente criar|remover`. Por isso a escrita mora aqui, num lugar so:
+# o `prumo agente criar|remover`. Por isso a escrita mora aqui, num lugar so:
 #   - sempre com a trava (com_trava), para dois comandos ao mesmo tempo nao
 #     perderem a escrita um do outro;
 #   - sempre atomica (temporario + mv), para o Web nunca ler meio arquivo;
@@ -42,14 +42,14 @@ _agentes_aplicar() {
 # existe um agente com o mesmo slug, substitui (rodar de novo nao duplica).
 agentes_registrar() {
     local obj
-    obj="$(jq -c . )" || falha "o registro do agente nao e um JSON valido." "isso e um erro do DG Claw; abra uma issue com a saida acima."
+    obj="$(jq -c . )" || falha "o registro do agente nao e um JSON valido." "isso e um erro do Prumo da Locadora; abra uma issue com a saida acima."
     local slug
     slug="$(printf '%s' "$obj" | jq -r '.slug // empty')"
-    [ -n "$slug" ] || falha "o registro do agente veio sem slug." "isso e um erro do DG Claw; abra uma issue."
+    [ -n "$slug" ] || falha "o registro do agente veio sem slug." "isso e um erro do Prumo da Locadora; abra uma issue."
     # Olha so os NOMES dos campos (em qualquer nivel), nunca os valores: um agente
     # chamado "Senha Bot" nao pode ser barrado. Campo que termina em _arquivo e caminho.
     if printf '%s' "$obj" | jq -e '[paths | .[-1] | strings | select(test("(?i)(password|senha|token|segredo|secret|chave)") and (test("_arquivo$") | not))] | length > 0' >/dev/null; then
-        falha "o registro do agente $slug parece conter um segredo." "o agentes.json so guarda CAMINHOS de arquivos de segredo; isso e um erro do DG Claw."
+        falha "o registro do agente $slug parece conter um segredo." "o agentes.json so guarda CAMINHOS de arquivos de segredo; isso e um erro do Prumo da Locadora."
     fi
     # shellcheck disable=SC2016 # o $o e variavel do jq, nao do shell
     com_trava _agentes_aplicar \

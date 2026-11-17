@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# `dgclaw atualizar --checar`, `dgclaw atualizar --aviso ligar|desligar` e a linha "atualizacao:" do
-# `dgclaw status`. Raiz falsa e stubs como os outros testes da CLI; o GitHub e o Admin sao o
+# `prumo atualizar --checar`, `prumo atualizar --aviso ligar|desligar` e a linha "atualizacao:" do
+# `prumo status`. Raiz falsa e stubs como os outros testes da CLI; o GitHub e o Admin sao o
 # servidor falso de tests/aviso-atualizacao (um servidor http local), e a checagem e a de verdade.
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh
@@ -34,7 +34,7 @@ echo "--checar"
 compare ahead 1 "$NOVO" "Aviso de versao nova" >"$CENARIO"
 dgclaw atualizar --checar >"$TMP/o.txt" 2>&1; rc=$?
 igual "com versao nova sai 0" 0 "$rc"
-afirma "diz que ha versao nova" grep -q "Ha uma vers.o nova do DG Claw\|Há uma versão nova do DG Claw" "$TMP/o.txt"
+afirma "diz que ha versao nova" grep -q "Ha uma vers.o nova do Prumo da Locadora\|Há uma versão nova do Prumo da Locadora" "$TMP/o.txt"
 afirma "diz que nada foi instalado" grep -q "Nada foi baixado nem instalado" "$TMP/o.txt"
 afirma "manda ver o resumo na faixa do painel" grep -q "faixa do painel" "$TMP/o.txt"
 nega "nao imprime o texto vindo do GitHub" grep -q "Aviso de versao nova" "$TMP/o.txt"
@@ -132,7 +132,7 @@ afirma "sem estado: ainda nao verificado" grep -q "atualizacao: ainda nao verifi
 compare ahead 1 "$NOVO" "Mudanca" >"$CENARIO"; dgclaw atualizar --checar >/dev/null 2>&1
 igual "versao nova: status sai 0 (nao e essencial)" 0 "$(status)"
 afirma "versao nova: avisa e manda rodar dgclaw atualizar" grep -q "atualizacao: versao nova disponivel (v1-aaaaaaaaaaaa → bbbbbbb\|atualizacao: versao nova disponivel (v1-aaaaaaaaaaaa → 0000000" "$TMP/o.txt"
-afirma "versao nova: cita o comando" grep -q "sudo dgclaw atualizar" "$TMP/o.txt"
+afirma "versao nova: cita o comando" grep -q "sudo prumo atualizar" "$TMP/o.txt"
 compare identical 0 "$NOVO" "x" | jq '.compare.body.commits = []' >"$CENARIO"; dgclaw atualizar --checar >/dev/null 2>&1
 igual "em dia: status sai 0" 0 "$(status)"
 afirma "em dia: diz em dia" grep -q "atualizacao: em dia" "$TMP/o.txt"
@@ -141,6 +141,6 @@ igual "checagem falhou: status sai 0" 0 "$(status)"
 afirma "checagem falhou: mostra o motivo" grep -q "atualizacao: a ultima checagem falhou: " "$TMP/o.txt"
 printf 'isto nao e json' >"$ESTADO"
 igual "estado ilegivel: status sai 0" 0 "$(status)"
-afirma "estado ilegivel: explica e manda refazer" grep -q "nao consegui ler .*estado.json.*dgclaw atualizar --checar" "$TMP/o.txt"
+afirma "estado ilegivel: explica e manda refazer" grep -q "nao consegui ler .*estado.json.*prumo atualizar --checar" "$TMP/o.txt"
 
 fim

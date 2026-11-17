@@ -114,7 +114,7 @@ ID_SEM="$D_SEM/identidade.txt"
 if grep -q "mcp__dgchat__reply" "$ID_SEM" 2>/dev/null && grep -q "REGRA ZERO DO CANAL DG CHAT" "$ID_SEM"; then
     ok "4. a identidade ensina a responder pelo painel"
 else
-    falhou "4. a identidade nao tem a REGRA ZERO do DG Chat"
+    falhou "4. a identidade nao tem a REGRA ZERO do chat do painel"
 fi
 if ! grep -q "REGRA ZERO DO CANAL TELEGRAM" "$ID_SEM" 2>/dev/null; then
     ok "4b. e nao ensina a do Telegram para quem nao tem Telegram"
@@ -148,7 +148,7 @@ fi
 # Sem agents-server, DGCHAT_URL tem que ficar vazio: e o que faz a tool responder
 # "entregue" em vez de prometer uma reconexao de janela que nao existe.
 if ! grep -q "DGCHAT_URL" "$MCP_JSON" 2>/dev/null && [ -z "${DGCHAT_URL:-}" ]; then
-    ok "6. DG Claw sozinho nao inventa DGCHAT_URL (modo transcript)"
+    ok "6. Prumo da Locadora sozinho nao inventa DGCHAT_URL (modo transcript)"
 else
     falhou "6. apareceu DGCHAT_URL num agente sem plataforma"
 fi
@@ -181,4 +181,4 @@ if [ "$FALHAS" -gt 0 ]; then
     echo "$FALHAS verificacao(oes) falharam." >&2
     exit 1
 fi
-echo "Fiacao do canal DG Chat: tudo verde."
+echo "Fiacao do canal do chat do painel: tudo verde."

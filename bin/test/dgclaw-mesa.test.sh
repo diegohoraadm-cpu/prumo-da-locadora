@@ -204,7 +204,7 @@ grep -q "não respondeu" "$T/e" && grep -q "PATCH /api/v1/tarefas/12" "$T/e"; ok
 prepara '' 3 "dgclaw-api: a pasta da caixa nao existe"
 rodar listar
 ok "caixa indisponivel (3) repassa o 3" $([ $C = 3 ] && echo 0 || echo 1)
-grep -q "sudo dgclaw agente reparar luna" "$T/e"; ok "saida 3 manda pedir o reparo com o slug" $?
+grep -q "sudo prumo agente reparar luna" "$T/e"; ok "saida 3 manda pedir o reparo com o slug" $?
 prepara '{"ok":false,"erro":"Dados inválidos.","erros":{"motivo":"obrigatório quando o estado é travada","progresso":"deve ir de 0 a 100"}}' 4 "dgclaw-api: HTTP 400"
 rodar atualizar 12 --nota x
 ok "recusa 4xx repassa o 4" $([ $C = 4 ] && echo 0 || echo 1)

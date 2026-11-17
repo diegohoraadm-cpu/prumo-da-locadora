@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# `dgclaw atualizar` com personalizacoes do programa (branch `personalizacoes` + registro).
+# `prumo atualizar` com personalizacoes do programa (branch `personalizacoes` + registro).
 #
 # Mesmo molde do atualizar.sh: raiz falsa, install.sh de verdade, "GitHub" local (repo bare),
 # stubs. Cenarios: sem personalizacao; personalizacao que nao cruza (reaplica por cima);
@@ -41,7 +41,7 @@ montar() {
     echo '# criar-agente' >"$TRAB/skills/criar-agente/SKILL.md"
     echo '# trocar-dominio' >"$TRAB/skills/trocar-dominio/SKILL.md"
     echo '//' >"$TRAB/scripts/dgchat-mcp/server.mjs"
-    echo 'DG Claw de mentira' >"$TRAB/README.md"
+    echo 'Prumo da Locadora de mentira' >"$TRAB/README.md"
     git -C "$TRAB" init -q -b main
     git -C "$TRAB" add -A; git -C "$TRAB" commit -q -m v1
     git clone -q --bare "$TRAB" "$ORIGEM"

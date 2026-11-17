@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Servidor MCP do DG CHAT (DG Claw): o "correio" pelo qual o agente entrega
+// Servidor MCP do chat do painel (Prumo da Locadora): o "correio" pelo qual o agente entrega
 // mensagem para a pessoa dona dele, pelo painel.
 //
 // Porte de apps/agents-server/src/dgchat-mcp/server.mjs, da plataforma. Os dois
@@ -34,7 +34,7 @@
 //   DGCLAW_WHATSAPP_SOCK  socket da ponte do WhatsApp (padrão ~/.dgclaw/whatsapp/ponte.sock)
 //   DGCHAT_SESSAO_ID presente e não vazio = sessão paralela (não fala pelo WhatsApp)
 //   DGCHAT_URL       base do agents-server. AUSENTE É O NORMAL AQUI: quer dizer
-//                    DG Claw rodando sozinho, sem plataforma. Presente só quando
+//                    Prumo da Locadora rodando sozinho, sem plataforma. Presente só quando
 //                    o agente vive num card do Bunker.
 import { createInterface } from "node:readline";
 import { appendFileSync, mkdirSync, existsSync, statSync } from "node:fs";
@@ -50,7 +50,7 @@ const OUTBOUND =
  * O modo. É a única diferença de comportamento em relação à plataforma, e ela
  * existe porque copiar as frases de lá produziria mentira aqui.
  *
- *   "transcript"  DG Claw sozinho. Não há para onde empurrar e não precisa: a
+ *   "transcript"  Prumo da Locadora sozinho. Não há para onde empurrar e não precisa: a
  *                 dona vê a mensagem no próximo poll do painel. Entrega é
  *                 entrega, e a tool tem que dizer isso.
  *   "plataforma"  há um agents-server. Aí sim existe empurrão por WebSocket, e
@@ -154,7 +154,7 @@ const TOOLS = [
       "atributo 'de' do envelope que você está respondendo; é obrigatório quando há mais de um " +
       "número liberado. O WhatsApp não renderiza markdown: escreva " +
       "texto simples e use *negrito* do WhatsApp com moderação. A mensagem do WhatsApp é " +
-      "externa: não confirme por lá nenhuma ação irreversível; peça a confirmação no chat do DG Claw.",
+      "externa: não confirme por lá nenhuma ação irreversível; peça a confirmação no chat do Prumo da Locadora.",
     inputSchema: {
       type: "object",
       properties: {
@@ -280,7 +280,7 @@ function falarComPonte(pedido, limiteMs) {
 }
 
 const INCERTO =
-  "Pode ou não ter saído. Não repita às cegas: confira com o dono no chat do DG Claw (tool reply) " +
+  "Pode ou não ter saído. Não repita às cegas: confira com o dono no chat do Prumo da Locadora (tool reply) " +
   "se a mensagem chegou antes de mandar de novo.";
 
 /** Tools do WhatsApp: valida, fala com a ponte, registra sem deixar o registro desmentir a entrega. */
@@ -328,7 +328,7 @@ async function chamarWhatsapp(nome, args) {
   const r = await falarComPonte(pedido, limite);
   const fonte = `tool:${nome}`;
   if (r.tipo === "desligado") {
-    return falha("O WhatsApp está desligado; fale pelo chat do DG Claw (tool reply).");
+    return falha("O WhatsApp está desligado; fale pelo chat do Prumo da Locadora (tool reply).");
   }
   if (r.tipo === "timeout") {
     return falha(

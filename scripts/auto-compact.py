@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""auto-compact.py (DG Claw) — Auto-compacta a sessao --channels VIVA da persona
+"""auto-compact.py (Prumo da Locadora) — Auto-compacta a sessao --channels VIVA da persona
 quando o contexto passa de um teto, sem reiniciar nem intervencao manual.
 
 A sessao viva e a MESMA que serve o canal (claude --channels ... --name dgclaw-<slug>,
@@ -9,7 +9,7 @@ antecipa: estima o tamanho do contexto lendo o transcript .jsonl da sessao e, se
 de DGCLAW_COMPACT_THRESHOLD, INJETA "/compact" na sessao viva (via _lib/inject, NUNCA
 claude -p — assim a sumarizacao roda na assinatura FLAT do dono, sem queimar credito API).
 
-Generalizado pro contrato DG Claw: ZERO hardcode de persona/paths. Tudo por env DGCLAW_*.
+Generalizado pro contrato Prumo da Locadora: ZERO hardcode de persona/paths. Tudo por env DGCLAW_*.
 
 Salvaguardas:
   - COOLDOWN (DGCLAW_COMPACT_COOLDOWN_MIN, default 20min) gravado em state file: o
@@ -49,7 +49,7 @@ Modos (DGCLAW_COMPACT_MODE):
            ⚠️ PRE-REQUISITO, e o erro mais caro de cometer aqui: o modo restart SO baixa
            o contexto se o launcher da sessao subir SEM `--resume`. E o caso dos
            agentes pessoais (`claude --channels ...`), onde reiniciar nasce sessao nova. NAO e o
-           caso de supervisor que guarda o sessionId e retoma: o agent-runner do DG Claw
+           caso de supervisor que guarda o sessionId e retoma: o agent-runner do Prumo da Locadora
            monta `claude --resume <sessionId>` no boot, entao restart ali MATA O TERMINAL
            DO CLIENTE e a sessao volta com o MESMO contexto (custo alto, beneficio zero).
            Antes de ligar restart, confira o comando real: `ps -eo args | grep claude`.
@@ -92,7 +92,7 @@ Env:
                                  nesses hosts, e serve tambem pro poke de retomada (uma env
                                  so). Placeholders {text}, {text_json}, {file}; o comando
                                  tambem recebe o texto no STDIN e em DGCLAW_POKE_TEXT.
-                                 No agent-runner do DG Claw voce NAO precisa desta env: ele
+                                 No agent-runner do Prumo da Locadora voce NAO precisa desta env: ele
                                  fala o protocolo do painel, entao o modo bunker (abaixo) ja
                                  resolve, e resolve pros 13 timers, nao so pra este.
                                  Se ainda assim quiser um comando, use ASPAS SIMPLES no corpo:

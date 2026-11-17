@@ -5,7 +5,7 @@
 # Por que isto virou aceite (Fase H do plano): numero nao tem som. Um motor novo
 # le "humor 6/10" e inventa um humor que nao e o do agente; fala escrita ele
 # imita. Foi o que segurou o jeito da Isa numa troca de modelo, e ate 11/08/2026
-# o PERSONALITY.md.tmpl do DG Claw tinha zero exemplo.
+# o PERSONALITY.md.tmpl do Prumo da Locadora tinha zero exemplo.
 #
 # A segunda metade da bancada e a armadilha: o /api/personality do painel varre o
 # arquivo INTEIRO com um regex atras de `| Traco | n/10`, e tambem pega titulo

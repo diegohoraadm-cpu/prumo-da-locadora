@@ -109,9 +109,9 @@ export function configDaSessao(
   return {
     ...p,
     // Decisão do Danilo (21/10/2026): o agente principal roda em bypassPermissions (é obrigatório,
-    // faz parte do DG Claw), e as outras sessões rodam em "auto". A paralela NÃO herda o modo da
+    // faz parte do Prumo da Locadora), e as outras sessões rodam em "auto". A paralela NÃO herda o modo da
     // principal e não tem campo de override. Os pedidos de permissão dela aparecem na tela do
-    // DG Claw pelo cartão de permissão (ver web/docs/TRILHA-E-PERMISSAO.md).
+    // Prumo da Locadora pelo cartão de permissão (ver web/docs/TRILHA-E-PERMISSAO.md).
     permissionMode: "auto",
     name: s.slug,
     envExtra: env,

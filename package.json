@@ -2,7 +2,7 @@
   "name": "dgclaw-lint",
   "version": "0.0.0",
   "private": true,
-  "description": "Só o lint de JavaScript do repositório (web/, panel/, canais/, scripts/). Não instala nem roda o DG Claw.",
+  "description": "Só o lint de JavaScript do repositório (web/, panel/, canais/, scripts/). Não instala nem roda o Prumo da Locadora.",
   "scripts": {
     "lint": "eslint ."
   },

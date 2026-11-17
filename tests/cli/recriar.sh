@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# `dgclaw agente recriar`: a troca do container nao pode travar num container preso em "stopping".
+# `prumo agente recriar`: a troca do container nao pode travar num container preso em "stopping".
 # Cobre: parada com espera, "stopping" que passa sozinho, "stopping" para sempre (rm -f so do
 # container), volume do podman (nao usa -f), estados exited/ausente com --forcar, e a mensagem de
 # erro que diz a verdade sobre o que foi ou nao removido.
@@ -53,14 +53,14 @@ nega "nao usou rm -f" grep -q '^podman rm -f' "$STUB_LOG"
 afirma "explica o volume" grep -q 'volume do podman' "$TMP/rec.txt"
 afirma "diz que o container antigo continua la, em stopping" grep -q 'ANTIGO do agente ana continua la, no estado stopping' "$TMP/rec.txt"
 nega "nao diz 'foi removido'" grep -q 'foi removido e o novo NAO' "$TMP/rec.txt"
-afirma "diz o comando para tentar de novo" grep -q 'dgclaw agente recriar ana --forcar' "$TMP/rec.txt"
+afirma "diz o comando para tentar de novo" grep -q 'prumo agente recriar ana --forcar' "$TMP/rec.txt"
 rm -f "$STUB_ESTADO/mounts-volume"
 
 echo "'stopping' sem --forcar: nao da para conferir o que se perde, entao para"
 recriar ana
 nega "sem --forcar: falha" test "$?" -eq 0
 afirma "explica que esta preso e que nao deu para conferir" grep -q "preso em 'stopping'.*nao da para conferir" "$TMP/rec.txt"
-afirma "pede --forcar" grep -q 'dgclaw agente recriar ana --forcar' "$TMP/rec.txt"
+afirma "pede --forcar" grep -q 'prumo agente recriar ana --forcar' "$TMP/rec.txt"
 nega "nao trocou o container" grep -q '^podman \(create\) ' "$STUB_LOG"
 echo "'stopping' com --forcar: recria"
 recriar ana --forcar
@@ -151,7 +151,7 @@ afirma "lista o pacote instalado a mao" grep -q '^   *tailscale$' "$TMP/rec.txt"
 afirma "lista o binario criado" grep -q 'A /usr/bin/tailscale' "$TMP/rec.txt"
 afirma "lista o estado criado fora da casa" grep -q 'A /var/lib/tailscale/tailscaled.state' "$TMP/rec.txt"
 nega "nao lista o diretorio pai que so mudou por causa do filho" grep -q 'C /usr$' "$TMP/rec.txt"
-afirma "diz como seguir" grep -q 'dgclaw agente recriar rita --forcar' "$TMP/rec.txt"
+afirma "diz como seguir" grep -q 'prumo agente recriar rita --forcar' "$TMP/rec.txt"
 afirma "diz que nada foi mexido" grep -q 'nada foi mexido' "$TMP/rec.txt"
 afirma "nao parou, removeu nem criou container" sem_troca
 nega "nao guardou rotinas (nao chegou a mexer)" test -e "$CASA_RITA/.unidades-self.tar"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# `dgclaw suporte ligar|desligar|status|limpar` e a linha "suporte:" do `dgclaw status`.
+# `prumo suporte ligar|desligar|status|limpar` e a linha "suporte:" do `prumo status`.
 # Raiz falsa (DGCLAW_RAIZ) e o relogio fixo por DGCLAW_AGORA_MS: o authorized_keys de verdade nunca e tocado.
 # As chaves sao geradas aqui com o ssh-keygen real; o `ssh -V` e o stub de tests/cli/stubs.
 set -uo pipefail
@@ -123,7 +123,7 @@ VENCIDA_FIM="$(date -u -d "@$((AGORA_S - 86400))" +%Y%m%d%H%M)"
 printf 'expiry-time="%sZ" ssh-ed25519 %s dgclaw-suporte:deadbeef:%s\n' "$VENCIDA_FIM" "$(awk '{print $2}' "$TMP/outra.pub")" "$VENCIDA_FIM" >>"$ARQ"
 dgclaw suporte status >"$TMP/o.txt" 2>&1
 afirma "lista a vencida" grep -q "vencida .*venceu em 31/10/2026 12:00 UTC" "$TMP/o.txt"
-afirma "oferece remover" grep -q "dgclaw suporte limpar" "$TMP/o.txt"
+afirma "oferece remover" grep -q "prumo suporte limpar" "$TMP/o.txt"
 
 echo "--limpar tira so as vencidas"
 dgclaw suporte limpar >"$TMP/o.txt" 2>&1; rc=$?
@@ -238,7 +238,7 @@ saida="$(bash -c '
     . "$1"; . "$2/lib/suporte.sh"
     s_ok() { printf "ok %s\n" "$1"; }; s_aviso() { printf "aviso %s\n" "$1"; }
     suporte_status_linha' _ "$REPO/lib/comum.sh" "$REPO" 2>&1)"
-afirma "dgclaw status avisa da sessao aberta" grep -q "suporte: chave revogada ou vencida, acesso ainda nao confirmado como encerrado (1 sessao(oes) de root abertas), veja sudo dgclaw suporte status" <<<"$saida"
+afirma "dgclaw status avisa da sessao aberta" grep -q "suporte: chave revogada ou vencida, acesso ainda nao confirmado como encerrado (1 sessao(oes) de root abertas), veja sudo prumo suporte status" <<<"$saida"
 dgclaw suporte status >"$TMP/o.txt" 2>&1
 afirma "suporte status lista a sessao" grep -q "198.51.100.8:42000, desde" "$TMP/o.txt"
 kill "$PID_A" "$PID_C" "$PID_D" 2>/dev/null; wait 2>/dev/null
@@ -654,7 +654,7 @@ else
     afirma "sshd de verdade honra o Include entre aspas (o caso e real)" bash -c '/usr/sbin/sshd -T -f "$1" -C user=root,host=localhost,addr=203.0.113.5 | grep -qx "authorizedkeysfile .ssh/suporte-permanente"' _ "$TMP/real.conf"
 fi
 
-echo "--trava: status e a linha do dgclaw status esperam a mesma trava"
+echo "--trava: status e a linha do prumo status esperam a mesma trava"
 LOCK="$DGCLAW_RAIZ/root/.ssh/.dgclaw-suporte.lock"
 printf '%s\n' "$ALHEIA1" >"$ARQ"; rm -f "$ALERTA"
 dgclaw suporte ligar --chave "$CHAVE" >/dev/null 2>&1
@@ -733,7 +733,7 @@ igual "e continua sem anunciar desligado (chave segue no authorized_keys2): sai 
 rmdir "$LOGSUP"; mv "$TMP/suporte.log.guardado" "$LOGSUP"
 rm -f "$ARQ2"; dgclaw suporte status >/dev/null 2>&1; rm -f "$ALERTA"
 
-echo "--a linha do dgclaw status le tudo depois da trava (renovacao entre a primeira leitura e a trava)"
+echo "--a linha do prumo status le tudo depois da trava (renovacao entre a primeira leitura e a trava)"
 printf '%s\n' "$ALHEIA1" >"$ARQ"; : >"$PEND"; rm -f "$ALERTA"
 printf 'expiry-time="%sZ" ssh-ed25519 %s dgclaw-suporte:cafe0003:%s\n' "$VENCIDA_FIM" "$BLOB" "$VENCIDA_FIM" >>"$ARQ"
 flock -x "$LOCK" sleep 2 & LOCKPID=$!

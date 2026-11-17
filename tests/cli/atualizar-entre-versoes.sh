@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# `dgclaw atualizar` ENTRE DUAS VERSOES REAIS: instalado no commit anterior, atualizar para o candidato.
+# `prumo atualizar` ENTRE DUAS VERSOES REAIS: instalado no commit anterior, atualizar para o candidato.
 #
 #   bash tests/cli/atualizar-entre-versoes.sh <commit anterior> <commit candidato>
 #   (da raiz do repositorio; sempre pela caixa: bin/caixa-testes.sh bash tests/cli/atualizar-entre-versoes.sh <a> <b>)

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dgclaw colaborador: a CLI fala com o Web pelo socket local. Aqui o curl e de mentira (stubs/curl): confere o que o
+# prumo colaborador: a CLI fala com o Web pelo socket local. Aqui o curl e de mentira (stubs/curl): confere o que o
 # comando MANDA (corpo, rota, socket) e o que ele MOSTRA a partir do que o Web responde.
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh

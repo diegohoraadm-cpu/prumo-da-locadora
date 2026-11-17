@@ -127,7 +127,7 @@ ok "runner fora do ar sai com 4" $([ $c = 4 ] && echo 0 || echo 1)
 # conferir: sem .env, token recusado, ok, modo errado
 H1="$HOME"; HOME="$T/sem-env" "$BIN" canal telegram conferir >"$T/o" 2>"$T/e"; c=$?
 ok "conferir sem .env falha" $([ $c != 0 ] && echo 0 || echo 1)
-grep -q "nenhum token guardado ainda" "$T/e" && grep -q "conversa do DG Claw" "$T/e"; ok "conferir sem .env explica o que fazer" $?
+grep -q "nenhum token guardado ainda" "$T/e" && grep -q "conversa do Prumo da Locadora" "$T/e"; ok "conferir sem .env explica o que fazer" $?
 mkdir -p "$T/ruim/.dgclaw/telegram"; echo "TELEGRAM_BOT_TOKEN=999999999:AAOutroOutroOutroOutroOutroOutro_zz" > "$T/ruim/.dgclaw/telegram/.env"; chmod 600 "$T/ruim/.dgclaw/telegram/.env"
 HOME="$T/ruim" "$BIN" canal telegram conferir >"$T/o" 2>"$T/e"; c=$?
 ok "conferir com token recusado falha" $([ $c != 0 ] && echo 0 || echo 1)

@@ -1,5 +1,5 @@
 #!/bin/bash
-# session-context.sh — SessionStart hook do DG Claw.
+# session-context.sh — SessionStart hook do Prumo da Locadora.
 #
 # Resolve o problema da compactacao: quando a conversa fica grande, o Claude Code
 # compacta o contexto sozinho. No default, o resumo guarda o "diario de bordo" do

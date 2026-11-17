@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Roda todos os testes do DG Claw v1 de uma vez e sai com codigo != 0 se algum falhar.
+# Roda todos os testes do Prumo da Locadora v1 de uma vez e sai com codigo != 0 se algum falhar.
 #
 #   1. tests/cli        a CLI dgclaw, numa raiz falsa com stubs
 #   2. tests/instalador o install.sh e o lib/firewall.sh, tambem em raiz falsa
 #   2b. ambiente      a secao "Onde voce esta" do prompt dos agentes (templates/ambiente) e `agente identidade`
-#   3. web/test         o DG Claw Web (node --test)
+#   3. web/test         o Prumo da Locadora Web (node --test)
 #   4. painel           panel/test-*.mjs, um por um (saida 3 = parte pulada, ex.: sem chave de teste)
 #   5. python           scripts/_lib/test_*.py, um por um
 #   5b. bin             bin/test/*.test.sh (dgclaw-agente e dgclaw-card, com Telegram e runner falsos)
@@ -13,7 +13,7 @@
 #   8. shellcheck       nos scripts do instalador, da CLI e dos testes
 #   9. whatsapp         canais/whatsapp/test (node --test): a ponte do WhatsApp com Baileys e runner falsos,
 #                       mais a conferencia do package-lock.json
-#  10. mcp              scripts/dgchat-mcp/test-server.mjs: a bancada do servidor MCP do DG Chat
+#  10. mcp              scripts/dgchat-mcp/test-server.mjs: a bancada do servidor MCP do chat do painel
 #  11. novidades        tests/novidades: o gancho do aviso de novidades depois de atualizar
 #  12. monitor         tests/monitor: o dgclaw-monitor (modo monitor) e o dgclaw-card abrir --monitor, com runner falso
 #  13. changelog        tests/changelog: o CHANGELOG fala com a pessoa, sem frase dirigida ao modelo

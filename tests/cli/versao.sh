@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# A versao instalada: `dgclaw status` (primeira linha), `dgclaw versao`, `dgclaw --version`, e a
+# A versao instalada: `prumo status` (primeira linha), `prumo versao`, `prumo --version`, e a
 # garantia de que o arquivo VERSION, o panel/package.json e o runner/package.json dizem a mesma coisa.
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh
@@ -26,9 +26,9 @@ igual "dgclaw versao sem commit" "1.0.5" "$(dgclaw versao 2>&1)"
 
 echo "versao nao registrada"
 printf 'DGCLAW_DOMINIO=teste.exemplo.org\n' >"$ETC/dgclaw.env"
-igual "a primeira linha do status avisa" "Prumo da Locadora: versao nao registrada: rode sudo dgclaw atualizar ou ./install.sh de novo" "$(dgclaw status 2>&1 | head -n 1)"
+igual "a primeira linha do status avisa" "Prumo da Locadora: versao nao registrada: rode sudo prumo atualizar ou ./install.sh de novo" "$(dgclaw status 2>&1 | head -n 1)"
 dgclaw versao >"$TMP/o.txt" 2>&1; rc=$?
 igual "dgclaw versao falha (1)" "1" "$rc"
-afirma "e diz o que fazer" grep -q 'sudo dgclaw atualizar ou ./install.sh' "$TMP/o.txt"
+afirma "e diz o que fazer" grep -q 'sudo prumo atualizar ou ./install.sh' "$TMP/o.txt"
 
 fim

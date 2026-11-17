@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""reinicio.py (DG Claw) — Reiniciar o agente, do jeito NORMAL ou em MODO DE SEGURANCA.
+"""reinicio.py (Prumo da Locadora) — Reiniciar o agente, do jeito NORMAL ou em MODO DE SEGURANCA.
 
 DOIS REINICIOS, PORQUE SAO DOIS PROBLEMAS
   normal  o agente travou, caiu ou parou de responder sem motivo na conversa. Ele
@@ -621,7 +621,7 @@ def status_publico():
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Reinicia o agente DG Claw (normal ou modo de segurança).")
+    ap = argparse.ArgumentParser(description="Reinicia o agente Prumo da Locadora (normal ou modo de segurança).")
     ap.add_argument("acao", choices=["checar", "normal", "seguro", "encerrar-modo-seguro", "status"])
     ap.add_argument("--motivo", default="")
     ap.add_argument("--origem", default="manual", choices=["painel", "watchdog", "manual"])

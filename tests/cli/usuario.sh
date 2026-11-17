@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dgclaw usuario e o final de dgclaw senha: usuario e endereco do painel, nunca senha nem hash.
+# prumo usuario e o final de prumo senha: usuario e endereco do painel, nunca senha nem hash.
 set -uo pipefail
 # shellcheck source=tests/cli/_comum.sh
 . "$(dirname "$0")/_comum.sh"
@@ -54,7 +54,7 @@ echo "sem root"
 if [ "$(id -u)" -ne 0 ]; then
     (unset DGCLAW_RAIZ; "$CLI" usuario >"$TMP/o.txt" 2>"$TMP/e.txt")
     igual "sem root sai 1" "1" "$?"
-    afirma "manda usar sudo" grep -q 'sudo dgclaw usuario' "$TMP/e.txt"
+    afirma "manda usar sudo" grep -q 'sudo prumo usuario' "$TMP/e.txt"
     nega "sem root nao imprime usuario" grep -q 'Usuário' "$TMP/o.txt"
 else
     echo "  pulado: esta maquina roda como root"

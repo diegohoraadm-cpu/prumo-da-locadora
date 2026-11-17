@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""inject.py — Injeta uma linha no stdin da sessao --channels VIVA de um agente DG Claw.
+"""inject.py — Injeta uma linha no stdin da sessao --channels VIVA de um agente Prumo da Locadora.
 
 A sessao viva e a MESMA que serve o bot Telegram (claude --channels ... --name dgclaw-<slug>,
-subida pelo dgclaw-<slug>.service do DG Claw, dentro de `script -qfec`). Injetar nela faz a
+subida pelo dgclaw-<slug>.service do Prumo da Locadora, dentro de `script -qfec`). Injetar nela faz a
 reflexao/auditoria/proatividade rodarem na ASSINATURA FLAT do dono — nunca queima credito de API.
 
 GENERALIZADO (tecnica TIOCSTI): nada de hardcode de nome de persona. O alvo e
@@ -60,7 +60,7 @@ from pathlib import Path
 
 def channel_name(slug: str) -> str:
     """O --name da sessao --channels do agente. Override por env DGCLAW_CHANNEL_NAME.
-    Default segue o contrato do DG Claw launch.sh: --name "dgclaw-<slug>"."""
+    Default segue o contrato do Prumo da Locadora launch.sh: --name "dgclaw-<slug>"."""
     return os.environ.get("DGCLAW_CHANNEL_NAME") or f"dgclaw-{slug}"
 
 
@@ -170,7 +170,7 @@ def _bunker_url() -> str:
 def resolve_mode() -> str:
     """O modo efetivo. DGCLAW_INJECT_MODE manda; na ausencia dele, ter um card
     configurado ja diz qual e o mundo (card do Bunker), e o default historico
-    (tiocsti) fica para quem roda o DG Claw sozinho."""
+    (tiocsti) fica para quem roda o Prumo da Locadora sozinho."""
     explicito = os.environ.get("DGCLAW_INJECT_MODE", "").strip().lower()
     if explicito:
         return explicito

@@ -328,7 +328,7 @@ faixas_extras_calcular() {
                     f="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.0.0/16"
                     [ "$f" = "$REDE_AGENTES" ] && continue
                     faixa_e_extra "$f" || FAIXAS_EXTRAS+=("$f")
-                    echo "dgclaw-firewall: a rede '$nome' do Prumo da Locadora esta em $s, fora da faixa atual $REDE_AGENTES. Mantive o salto da faixa $f na cerca, para ela continuar isolada. Para resolver: volte DGCLAW_FAIXA_REDE para $f em /etc/dgclaw/dgclaw.env, ou recrie o agente na faixa nova (sudo dgclaw agente remover <agente>) e rode a cerca de novo." >&2
+                    echo "dgclaw-firewall: a rede '$nome' do Prumo da Locadora esta em $s, fora da faixa atual $REDE_AGENTES. Mantive o salto da faixa $f na cerca, para ela continuar isolada. Para resolver: volte DGCLAW_FAIXA_REDE para $f em /etc/dgclaw/dgclaw.env, ou recrie o agente na faixa nova (sudo prumo agente remover <agente>) e rode a cerca de novo." >&2
                 done
             done <<<"$nomes"
         else

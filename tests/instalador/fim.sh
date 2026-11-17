@@ -43,7 +43,7 @@ caso_fim_aviso_da_versao_so_sem_manifesto() {
     novo_cenario
     afirma "a instalacao termina com sucesso" fim_com_agentes ana:running bia:running
     afirma "sem manifesto: o aviso aparece" tem "$SAIDA" "AVISO DA VERSÃO 1.0.5"
-    afirma "o aviso traz o comando de cada agente" tem "$SAIDA" "sudo dgclaw agente recriar bia --forcar"
+    afirma "o aviso traz o comando de cada agente" tem "$SAIDA" "sudo prumo agente recriar bia --forcar"
     afirma "o aviso diz que a tela termina INCOMPLETA" tem "$SAIDA" "Atualizacao INCOMPLETA"
     local h="$RAIZ/var/lib/dgclaw/agentes"
     mkdir -p "$h/ana/home/.dgclaw" "$h/bia/home/.dgclaw"
@@ -72,7 +72,7 @@ caso_fim_atalho_prumo_igual_ao_dgclaw() {
     local p="$RAIZ/usr/local/bin/prumo"
     afirma "prumo e um arquivo comum executavel (nao um link)" bash -c "[ -f '$p' ] && [ ! -L '$p' ] && [ -x '$p' ]"
     afirma "prumo faz exec do dgclaw" tem "$p" "exec $RAIZ/usr/local/bin/dgclaw \"\$@\""
-    igual "$(env DGCLAW_STUB_LOG="$STUB_LOG" "$p" versao)" "$(env DGCLAW_STUB_LOG="$STUB_LOG" "$RAIZ/usr/local/bin/dgclaw" versao)" || { echo "      FALHOU: prumo versao difere de dgclaw versao"; FALHAS=$((FALHAS + 1)); }
+    igual "$(env DGCLAW_STUB_LOG="$STUB_LOG" "$p" versao)" "$(env DGCLAW_STUB_LOG="$STUB_LOG" "$RAIZ/usr/local/bin/dgclaw" versao)" || { echo "      FALHOU: prumo versao difere de prumo versao"; FALHAS=$((FALHAS + 1)); }
     igual "$(env DGCLAW_STUB_LOG="$STUB_LOG" "$p" versao)" "versao-falsa" || { echo "      FALHOU: prumo versao nao rodou o dgclaw"; FALHAS=$((FALHAS + 1)); }
     afirma "o atalho nasce antes de o Admin ser ligado" bash -c "a=\$(grep -n 'comando prumo' '$SAIDA' | head -1 | cut -d: -f1); b=\$(grep -n 'Ligando o Admin' '$SAIDA' | head -1 | cut -d: -f1); [ -n \"\$a\" ] && [ -n \"\$b\" ] && [ \"\$a\" -lt \"\$b\" ]"
     afirma "reinstalar nao reclama do proprio atalho" instalacao_basica
@@ -116,9 +116,9 @@ caso_fim_aviso_separa_exited_de_quem_vira_falhou() {
     afirma "o aviso aparece" tem "$SAIDA" "AVISO DA VERSÃO 1.0.5"
     nega "nada e iniciado no exited" tem "$STUB_LOG" "dgclaw agente iniciar ana"
     afirma "o created (ligado agora) e o running vao para a lista do FALHOU" tem "$SAIDA" "FALHOU e a tela vai terminar com"
-    afirma "o --forcar e comandado para o bia" tem "$SAIDA" "sudo dgclaw agente recriar bia --forcar"
-    afirma "o --forcar e comandado para o cai" tem "$SAIDA" "sudo dgclaw agente recriar cai --forcar"
-    nega "o exited nao recebe comando de --forcar" tem "$SAIDA" "sudo dgclaw agente recriar ana --forcar"
+    afirma "o --forcar e comandado para o bia" tem "$SAIDA" "sudo prumo agente recriar bia --forcar"
+    afirma "o --forcar e comandado para o cai" tem "$SAIDA" "sudo prumo agente recriar cai --forcar"
+    nega "o exited nao recebe comando de --forcar" tem "$SAIDA" "sudo prumo agente recriar ana --forcar"
     afirma "o exited aparece como desligado que fica como esta" grep -qE "estao desligados e ficam como estao.*: ana\$" "$SAIDA"
     afirma "o aviso diz o que o --forcar perde" tem "$SAIDA" "perde o que foi instalado so dentro dela"
     afirma "o aviso diz onde fica a lista" tem "$SAIDA" "/var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-<data>.txt"
@@ -137,7 +137,7 @@ caso_fim_agente_sem_container_nao_manda_iniciar() {
     afirma "o aviso aparece" tem "$SAIDA" "AVISO DA VERSÃO 1.0.5"
     afirma "o agente sem container tem lista propria" grep -qE "sem container .*: dia\$" "$SAIDA"
     afirma "diz que o iniciar nao funciona sem container" tem "$SAIDA" "O \"agente iniciar\" nao funciona sem container"
-    afirma "o comando certo e o recriar --forcar" tem "$SAIDA" "sudo dgclaw agente recriar <nome do agente> --forcar"
+    afirma "o comando certo e o recriar --forcar" tem "$SAIDA" "sudo prumo agente recriar <nome do agente> --forcar"
     nega "o agente sem container nao cai na lista dos desligados" grep -qE "estao desligados e ficam como estao.*dia" "$SAIDA"
     afirma "o desligado de verdade segue na lista dos desligados" grep -qE "estao desligados e ficam como estao.*: ana\$" "$SAIDA"
     nega "nada e iniciado no agente sem container" tem "$STUB_LOG" "dgclaw agente iniciar dia"
@@ -145,5 +145,5 @@ caso_fim_agente_sem_container_nao_manda_iniciar() {
     novo_cenario
     afirma "instalacao so com agente sem container" fim_com_agentes dia:ausente
     nega "so sem container: nao promete FALHOU" tem "$SAIDA" "vao aparecer como FALHOU"
-    nega "so sem container: nao manda iniciar" tem "$SAIDA" "ligue com: sudo dgclaw agente iniciar"
+    nega "so sem container: nao manda iniciar" tem "$SAIDA" "ligue com: sudo prumo agente iniciar"
 }

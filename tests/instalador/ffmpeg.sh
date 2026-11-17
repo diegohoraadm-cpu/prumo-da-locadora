@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 # Casos do ffmpeg: o painel gera miniatura de video e foto com o ffmpeg do servidor, e o instalador
-# (que o "dgclaw atualizar" tambem roda) precisa instala-lo sem nunca derrubar a instalacao.
+# (que o "prumo atualizar" tambem roda) precisa instala-lo sem nunca derrubar a instalacao.
 
 caso_ffmpeg_e_instalado_pelo_instalador() {
     novo_cenario

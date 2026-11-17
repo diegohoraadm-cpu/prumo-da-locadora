@@ -3,7 +3,7 @@
 secrets:
   # O pacote yt-dlp, instalado na imagem pelo pip, traz no extractor do Shahid uma chave
   # embutida pelo próprio projeto yt-dlp (código de terceiro, no site-packages do Python).
-  # Não é credencial do DG Claw nem de quem usa o produto, e não dá acesso a nada nosso.
+  # Não é credencial do Prumo da Locadora nem de quem usa o produto, e não dá acesso a nada nosso.
   - id: aws-access-key-id
     paths:
       - "**/yt_dlp/extractor/shahid.py"

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-powers.py (DG Claw) — CRUD do catalogo de poderes (powers.json).
+powers.py (Prumo da Locadora) — CRUD do catalogo de poderes (powers.json).
 
 powers.json e a fonte da verdade lida por DOIS consumidores:
   - os crons (checam `enabled` antes de mexer em qualquer coisa de um poder)
@@ -102,7 +102,7 @@ def main():
         if not p:
             print(f"poder desconhecido: {pid}", file=sys.stderr); sys.exit(1)
         p["enabled"] = False
-        p["locked_reason"] = "Desativado pelo dono. Reative com /dgclaw:powers install " + pid
+        p["locked_reason"] = "Desativado pelo dono. Reative pedindo ao agente para instalar o poder " + pid
         save(d)
         print(json.dumps(p, ensure_ascii=False)); return
 

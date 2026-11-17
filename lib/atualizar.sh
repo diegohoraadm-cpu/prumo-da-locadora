@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# lib/atualizar.sh: `dgclaw atualizar`, a atualizacao do DG Claw sem perder nada do dono.
+# lib/atualizar.sh: `prumo atualizar`, a atualizacao do Prumo da Locadora sem perder nada do dono.
 #
 # Carregado com `source` pelo bin/dgclaw, nunca executado. Usa as funcoes dele e da lib/comum.sh
 # (falha, ok, info, aviso, passo, executar, estado_container, saude_runner...), por isso as
@@ -20,7 +20,7 @@
 # volume, ou sobrescrever /var/lib/dgclaw. Detalhes e motivos em docs/ATUALIZAR.md.
 #
 # O backup em si (tar conferido, manifesto, pasta datada) mora em lib/backup.sh, que tambem serve
-# ao `dgclaw backup` e ao `dgclaw restaurar`.
+# ao `prumo backup` e ao `prumo restaurar`.
 
 ATU_REPO=""
 ATU_ETAPA=""
@@ -56,8 +56,8 @@ _atualizar_ao_sair() {
         printf '\nA atualizacao parou em: %s.\n' "${ATU_ETAPA:-inicio}"
         if [ -n "$ATU_BACKUP" ] && [ -f "$ATU_BACKUP/MANIFESTO.txt" ]; then
             printf 'Seus dados estao salvos no backup %s (nada foi apagado).\n' "$ATU_BACKUP"
-            printf 'Para tentar de novo (rodar de novo e seguro): sudo dgclaw atualizar --sem-baixar\n'
-            printf 'Para voltar ao que era antes: sudo dgclaw atualizar --voltar %s\n' "$ATU_BACKUP"
+            printf 'Para tentar de novo (rodar de novo e seguro): sudo prumo atualizar --sem-baixar\n'
+            printf 'Para voltar ao que era antes: sudo prumo atualizar --voltar %s\n' "$ATU_BACKUP"
         else
             printf 'Nada foi mudado ainda: o backup nem chegou a ser feito.\n'
         fi
@@ -75,15 +75,15 @@ atualizar_achar_repo() {
     elif [ -f "$R/root/DG-Claw/install.sh" ]; then candidato="$R/root/DG-Claw"; origem="o lugar de sempre (/root/DG-Claw)"
     fi
     if [ -z "$candidato" ]; then
-        falha "nao sei onde esta o clone do DG Claw (a pasta onde voce rodou o install.sh): o dgclaw.env nao guarda o caminho e --repo nao foi informado." \
-              "diga onde ele esta: sudo dgclaw atualizar --repo /root/DG-Claw (troque pelo caminho certo; para procurar: find / -name install.sh -path '*DG-Claw*' 2>/dev/null). O proximo install.sh passa a anotar o caminho sozinho."
+        falha "nao sei onde esta o clone do Prumo da Locadora (a pasta onde voce rodou o install.sh): o dgclaw.env nao guarda o caminho e --repo nao foi informado." \
+              "diga onde ele esta: sudo prumo atualizar --repo /root/DG-Claw (troque pelo caminho certo; para procurar: find / -name install.sh -path '*DG-Claw*' 2>/dev/null). O proximo install.sh passa a anotar o caminho sozinho."
     fi
     [ -d "$candidato" ] || falha "o clone '$candidato' (vindo de $origem) nao e uma pasta." \
-        "informe o caminho certo: sudo dgclaw atualizar --repo <pasta do clone>"
+        "informe o caminho certo: sudo prumo atualizar --repo <pasta do clone>"
     candidato="$(cd "$candidato" && pwd)"
     if [ ! -f "$candidato/install.sh" ] || [ ! -f "$candidato/lib/comum.sh" ]; then
-        falha "'$candidato' (vindo de $origem) nao parece o clone do DG Claw: falta o install.sh ou o lib/comum.sh." \
-              "informe a pasta certa: sudo dgclaw atualizar --repo <pasta do clone>"
+        falha "'$candidato' (vindo de $origem) nao parece o clone do Prumo da Locadora: falta o install.sh ou o lib/comum.sh." \
+              "informe a pasta certa: sudo prumo atualizar --repo <pasta do clone>"
     fi
     ATU_REPO="$candidato"
     if ! git_do_clone "$ATU_REPO" rev-parse --git-dir >/dev/null 2>&1; then
@@ -94,7 +94,7 @@ atualizar_achar_repo() {
         fi
         aviso "'$ATU_REPO' nao e um repositorio git; vou so reinstalar o que esta na pasta. Nao havera como anotar a versao antiga no backup."
     fi
-    info "clone do DG Claw: $ATU_REPO (vindo de $origem)"
+    info "clone do Prumo da Locadora: $ATU_REPO (vindo de $origem)"
 }
 
 # atualizar_checar_clone: alteracao local para ou vai para o stash (so com --forcar-local).
@@ -109,7 +109,7 @@ atualizar_checar_clone() {
     if [ "$ATU_FORCAR_LOCAL" != 1 ]; then
         falha "o clone $ATU_REPO tem alteracao local que a atualizacao poderia atropelar:
 $(printf '%s\n' "$sujo" | head -n 15 | sed 's/^/     /')" \
-              "nada foi mudado. Guarde as alteracoes de lado (cd $ATU_REPO && git stash push -u -m $stamp) ou mova os arquivos para outra pasta, e rode de novo. Se quiser que eu guarde no stash por voce: sudo dgclaw atualizar --forcar-local"
+              "nada foi mudado. Guarde as alteracoes de lado (cd $ATU_REPO && git stash push -u -m $stamp) ou mova os arquivos para outra pasta, e rode de novo. Se quiser que eu guarde no stash por voce: sudo prumo atualizar --forcar-local"
     fi
     aviso "o clone tem alteracao local:"
     printf '%s\n' "$sujo" | head -n 15 | sed 's/^/        /' >&2
@@ -186,7 +186,7 @@ atualizar_conferir() {
                 fi ;;
             etc/dgclaw/primeiro-acesso.json)
                 if [ "$sha_atual" != "$hash" ]; then
-                    aviso "$rel mudou: o instalador gerou um link de primeiro acesso novo (a senha ainda nao tinha sido cadastrada). Gere o link com: sudo dgclaw primeiro-acesso"
+                    aviso "$rel mudou: o instalador gerou um link de primeiro acesso novo (a senha ainda nao tinha sido cadastrada). Gere o link com: sudo prumo primeiro-acesso"
                 fi ;;
             opt/dgclaw/admin/CLAUDE.md|opt/dgclaw/admin/AGENTS.md)
                 # Igual ao de antes, ou era o modelo de fabrica e foi trocado pelo novo. Personalizado nao muda.
@@ -227,11 +227,11 @@ atualizar_rodar_install() {
     info "rodando: bash $ATU_REPO/install.sh ${args[*]}  (sem pergunta nenhuma; a senha atual do painel continua valendo)"
     # O link de primeiro acesso, se o instalador gerar um, e credencial: nao vai para o log.
     set +e
-    bash "$ATU_REPO/install.sh" "${args[@]}" </dev/null 2>&1 | sed 's|primeiro-acesso#[A-Za-z0-9_-]*|primeiro-acesso#(oculto; gere outro com: sudo dgclaw primeiro-acesso)|'
+    bash "$ATU_REPO/install.sh" "${args[@]}" </dev/null 2>&1 | sed 's|primeiro-acesso#[A-Za-z0-9_-]*|primeiro-acesso#(oculto; gere outro com: sudo prumo primeiro-acesso)|'
     rc="${PIPESTATUS[0]}"
     set -e
     [ "$rc" -eq 0 ] || falha "o instalador ($ATU_REPO/install.sh) terminou com codigo $rc." \
-        "leia as linhas acima, que mostram a causa. Seus dados estao no backup; rodar de novo e seguro: sudo dgclaw atualizar --sem-baixar"
+        "leia as linhas acima, que mostram a causa. Seus dados estao no backup; rodar de novo e seguro: sudo prumo atualizar --sem-baixar"
 }
 
 # atualizar_aplicar: instalar + imagem + agentes. Compartilhado pela atualizacao e pelo --voltar.
@@ -262,7 +262,7 @@ atualizar_aplicar() {
     done < <(agentes_ler | jq -r '.agentes[] | select(.tipo == "agente") | .slug')
     if [ -n "$falhou" ]; then
         ATU_PROBLEMAS=$((ATU_PROBLEMAS + 1))
-        printf '   FALHOU  nao consegui recriar:%s (leia as mensagens acima; a casa deles esta intacta). Se a mensagem listou coisas que existem so dentro do container, confira se pode perde-las antes de usar --forcar. Para refazer cada um: dgclaw agente recriar <slug> --forcar\n' "$falhou" >&2
+        printf '   FALHOU  nao consegui recriar:%s (leia as mensagens acima; a casa deles esta intacta). Se a mensagem listou coisas que existem so dentro do container, confira se pode perde-las antes de usar --forcar. Para refazer cada um: prumo agente recriar <slug> --forcar\n' "$falhou" >&2
     fi
     atualizar_juntar_tela_sem_senha
 }
@@ -282,30 +282,30 @@ atualizar_juntar_tela_sem_senha() {
 # atualizar_checar_vida: o status geral e a saude de cada agente que estava ligado.
 atualizar_checar_vida() {
     local slug runner estado saude
-    if [ "$ENSAIO" = 1 ]; then info "[ensaio] rodaria o dgclaw status e testaria a saude de cada agente"; return 0; fi
+    if [ "$ENSAIO" = 1 ]; then info "[ensaio] rodaria o prumo status e testaria a saude de cada agente"; return 0; fi
     set +e
     "$DGCLAW_BIN_REAL" status
     local rc=$?
     set -e
-    if [ "$rc" -ne 0 ]; then _atu_problema "o dgclaw status acusou servico essencial fora do ar (veja as linhas FALHOU acima)"; fi
+    if [ "$rc" -ne 0 ]; then _atu_problema "o prumo status acusou servico essencial fora do ar (veja as linhas FALHOU acima)"; fi
     while IFS=$'\t' read -r slug runner; do
         [ -n "$slug" ] || continue
         estado="$(estado_container "$slug")"
         if [ "$estado" = stopping ]; then
-            _atu_problema "agente $slug: o container esta preso em 'stopping'. Refaca com: dgclaw agente recriar $slug --forcar"
+            _atu_problema "agente $slug: o container esta preso em 'stopping'. Refaca com: prumo agente recriar $slug --forcar"
             ATU_AGENTES_FALHOS+=" $slug"
             continue
         fi
         # So o `created` (nunca subiu) e ligado aqui; `exited` pode ter sido desligado de proposito.
         if [ "$estado" = created ] && "$DGCLAW_BIN_REAL" agente iniciar "$slug"; then estado="$(estado_container "$slug")"; fi
         if [ "$estado" != running ]; then
-            aviso "agente $slug: container $estado (ele ja nao estava ligado ou nao subiu). Ligue com: dgclaw agente iniciar $slug"
+            aviso "agente $slug: container $estado (ele ja nao estava ligado ou nao subiu). Ligue com: prumo agente iniciar $slug"
             continue
         fi
         saude="$(saude_runner "${runner##*:}" "$estado")"
         if [ "$saude" = ok ]; then ok "agente $slug responde"
         else
-            _atu_problema "agente $slug: o container esta de pe, mas o runner nao responde. Tente: dgclaw agente reparar $slug"
+            _atu_problema "agente $slug: o container esta de pe, mas o runner nao responde. Tente: prumo agente reparar $slug"
             ATU_AGENTES_FALHOS+=" $slug"
         fi
     done < <(agentes_ler | jq -r '.agentes[] | select(.tipo == "agente") | [.slug, .runner] | @tsv')
@@ -378,13 +378,13 @@ atualizar_montar_resumo() {
     printf '%s\n' "$resultado"
     printf '  Versao:  %s (%s) -> %s (%s)\n' "$va" "${ATU_COMMIT_ANTIGO:0:10}" "$vn" "${cn:0:10}"
     printf '  Backup:  %s\n' "$ATU_BACKUP"
-    printf '  Para voltar atras: sudo dgclaw atualizar --voltar %s\n' "$ATU_BACKUP"
+    printf '  Para voltar atras: sudo prumo atualizar --voltar %s\n' "$ATU_BACKUP"
     printf '  Agentes que ficaram bem: %s\n' "${oks:-nenhum}"
     personalizacoes_linha_resumo
     for slug in $ATU_TELA_SEM_SENHA; do printf '  Tela sem senha: %s\n' "$(tela_texto_sem_senha "$slug")"; done
     if [ -n "${ATU_AGENTES_FALHOS// /}" ]; then
         printf '  Agentes COM PROBLEMA:%s\n' "$ATU_AGENTES_FALHOS"
-        for slug in $ATU_AGENTES_FALHOS; do printf '    para refazer: dgclaw agente recriar %s --forcar\n' "$slug"; done
+        for slug in $ATU_AGENTES_FALHOS; do printf '    para refazer: prumo agente recriar %s --forcar\n' "$slug"; done
     fi
     if [ "$ATU_PROBLEMAS" -gt 0 ] && [ -z "${ATU_AGENTES_FALHOS// /}" ]; then
         printf '  A conferencia acusou %s problema(s) (linhas FALHOU no log).\n' "$ATU_PROBLEMAS"
@@ -424,8 +424,8 @@ atualizar_validar_parecer_pedido() {
         esac
         [[ "$ATU_COMMIT_PARECER" =~ ^[0-9a-f]{40}$ ]] \
             || falha "falta o --commit do parecer, ou ele nao tem 40 caracteres hexadecimais (veio: ${ATU_COMMIT_PARECER:0:50})." \
-                     "rode 'sudo dgclaw atualizar --simular', leia o relatorio e copie o commit da linha DESTINO= : sudo dgclaw atualizar --parecer $ATU_PARECER --commit <40 caracteres> --motivo \"<texto curto>\""
-        [ -n "$ATU_MOTIVO" ] || falha "falta o --motivo do parecer." "diga em uma frase por que: sudo dgclaw atualizar --parecer $ATU_PARECER --motivo \"<texto curto>\""
+                     "rode 'sudo prumo atualizar --simular', leia o relatorio e copie o commit da linha DESTINO= : sudo prumo atualizar --parecer $ATU_PARECER --commit <40 caracteres> --motivo \"<texto curto>\""
+        [ -n "$ATU_MOTIVO" ] || falha "falta o --motivo do parecer." "diga em uma frase por que: sudo prumo atualizar --parecer $ATU_PARECER --motivo \"<texto curto>\""
         if [ "${#ATU_MOTIVO}" -gt 500 ] || [[ "$ATU_MOTIVO" == *$'\n'* ]]; then
             falha "o --motivo tem ${#ATU_MOTIVO} caracteres ou mais de uma linha." "resuma em uma linha de ate 500 caracteres."
         fi
@@ -434,11 +434,11 @@ atualizar_validar_parecer_pedido() {
         [ "$ATU_OK_DONO" != 1 ] || falha "--parecer nao combina com --ok-do-dono." "primeiro grave o parecer; depois, com o ok do dono, rode a atualizacao."
         [ -z "$voltar" ] || falha "--parecer nao combina com --voltar." "rode um de cada vez."
     elif [ -n "$ATU_MOTIVO" ] || [ -n "$ATU_COMMIT_PARECER" ]; then
-        falha "--motivo e --commit so valem junto de --parecer." "use: sudo dgclaw atualizar --parecer segura|arriscada --motivo \"<texto curto>\""
+        falha "--motivo e --commit so valem junto de --parecer." "use: sudo prumo atualizar --parecer segura|arriscada --motivo \"<texto curto>\""
     fi
     if [ "$ATU_APESAR" = 1 ] && [ "$ATU_OK_DONO" != 1 ]; then
         falha "--apesar-do-alerta so vale junto de --ok-do-dono." \
-              "ele existe para o caso em que o dono ouviu o alerta de risco e pediu, explicitamente, para instalar mesmo assim: sudo dgclaw atualizar --ok-do-dono --apesar-do-alerta"
+              "ele existe para o caso em que o dono ouviu o alerta de risco e pediu, explicitamente, para instalar mesmo assim: sudo prumo atualizar --ok-do-dono --apesar-do-alerta"
     fi
 }
 
@@ -454,31 +454,31 @@ atualizar_gravar_parecer() {
     # remoto andou desde entao, o que vai ser instalado nao e o que foi analisado.
     if [ -z "${OM_PREV_DEST:-}" ]; then
         falha "nao ha relatorio 'o que muda' gravado antes deste comando, entao nao ha o que o parecer confirme." \
-              "rode 'sudo dgclaw atualizar --simular', leia o relatorio e repita o parecer com o commit da linha DESTINO=."
+              "rode 'sudo prumo atualizar --simular', leia o relatorio e repita o parecer com o commit da linha DESTINO=."
     fi
     if [ "$ATU_COMMIT_PARECER" != "$OM_PREV_DEST" ]; then
         falha "o --commit informado (${ATU_COMMIT_PARECER:0:10}) nao e o do ultimo relatorio gravado (${OM_PREV_DEST:0:10})." \
-              "use o commit da linha DESTINO= do relatorio que voce leu. Se nao tem certeza de qual leu, rode 'sudo dgclaw atualizar --simular' de novo e analise esse."
+              "use o commit da linha DESTINO= do relatorio que voce leu. Se nao tem certeza de qual leu, rode 'sudo prumo atualizar --simular' de novo e analise esse."
     fi
     if [ "$ATU_COMMIT_PARECER" != "$alvo" ]; then
         falha "o repositorio andou: o relatorio que voce leu e de ${ATU_COMMIT_PARECER:0:10}, mas o destino agora e ${alvo:0:10}. Nada foi gravado." \
-              "rode 'sudo dgclaw atualizar --simular' de novo, analise a versao nova e grave o parecer com o commit dela."
+              "rode 'sudo prumo atualizar --simular' de novo, analise a versao nova e grave o parecer com o commit dela."
     fi
     if [ "${OM_PREV_PERS:-}" != "${ATU_PERS_HEAD:-}" ] || [ "${OM_PREV_MODO:-}" != "${ATU_MODO_INST:-}" ]; then
         falha "as personalizacoes ou o modo de instalacao mudaram depois do relatorio que voce leu (relatorio: ${OM_PREV_PERS:0:10} / ${OM_PREV_MODO:-sem registro}; agora: ${ATU_PERS_HEAD:0:10} / ${ATU_MODO_INST}). Nada foi gravado." \
-              "rode 'sudo dgclaw atualizar --simular', leia o relatorio novo e de o parecer de novo."
+              "rode 'sudo prumo atualizar --simular', leia o relatorio novo e de o parecer de novo."
     fi
     # A versao instalada tambem faz parte do que foi analisado: se ela mudou entre o --simular e o --parecer (uma
     # restauracao, uma atualizacao a mao), o parecer seria "B para C" sobre uma analise de "A para C".
     if [ "${OM_PREV_INST:-}" != "${ATU_COMMIT_ANTIGO:-}" ]; then
         falha "a versao instalada mudou depois do relatorio que voce leu (relatorio: ${OM_PREV_INST:0:10}${OM_PREV_INST:+, }agora: ${ATU_COMMIT_ANTIGO:0:10}). Nada foi gravado." \
-              "rode 'sudo dgclaw atualizar --simular' de novo, leia o relatorio novo e grave o parecer dele."
+              "rode 'sudo prumo atualizar --simular' de novo, leia o relatorio novo e grave o parecer dele."
     fi
     instalado="$OM_PREV_INST"
     # So vale quando a origem da versao instalada e verificavel: o "HEAD do clone" e um palpite, e com o clone ja puxado
     # a mao ele e igual ao destino, o que travaria o parecer (e, sem parecer, o --ok-do-dono) sem saida.
     if [ "$alvo" = "$instalado" ] && [ "${PERS_ATIVO:-0}" != 1 ] && [ "${ATU_COMMIT_ORIGEM:-}" != "HEAD do clone" ]; then
-        falha "o destino (${alvo:0:10}) e o commit que ja esta instalado: nao ha atualizacao para dar parecer." "nada a fazer. Se acredita que saiu versao nova, confira: sudo dgclaw atualizar --checar"
+        falha "o destino (${alvo:0:10}) e o commit que ja esta instalado: nao ha atualizacao para dar parecer." "nada a fazer. Se acredita que saiu versao nova, confira: sudo prumo atualizar --checar"
     fi
     # O comando inteiro roda em modo ensaio (ler o que muda nao pode mudar nada); gravar o parecer e a unica excecao.
     local ensaio_antes="$ENSAIO"; ENSAIO=0
@@ -493,9 +493,9 @@ atualizar_gravar_parecer() {
     ENSAIO="$ensaio_antes"
     ok "parecer '$ATU_PARECER' gravado para a versao ${alvo:0:10} em $arq"
     if [ "$ATU_PARECER" = segura ]; then
-        info "Com o sim do dono: sudo dgclaw atualizar --ok-do-dono --segundo-plano"
+        info "Com o sim do dono: sudo prumo atualizar --ok-do-dono --segundo-plano"
     else
-        info "Parecer ARRISCADA: a instalacao fica bloqueada. Conte o alerta ao dono. So se ele, depois de ouvir, pedir explicitamente para instalar mesmo assim: sudo dgclaw atualizar --ok-do-dono --apesar-do-alerta --segundo-plano"
+        info "Parecer ARRISCADA: a instalacao fica bloqueada. Conte o alerta ao dono. So se ele, depois de ouvir, pedir explicitamente para instalar mesmo assim: sudo prumo atualizar --ok-do-dono --apesar-do-alerta --segundo-plano"
     fi
 }
 
@@ -508,36 +508,36 @@ atualizar_conferir_parecer() {
         # Sem identidade verificavel do destino nao ha a que prender o parecer: bloqueia, em vez de deixar passar.
         atualizar_registrar bloqueio "motivo=destino-sem-identidade"
         falha "nao consigo identificar a versao de destino (o clone nao e um repositorio git ou nao tem de onde puxar), entao nao ha como conferir o parecer." \
-              "faca da pasta um clone git do Prumo da Locadora oficial (git clone https://github.com/diegohoraadm-cpu/prumo-da-locadora), aponte para ele com --repo e rode de novo: sudo dgclaw atualizar --simular, depois o parecer e o --ok-do-dono. Nada foi mudado (parei antes do backup)."
+              "faca da pasta um clone git do Prumo da Locadora oficial (git clone https://github.com/diegohoraadm-cpu/prumo-da-locadora), aponte para ele com --repo e rode de novo: sudo prumo atualizar --simular, depois o parecer e o --ok-do-dono. Nada foi mudado (parei antes do backup)."
     fi
     arq="$(atualizar_parecer_arquivo)"
     if [ ! -f "$arq" ]; then
         atualizar_registrar bloqueio "alvo=${alvo:0:12} motivo=sem-parecer"
         falha "falta o parecer sobre a versao ${alvo:0:10} (nao existe $arq). Nunca se atualiza as cegas." \
-              "rode o relatorio (sudo dgclaw atualizar --simular), leia o que muda e o que este Prumo da Locadora usa, diga ao dono se e segura e vale a pena, e grave o veredito: sudo dgclaw atualizar --parecer segura --commit <commit do DESTINO> --motivo \"<texto curto>\" (ou arriscada). Depois repita com --ok-do-dono. Nada foi mudado (parei antes do backup)."
+              "rode o relatorio (sudo prumo atualizar --simular), leia o que muda e o que este Prumo da Locadora usa, diga ao dono se e segura e vale a pena, e grave o veredito: sudo prumo atualizar --parecer segura --commit <commit do DESTINO> --motivo \"<texto curto>\" (ou arriscada). Depois repita com --ok-do-dono. Nada foi mudado (parei antes do backup)."
     fi
     if ! lido="$(jq -r '[(.commit_alvo // ""), (.veredito // ""), (.motivo // ""), (.data // ""), (.personalizacoes // "-"), (.modo // "-"), (.commit_instalado // "-")] | @tsv' "$arq" 2>&1)"; then
         falha "nao consegui ler o parecer em $arq ($(printf '%s' "$lido" | head -n 1 | tr -d '\000-\037\177' | cut -c1-120))." \
-              "grave o parecer de novo: sudo dgclaw atualizar --parecer segura --commit <commit do DESTINO> --motivo \"<texto curto>\". Nada foi mudado."
+              "grave o parecer de novo: sudo prumo atualizar --parecer segura --commit <commit do DESTINO> --motivo \"<texto curto>\". Nada foi mudado."
     fi
     IFS=$'\t' read -r commit veredito motivo data pers modo inst_parecer <<<"$lido"
     motivo="$(printf '%s' "$motivo" | tr -d '\000-\037\177' | cut -c1-300)"
     if [ "$commit" != "$alvo" ]; then
         atualizar_registrar bloqueio "alvo=${alvo:0:12} motivo=parecer-de-outro-commit(${commit:0:12})"
         falha "o parecer gravado e sobre outra versao (${commit:0:10}); a versao a instalar agora e ${alvo:0:10}." \
-              "refaca a analise desta versao (sudo dgclaw atualizar --simular), diga ao dono e grave o parecer novo: sudo dgclaw atualizar --parecer segura|arriscada --motivo \"<texto curto>\". Nada foi mudado (parei antes do backup)."
+              "refaca a analise desta versao (sudo prumo atualizar --simular), diga ao dono e grave o parecer novo: sudo prumo atualizar --parecer segura|arriscada --motivo \"<texto curto>\". Nada foi mudado (parei antes do backup)."
     fi
     # O parecer foi dado para sair de uma versao instalada para o destino. Se a instalacao andou (voltou, foi atualizada
     # a mao), o que foi analisado nao e mais o que vai acontecer.
     if [ "$inst_parecer" != "${ATU_COMMIT_ANTIGO:-}" ]; then
         atualizar_registrar bloqueio "alvo=${alvo:0:12} motivo=instalado-mudou(${inst_parecer:0:12}->${ATU_COMMIT_ANTIGO:0:12})"
         falha "o parecer foi dado para quem estava na versao ${inst_parecer:0:10}, mas a versao instalada agora e ${ATU_COMMIT_ANTIGO:0:10} (destino ${alvo:0:10})." \
-              "a instalacao mudou depois da analise. Rode 'sudo dgclaw atualizar --simular', leia o relatorio novo e grave o parecer de novo (--parecer segura|arriscada --commit <commit do DESTINO>). Nada foi mudado (parei antes do backup)."
+              "a instalacao mudou depois da analise. Rode 'sudo prumo atualizar --simular', leia o relatorio novo e grave o parecer de novo (--parecer segura|arriscada --commit <commit do DESTINO>). Nada foi mudado (parei antes do backup)."
     fi
     if [ "$pers" != "${ATU_PERS_HEAD:-nenhuma}" ] || [ "$modo" != "${ATU_MODO_INST:-oficial}" ]; then
         atualizar_registrar bloqueio "alvo=${alvo:0:12} motivo=personalizacoes-ou-modo-mudaram"
         falha "as personalizacoes mudaram depois do parecer (ou o modo de instalacao: parecer ${pers:0:10} / $modo, agora ${ATU_PERS_HEAD:0:10} / ${ATU_MODO_INST:-oficial})." \
-              "rode --simular e de o parecer de novo: sudo dgclaw atualizar --simular, depois --parecer segura|arriscada --commit <commit do DESTINO> --motivo \"<texto curto>\". Nada foi mudado (parei antes do backup)."
+              "rode --simular e de o parecer de novo: sudo prumo atualizar --simular, depois --parecer segura|arriscada --commit <commit do DESTINO> --motivo \"<texto curto>\". Nada foi mudado (parei antes do backup)."
     fi
     case "$veredito" in
         segura)
@@ -550,10 +550,10 @@ atualizar_conferir_parecer() {
             else
                 atualizar_registrar bloqueio "alvo=${alvo:0:12} motivo=parecer-arriscada"
                 falha "o parecer sobre a versao ${alvo:0:10} e ARRISCADA, e a instalacao esta bloqueada. O alerta: $motivo" \
-                      "conte o alerta ao dono em linguagem simples. So se ele, depois de ouvir, pedir explicitamente para instalar mesmo assim, rode: sudo dgclaw atualizar --ok-do-dono --apesar-do-alerta --segundo-plano. Nada foi mudado (parei antes do backup)."
+                      "conte o alerta ao dono em linguagem simples. So se ele, depois de ouvir, pedir explicitamente para instalar mesmo assim, rode: sudo prumo atualizar --ok-do-dono --apesar-do-alerta --segundo-plano. Nada foi mudado (parei antes do backup)."
             fi ;;
         *)
-            falha "o parecer em $arq tem um veredito que eu nao conheco ('${veredito:0:20}')." "grave de novo: sudo dgclaw atualizar --parecer segura|arriscada --motivo \"<texto curto>\". Nada foi mudado." ;;
+            falha "o parecer em $arq tem um veredito que eu nao conheco ('${veredito:0:20}')." "grave de novo: sudo prumo atualizar --parecer segura|arriscada --motivo \"<texto curto>\". Nada foi mudado." ;;
     esac
 }
 
@@ -568,17 +568,17 @@ atualizar_main() {
         a="$1"
         case "$a" in
             --simular) ENSAIO=1; simular_pedido=1 ;;
-            --parecer) [ $# -ge 2 ] || falha "a opcao --parecer precisa de segura ou arriscada." "exemplo: sudo dgclaw atualizar --parecer segura --commit <commit do DESTINO> --motivo \"so muda texto de ajuda\""
+            --parecer) [ $# -ge 2 ] || falha "a opcao --parecer precisa de segura ou arriscada." "exemplo: sudo prumo atualizar --parecer segura --commit <commit do DESTINO> --motivo \"so muda texto de ajuda\""
                        ATU_PARECER="$2"; ATU_MODO=parecer; shift ;;
             --parecer=*) ATU_PARECER="${a#*=}"; ATU_MODO=parecer ;;
-            --motivo) [ $# -ge 2 ] || falha "a opcao --motivo precisa de um texto curto." "exemplo: sudo dgclaw atualizar --parecer segura --commit <commit do DESTINO> --motivo \"so muda texto de ajuda\""
+            --motivo) [ $# -ge 2 ] || falha "a opcao --motivo precisa de um texto curto." "exemplo: sudo prumo atualizar --parecer segura --commit <commit do DESTINO> --motivo \"so muda texto de ajuda\""
                       ATU_MOTIVO="$2"; shift ;;
             --motivo=*) ATU_MOTIVO="${a#*=}" ;;
-            --commit) [ $# -ge 2 ] || falha "a opcao --commit precisa do commit de destino (40 caracteres hexadecimais)." "ele esta na linha DESTINO= do relatorio de 'sudo dgclaw atualizar --simular'"
+            --commit) [ $# -ge 2 ] || falha "a opcao --commit precisa do commit de destino (40 caracteres hexadecimais)." "ele esta na linha DESTINO= do relatorio de 'sudo prumo atualizar --simular'"
                       ATU_COMMIT_PARECER="$2"; shift ;;
             --commit=*) ATU_COMMIT_PARECER="${a#*=}" ;;
             --apesar-do-alerta) ATU_APESAR=1 ;;
-            --repo) [ $# -ge 2 ] || falha "a opcao --repo precisa de um valor." "exemplo: sudo dgclaw atualizar --repo /root/DG-Claw"; repo_arg="$2"; shift ;;
+            --repo) [ $# -ge 2 ] || falha "a opcao --repo precisa de um valor." "exemplo: sudo prumo atualizar --repo /root/DG-Claw"; repo_arg="$2"; shift ;;
             --repo=*) repo_arg="${a#*=}" ;;
             --forcar-local) ATU_FORCAR_LOCAL=1 ;;
             --sem-baixar) ATU_SEM_BAIXAR=1 ;;
@@ -588,9 +588,9 @@ atualizar_main() {
             --sem-personalizacoes) export ATU_SEM_PERS=1 ;;
             --mesmo-assim) mesmo_assim=1 ;;
             --sem-voltar-sozinho) ATU_SEM_VOLTAR=1 ;;
-            --voltar) [ $# -ge 2 ] || falha "a opcao --voltar precisa da pasta do backup." "exemplo: sudo dgclaw atualizar --voltar /var/backups/dgclaw/20261018-093000"; voltar="$2"; ATU_MODO=voltar; shift ;;
+            --voltar) [ $# -ge 2 ] || falha "a opcao --voltar precisa da pasta do backup." "exemplo: sudo prumo atualizar --voltar /var/backups/dgclaw/20261018-093000"; voltar="$2"; ATU_MODO=voltar; shift ;;
             --voltar=*) voltar="${a#*=}"; ATU_MODO=voltar ;;
-            *) falha "a opcao '$a' nao existe em 'atualizar'." "veja as opcoes com: dgclaw --ajuda" ;;
+            *) falha "a opcao '$a' nao existe em 'atualizar'." "veja as opcoes com: prumo --ajuda" ;;
         esac
         shift
     done
@@ -600,11 +600,11 @@ atualizar_main() {
     exigir_ferramentas git jq tar sha256sum podman curl rsync
     carregar_env_dgclaw
     if [ ! -f "$DG_ETC/dgclaw.env" ]; then
-        falha "o DG Claw nao parece instalado aqui: falta $DG_ETC/dgclaw.env." "instale primeiro: sudo ./install.sh --usuario <nome>"
+        falha "o Prumo da Locadora nao parece instalado aqui: falta $DG_ETC/dgclaw.env." "instale primeiro: sudo ./install.sh --usuario <nome>"
     fi
 
     if [ "$segundo_plano" = 1 ]; then
-        [ "$ENSAIO" != 1 ] || falha "--segundo-plano nao combina com --simular." "rode a simulacao direto: sudo dgclaw atualizar --simular"
+        [ "$ENSAIO" != 1 ] || falha "--segundo-plano nao combina com --simular." "rode a simulacao direto: sudo prumo atualizar --simular"
         atualizar_segundo_plano "${repassar[@]}"
         return 0
     fi
@@ -616,7 +616,7 @@ atualizar_main() {
     elif [ "$ENSAIO" = 1 ]; then printf 'SIMULACAO: nada sera mudado; so mostro o que seria feito.\n'; fi
 
     ATU_ETAPA="conferindo o clone"
-    passo "Achando o clone do DG Claw e conferindo que esta limpo"
+    passo "Achando o clone do Prumo da Locadora e conferindo que esta limpo"
     atualizar_achar_repo "$repo_arg"
     atualizar_checar_clone
 
@@ -682,7 +682,7 @@ atualizar_main() {
     if [ "$reinicia" = 1 ]; then
         atualizar_agendar_reinicio_do_admin "$resumo_arq" "$log_arq"
     elif [ -n "${ATU_AGENTES_FALHOS// /}" ]; then
-        aviso "NAO vou reiniciar o Admin: o(s) agente(s)${ATU_AGENTES_FALHOS} nao ficou(aram) bem, e o Admin precisa continuar de pe, com o chat funcionando, para consertar. Tambem NAO desfiz a atualizacao: agente que nao sobe costuma ser problema do container dele, nao da versao, e voltar repetiria a falha. Refaca cada um com: dgclaw agente recriar <slug> --forcar"
+        aviso "NAO vou reiniciar o Admin: o(s) agente(s)${ATU_AGENTES_FALHOS} nao ficou(aram) bem, e o Admin precisa continuar de pe, com o chat funcionando, para consertar. Tambem NAO desfiz a atualizacao: agente que nao sobe costuma ser problema do container dele, nao da versao, e voltar repetiria a falha. Refaca cada um com: prumo agente recriar <slug> --forcar"
     else
         aviso "houve $ATU_PROBLEMAS problema(s) na conferencia; deixo o Admin como esta, para voce nao perder o chat enquanto resolve."
     fi
@@ -690,7 +690,7 @@ atualizar_main() {
     trap - EXIT; _atu_tira_marca
     printf '\n'
     if [ "$ENSAIO" = 1 ]; then
-        printf 'Simulacao terminada: nada foi mudado. Para atualizar de verdade: sudo dgclaw atualizar\n'
+        printf 'Simulacao terminada: nada foi mudado. Para atualizar de verdade: sudo prumo atualizar\n'
         return 0
     fi
     if [ "$reinicia" != 1 ]; then
@@ -737,10 +737,10 @@ atualizar_voltar_sozinho() {
     atualizar_voltar "$backup_orig" "$sem_homes" 0
     {
         printf '\nO que aconteceu: %s.\n' "$motivo"
-        printf 'O DG Claw esta de volta na versao de antes. O backup que usei esta em %s.\n' "$backup_orig"
-        printf 'O que fazer agora: leia as linhas FALHOU acima para saber a causa; quando ela estiver resolvida, rode de novo: sudo dgclaw atualizar.\n'
-        printf 'Se quiser investigar com a versao nova instalada, rode: sudo dgclaw atualizar --sem-voltar-sozinho (ele para no erro e nao desfaz).\n'
-        printf 'Se algum agente nao estiver bem depois disto, o conserto e: sudo dgclaw agente recriar <slug> --forcar.\n'
+        printf 'O Prumo da Locadora esta de volta na versao de antes. O backup que usei esta em %s.\n' "$backup_orig"
+        printf 'O que fazer agora: leia as linhas FALHOU acima para saber a causa; quando ela estiver resolvida, rode de novo: sudo prumo atualizar.\n'
+        printf 'Se quiser investigar com a versao nova instalada, rode: sudo prumo atualizar --sem-voltar-sozinho (ele para no erro e nao desfaz).\n'
+        printf 'Se algum agente nao estiver bem depois disto, o conserto e: sudo prumo agente recriar <slug> --forcar.\n'
     } >&2
     depois_de_atualizar voltou-sozinho
 }
@@ -823,7 +823,7 @@ atualizar_segundo_plano() {
         --setenv="PATH=$PATH" --setenv="NO_COLOR=1" --setenv="DGCLAW_ATUALIZAR_LOG=$log" ${R:+--setenv="DGCLAW_RAIZ=$R"} \
         "$DGCLAW_BIN_REAL" atualizar "${args[@]}" >/dev/null \
         || falha "o systemd-run nao conseguiu iniciar a atualizacao em segundo plano (unidade $unidade)." \
-                 "rode direto no terminal, sem --segundo-plano: sudo dgclaw atualizar"
+                 "rode direto no terminal, sem --segundo-plano: sudo prumo atualizar"
     printf 'A atualizacao esta rodando em segundo plano (unidade %s).\n' "$unidade"
     printf '  Acompanhar:  tail -f %s\n' "$log"
     printf '  Terminou?    systemctl is-active %s   (inactive = acabou; o fim do log diz se deu certo)\n' "$unidade"
@@ -847,7 +847,7 @@ atualizar_voltar() {
     extras="$(backup_agentes_novos "$b/MANIFESTO.txt")"
     if [ -n "$extras" ] && [ "$mesmo_assim" != 1 ]; then
         falha "estes agentes foram criados DEPOIS desse backup:$extras. Restaurar o agentes.json do backup os tiraria do painel (as pastas deles ficam, mas eles somem da lista)." \
-              "se quer voltar mesmo assim: sudo dgclaw atualizar --voltar $b --mesmo-assim. Se nao, escolha um backup mais recente: ls $DG_BACKUPS"
+              "se quer voltar mesmo assim: sudo prumo atualizar --voltar $b --mesmo-assim. Se nao, escolha um backup mais recente: ls $DG_BACKUPS"
     fi
 
     if [ "$ENSAIO" = 1 ]; then

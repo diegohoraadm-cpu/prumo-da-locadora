@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""watchdog.py (DG Claw) — Vigia da SESSAO VIVA do agente (a sessao --channels que serve
+"""watchdog.py (Prumo da Locadora) — Vigia da SESSAO VIVA do agente (a sessao --channels que serve
 o bot Telegram e onde os crons de vida injetam seus pokes).
 
-A sessao alvo e a do DG Claw: o processo `claude --channels --name dgclaw-<slug>` (User=root),
+A sessao alvo e a do Prumo da Locadora: o processo `claude --channels --name dgclaw-<slug>` (User=root),
 subido pelo servico `dgclaw-<slug>.service` e reiniciavel por `systemctl restart dgclaw-<slug>.service`.
 
 Duas coberturas, ambas com o MESMO cap anti-storm:
@@ -49,7 +49,7 @@ janela deslizante (default 3 / 60 min), persistido em <ws>/.dgclaw/logs/.watchdo
 (mesmo nome que o doctor.sh checa).
 Estourou o cap -> NAO reinicia: notifica o dono 1x (dedup) pedindo olho manual e sai 0.
 
-Tudo parametrizado por env do contrato DG Claw. ZERO hardcode de persona/paths/dados pessoais.
+Tudo parametrizado por env do contrato Prumo da Locadora. ZERO hardcode de persona/paths/dados pessoais.
 Notificacao SEMPRE via scripts/notify-owner.sh (bot do dono, sem markdown).
 
 Env:
@@ -92,7 +92,7 @@ from pulso_lib import pulso_write  # noqa: E402
 FALHAS = []
 
 
-# ─── resolucao de env (contrato DG Claw) ─────────────────────────────────────
+# ─── resolucao de env (contrato Prumo da Locadora) ─────────────────────────────────────
 
 def env(name, default=""):
     return os.environ.get(name, default)
@@ -268,9 +268,9 @@ def observe_only(service, reason, state, state_path) -> str:
     'warned_off'), igual ao watchdog.sh aposentado. A flag e rearmada quando a sessao volta."""
     if not state.get("warned_off"):
         notify_owner(
-            f"⚠️ Watchdog DG Claw: a sessao viva {reason}, mas o auto-recovery esta DESLIGADO "
+            f"⚠️ Watchdog Prumo da Locadora: a sessao viva {reason}, mas o auto-recovery esta DESLIGADO "
             f"(DGCLAW_AUTO_RECOVERY=off), entao NAO vou reiniciar sozinho. Reinicie pelo botao "
-            f"Reiniciar do painel (ou rode /dgclaw:doctor --fix)."
+            f"Reiniciar do painel (ou rode sudo prumo agente reparar <slug>)."
         )
         state["warned_off"] = True
         save_state(state_path, state)
@@ -289,7 +289,7 @@ def attempt_restart(service, reason, state, state_path, now, max_restarts, windo
         # Cap estourado: NAO reinicia. Notifica o dono 1x por estouro (dedup por flag).
         if not state.get("storm_notified"):
             notify_owner(
-                f"🚨 Watchdog DG Claw: a sessao viva caiu/travou de novo, mas ja reiniciei "
+                f"🚨 Watchdog Prumo da Locadora: a sessao viva caiu/travou de novo, mas ja reiniciei "
                 f"{len(recents)}x na ultima ~{window_min}min (cap atingido). NAO vou ficar "
                 f"reiniciando em loop. Precisa de olho manual (servico: {service})."
             )
@@ -304,14 +304,14 @@ def attempt_restart(service, reason, state, state_path, now, max_restarts, windo
 
     if ok:
         notify_owner(
-            f"🔧 Watchdog DG Claw: a sessao viva {reason} — reiniciei {service} "
+            f"🔧 Watchdog Prumo da Locadora: a sessao viva {reason} — reiniciei {service} "
             f"automaticamente ({len(state['restarts'])}/{max_restarts} na janela de {window_min}min). "
             f"Se voce mandou msg e nao respondeu, reenvia."
         )
         return f"reiniciei ({reason}) — {len(state['restarts'])}/{max_restarts}"
     FALHAS.append(f"restart FALHOU ({reason}): {erro}")
     notify_owner(
-        f"🚨 Watchdog DG Claw: a sessao viva {reason} e o reinicio automatico FALHOU "
+        f"🚨 Watchdog Prumo da Locadora: a sessao viva {reason} e o reinicio automatico FALHOU "
         f"({erro[:160]}). Precisa de olho manual."
     )
     return f"restart FALHOU ({reason}): {erro}"

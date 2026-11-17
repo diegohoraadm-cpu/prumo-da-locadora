@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dgclaw-agente: comandos do agente DG Claw que rodam DENTRO do container, como usuario "agente".
+# dgclaw-agente: comandos do agente Prumo da Locadora que rodam DENTRO do container, como usuario "agente".
 #
 # Uso:
 #   dgclaw-agente canal telegram token              (token do bot pelo stdin)
@@ -120,10 +120,10 @@ cmd_token() {
   echo "@$user"
 }
 
-# Confere o token que o DG Claw Web guardou no .env (o agente nunca ve o token cru).
+# Confere o token que o Prumo da Locadora Web guardou no .env (o agente nunca ve o token cru).
 cmd_conferir() {
-  [ -f "$ENVF" ] || die "nenhum token guardado ainda; peca ao dono para colar o token do BotFather na conversa do DG Claw. Ele e guardado sozinho e o token nao passa por aqui."
-  BOT="$(ler_salvo)" || die "o arquivo $ENVF existe, mas nao tem a linha TELEGRAM_BOT_TOKEN=. Peca ao dono para colar o token do BotFather na conversa do DG Claw de novo."
+  [ -f "$ENVF" ] || die "nenhum token guardado ainda; peca ao dono para colar o token do BotFather na conversa do Prumo da Locadora. Ele e guardado sozinho e o token nao passa por aqui."
+  BOT="$(ler_salvo)" || die "o arquivo $ENVF existe, mas nao tem a linha TELEGRAM_BOT_TOKEN=. Peca ao dono para colar o token do BotFather na conversa do Prumo da Locadora de novo."
   # Sem o modo do arquivo a checagem de permissao e apenas pulada (o aviso abaixo e so um reforco).
   local modo; modo="$(stat -c %a "$ENVF" 2>/dev/null || true)"
   if [ -n "$modo" ] && [ "$modo" != "600" ]; then

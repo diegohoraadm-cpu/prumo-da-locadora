@@ -1,7 +1,7 @@
 // Tipos do agente, copiados de @agent-panel/shared (dg-ai-bunker, packages/shared/src/types.ts).
 //
 // O runner nasceu dentro do monorepo do Bunker e importava estes tipos do pacote
-// compartilhado. No DG Claw ele roda sozinho, na VPS do aluno, onde não existe
+// compartilhado. No Prumo da Locadora ele roda sozinho, na VPS do aluno, onde não existe
 // Bunker nem monorepo: por isso os tipos que ele usa moram aqui. Só tipos, nada de
 // código. Se o Bunker mudar o formato de AgentConfig ou AgentState, este arquivo
 // precisa acompanhar à mão.
@@ -87,7 +87,7 @@ export interface AgentConfig {
    *             POST /api/fin/spawn (o WS spawn_agent rejeita), roda no workspace
    *             financeiro, recebe env Pluggy/fin.db e morre quando a área
    *             tranca. Nunca persiste no data/agents.json.
-   * - `manager` Agente gestor de um projeto (Fase 1): conversa pelo DG Chat,
+   * - `manager` Agente gestor de um projeto (Fase 1): conversa pelo chat do painel,
    *             cria tarefa, spawna filhas e escala decisão pro dono.
    * - `child`   Sessão filha spawnada por um gestor pra executar uma tarefa.
    *             Nasce em permissionMode "auto" (nunca bypass): o classificador do
@@ -216,7 +216,7 @@ export interface AgentConfig {
    * status que o Bunker já escreve. Cada item é a linha de comando inteira, como
    * o Claude Code a executará.
    *
-   * É por aqui que entra a trava do DG Chat
+   * É por aqui que entra a trava do chat do painel
    * (`apps/agents-server/hooks/stop-force-reply.py`), que devolve o turno ao
    * agente quando ele tenta encerrar sem ter entregue a resposta pela tool do
    * canal. Sem ela, o modo de falha mais comum do canal (escrever a resposta como

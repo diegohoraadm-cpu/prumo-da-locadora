@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Checagem de nova versão do Prumo da Locadora. Roda como root, pelo timer dgclaw-checar-atualizacao.timer
-// (a cada 6 h) e por `dgclaw atualizar --checar`. Contrato, decisões e arquivos: docs/AVISO-DE-ATUALIZACAO.md.
+// (a cada 6 h) e por `prumo atualizar --checar`. Contrato, decisões e arquivos: docs/AVISO-DE-ATUALIZACAO.md.
 //
 // O que faz: pergunta ao GitHub (leitura pública, sem token) se a branch principal do repositório
 // oficial tem commits que a instalação ainda não tem. Se tiver, guarda o resumo do que mudou num
@@ -429,13 +429,13 @@ async function principal() {
   if (env.DGCLAW_AVISO_ATUALIZACAO === '0') {
     gravaJson(ARQ_ESTADO, estadoVazio({ desligado: true }));
     anota('aviso de atualização desligado (DGCLAW_AVISO_ATUALIZACAO=0); não consultei o GitHub.');
-    mostra(['O aviso de nova versão está desligado. Para ligar: sudo dgclaw atualizar --aviso ligar']);
+    mostra(['O aviso de nova versão está desligado. Para ligar: sudo prumo atualizar --aviso ligar']);
     return;
   }
 
   const instalado = env.DGCLAW_COMMIT || '';
   if (!RX_SHA.test(instalado)) {
-    registraErro('Não sei qual commit está instalado: o dgclaw.env não tem DGCLAW_COMMIT (instalação antiga, ou feita de um zip). Rode sudo ./install.sh de dentro do clone, ou sudo dgclaw atualizar uma vez, e a checagem passa a funcionar.', anterior, null);
+    registraErro('Não sei qual commit está instalado: o dgclaw.env não tem DGCLAW_COMMIT (instalação antiga, ou feita de um zip). Rode sudo ./install.sh de dentro do clone, ou sudo prumo atualizar uma vez, e a checagem passa a funcionar.', anterior, null);
     return;
   }
   const versaoInstalada = env.DGCLAW_VERSAO && RX_VERSAO.test(env.DGCLAW_VERSAO) ? env.DGCLAW_VERSAO : null;
@@ -448,7 +448,7 @@ async function principal() {
     if (aviso_desligado()) {
       gravaJson(ARQ_ESTADO, estadoVazio({ desligado: true }));
       anota('o aviso foi desligado durante a checagem; gravei "desligado" e descartei o resultado.');
-      mostra(['O aviso de nova versão foi desligado durante a checagem. Para ligar: sudo dgclaw atualizar --aviso ligar']);
+      mostra(['O aviso de nova versão foi desligado durante a checagem. Para ligar: sudo prumo atualizar --aviso ligar']);
       return;
     }
     gravaJson(ARQ_ESTADO, estado);
@@ -468,16 +468,16 @@ async function principal() {
     const para = estado.publicado.versao || estado.publicado.commit.slice(0, 7);
     anota(`versão nova: ${de} -> ${para} (${estado.commits_a_frente} à frente; resumo pelo ${estado.fonte_resumo}).`);
     mostra([
-      `Há uma versão nova do DG Claw: ${de} -> ${para} (${estado.commits_a_frente} ${estado.commits_a_frente === 1 ? 'mudança' : 'mudanças'} à frente).`,
+      `Há uma versão nova do Prumo da Locadora: ${de} -> ${para} (${estado.commits_a_frente} ${estado.commits_a_frente === 1 ? 'mudança' : 'mudanças'} à frente).`,
       'O resumo do que mudou está na faixa do painel ("Ver o que mudou"); por aqui só mostro as versões.',
-      'Nada foi baixado nem instalado. Para instalar: sudo dgclaw atualizar',
+      'Nada foi baixado nem instalado. Para instalar: sudo prumo atualizar',
     ]);
   } else if (estado.motivo) {
     anota(`sem aviso: ${estado.motivo}`);
     mostra([`Não há aviso a dar (${estado.motivo}). Nada foi baixado nem instalado.`]);
   } else {
     anota(`em dia (${instalado.slice(0, 7)}).`);
-    mostra(['O DG Claw está em dia com a versão publicada no GitHub.']);
+    mostra(['O Prumo da Locadora está em dia com a versão publicada no GitHub.']);
   }
 
   try {

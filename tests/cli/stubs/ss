@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Com -H (como o dgclaw suporte usa): so as conexoes de $STUB_ESTADO/ss-conexoes, uma por linha, sem cabecalho.
+# Com -H (como o prumo suporte usa): so as conexoes de $STUB_ESTADO/ss-conexoes, uma por linha, sem cabecalho.
 # Sem -H: mostra as portas "ocupadas" listadas (uma por linha) em $STUB_ESTADO/ss.
 case " $* " in
     *" -tnpH "*)

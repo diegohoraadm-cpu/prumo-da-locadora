@@ -3,7 +3,7 @@
 #
 # A fonte unica e $DG_CASAS/<slug>/runner/restricoes.json: pasta do dono do servidor (root), montada
 # so leitura dentro da caixa. Nada que o agente ou a imagem faca apaga esse arquivo, e por isso a
-# restricao sobrevive ao `dgclaw atualizar`, ao `agente recriar` e ao `agente reparar`.
+# restricao sobrevive ao `prumo atualizar`, ao `agente recriar` e ao `agente reparar`.
 # `aplicar_restricoes` traduz o arquivo em duas coisas, sempre de forma idempotente:
 #   - denyTools (e a saida de allowTools) no runner.json;
 #   - o gancho PreToolUse de escrita no .claude/settings.json da casa do agente.
@@ -46,7 +46,7 @@ console.log("removido");'
 # qualquer outro meio. Por isso a combinacao e recusada em vez de prometer uma trava que nao existe.
 _restricoes_recusar_combinacao() {
     falha "o agente $1 ficaria com o envio de arquivos travado e o terminal (Bash) liberado: com o terminal liberado o agente consegue mandar o arquivo por fora das ferramentas, por exemplo falando direto com a ponte do WhatsApp. Nao gravei nada e deixei as travas atuais como estao." \
-        "trave os dois juntos: dgclaw agente restricoes $1 --sem-bash sim --sem-enviar-arquivo sim . Se prefere o terminal liberado, deixe o envio liberado: --sem-enviar-arquivo nao"
+        "trave os dois juntos: prumo agente restricoes $1 --sem-bash sim --sem-enviar-arquivo sim . Se prefere o terminal liberado, deixe o envio liberado: --sem-enviar-arquivo nao"
 }
 
 # restricoes_validar <restricoes.json> <slug> [permitir-combinacao]: para com erro (e nao muda nada) se o arquivo nao serve.
@@ -57,11 +57,11 @@ restricoes_validar() {
     local arq="$1" slug="$2" erro
     if [ -L "$arq" ] || [ ! -f "$arq" ]; then
         falha "$arq (restricoes do agente $slug) existe mas nao e um arquivo comum; nao apliquei nada e deixei as travas atuais como estao." \
-            "veja com: ls -la $arq . Se foi voce que o criou por engano, apague-o e rode: dgclaw agente restricoes $slug --sem-bash sim|nao ..."
+            "veja com: ls -la $arq . Se foi voce que o criou por engano, apague-o e rode: prumo agente restricoes $slug --sem-bash sim|nao ..."
     fi
     if ! jq -e . "$arq" >/dev/null 2>&1; then
         falha "$arq (restricoes do agente $slug) nao e um JSON valido; nao apliquei nada e deixei as travas atuais como estao." \
-            "confira com: jq . $arq . Corrija o arquivo, ou refaca as restricoes pelo comando: dgclaw agente restricoes $slug --sem-bash sim|nao --sem-enviar-arquivo sim|nao --escrita-so-em pasta1,pasta2"
+            "confira com: jq . $arq . Corrija o arquivo, ou refaca as restricoes pelo comando: prumo agente restricoes $slug --sem-bash sim|nao --sem-enviar-arquivo sim|nao --escrita-so-em pasta1,pasta2"
     fi
     # shellcheck disable=SC2016 # nao ha variavel de shell aqui
     erro="$(jq -r '
@@ -76,7 +76,7 @@ restricoes_validar() {
         else empty end' "$arq")"
     if [ -n "$erro" ]; then
         falha "$arq (restricoes do agente $slug) esta invalido: $erro. Nao apliquei nada e deixei as travas atuais como estao." \
-            "corrija o arquivo ou refaca as restricoes pelo comando: dgclaw agente restricoes $slug --sem-bash sim|nao --sem-enviar-arquivo sim|nao --escrita-so-em pasta1,pasta2"
+            "corrija o arquivo ou refaca as restricoes pelo comando: prumo agente restricoes $slug --sem-bash sim|nao --sem-enviar-arquivo sim|nao --escrita-so-em pasta1,pasta2"
     fi
     if [ "${3:-}" != permitir-combinacao ] && jq -e '(.sem_enviar_arquivo // false) == true and (.sem_bash // false) != true' "$arq" >/dev/null; then
         _restricoes_recusar_combinacao "$slug"
@@ -325,7 +325,7 @@ _restricoes_derivar_ms() {
 # lendo /etc e a imagem, que o agente nao controla) que a imagem carrega a configuracao administrada: o link
 # /etc/claude-code/managed-settings.json aponta para a pasta do runner, o conteudo visto la e o <esperado> e o
 # script do gancho de escrita existe, e que a conta de IA do agente nao traz politica administrada remota (que
-# substituiria a local; ver REMOTA_JS). Agente parado numa imagem antiga (ex.: durante `dgclaw atualizar`) sobe sem
+# substituiria a local; ver REMOTA_JS). Agente parado numa imagem antiga (ex.: durante `prumo atualizar`) sobe sem
 # nada disso, e o gancho que protege o .dgclaw/config.sh nao vale. Devolve 0 se tudo certo; senao 1, com o motivo
 # em RESTRICOES_SUPORTE_MOTIVO. Nao grava nada.
 _restricoes_conferir_suporte() {
@@ -392,9 +392,9 @@ _restricoes_classificar_conta() {
 # passo de ligar.
 _restricoes_receita_remota() {
     local slug="$1" passo2 n=3
-    passo2=" 2) ligue o agente: dgclaw agente iniciar $slug ;"
+    passo2=" 2) ligue o agente: prumo agente iniciar $slug ;"
     if [ "${2:-}" = ligado ]; then passo2=""; n=2; fi
-    printf '%s' "1) desligue as restricoes: dgclaw agente restricoes $slug --sem-bash nao --sem-enviar-arquivo nao --escrita-livre ;$passo2 $n) no painel do agente, conecte uma conta pessoal (Pro ou Max) ou uma chave de API no lugar da conta da organizacao ; $((n + 1))) ligue as restricoes de novo com o mesmo comando restricoes e as opcoes que voce quer, por exemplo: dgclaw agente restricoes $slug --sem-bash sim --sem-enviar-arquivo sim (ele confere de novo e para o agente se a politica remota continuar)"
+    printf '%s' "1) desligue as restricoes: prumo agente restricoes $slug --sem-bash nao --sem-enviar-arquivo nao --escrita-livre ;$passo2 $n) no painel do agente, conecte uma conta pessoal (Pro ou Max) ou uma chave de API no lugar da conta da organizacao ; $((n + 1))) ligue as restricoes de novo com o mesmo comando restricoes e as opcoes que voce quer, por exemplo: prumo agente restricoes $slug --sem-bash sim --sem-enviar-arquivo sim (ele confere de novo e para o agente se a politica remota continuar)"
 }
 
 # _restricoes_suporte_falhou <slug>: a falha comum da conferencia de suporte. Sempre vem depois de
@@ -407,7 +407,7 @@ _restricoes_suporte_falhou() {
             "o agente esta parado e nao da para reinicia-lo; siga em ordem: $(_restricoes_receita_remota "$slug")"
     fi
     falha "o agente $slug roda numa imagem antiga que nao carrega a configuracao administrada do Claude Code ($RESTRICOES_SUPORTE_MOTIVO). Por isso as restricoes NAO valem: o agente ainda poderia mudar arquivos que as rotinas dele executam. Parei o container, porque agente com restricao ligada nao roda sem a trava. Os arquivos das restricoes ficaram gravados." \
-        "recrie o agente com a imagem atual: dgclaw agente recriar $slug --forcar (--forcar porque o agente ficou parado; se a imagem do servidor tambem estiver velha, antes: dgclaw imagem construir --agora). O recriar liga o agente de novo ja conferindo as restricoes."
+        "recrie o agente com a imagem atual: prumo agente recriar $slug --forcar (--forcar porque o agente ficou parado; se a imagem do servidor tambem estiver velha, antes: prumo imagem construir --agora). O recriar liga o agente de novo ja conferindo as restricoes."
 }
 
 # _restricoes_confirmar_parado <container>: confirmacao POSITIVA de que o container parou. Devolve 0 so se o
@@ -438,7 +438,7 @@ _restricoes_parar_por_falha() {
         if ! _restricoes_confirmar_parado "$c"; then
             ( _restricoes_log "$slug" "$etapa: $2; NAO consegui confirmar que o container parou (estado: $RESTRICOES_ESTADO)" ) || true
             falha "nao consegui confirmar que o agente $slug parou (estado: $RESTRICOES_ESTADO); ele pode estar LIGADO SEM A TRAVA: $2. Tentei parar o container (podman stop e podman kill)." \
-                "pare o agente na mao agora: dgclaw agente parar $slug (ou: podman stop dgclaw-$slug / podman kill dgclaw-$slug) e confira com: podman ps -a. Depois resolva o motivo acima e rode: dgclaw agente iniciar $slug"
+                "pare o agente na mao agora: prumo agente parar $slug (ou: podman stop dgclaw-$slug / podman kill dgclaw-$slug) e confira com: podman ps -a. Depois resolva o motivo acima e rode: prumo agente iniciar $slug"
         fi
     fi
     if [ ! -e "$casa/runner/restricoes-suporte.pendente" ]; then
@@ -466,7 +466,7 @@ restricoes_conferir_ao_iniciar() {
     if [ -L "$rs" ] || ! ligada="$(jq -r '.sem_bash == true or .sem_enviar_arquivo == true or ((.escrita_so_em // null) != null)' "$rs" 2>/dev/null)"; then
         _restricoes_parar_por_falha "$slug" "restricoes.json ilegivel ou invalido"
         falha "nao consegui ler $rs (restricoes do agente $slug), entao nao sei quais travas valem. Parei o container." \
-            "confira com: jq . $rs . Corrija o arquivo, ou refaca as restricoes pelo comando: dgclaw agente restricoes $slug --sem-bash sim|nao --sem-enviar-arquivo sim|nao --escrita-so-em pasta1,pasta2"
+            "confira com: jq . $rs . Corrija o arquivo, ou refaca as restricoes pelo comando: prumo agente restricoes $slug --sem-bash sim|nao --sem-enviar-arquivo sim|nao --escrita-so-em pasta1,pasta2"
     fi
     if [ "$ligada" != true ]; then
         rm -f -- "$casa/runner/restricoes-suporte.pendente"
@@ -476,7 +476,7 @@ restricoes_conferir_ao_iniciar() {
     if [ -z "$esperado" ] || [ "$esperado" = '{}' ]; then
         _restricoes_parar_por_falha "$slug" "managed-settings.json ausente, vazio ou invalido com restricao ligada"
         falha "o agente $slug tem restricao ligada, mas $ms esta ausente, vazio ou invalido, entao as travas nao valem. Parei o container." \
-            "ligue de novo com: dgclaw agente iniciar $slug (ele refaz os arquivos a partir do restricoes.json e confere antes de ligar)"
+            "ligue de novo com: prumo agente iniciar $slug (ele refaz os arquivos a partir do restricoes.json e confere antes de ligar)"
     fi
     if ! _restricoes_conferir_suporte "$slug" "$esperado"; then
         _restricoes_parar_por_falha "$slug" "configuracao administrada nao vale ($RESTRICOES_SUPORTE_MOTIVO)"
@@ -522,7 +522,7 @@ restricoes_antes_de_ligar() {
     if ! _restricoes_imagem_com_suporte "$slug"; then
         _restricoes_log "$slug" "ligar: nao liguei, $RESTRICOES_SUPORTE_MOTIVO"
         falha "o agente $slug tem restricao ligada, mas nao liguei o container: $RESTRICOES_SUPORTE_MOTIVO. Uma imagem antiga nao carrega a configuracao administrada do Claude Code, e sem ela as restricoes nao valem (o agente ainda poderia mudar arquivos que as rotinas dele executam). Os arquivos das restricoes ficaram gravados." \
-            "recrie o agente com a imagem atual: dgclaw agente recriar $slug --forcar (--forcar porque o agente esta parado; se a imagem do servidor tambem estiver velha, antes: dgclaw imagem construir --agora). O recriar liga o agente de novo ja conferindo as restricoes."
+            "recrie o agente com a imagem atual: prumo agente recriar $slug --forcar (--forcar porque o agente esta parado; se a imagem do servidor tambem estiver velha, antes: prumo imagem construir --agora). O recriar liga o agente de novo ja conferindo as restricoes."
     fi
 }
 
@@ -562,12 +562,12 @@ _aplicar_restricoes_sem_trava() {
     if [ -z "$base" ]; then
         if [ "$deny_json" != '[]' ]; then
             falha "nao achei $rj, entao nao consigo aplicar as restricoes do agente $slug." \
-                "rode: dgclaw agente criar $slug --nome \"...\" (continua de onde parou e regrava o runner.json) e depois: dgclaw agente reparar $slug"
+                "rode: prumo agente criar $slug --nome \"...\" (continua de onde parou e regrava o runner.json) e depois: prumo agente reparar $slug"
         fi
     else
         if ! printf '%s' "$base" | jq -e '(.config | type) == "object"' >/dev/null 2>&1; then
             falha "o runner.json $rj do agente $slug nao e um JSON valido com \"config\"; nao apliquei as restricoes." \
-                "confira com: jq . $rj (corrija o JSON ou, se nao tiver nada seu, apague o arquivo e rode: dgclaw agente criar $slug --nome \"...\")."
+                "confira com: jq . $rj (corrija o JSON ou, se nao tiver nada seu, apague o arquivo e rode: prumo agente criar $slug --nome \"...\")."
         fi
         # shellcheck disable=SC2016 # os $ sao variaveis do jq
         novo_rj="$(printf '%s' "$base" | jq --argjson querem "$deny_json" '
@@ -595,7 +595,7 @@ _aplicar_restricoes_sem_trava() {
     [ "$(podman inspect -f '{{.State.Status}}' "$c" 2>/dev/null || true)" = running ] && rodando=1
     # --- grava: configuracao administrada primeiro, para o runner nunca subir sem a trava ---
     if [ -L "$ms" ]; then
-        falha "$ms e um link; nao gravo nele." "apague o link e rode de novo: dgclaw agente reparar $slug"
+        falha "$ms e um link; nao gravo nele." "apague o link e rode de novo: prumo agente reparar $slug"
     fi
     [ -f "$ms" ] && ms_existia=1
     # Primeiro DECIDE o que vai mudar; com reinicio a fazer, o marcador de pendencia entra ANTES de qualquer
@@ -633,7 +633,7 @@ _aplicar_restricoes_sem_trava() {
                 # antigo que ficar la nao afrouxa nada, porque a configuracao administrada vale por cima, e o
                 # reinicio do runner precisa acontecer de qualquer jeito.
                 [ -e "$pend_mig" ] || _restricoes_gravar "$pend_mig" "migracao do gancho antigo pendente desde $(date -u +%FT%TZ)"
-                aviso "nao consegui tirar o gancho antigo do settings.json de dentro da caixa do agente $slug ($([ "$rc" = 124 ] && echo 'passou de 30 segundos' || echo "codigo $rc: ${saida:-sem mensagem}")). Isso nao afrouxa nada: a configuracao administrada vale por cima. Continuei com o reinicio; para tentar de novo, corrija o settings.json do agente e rode: dgclaw agente reparar $slug"
+                aviso "nao consegui tirar o gancho antigo do settings.json de dentro da caixa do agente $slug ($([ "$rc" = 124 ] && echo 'passou de 30 segundos' || echo "codigo $rc: ${saida:-sem mensagem}")). Isso nao afrouxa nada: a configuracao administrada vale por cima. Continuei com o reinicio; para tentar de novo, corrija o settings.json do agente e rode: prumo agente reparar $slug"
             else
                 rm -f -- "$pend_mig"
                 if [ "$saida" = removido ]; then
@@ -645,18 +645,18 @@ _aplicar_restricoes_sem_trava() {
             if [ ! -e "$pend_mig" ]; then
                 _restricoes_gravar "$pend_mig" "migracao do gancho antigo pendente desde $(date -u +%FT%TZ)"
             fi
-            aviso "o agente $slug esta parado, entao nao mexi no settings.json dele: se ainda houver um gancho antigo de escrita la, ele sai quando o agente ligar e este comando (ou dgclaw agente reparar $slug) rodar de novo."
+            aviso "o agente $slug esta parado, entao nao mexi no settings.json dele: se ainda houver um gancho antigo de escrita la, ele sai quando o agente ligar e este comando (ou prumo agente reparar $slug) rodar de novo."
         fi
     fi
 
     # --- confere o que ficou no disco antes de dizer que aplicou ---
     if [ "$(jq -c . "$ms" 2>/dev/null || true)" != "$novo_ms" ] || [ "$(stat -c %a "$ms")" != 444 ]; then
         falha "reli $ms depois de gravar e o conteudo ou o modo nao e o esperado; nao vou dizer que as restricoes do agente $slug foram aplicadas." \
-            "veja o arquivo (cat $ms; ls -l $ms) e rode de novo: dgclaw agente reparar $slug"
+            "veja o arquivo (cat $ms; ls -l $ms) e rode de novo: prumo agente reparar $slug"
     fi
     if [ -n "$novo_rj" ] && [ "$(jq -c . "$rj" 2>/dev/null || true)" != "$(printf '%s' "$novo_rj" | jq -c .)" ]; then
         falha "reli $rj depois de gravar e o conteudo nao e o esperado; nao vou dizer que as restricoes do agente $slug foram aplicadas." \
-            "veja o arquivo (jq . $rj) e rode de novo: dgclaw agente reparar $slug"
+            "veja o arquivo (jq . $rj) e rode de novo: prumo agente reparar $slug"
     fi
     # Os arquivos aplicados batem com o restricoes.json: a transacao terminou (inclusive quando nada mudou).
     rm -f -- "$casa/runner/restricoes-transacao.pendente"
@@ -677,7 +677,7 @@ _aplicar_restricoes_sem_trava() {
         fi
     else
         [ -e "$pend_sup" ] || _restricoes_gravar "$pend_sup" "conferencia de suporte pendente desde $(date -u +%FT%TZ)"
-        aviso "o agente $slug esta parado, entao nao deu para conferir se a imagem dele carrega a configuracao administrada. A conferencia sera feita quando o agente ligar (dgclaw agente iniciar $slug); se a imagem for antiga, o agente nao liga e a mensagem diz como recriar."
+        aviso "o agente $slug esta parado, entao nao deu para conferir se a imagem dele carrega a configuracao administrada. A conferencia sera feita quando o agente ligar (prumo agente iniciar $slug); se a imagem for antiga, o agente nao liga e a mensagem diz como recriar."
     fi
     [ "$grav_ms" = 0 ] || [ "$novo_ms" = '{}' ] || ok "configuracao administrada do agente $slug gravada (gancho de escrita: $([ "$ativo" = true ] && { [ "$pastas" != null ] && echo "ligado, grava so nas pastas" || echo "ligado, protege so a configuracao"; } || echo desligado); ferramentas negadas: $(printf '%s' "$deny_json" | jq -r 'if length == 0 then "nenhuma" else join(", ") end'))"
     [ "$grav_rj" = 0 ] || ok "runner.json do agente $slug ajustado (Bash: $([ "$sem_bash" = true ] && echo travado || echo liberado), envio de arquivo: $([ "$sem_env" = true ] && echo travado || echo liberado))"
@@ -712,7 +712,7 @@ _aplicar_restricoes_sem_trava() {
                 done
                 if [ "$pronto" != active ]; then
                     falha "reiniciei o runner do agente $slug, mas ele nao voltou a responder active (systemctl is-active devolveu '${pronto:-nada}'); as restricoes novas ainda nao valem para ele." \
-                        "veja o log: podman exec $c journalctl -u dgclaw-runner -n 50 . A pendencia ficou guardada em $pend: depois de consertar, rode de novo o mesmo comando ou: dgclaw agente reiniciar $slug (os dois reiniciam o runner; o reparar nao)."
+                        "veja o log: podman exec $c journalctl -u dgclaw-runner -n 50 . A pendencia ficou guardada em $pend: depois de consertar, rode de novo o mesmo comando ou: prumo agente reiniciar $slug (os dois reiniciam o runner; o reparar nao)."
                 fi
                 rm -f -- "$pend"
                 ok "runner do agente $slug reiniciado para valer a mudanca"
@@ -768,12 +768,12 @@ agente_restricoes() {
         a="$1"
         case "$a" in
             --sem-bash|--sem-enviar-arquivo|--escrita-so-em)
-                [ $# -ge 2 ] || falha "a opcao $a precisa de um valor." "exemplo: dgclaw agente restricoes ana $a $([ "$a" = --escrita-so-em ] && echo relatorios,rascunhos || echo sim)"
+                [ $# -ge 2 ] || falha "a opcao $a precisa de um valor." "exemplo: prumo agente restricoes ana $a $([ "$a" = --escrita-so-em ] && echo relatorios,rascunhos || echo sim)"
                 case "$a" in
                     --sem-bash|--sem-enviar-arquivo)
                         case "$2" in
                             sim|nao) ;;
-                            *) falha "o valor '$2' de $a nao serve." "use sim ou nao: dgclaw agente restricoes ${slug:-<slug>} $a sim" ;;
+                            *) falha "o valor '$2' de $a nao serve." "use sim ou nao: prumo agente restricoes ${slug:-<slug>} $a sim" ;;
                         esac ;;
                 esac
                 case "$a" in
@@ -783,23 +783,23 @@ agente_restricoes() {
                 esac
                 shift 2 ;;
             --escrita-livre) livre=1; shift ;;
-            -*) falha "opcao desconhecida: $a" "use: dgclaw agente restricoes <slug> [--sem-bash sim|nao] [--sem-enviar-arquivo sim|nao] [--escrita-so-em pasta1,pasta2 | --escrita-livre]" ;;
-            *) [ -z "$slug" ] || falha "so cabe um agente por vez, e recebi '$slug' e '$a'." "use: dgclaw agente restricoes <slug> ..."
+            -*) falha "opcao desconhecida: $a" "use: prumo agente restricoes <slug> [--sem-bash sim|nao] [--sem-enviar-arquivo sim|nao] [--escrita-so-em pasta1,pasta2 | --escrita-livre]" ;;
+            *) [ -z "$slug" ] || falha "so cabe um agente por vez, e recebi '$slug' e '$a'." "use: prumo agente restricoes <slug> ..."
                slug="$a"; shift ;;
         esac
     done
     [ "$slug" != admin ] || falha "o Admin nao usa este mecanismo: ele roda como root para cuidar do servidor e quem limita o que ele faz e o proprio instalador." \
-        "as restricoes valem para os agentes de trabalho: dgclaw agente restricoes <slug-do-agente> ."
+        "as restricoes valem para os agentes de trabalho: prumo agente restricoes <slug-do-agente> ."
     exigir_slug "$slug" restricoes
     [ -z "$pastas_arg" ] || [ "$livre" = 0 ] || falha "--escrita-so-em e --escrita-livre juntos se contradizem." \
         "use um so: --escrita-so-em pasta1,pasta2 para limitar, ou --escrita-livre para soltar."
     exigir_ferramentas jq podman
     local obj
     obj="$(agentes_obter "$slug")"
-    [ -n "$obj" ] || falha "o agente '$slug' nao esta no agentes.json." "veja os que existem com: dgclaw agente listar"
+    [ -n "$obj" ] || falha "o agente '$slug' nao esta no agentes.json." "veja os que existem com: prumo agente listar"
 
     local casa="$DG_CASAS/$slug" h="$DG_CASAS/$slug/home" rs="$DG_CASAS/$slug/runner/restricoes.json" atual='{"versao":1}'
-    exigir_casa_sem_link "$casa" "$h" "$slug" "dgclaw agente restricoes $slug --sem-bash sim|nao ..."
+    exigir_casa_sem_link "$casa" "$h" "$slug" "prumo agente restricoes $slug --sem-bash sim|nao ..."
 
     if [ -z "$sem_bash$sem_env$pastas_arg" ] && [ "$livre" = 0 ]; then
         if [ -e "$rs" ] || [ -L "$rs" ]; then
@@ -869,7 +869,7 @@ _restricoes_transacao() {
     _restricoes_gravar "$(dirname "$rs")/restricoes-transacao.pendente" "transacao das restricoes pendente desde $(date -u +%FT%TZ)"
     _restricoes_gravar "$rs" "$novo"
     if [ "$ENSAIO" != 1 ] && ! printf '%s' "$novo" | jq -e '.escrita_so_em == null or .sem_bash == true' >/dev/null; then
-        aviso "este agente continua com o Bash ligado, e pelo Bash ele grava em qualquer lugar: a trava de pastas so barra as ferramentas de arquivo (Write, Edit). Para valer de verdade, combine com: dgclaw agente restricoes $slug --sem-bash sim"
+        aviso "este agente continua com o Bash ligado, e pelo Bash ele grava em qualquer lugar: a trava de pastas so barra as ferramentas de arquivo (Write, Edit). Para valer de verdade, combine com: prumo agente restricoes $slug --sem-bash sim"
     fi
     # Sem `|| falha`: um `||` desligaria o set -e la dentro e um erro de gravacao viraria "aplicado".
     aplicar_restricoes "$slug"
@@ -940,12 +940,12 @@ restricoes_mostrar() {
     printf '\nRestricoes do agente %s\n' "$slug"
     if [ ! -e "$rs" ]; then
         printf '  Nenhuma restricao definida (o agente faz tudo o que o Prumo da Locadora permite).\n'
-        printf '  Para travar: dgclaw agente restricoes %s --sem-bash sim --sem-enviar-arquivo sim --escrita-so-em pasta1,pasta2\n' "$slug"
+        printf '  Para travar: prumo agente restricoes %s --sem-bash sim --sem-enviar-arquivo sim --escrita-so-em pasta1,pasta2\n' "$slug"
         return 0
     fi
     ligada="$(printf '%s' "$json" | jq -r '(.sem_bash // false) or (.sem_enviar_arquivo // false) or ((.escrita_so_em // null) != null)')"
     if [ "$ENSAIO" != 1 ] && [ "$(podman inspect -f '{{.State.Status}}' "$c" 2>/dev/null || true)" = running ]; then estado=ligado; fi
-    if [ "$estado" = ligado ]; then quem_liga="dgclaw agente reiniciar $slug"; else quem_liga="dgclaw agente iniciar $slug"; fi
+    if [ "$estado" = ligado ]; then quem_liga="prumo agente reiniciar $slug"; else quem_liga="prumo agente iniciar $slug"; fi
     if [ "$ENSAIO" != 1 ]; then
         while IFS='|' read -r marcador txt; do
             [ -n "$marcador" ] || continue
@@ -953,7 +953,7 @@ restricoes_mostrar() {
                 restricoes-transacao.pendente) cmd="$quem_liga (refaz os arquivos aplicados a partir do restricoes.json)" ;;
                 restricoes.pendente) cmd="$quem_liga (reinicia o runner com as travas novas)" ;;
                 restricoes-suporte.pendente) cmd="$quem_liga (confere se a imagem carrega a configuracao administrada)" ;;
-                *) cmd="dgclaw agente reparar $slug (tira o gancho antigo do settings.json; o agente precisa estar ligado)" ;;
+                *) cmd="prumo agente reparar $slug (tira o gancho antigo do settings.json; o agente precisa estar ligado)" ;;
             esac
             pend_linhas+=("$txt. Resolve: $cmd")
         done < <(_restricoes_pendencias "$slug")
@@ -966,9 +966,9 @@ restricoes_mostrar() {
             esperado="$(jq -c . "$casa/runner/managed-settings.json" 2>/dev/null || true)"
             if ! _restricoes_conferir_suporte "$slug" "$esperado"; then
                 if [ "${RESTRICOES_SUPORTE_CAUSA:-}" = remota ]; then
-                    motivo="$RESTRICOES_SUPORTE_MOTIVO. O agente esta ligado SEM a trava (pare com: dgclaw agente parar $slug). Resolve, em ordem: $(_restricoes_receita_remota "$slug" ligado)"
+                    motivo="$RESTRICOES_SUPORTE_MOTIVO. O agente esta ligado SEM a trava (pare com: prumo agente parar $slug). Resolve, em ordem: $(_restricoes_receita_remota "$slug" ligado)"
                 else
-                    motivo="$RESTRICOES_SUPORTE_MOTIVO. O agente esta ligado SEM a trava (pare com: dgclaw agente parar $slug). Resolve: dgclaw agente recriar $slug (se a imagem do servidor tambem estiver velha, antes: dgclaw imagem construir --agora)"
+                    motivo="$RESTRICOES_SUPORTE_MOTIVO. O agente esta ligado SEM a trava (pare com: prumo agente parar $slug). Resolve: prumo agente recriar $slug (se a imagem do servidor tambem estiver velha, antes: prumo imagem construir --agora)"
                 fi
             fi
         fi
@@ -985,7 +985,7 @@ restricoes_mostrar() {
     [ -z "$motivo" ] || printf '  NAO VALE:              %s\n' "$motivo"
     if [ "$consulta" = consulta ] && [ "$ENSAIO" != 1 ] && [ "$ligada" = true ]; then
         if [ "$estado" != ligado ]; then
-            printf '  Conferencia:           o agente esta parado; a imagem sera conferida quando ele ligar (dgclaw agente iniciar %s).\n' "$slug"
+            printf '  Conferencia:           o agente esta parado; a imagem sera conferida quando ele ligar (prumo agente iniciar %s).\n' "$slug"
         fi
         if [ -n "$codex_em" ]; then
             printf '  Codex:                 %s. No Codex estas travas nao valem (o runner ignora as regras de ferramentas e os ganchos do Claude Code); passam a valer na sessao que voltar para o Claude.\n' "$codex_em"

@@ -34,6 +34,21 @@
       "arquivo": "tests/cli/rodar.sh",
       "linha": "for t in \"$AQUI\"/versao.sh \"$AQUI\"/backup.sh \"$AQUI\"/criar.sh \"$AQUI\"/validacao.sh \"$AQUI\"/gestao.sh \"$AQUI\"/cofre.sh \"$AQUI\"/chave-api.sh \"$AQUI\"/tela.sh \"$AQUI\"/tela-diagnostico.sh \"$AQUI\"/inotify.sh \"$AQUI\"/dominio.sh \"$AQUI\"/proxy.sh \"$AQUI\"/api.sh \"$AQUI\"/recriar.sh \"$AQUI\"/atualizar.sh \"$AQUI\"/aviso-atualizacao.sh \"$AQUI\"/personalizacoes.sh \"$AQUI\"/instalacao-remota.sh \"$AQUI\"/restricoes.sh \"$AQUI\"/restricoes-suporte.sh \"$AQUI\"/restricoes-consulta.sh \"$AQUI\"/restricoes-conta.sh \"$AQUI\"/restricoes-ligar.sh \"$AQUI\"/restricoes-gancho.sh \"$AQUI\"/restricoes-rotinas.sh \"$AQUI\"/rotinas-seguras.sh \"$AQUI\"/suporte.sh \"$AQUI\"/grupo-diario.sh \"$AQUI\"/colaborador.sh; do",
       "motivo": "o lote C2 (3e3d355) acrescentou \"$AQUI\"/usuario.sh no fim desta linha para a suite rodar o teste novo do comando dgclaw usuario; todos os arquivos que o original lista nela continuam, na mesma ordem, so ha um a mais no fim"
+    },
+    {
+      "arquivo": "runner/src/sessao-parar.test.ts",
+      "linha": "assert.match(s.estado.error ?? \"\", /dgclaw agente reiniciar/);",
+      "motivo": "o runner/src/sessao/ciclo.ts:524 passou a dizer ao dono 'prumo agente reiniciar' (texto de erro, nunca executado; lote M4 da marca); a asserção espera o texto novo exato"
+    },
+    {
+      "arquivo": "tests/cli/restricoes-suporte.sh",
+      "linha": "dgclaw ${cmd#dgclaw } >\"$TMP/m-cmd.txt\" 2>&1",
+      "motivo": "o teste extrai da mensagem os comandos citados ao dono, que agora vêm como 'prumo agente ...'; tira o prefixo 'prumo ' e continua executando o 'dgclaw' (lote M4 da marca)"
+    },
+    {
+      "arquivo": "tests/cli/restricoes-suporte.sh",
+      "linha": "cmds=\"$(grep -oE 'dgclaw agente (reiniciar|iniciar|restricoes) ana( --[a-z-]+( (sim|nao))?)*' \"$TMP/m-$caso.txt\" | sort -u)\"",
+      "motivo": "a extracao aceita os dois nomes, (prumo|dgclaw), para o teste nao ignorar em silencio uma mensagem que volte a citar dgclaw (QA-M4, B1)"
     }
   ],
   "nossas_ausentes": [

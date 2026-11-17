@@ -1,4 +1,4 @@
-# Imagem do agente do DG Claw v1: uma "VPS pequena" (systemd, cron, sudo) com as
+# Imagem do agente do Prumo da Locadora v1: uma "VPS pequena" (systemd, cron, sudo) com as
 # ferramentas que os agentes de verdade usam, o runner e o plugin já dentro.
 #
 # Contexto de build = raiz do repositório:
@@ -34,7 +34,7 @@ COPY runner/ ./
 RUN npm ci && npm run build && npm prune --omit=dev && npm cache clean --force
 
 # ---------------------------------------------------------------------------
-# Estágio 2 (base): tudo da máquina, sem o código do DG Claw. Dá para construir
+# Estágio 2 (base): tudo da máquina, sem o código do Prumo da Locadora. Dá para construir
 # só até aqui com --target base (útil para validar a imagem sem o runner).
 # ---------------------------------------------------------------------------
 FROM docker.io/library/ubuntu:24.04 AS base
@@ -213,7 +213,7 @@ STOPSIGNAL SIGRTMIN+3
 CMD ["/sbin/init"]
 
 # ---------------------------------------------------------------------------
-# Estágio 3 (final): o código do DG Claw por cima da máquina.
+# Estágio 3 (final): o código do Prumo da Locadora por cima da máquina.
 # ---------------------------------------------------------------------------
 FROM base AS final
 
@@ -275,3 +275,8 @@ RUN cd /opt/dgclaw/app/panel && npm install --omit=dev --no-audit --no-fund && n
 # --ignore-scripts impede que qualquer script de instalação de dependência rode no build.
 # Não precisa de git nem de GitHub: o libsignal vem do registro npm ("overrides" no package.json).
 RUN cd /opt/dgclaw/app/canais/whatsapp && npm ci --omit=dev --ignore-scripts --no-audit --no-fund && npm cache clean --force
+
+# Título da imagem. Fica no fim de propósito: um LABEL no estágio base, antes do apt e do npm -g, invalidaria
+# o cache dessas camadas em toda atualização. Este sobrepõe o "title" do estágio base sem custo (a COPY do
+# código, acima, já muda a cada versão).
+LABEL org.opencontainers.image.title="Prumo da Locadora agente"

@@ -242,7 +242,7 @@ igual "sai 0" 0 "$RC"
 igual "estado desligado" true "$(campo .desligado)"
 igual "nenhuma requisicao" 0 "$(requisicoes)"
 igual "nenhum recado" 0 "$(recados)"
-tem "diz como ligar" "dgclaw atualizar --aviso ligar" "$OUT"
+tem "diz como ligar" "prumo atualizar --aviso ligar" "$OUT"
 raiz_nova "DGCLAW_AVISO_ATUALIZACAO='0'"
 roda
 igual "aspas simples tambem desligam" true "$(campo .desligado)"

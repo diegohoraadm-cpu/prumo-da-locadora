@@ -11,19 +11,19 @@ versao_texto() {
     if [ -n "$c" ]; then printf '%s (commit %s)' "$v" "${c:0:12}"; else printf '%s' "$v"; fi
 }
 
-# versao_linha: a primeira linha do `dgclaw status`.
+# versao_linha: a primeira linha do `prumo status`.
 versao_linha() {
     local t
     if t="$(versao_texto)"; then printf 'Prumo da Locadora %s\n' "$t"
-    else printf 'Prumo da Locadora: versao nao registrada: rode sudo dgclaw atualizar ou ./install.sh de novo\n'; fi
+    else printf 'Prumo da Locadora: versao nao registrada: rode sudo prumo atualizar ou ./install.sh de novo\n'; fi
 }
 
-# versao_main: `dgclaw versao`, so a versao e o commit.
+# versao_main: `prumo versao`, so a versao e o commit.
 versao_main() {
-    [ $# -eq 0 ] || falha "'versao' nao tem opcoes (recebi: $*)." "use: dgclaw versao"
+    [ $# -eq 0 ] || falha "'versao' nao tem opcoes (recebi: $*)." "use: prumo versao"
     carregar_env_dgclaw
     local t
     t="$(versao_texto)" || falha "o Prumo da Locadora nao registrou a versao instalada (falta DGCLAW_VERSAO em $DG_ETC/dgclaw.env)." \
-        "rode sudo dgclaw atualizar ou ./install.sh de novo dentro do clone; o instalador anota a versao."
+        "rode sudo prumo atualizar ou ./install.sh de novo dentro do clone; o instalador anota a versao."
     printf '%s\n' "$t"
 }

@@ -1,6 +1,6 @@
 #!/bin/bash
 # prestart-clear-tg-authcache.sh — Remove a chave global do canal telegram do cache
-# needs-auth do Claude Code, ANTES de cada start do servico do DG Claw.
+# needs-auth do Claude Code, ANTES de cada start do servico do Prumo da Locadora.
 #
 # Por que: regressao do Claude Code (~v2.1.16x). O Claude carimba
 # `plugin:telegram:telegram` em <config>/mcp-needs-auth-cache.json ~20s apos cada

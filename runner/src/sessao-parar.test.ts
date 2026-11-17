@@ -331,7 +331,7 @@ test("recusa por restrição: sem conseguir confirmar a morte vira falha de segu
   assert.equal(s.estado.statusReason, "runner:restricao-sem-contencao");
   assert.equal(s.estado.status, "errored");
   assert.match(s.estado.error ?? "", /não consegui confirmar que o processo do agente \(pid 999999\) parou/);
-  assert.match(s.estado.error ?? "", /dgclaw agente reiniciar/);
+  assert.match(s.estado.error ?? "", /prumo agente reiniciar/);
   assert.equal(s.grupoQueSobrou, 999_999);
   s.grupoQueSobrou = null;
 });

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2016
-# dgclaw-mesa: o agente cria, atualiza e conclui as tarefas da Mesa do DG Claw Web.
+# dgclaw-mesa: o agente cria, atualiza e conclui as tarefas da Mesa do Prumo da Locadora Web.
 # Roda DENTRO do container, como "agente". E um involucro fino do dgclaw-api (a caixa do agente):
 # nao ha endereco nem chave aqui, o Web reconhece o agente pela caixa.
 #
@@ -44,7 +44,7 @@
 #   0  ok
 #   1  erro de uso (argumento faltando, id que nao e numero, opcao desconhecida)
 #   2  o Web nao respondeu (fora do ar ou reiniciando): tente de novo em instantes
-#   3  a caixa do agente nao esta disponivel: peca ao dono 'sudo dgclaw agente reparar <slug>'
+#   3  a caixa do agente nao esta disponivel: peca ao dono 'sudo prumo agente reparar <slug>'
 #   4  o Web recusou o pedido (4xx): a frase do erro sai no stderr
 #   5  erro do lado do Web (5xx): a frase do erro sai no stderr
 set -euo pipefail
@@ -127,7 +127,7 @@ achar_api() {
   if [ -n "${DGCLAW_API_BIN:-}" ]; then API_BIN="$DGCLAW_API_BIN"
   elif command -v dgclaw-api >/dev/null 2>&1; then API_BIN="$(command -v dgclaw-api)"
   else API_BIN="/opt/dgclaw/app/bin/dgclaw-api"; fi
-  [ -x "$API_BIN" ] || CODIGO=3 die "a caixa do agente (o comando dgclaw-api) não está instalada nesta imagem (procurei '$API_BIN'). Peça ao dono para atualizar o DG Claw e rodar 'sudo dgclaw agente reparar ${SLUG:-<slug>}'."
+  [ -x "$API_BIN" ] || CODIGO=3 die "a caixa do agente (o comando dgclaw-api) não está instalada nesta imagem (procurei '$API_BIN'). Peça ao dono para atualizar o Prumo da Locadora e rodar 'sudo prumo agente reparar ${SLUG:-<slug>}'."
 }
 
 RESP=""
@@ -155,7 +155,7 @@ falha() {
   case "$STATUS" in
     1) CODIGO=1 die "a caixa recusou o pedido como erro de uso ($metodo $rota): ${frase:-sem detalhe}. Isto parece defeito do dgclaw-mesa; avise o dono." ;;
     2) CODIGO=2 die "o Web não respondeu ($metodo $rota). Ele pode estar fora do ar ou reiniciando: espere cerca de um minuto e tente de novo. Para só ler, 'dgclaw-mesa listar --retrato' mostra a última cópia." ;;
-    3) CODIGO=3 die "a caixa do agente não está disponível${frase:+ ($frase)}. Peça ao dono para rodar 'sudo dgclaw agente reparar ${SLUG:-<slug>}' e tente de novo." ;;
+    3) CODIGO=3 die "a caixa do agente não está disponível${frase:+ ($frase)}. Peça ao dono para rodar 'sudo prumo agente reparar ${SLUG:-<slug>}' e tente de novo." ;;
     4)
       # lista de campos e opcional: sem ela, a mensagem principal do erro ja sai logo abaixo
       campos="$(jq -r '(.erros // {}) | if type == "object" then to_entries[] | "  \(.key): \(.value)" else empty end' <<<"$RESP" 2>/dev/null || true)"

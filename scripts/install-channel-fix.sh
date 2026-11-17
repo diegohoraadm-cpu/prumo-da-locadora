@@ -1,8 +1,8 @@
 #!/bin/bash
 # install-channel-fix.sh — Instala o mitigador do bug "canal telegram mudo no 2o start".
 #
-# Coloca um drop-in systemd com ExecStartPre no servico do DG Claw (dgclaw-<slug>.service)
-# que limpa a chave needs-auth do telegram antes de cada start. NAO edita a unit do DG Claw
+# Coloca um drop-in systemd com ExecStartPre no servico do Prumo da Locadora (dgclaw-<slug>.service)
+# que limpa a chave needs-auth do telegram antes de cada start. NAO edita a unit do Prumo da Locadora
 # (drop-in e arquivo separado em .service.d/). Idempotente.
 #
 # Uso:  sudo bash install-channel-fix.sh <.dgclaw/config.sh>
@@ -33,7 +33,7 @@ if [ "$OFF" = "1" ]; then
     exit 0
 fi
 
-# Resolve o config dir que o servico realmente usa (igual ao launch.sh do DG Claw):
+# Resolve o config dir que o servico realmente usa (igual ao launch.sh do Prumo da Locadora):
 # DGCLAW_CLAUDE_CONFIG_DIR custom, senao o default /root/.claude (o servico faz unset).
 CFGDIR="${DGCLAW_CLAUDE_CONFIG_DIR:-/root/.claude}"
 
@@ -45,7 +45,7 @@ chmod +x "$PRESTART"
 mkdir -p "$DROPDIR"
 cat > "$DROPIN" <<EOF
 # Mitiga regressao do Claude Code: limpa a chave needs-auth do canal telegram
-# antes de cada start (senao o bot fica mudo a partir do 2o start). Instalado pelo DG Claw.
+# antes de cada start (senao o bot fica mudo a partir do 2o start). Instalado pelo Prumo da Locadora.
 [Service]
 ExecStartPre=-/bin/bash ${PRESTART} ${CFGDIR}
 EOF

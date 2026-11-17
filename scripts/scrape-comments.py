@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""scrape-comments.py (DG Claw) — Extrai comentarios COM user_id via API privada do IG.
+"""scrape-comments.py (Prumo da Locadora) — Extrai comentarios COM user_id via API privada do IG.
 
 Versao GENERICA (nada de persona hardcoded). A Graph API oficial NAO retorna o
 username/user_id de quem comentou; este script preenche essa lacuna lendo a API

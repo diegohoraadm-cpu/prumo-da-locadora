@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
-// dispatch.ts — porteiro dos hooks de PLUGIN do DG Claw (v0.2).
+// dispatch.ts — porteiro dos hooks de PLUGIN do Prumo da Locadora (v0.2).
 //
 // Hooks registrados no hooks.json de um plugin rodam em TODAS as sessões da
 // máquina onde o plugin está habilitado. No v0.1 isso vazava os hooks bash pra
 // qualquer sessão (e quebraria no Windows). Este dispatcher corrige:
 //
-//   - Sessão num workspace DG Claw MODO SERVIDOR (tem .dgclaw/config.sh, Linux)
+//   - Sessão num workspace Prumo da Locadora MODO SERVIDOR (tem .dgclaw/config.sh, Linux)
 //     → repassa pro hook bash original do v0.1 (comportamento intacto).
 //   - Qualquer outra sessão (outros projetos, Windows/Mac, modo local — que usa
 //     hooks project-scoped no .claude/settings.json do workspace)

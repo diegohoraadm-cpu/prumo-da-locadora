@@ -314,7 +314,7 @@ export class Sessao extends EventEmitter {
     this.ultimaAtividade = Date.now();
   }
 
-  /** true quando existe PTY vivo agora. É a diferença que o painel do DG Claw
+  /** true quando existe PTY vivo agora. É a diferença que o painel do Prumo da Locadora
    *  usa para decidir entre "não alcancei a plataforma" (o runner está fora) e
    *  "o terminal caiu" (o runner respondeu, mas não há sessão), e só a segunda
    *  mostra o botão de acordar. Responder errado aqui esconde o botão
@@ -430,7 +430,7 @@ export class Sessao extends EventEmitter {
       return {
         tipo: "restricao",
         mensagem: this.estado.error ?? `A conta de IA de ${this.slug} não serve com as restrições do dono.`,
-        comoResolver: "conectar uma conta pessoal (Pro ou Max) ou uma chave de API, ou desligar as restrições (dgclaw agente restricoes)",
+        comoResolver: "conectar uma conta pessoal (Pro ou Max) ou uma chave de API, ou desligar as restrições (prumo agente restricoes)",
       };
     }
     return this.recusaDoMotor();

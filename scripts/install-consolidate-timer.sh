@@ -20,7 +20,7 @@ RUN_HOME="$(getent passwd "$RUN_USER" | cut -d: -f6)"; [ -n "$RUN_HOME" ] || RUN
 
 cat > "/etc/systemd/system/dgclaw-${DGCLAW_SLUG}-consolidate.service" <<EOF
 [Unit]
-Description=DG Claw consolidacao de memoria: ${DGCLAW_SLUG}
+Description=Prumo da Locadora consolidacao de memoria: ${DGCLAW_SLUG}
 
 [Service]
 Type=oneshot
@@ -32,7 +32,7 @@ EOF
 
 cat > "/etc/systemd/system/dgclaw-${DGCLAW_SLUG}-consolidate.timer" <<EOF
 [Unit]
-Description=DG Claw consolidacao noturna: ${DGCLAW_SLUG} (${WHEN})
+Description=Prumo da Locadora consolidacao noturna: ${DGCLAW_SLUG} (${WHEN})
 
 [Timer]
 OnCalendar=*-*-* ${WHEN}:00

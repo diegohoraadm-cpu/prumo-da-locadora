@@ -1,5 +1,5 @@
 #!/bin/bash
-# memory-recall.sh — UserPromptSubmit hook do DG Claw. Faz 3 coisas (tudo local):
+# memory-recall.sh — UserPromptSubmit hook do Prumo da Locadora. Faz 3 coisas (tudo local):
 #   1. RECALL: traz trechos de conversas antigas e da memoria ligados a mensagem do dono.
 #   2. CHAT-TAIL: registra a fala do dono no fio (pro re-contexto pos-compact).
 #   3. AVISO DE TAMANHO: conta as trocas; se a conversa ficou longa, sugere a

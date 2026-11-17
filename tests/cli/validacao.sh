@@ -22,7 +22,7 @@ nega "nada foi criado pelas recusas" test -e "$ETC/registro.tsv"
 touch "$STUB_ESTADO/sem-imagem"
 dgclaw agente criar ana --nome "Ana" >"$TMP/o.txt" 2>&1
 igual "imagem ausente: sai com 1" "1" "$?"
-afirma "imagem ausente: diz para esperar 'dgclaw imagem status'" grep -q "dgclaw imagem status" "$TMP/o.txt"
+afirma "imagem ausente: diz para esperar 'prumo imagem status'" grep -q "prumo imagem status" "$TMP/o.txt"
 nega "imagem ausente: nao reserva faixa" test -e "$ETC/registro.tsv"
 nega "imagem ausente: nao chama podman create" grep -q '^podman create' "$STUB_LOG"
 

@@ -17,7 +17,7 @@ from .transcript import context_tokens, had_compact_since, looks_idle, resolve_l
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Auto-compacta a sessao viva da persona DG Claw.")
+    ap = argparse.ArgumentParser(description="Auto-compacta a sessao viva da persona Prumo da Locadora.")
     ap.add_argument("--threshold", default=None,
                     help="override do teto: fracao (<=1) do limite ou tokens absolutos (>1)")
     ap.add_argument("--dry-run", action="store_true", help="so reporta, NAO injeta")

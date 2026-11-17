@@ -63,7 +63,7 @@ igual "senha curta recusada com codigo 1" "1" "$?"
 afirma "a recusa diz que o tamanho e de 6 a 8" grep -q "6 a 8" "$TMP/o.txt"
 dgclaw agente tela-senha fantasma </dev/null >"$TMP/o.txt" 2>&1
 igual "agente desconhecido recusado" "1" "$?"
-afirma "o erro diz o que fazer" grep -q "dgclaw agente listar" "$TMP/o.txt"
+afirma "o erro diz o que fazer" grep -q "prumo agente listar" "$TMP/o.txt"
 
 echo "tela: sem o gravador de verdade o erro diz o arquivo"
 APP_SEM_TELA="$TMP/app-sem-tela"

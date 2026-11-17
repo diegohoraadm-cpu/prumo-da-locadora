@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# lib/colaborador.sh: o comando `dgclaw colaborador` (convidar e gerenciar quem conversa com UM agente).
+# lib/colaborador.sh: o comando `prumo colaborador` (convidar e gerenciar quem conversa com UM agente).
 #
 # Carregado com `source` pelo bin/dgclaw, nunca executado. Usa as funcoes dele e da lib/comum.sh
 # (falha, info, aviso, exigir_ferramentas, carregar_env_dgclaw...).
 # shellcheck disable=SC2154
 #
-#   dgclaw colaborador criar <agente> <email> [--nome X] [--json]
-#   dgclaw colaborador listar [agente] [--json]
-#   dgclaw colaborador reenviar <id-ou-email> [--json]
-#   dgclaw colaborador revogar <id-ou-email> [--json]
+#   prumo colaborador criar <agente> <email> [--nome X] [--json]
+#   prumo colaborador listar [agente] [--json]
+#   prumo colaborador reenviar <id-ou-email> [--json]
+#   prumo colaborador revogar <id-ou-email> [--json]
 #
 # Quem faz o trabalho e o Prumo da Locadora Web (a regra do convite, a senha temporaria, o e-mail e a lista ficam la). Este comando
 # fala com ele por um socket Unix local, <pasta de dados do Web>/admin.sock, que so o root abre: nao passa por senha do
@@ -17,18 +17,18 @@
 
 colaborador_ajuda() {
     cat <<'FIM'
-dgclaw colaborador: convida alguem para conversar com UM agente de trabalho (nunca com o Admin).
+prumo colaborador: convida alguem para conversar com UM agente de trabalho (nunca com o Admin).
 
-  dgclaw colaborador criar <agente> <email> [--nome "<Nome>"] [--json]
+  prumo colaborador criar <agente> <email> [--nome "<Nome>"] [--json]
       Cria o acesso. O e-mail e o login da pessoa. Mostra o texto do convite pronto para copiar (endereco, login e
       senha temporaria, que vale 7 dias e a pessoa troca no primeiro acesso). Se o servidor tiver e-mail configurado,
       o convite tambem sai por e-mail.
-      Exemplo:  sudo dgclaw colaborador criar ana maria@empresa.com --nome "Maria"
-  dgclaw colaborador listar [<agente>] [--json]
+      Exemplo:  sudo prumo colaborador criar ana maria@empresa.com --nome "Maria"
+  prumo colaborador listar [<agente>] [--json]
       Mostra os colaboradores (e se ja entraram, se a senha temporaria venceu ou se foram revogados).
-  dgclaw colaborador reenviar <id-ou-email> [--json]
+  prumo colaborador reenviar <id-ou-email> [--json]
       Gera uma senha temporaria nova e derruba as sessoes da pessoa. Mostra o convite de novo.
-  dgclaw colaborador revogar <id-ou-email> [--json]
+  prumo colaborador revogar <id-ou-email> [--json]
       Tira o acesso e derruba as sessoes. A conta de IA que a pessoa tenha conectado no agente continua la.
 FIM
 }
@@ -66,8 +66,8 @@ colab_erro() {
     motivo="$(printf '%s' "$COLAB_CORPO" | jq -r '.erro // empty' 2>/dev/null || true)"
     [ -n "$motivo" ] || motivo="o Web respondeu algo que nao entendi: $(printf '%s' "$COLAB_CORPO" | head -c 200 | tr '\n' ' ')"
     case "$COLAB_STATUS" in
-        404) falha "$1 (HTTP 404): $motivo" "confira o nome do agente ou o e-mail com: dgclaw colaborador listar" ;;
-        409) falha "$1 (HTTP 409): $motivo" "veja quem ja tem acesso com: dgclaw colaborador listar" ;;
+        404) falha "$1 (HTTP 404): $motivo" "confira o nome do agente ou o e-mail com: prumo colaborador listar" ;;
+        409) falha "$1 (HTTP 409): $motivo" "veja quem ja tem acesso com: prumo colaborador listar" ;;
         5??) falha "$1 (HTTP $COLAB_STATUS): $motivo" "veja o log do Web: journalctl -u dgclaw-web -n 50" ;;
         *) falha "$1 (HTTP $COLAB_STATUS): $motivo" "corrija o que a mensagem aponta e rode de novo." ;;
     esac
@@ -77,12 +77,12 @@ colab_erro() {
 colab_resolve_id() {
     local alvo="$1" id
     if [[ "$alvo" =~ ^[A-Za-z0-9_-]{8,64}$ ]]; then printf '%s' "$alvo"; return 0; fi
-    [[ "$alvo" == *@* ]] || falha "'$alvo' nao parece um id nem um e-mail." "use o e-mail da pessoa ou o id que aparece em: dgclaw colaborador listar"
+    [[ "$alvo" == *@* ]] || falha "'$alvo' nao parece um id nem um e-mail." "use o e-mail da pessoa ou o id que aparece em: prumo colaborador listar"
     colab_chamar GET /api/v1/colaboradores
     [ "$COLAB_STATUS" = 200 ] || colab_erro "nao consegui listar os colaboradores"
     id="$(printf '%s' "$COLAB_CORPO" | jq -r --arg e "$(printf '%s' "$alvo" | tr '[:upper:]' '[:lower:]')" \
         '[.colaboradores[] | select(.email == $e and .estado != "revogado")][0].id // empty')"
-    [ -n "$id" ] || falha "nao achei colaborador ativo com o e-mail $alvo." "veja a lista com: dgclaw colaborador listar"
+    [ -n "$id" ] || falha "nao achei colaborador ativo com o e-mail $alvo." "veja a lista com: prumo colaborador listar"
     printf '%s' "$id"
 }
 
@@ -90,7 +90,7 @@ colab_resolve_id() {
 colab_mostrar_convite() {
     local json="$1" texto aviso_web enviado motivo
     texto="$(printf '%s' "$json" | jq -r '.convite.texto // empty')"
-    [ -n "$texto" ] || falha "o Web respondeu sem o texto do convite." "rode: dgclaw colaborador reenviar <e-mail> para gerar uma senha nova."
+    [ -n "$texto" ] || falha "o Web respondeu sem o texto do convite." "rode: prumo colaborador reenviar <e-mail> para gerar uma senha nova."
     printf '%s\n' "$texto"
     aviso_web="$(printf '%s' "$json" | jq -r '.convite.aviso // empty')"
     [ -z "$aviso_web" ] || aviso "$aviso_web"
@@ -109,12 +109,12 @@ colaborador_criar() {
         case "$1" in
             --json) json=1 ;;
             --nome) [ $# -ge 2 ] || falha "'--nome' precisa de um valor." "exemplo: --nome \"Maria\""; nome="$2"; shift ;;
-            --*) falha "a opcao '$1' nao existe em 'colaborador criar'." "veja as opcoes com: dgclaw colaborador ajuda" ;;
+            --*) falha "a opcao '$1' nao existe em 'colaborador criar'." "veja as opcoes com: prumo colaborador ajuda" ;;
             *) args+=("$1") ;;
         esac
         shift
     done
-    [ "${#args[@]}" -eq 2 ] || falha "faltou o agente ou o e-mail (recebi ${#args[@]} argumento(s))." "use: dgclaw colaborador criar <agente> <email> [--nome \"Nome\"]"
+    [ "${#args[@]}" -eq 2 ] || falha "faltou o agente ou o e-mail (recebi ${#args[@]} argumento(s))." "use: prumo colaborador criar <agente> <email> [--nome \"Nome\"]"
     agente="${args[0]}"; email="${args[1]}"
     exigir_ferramentas jq curl
     if [ "$ENSAIO" = 1 ]; then
@@ -135,8 +135,8 @@ colaborador_listar() {
     for a in "$@"; do
         case "$a" in
             --json) json=1 ;;
-            --*) falha "a opcao '$a' nao existe em 'colaborador listar'." "veja as opcoes com: dgclaw colaborador ajuda" ;;
-            *) [ -z "$agente" ] || falha "so da para filtrar por um agente (recebi '$agente' e '$a')." "use: dgclaw colaborador listar [agente]"; agente="$a" ;;
+            --*) falha "a opcao '$a' nao existe em 'colaborador listar'." "veja as opcoes com: prumo colaborador ajuda" ;;
+            *) [ -z "$agente" ] || falha "so da para filtrar por um agente (recebi '$agente' e '$a')." "use: prumo colaborador listar [agente]"; agente="$a" ;;
         esac
     done
     exigir_ferramentas jq curl
@@ -160,11 +160,11 @@ colaborador_reenviar() {
     for a in "$@"; do
         case "$a" in
             --json) json=1 ;;
-            --*) falha "a opcao '$a' nao existe em 'colaborador reenviar'." "veja as opcoes com: dgclaw colaborador ajuda" ;;
+            --*) falha "a opcao '$a' nao existe em 'colaborador reenviar'." "veja as opcoes com: prumo colaborador ajuda" ;;
             *) args+=("$a") ;;
         esac
     done
-    [ "${#args[@]}" -eq 1 ] || falha "faltou o id ou o e-mail do colaborador." "use: dgclaw colaborador reenviar <id-ou-email>"
+    [ "${#args[@]}" -eq 1 ] || falha "faltou o id ou o e-mail do colaborador." "use: prumo colaborador reenviar <id-ou-email>"
     exigir_ferramentas jq curl
     if [ "$ENSAIO" = 1 ]; then
         info "[ensaio] pediria ao Web uma senha temporaria nova para ${args[0]}, derrubaria as sessoes dele e mostraria o convite (nada foi mudado)"
@@ -184,11 +184,11 @@ colaborador_revogar() {
     for a in "$@"; do
         case "$a" in
             --json) json=1 ;;
-            --*) falha "a opcao '$a' nao existe em 'colaborador revogar'." "veja as opcoes com: dgclaw colaborador ajuda" ;;
+            --*) falha "a opcao '$a' nao existe em 'colaborador revogar'." "veja as opcoes com: prumo colaborador ajuda" ;;
             *) args+=("$a") ;;
         esac
     done
-    [ "${#args[@]}" -eq 1 ] || falha "faltou o id ou o e-mail do colaborador." "use: dgclaw colaborador revogar <id-ou-email>"
+    [ "${#args[@]}" -eq 1 ] || falha "faltou o id ou o e-mail do colaborador." "use: prumo colaborador revogar <id-ou-email>"
     exigir_ferramentas jq curl
     if [ "$ENSAIO" = 1 ]; then
         info "[ensaio] pediria ao Web para revogar o acesso de ${args[0]} e derrubar as sessoes dele (nada foi mudado)"
@@ -215,6 +215,6 @@ colaborador_main() {
         reenviar) colaborador_reenviar "$@" ;;
         revogar) colaborador_revogar "$@" ;;
         ""|ajuda) colaborador_ajuda ;;
-        *) falha "'colaborador $sub' nao existe." "veja os comandos com: dgclaw colaborador ajuda" ;;
+        *) falha "'colaborador $sub' nao existe." "veja os comandos com: prumo colaborador ajuda" ;;
     esac
 }

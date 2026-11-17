@@ -1,5 +1,5 @@
 [Unit]
-Description=DG Claw Tela do agente (reinicia o VNC quando a senha muda)
+Description=Prumo da Locadora Tela do agente (reinicia o VNC quando a senha muda)
 
 [Service]
 Type=oneshot

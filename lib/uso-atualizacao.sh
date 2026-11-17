@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # lib/uso-atualizacao.sh: a seção "O que este Prumo da Locadora usa e o que a versão nova toca" do relatório
-# `dgclaw atualizar --simular` (docs/ATUALIZAR.md, capítulo "Ler o que muda antes de instalar").
+# `prumo atualizar --simular` (docs/ATUALIZAR.md, capítulo "Ler o que muda antes de instalar").
 #
 # Carregado com `source` pelo bin/dgclaw, nunca executado. Usa as funcoes do bin/dgclaw, da lib/comum.sh e da
 # lib/personalizacoes.sh (_git, agentes_ler, personalizacoes_ler...).
@@ -17,7 +17,7 @@
 # bin/dgclaw). Texto livre de container nunca chega ao relatorio. Dos canais so se confere se existem.
 #
 # Alcance honesto do cruzamento: pega o que esta ESCRITO (caminho /opt/dgclaw/app/..., $DGCLAW_PLUGIN_ROOT/...,
-# .dgclaw/plugin/... e `dgclaw <comando> [subcomando]`). Uma rotina que so diz "faca o resumo do dia" e
+# .dgclaw/plugin/... e `prumo <comando> [subcomando]`). Uma rotina que so diz "faca o resumo do dia" e
 # chama o programa por dentro nao aparece: para isso vale o julgamento do Admin sobre o relatorio.
 
 USO_TXT=""          # o texto da secao (inventario + cruzamentos)

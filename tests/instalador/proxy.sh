@@ -70,7 +70,7 @@ caso_proxy_instala_sem_caddy_sem_ufw_e_com_a_porta_do_painel() {
     afirma "trecho cloudflared: DNS" tem "$SAIDA" "cloudflared tunnel route dns <nome-do-tunel> painel.exemplo.com.br"
     afirma "link de primeiro acesso" grep -qE 'https://painel.exemplo.com.br/primeiro-acesso#[A-Za-z0-9_-]{43}' "$SAIDA"
     afirma "avisa que o link so abre com o proxy apontando" tem "$SAIDA" "só abre depois que o seu proxy estiver apontando"
-    afirma "avisa como gerar outro" tem "$SAIDA" "sudo dgclaw primeiro-acesso"
+    afirma "avisa como gerar outro" tem "$SAIDA" "sudo prumo primeiro-acesso"
     limpar_cenario
 }
 

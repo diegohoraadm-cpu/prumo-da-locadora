@@ -1,5 +1,5 @@
 [Unit]
-Description=DG Claw ponte do WhatsApp (liga o numero secundario do dono ao agente pelo Baileys)
+Description=Prumo da Locadora ponte do WhatsApp (liga o numero secundario do dono ao agente pelo Baileys)
 After=network-online.target dgclaw-runner.service
 Wants=network-online.target
 # Esta unidade vem na imagem mas NAO e habilitada nela: quem liga e o dono, com

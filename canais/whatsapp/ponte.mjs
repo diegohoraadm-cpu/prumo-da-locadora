@@ -1,4 +1,4 @@
-// ponte.mjs - A ponte do WhatsApp do DG Claw.
+// ponte.mjs - A ponte do WhatsApp do Prumo da Locadora.
 //
 // Liga um numero SECUNDARIO do dono ao agente, pelo Baileys (protocolo do WhatsApp Web,
 // que NAO e uma API oficial). Contrato completo em docs/CANAL-WHATSAPP.md.

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""build-baseline.py (DG Claw) — baseline de vocabulario das DMs da persona.
+"""build-baseline.py (Prumo da Locadora) — baseline de vocabulario das DMs da persona.
 
-Baseline generico do plugin DG Claw. Le os transcripts
+Baseline generico do plugin Prumo da Locadora. Le os transcripts
 .jsonl da sessao viva (channels) da persona, extrai mensagens de usuario (channel)
 e respostas assistant, tokeniza, conta frequencia e salva as top-N palavras
 "comuns" em baseline-vocab.json. O lado-leitura (memory_search rapido) usa isso pra
 detectar "palavra estranha" (= termo FORA do baseline -> dispara busca semantica).
 
-Sem hardcode de persona/paths. Tudo via env do contrato DG Claw.
+Sem hardcode de persona/paths. Tudo via env do contrato Prumo da Locadora.
 
 Env:
   DGCLAW_WORKSPACE        (obrigatorio na pratica) — raiz do workspace da persona

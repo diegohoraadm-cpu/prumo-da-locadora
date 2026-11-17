@@ -283,7 +283,7 @@ if [ "${DGCLAW_REFLECT_SEMPRE:-0}" = "1" ]; then
     echo "[$(date '+%F %T')] reflexao ${TODAY}: DGCLAW_REFLECT_SEMPRE=1, reflito mesmo sem conversa com o dono" >> "$LOG"
 elif [ "${DGCLAW_PROVEDOR:-}" != "claude" ]; then
     # So o registro do Claude e lido aqui. Codex (rollout em outra pasta) e config sem DGCLAW_PROVEDOR
-    # (agente criado antes da variavel existir; 'dgclaw agente reparar <slug>' regrava) nao tem prova.
+    # (agente criado antes da variavel existir; 'prumo agente reparar <slug>' regrava) nao tem prova.
     echo "[$(date '+%F %T')] reflexao ${TODAY}: provedor '${DGCLAW_PROVEDOR:-nao informado}'; so pulo o dia sem conversa quando o provedor e 'claude' (leio so o registro dele), entao reflito" >> "$LOG"
 elif [ "$CONVERSA_RC" -ne 0 ]; then
     echo "[$(date '+%F %T')] reflexao ${TODAY}: a leitura das conversas falhou (codigo ${CONVERSA_RC}, motivo nas linhas acima); sem prova de que o dia foi parado, reflito" >> "$LOG"
@@ -304,7 +304,7 @@ fi
 
 # ─── passos extras vindos das extensoes instaladas ────────────────────────────
 # Cada extensao pode ter um hooks/reflection.md com passos proprios pra reflexao noturna
-# (o DG Alive usa pra pedir o ajuste de emocao e a evolucao da personalidade). O nucleo so
+# (a extensão de emoções usa pra pedir o ajuste de emocao e a evolucao da personalidade). O nucleo so
 # concatena: nao precisa saber o que cada extensao faz. Extensao sem o arquivo nao muda nada.
 EXT_BLOCK=""
 EXT_DIR="$DGCLAW_WORKSPACE/.dgclaw/ext"

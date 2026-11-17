@@ -98,4 +98,5 @@ container/Containerfile	org.opencontainers.image.title="DG Claw agente"	logica: 
 #
 # --- M4 ---
 #
+lib/uso-atualizacao.sh	usa o comando \"dgclaw $alvo\"	logica: cita o comando como esta escrito na rotina do dono, que o rotulo \"cli\" compara com a ajuda das duas versoes (a ajuda ainda diz dgclaw)
 # --- M5 ---

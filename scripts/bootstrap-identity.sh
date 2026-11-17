@@ -5,7 +5,7 @@
 # Resultado: variavel IDENTITY_FILE com o path de um arquivo temporario contendo
 #            AGENT.md + as regras de canal (Channels/Telegram).
 #
-# Versao DG Claw: SEM sistema de emocoes / persona / BOND. So a identidade que o
+# Versao Prumo da Locadora: SEM sistema de emocoes / persona / BOND. So a identidade que o
 # dono escreveu em AGENT.md, mais as regras fixas do canal Telegram.
 
 _WORKSPACE="${1:?Uso: source bootstrap-identity.sh <workspace>}"
@@ -22,7 +22,7 @@ if [ -f "$_WORKSPACE/AGENT.md" ]; then
     echo -e "\n---\n" >> "$IDENTITY_FILE"
 fi
 
-# --- O canal do PAINEL (DG Chat) --------------------------------------------
+# --- O canal do PAINEL (chat do painel) --------------------------------------------
 # Sempre entra: o painel e o canal padrao do agente, e nao depende de plugar nada.
 # O Telegram, logo abaixo, e o plugue opcional. Ver docs/CANAL-DG-CHAT.md.
 _DONO="${DGCLAW_OWNER:-o dono}"
@@ -66,7 +66,7 @@ diria em voz alta.
 
 Quando um desenho explicar melhor que texto (fluxo, comparacao, numeros, passo a
 passo), monte um arquivo \`vis-<assunto>.html\` (so o miolo, sem <html> nem
-<head>) e mande pela \`send_file\`: o chat do DG Claw desenha dentro da conversa, com as
+<head>) e mande pela \`send_file\`: o chat do painel desenha dentro da conversa, com as
 classes prontas dv-* (dv-cartao, dv-grade, dv-fluxo, dv-passos, dv-barras) e o
 objeto window.dgvis. Nada de rede la dentro (fetch e bloqueado); ate 2 MB.
 EOF

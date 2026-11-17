@@ -158,7 +158,7 @@ dgclaw status >"$TMP/o.txt" 2>&1
 igual "cofre antigo e aviso, nao falha: status sai 0" "0" "$?"
 afirma "avisa o cofre antigo com o nome do agente" grep -q 'aviso  agente beto: sobrou o cofre antigo' "$TMP/o.txt"
 afirma "lista os nomes das chaves" grep -q 'chaves: GEMINI_API_KEY, OPENAI_API_KEY' "$TMP/o.txt"
-afirma "diz como guardar de novo" grep -q 'dgclaw agente cofre beto guardar NOME' "$TMP/o.txt"
+afirma "diz como guardar de novo" grep -q 'prumo agente cofre beto guardar NOME' "$TMP/o.txt"
 afirma "diz o que apagar" grep -q "apague $VELHO/cofre.chave" "$TMP/o.txt"
 nega "nao imprime o conteudo dos arquivos" grep -q 'sk-teste' "$TMP/o.txt"
 afirma "nao apaga nada sozinho" test -f "$VELHO/cofre/segredos/OPENAI_API_KEY.enc"
@@ -235,7 +235,7 @@ igual "acrescenta o gancho que faltava" "1" "$(jq --arg g "$GANCHO" '[.config.pr
 igual "agente reparado ganha tambem o gancho de novidades" "1" "$(jq '[.config.promptHooks[] | select(. == "node /opt/dgclaw/app/scripts/novidades-hook.mjs")] | length' "$RJ")"
 igual "preserva os outros promptHooks" "echo meu-gancho" "$(jq -r '.config.promptHooks[0]' "$RJ")"
 igual "preserva o resto do runner.json" "codex-cli" "$(jq -r .config.provider "$RJ")"
-afirma "diz o que fez e como reiniciar" grep -q "dgclaw agente reiniciar cida" "$TMP/o.txt"
+afirma "diz o que fez e como reiniciar" grep -q "prumo agente reiniciar cida" "$TMP/o.txt"
 igual "runner.json segue 444" "444" "$(stat -c %a "$RJ")"
 cp "$RJ" "$TMP/rj-antes.json"
 dgclaw agente reparar cida >"$TMP/o.txt" 2>&1

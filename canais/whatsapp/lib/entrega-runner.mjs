@@ -43,7 +43,7 @@ export function criarEntregaRunner({ opcoes, env, runnerUrl, tokenFile, runnerJs
       await r.arrayBuffer().catch(() => {});
       if (r.status >= 200 && r.status < 300) return { ok: true };
       if (r.status === 409) {
-        return { ok: false, definitivo: true, status: 409, motivo: 'o runner respondeu 409: o agente esta sem login ou sem chave. Abra o painel do DG Claw e entre com a assinatura' };
+        return { ok: false, definitivo: true, status: 409, motivo: 'o runner respondeu 409: o agente esta sem login ou sem chave. Abra o painel do Prumo da Locadora e entre com a assinatura' };
       }
       if (r.status >= 500) return { ok: false, definitivo: false, motivo: `o runner respondeu ${r.status}` };
       return { ok: false, definitivo: true, status: r.status, motivo: `o runner recusou com ${r.status}` };

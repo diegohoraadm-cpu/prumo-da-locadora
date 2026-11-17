@@ -42,6 +42,14 @@
     </div>
     <button type="submit" id="entrar">Entrar</button>
   </form>
+  <button type="button" id="naoConsigo" aria-expanded="false" aria-controls="ajudaEntrar"
+          style="width:auto;margin:var(--esp-3) auto 0;padding:0 var(--esp-3);border:0;background:transparent;color:var(--cor-link);font-size:var(--texto-m);font-weight:400;text-decoration:underline">Não consigo entrar</button>
+  <div id="ajudaEntrar" class="erro info" hidden>
+    <p style="margin:0 0 var(--esp-2)">Se você é o dono, rode no terminal do servidor:</p>
+    <p style="margin:0 0 var(--esp-2)"><code>sudo prumo usuario</code> mostra o nome de usuário.</p>
+    <p style="margin:0 0 var(--esp-2)"><code>sudo prumo senha</code> define uma senha nova.</p>
+    <p style="margin:0">Depois de muitas tentativas erradas seguidas, o acesso fica bloqueado por até 15 minutos. Espere e tente de novo.</p>
+  </div>
   <p class="slogan">{{MARCA_SLOGAN}}</p>
 </main>
 <script src="/login.js"></script>

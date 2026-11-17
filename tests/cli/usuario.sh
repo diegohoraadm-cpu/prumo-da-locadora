@@ -27,6 +27,26 @@ igual "as duas ultimas linhas sao o usuario e o endereco" "$ESPERADO" "$(tail -n
 nega "a senha nao aparece na saida" grep -q "uma senha bem grande" "$TMP/o.txt"
 unset DGCLAW_SENHA_HASH_CMD
 
+echo "porta invalida sem dominio: nao imprime endereco quebrado"
+cp "$ETC/dgclaw.env" "$ETC/dgclaw.env.guardado"
+printf 'DGCLAW_PORTA_PAINEL=abc\n' >"$ETC/dgclaw.env"
+dgclaw usuario >"$TMP/o.txt" 2>"$TMP/e.txt"
+afirma "mostra o usuario" grep -q 'Usuário do painel: dono' "$TMP/o.txt"
+nega "nao imprime http://127.0.0.1:/" grep -q 'http://' "$TMP/o.txt"
+afirma "avisa que a porta nao esta configurada" grep -q 'porta do painel não está configurada' "$TMP/o.txt"
+mv "$ETC/dgclaw.env.guardado" "$ETC/dgclaw.env"
+
+echo "web.env sem usuario: senha trocar confere antes e nao troca"
+printf "DGCLAW_PANEL_PASSWORD_HASH='scrypt\$velho\$velho'\n" >"$ETC/web.env"
+export DGCLAW_SENHA_HASH_CMD="cat >/dev/null; echo 'scrypt\$novo\$novo'"
+printf '%s\n' "uma senha bem grande" | dgclaw senha trocar >"$TMP/o.txt" 2>"$TMP/e.txt"
+igual "sai 1" "1" "$?"
+afirma "diz para rodar o instalador" grep -q 'rode o instalador de novo' "$TMP/e.txt"
+afirma "a senha antiga continua" grep -q 'scrypt\$velho\$velho' "$ETC/web.env"
+nega "a senha nova nao foi gravada" grep -q 'scrypt\$novo' "$ETC/web.env"
+unset DGCLAW_SENHA_HASH_CMD
+printf "DGCLAW_PANEL_USER=dono\nDGCLAW_PANEL_PASSWORD_HASH='scrypt\$velho\$velho'\n" >"$ETC/web.env"
+
 echo "ajuda"
 afirma "a ajuda lista dgclaw usuario" bash -c "'$CLI' ajuda | grep -q 'dgclaw usuario'"
 

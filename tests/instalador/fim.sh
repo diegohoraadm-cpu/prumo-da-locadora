@@ -130,3 +130,20 @@ caso_fim_aviso_separa_exited_de_quem_vira_falhou() {
     afirma "so exited: diz que fica desligado" tem "$SAIDA" "estao desligados e ficam como estao"
     nega "so exited: nada iniciado" tem "$STUB_LOG" "dgclaw agente iniciar"
 }
+
+caso_fim_agente_sem_container_nao_manda_iniciar() {
+    novo_cenario
+    afirma "a instalacao termina com sucesso" fim_com_agentes ana:exited dia:ausente cai:running
+    afirma "o aviso aparece" tem "$SAIDA" "AVISO DA VERSÃO 1.0.5"
+    afirma "o agente sem container tem lista propria" grep -qE "sem container .*: dia\$" "$SAIDA"
+    afirma "diz que o iniciar nao funciona sem container" tem "$SAIDA" "O \"agente iniciar\" nao funciona sem container"
+    afirma "o comando certo e o recriar --forcar" tem "$SAIDA" "sudo dgclaw agente recriar <nome do agente> --forcar"
+    nega "o agente sem container nao cai na lista dos desligados" grep -qE "estao desligados e ficam como estao.*dia" "$SAIDA"
+    afirma "o desligado de verdade segue na lista dos desligados" grep -qE "estao desligados e ficam como estao.*: ana\$" "$SAIDA"
+    nega "nada e iniciado no agente sem container" tem "$STUB_LOG" "dgclaw agente iniciar dia"
+    afirma "o aviso dos desligados diz que a etapa so vale na atualizacao seguinte" tem "$SAIDA" "Na atualizacao SEGUINTE a esta"
+    novo_cenario
+    afirma "instalacao so com agente sem container" fim_com_agentes dia:ausente
+    nega "so sem container: nao promete FALHOU" tem "$SAIDA" "vao aparecer como FALHOU"
+    nega "so sem container: nao manda iniciar" tem "$SAIDA" "ligue com: sudo dgclaw agente iniciar"
+}

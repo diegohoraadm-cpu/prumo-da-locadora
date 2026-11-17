@@ -2472,7 +2472,7 @@ agente_sem_manifesto() {
 # de proposito); imprime o aviso da 1.0.5 se algum agente ainda nao tem o manifesto. Nada e gravado nas casas.
 fim_agentes() {
     passo "Conferindo os agentes"
-    local cli="$DG_APP/bin/dgclaw" slug estado sem="" desl=""
+    local cli="$DG_APP/bin/dgclaw" slug estado sem="" desl="" aus=""
     if [ "$ENSAIO" = 1 ]; then
         info "[ensaio] listaria os agentes e ligaria os que estao em 'created'"
         return 0
@@ -2493,10 +2493,10 @@ fim_agentes() {
         # O `recriar` (sem --forcar) so para por falta de manifesto no agente ligado (ou preso em stopping);
         # agente desligado ele deixa como esta e sai 0, entao nao vira FALHOU.
         if agente_sem_manifesto "$slug"; then
-            case "$estado" in running|stopping) sem+=" $slug" ;; *) desl+=" $slug" ;; esac
+            case "$estado" in running|stopping) sem+=" $slug" ;; ausente) aus+=" $slug" ;; *) desl+=" $slug" ;; esac
         fi
     done < <(jq -r '.agentes[] | select(.tipo == "agente") | .slug' "$DG_AGENTES_JSON")
-    if [ -n "$sem$desl" ]; then printf '\n%sAVISO DA VERSÃO 1.0.5%s\n' "$_C_AV" "$_C_0"; fi
+    if [ -n "$sem$desl$aus" ]; then printf '\n%sAVISO DA VERSÃO 1.0.5%s\n' "$_C_AV" "$_C_0"; fi
     if [ -n "$sem" ]; then
         printf '   Estes agentes ainda nao tem a referencia que a versao nova usa para conferir o que existe so dentro da caixa deles:%s\n' "$sem"
         printf '   Na etapa seguinte da atualizacao eles vao aparecer como FALHOU e a tela vai terminar com "Atualizacao INCOMPLETA".\n'
@@ -2509,7 +2509,12 @@ fim_agentes() {
     fi
     if [ -n "$desl" ]; then
         printf '   Estes agentes estao desligados e ficam como estao; a atualizacao nao os liga, nao os troca e nao os lista como FALHOU:%s\n' "$desl"
-        printf '   Quando quiser usar um deles, ligue com: sudo dgclaw agente iniciar <nome do agente>. Depois de ligado, ele passa pela mesma etapa dos outros (FALHOU e --forcar).\n'
+        printf '   Quando quiser usar um deles, ligue com: sudo dgclaw agente iniciar <nome do agente>. Na atualizacao SEGUINTE a esta, depois de ligado, ele passa pela mesma etapa dos outros (FALHOU e --forcar).\n'
+    fi
+    if [ -n "$aus" ]; then
+        printf '   Estes agentes estao sem container (a caixa deles nao existe mais) e a atualizacao nao os cria nem os lista como FALHOU:%s\n' "$aus"
+        printf '   O "agente iniciar" nao funciona sem container. Para criar a caixa de novo, rode, um por vez: sudo dgclaw agente recriar <nome do agente> --forcar\n'
+        printf '   Como a caixa nao existe, nao ha nada dentro dela para perder; a casa, a memoria e o cofre do agente nao sao tocados.\n'
     fi
 }
 

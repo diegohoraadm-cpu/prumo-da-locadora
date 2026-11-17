@@ -2541,10 +2541,17 @@ painel_usuario() {
 
 # painel_usuario_endereco: as duas linhas "Usuario do painel" e "Endereco do painel" (usadas por `senha` e `usuario`).
 painel_usuario_endereco() {
-    local usuario
+    local usuario url
     usuario="$(painel_usuario)" || return 1
     carregar_env_dgclaw
-    printf 'Usuário do painel: %s\nEndereço do painel: %s/\n' "$usuario" "$(url_base_painel)"
+    printf 'Usuário do painel: %s\n' "$usuario"
+    # Porta invalida sem dominio: o erro de porta_painel_efetiva morre na subshell de dentro do printf e a url sai "http://127.0.0.1:"; nunca imprimir isso.
+    url="$(url_base_painel 2>/dev/null)"
+    if [ -n "$url" ] && [[ "$url" != *: ]]; then
+        printf 'Endereço do painel: %s/\n' "$url"
+    else
+        printf 'Endereço do painel: não consigo mostrar, a porta do painel não está configurada direito (DGCLAW_PORTA_PAINEL em %s/dgclaw.env).\n' "$DG_ETC"
+    fi
 }
 
 senha_trocar() {
@@ -2554,6 +2561,8 @@ senha_trocar() {
         return 0
     }
     [ -f "$web_env" ] || falha "nao achei $web_env." "o DG Claw Web ainda nao foi instalado; rode o instalador."
+    # Confere o usuario ANTES de trocar (como primeiro_acesso e instalacao_remota): sem ele, o fim do comando falharia depois de a senha ja ter mudado.
+    painel_usuario >/dev/null
     if [ -t 0 ]; then
         printf 'Nova senha do painel (minimo 12 caracteres, nada aparece enquanto digita): ' >&2
         read -rs senha; printf '\n' >&2

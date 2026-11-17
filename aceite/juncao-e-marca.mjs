@@ -67,6 +67,7 @@ import { createRequire } from 'node:module';
 const ANTERIOR = '4be8b2f7e9a5b2fa2db615479c59e7879ea1c47c';   // nossa main publicada (14/11)
 const BASE_ORIGINAL = 'c38d399d2a606d97fd7c070c85f92785c8404d17'; // #123 do original, última já absorvida
 const FIM_ORIGINAL = 'f4efccc32c79ef5809a4b5f73c5864c312f5c9fc';  // #129 do original
+const BASE_MARCA = 'ceca5e27239887f9a8f588f2adcc898e89912e18';  // ponta de onde saíram os lotes M1, M3, M4 e M5 (F4.4 executor)
 const PR12 = '1c7992d32568372e157ba88092f52fff70f50a51';          // manual de socorro, ramo docs/socorro-nao-consigo-entrar
 const DEZ = [
   ['#104', '24915863bb41254e90d0c7a0a2d5a63e11366622'],
@@ -323,7 +324,7 @@ function blocoF1() {
   const soc = [ler('skills/socorro/SKILL.md') || '', ler('panel/lib/socorro.js') || ''];
   criterio(soc.every((t) => t.includes('EMERGENCIA.md')), 'skill socorro e panel/lib/socorro.js carregam docs/EMERGENCIA.md');
   // Referência NOVA a EMERGENCIA.md (sem ser BOTAO-DE-) que não existia em 4be8b2f: provável botão apontando para o socorro.
-  const refsAlvo = spawnSync('git', ['-C', REPO, 'grep', '-n', '-I', 'EMERGENCIA\\.md', ...(COMMIT ? [COMMIT] : []), '--', '.', ':!aceite/', ':!CHANGELOG.md'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }).stdout.split('\n').filter(Boolean);
+  const refsAlvo = spawnSync('git', ['-C', REPO, 'grep', '-n', '-I', 'EMERGENCIA\\.md', ...(COMMIT ? [COMMIT] : []), '--', '.', ':!aceite/', ':!CHANGELOG.md', ':!scripts/marca/'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }).stdout.split('\n').filter(Boolean);   // scripts/marca: a ferramenta cita o arquivo no fica_em, não aponta botão
   const antes = new Set(spawnSync('git', ['-C', REPO, 'grep', '-h', '-I', 'EMERGENCIA\\.md', ANTERIOR, '--', '.'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }).stdout.split('\n').map(norm));
   const novas = [];
   for (const r of refsAlvo) {
@@ -564,11 +565,31 @@ async function blocoF4() {
   criterio(mortas.length === 0, `F4.3 exceções de lógica com o trecho presente: ${logicas.length - mortas.length} de ${logicas.length}`, mortas);
 
   // 4. Comando: texto ao dono diz `prumo`; o que é executado segue `dgclaw`.
-  const ficaEm = (rel) => (regras.comando.fica_em || []).some((p) => rel === p || rel.startsWith(p.endsWith('/') ? p : `${p}/`));
+  // Mesma regra do aplicar.mjs (inclusive o sufixo * de web/test/diagnostico*).
+  const ficaEm = (rel) => (regras.comando.fica_em || []).some((p) => rel === p || (p.endsWith('*') ? rel.startsWith(p.slice(0, -1)) : rel.startsWith(p.endsWith('/') ? p : `${p}/`)));
   const textoAoDono = (rel) => /^(docs\/manual\/|templates\/|skills\/)/.test(rel) || ['docs/EMERGENCIA.md', 'README.md', 'INSTALL.md'].includes(rel);
   const sudo = [];
   for (const [rel, src] of fonte) if (textoAoDono(rel) && !ficaEm(rel)) src.split('\n').forEach((l, i) => { if (l.includes('sudo dgclaw ')) sudo.push(`${rel}:${i + 1}: ${l.trim().slice(0, 100)}`); });
-  criterio(sudo.length === 0, `F4.4 "sudo dgclaw " em manual, EMERGENCIA, README, INSTALL, templates e skills (fora de comando.fica_em): ${sudo.length} (esperado 0)`, sudo);
+  criterio(sudo.length === 0, `F4.4 "sudo dgclaw " em manual, README, INSTALL, templates e skills (fora de comando.fica_em): ${sudo.length} (esperado 0)`, sudo);
+  // 4b (Teia, 17/11, achado do QA-M3): nos arquivos de comando.fica_em quem lê EXECUTA (o Admin, a sessão de socorro, um
+  // programa). Lá o comando segue "dgclaw": num servidor com um "prumo" alheio o atalho não é criado
+  // (tests/instalador/fim.sh:86-88). Reprova a linha que passou a ter "prumo <subcomando>" depois da base dos lotes
+  // (BASE_MARCA); linha idêntica à da base (o texto ao dono que já existia, ex.: "sudo prumo senha" do C5) passa, e
+  // texto novo ao dono nesses arquivos entra por exceção com motivo no excecoes.txt.
+  const escRx = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const rxPrumo = new RegExp(`(?<![\\w/.\\-=$])${escRx(regras.comando.para)} (?:${regras.comando.subcomandos.map(escRx).join('|')})(?![\\w-])`);
+  const executa = [];
+  for (const [rel, src] of fonte) {
+    if (!ficaEm(rel)) continue;
+    const b = spawnSync('git', ['-C', REPO, 'show', `${BASE_MARCA}:${rel}`], { encoding: 'utf8' });
+    const naBase = new Set(b.status === 0 ? b.stdout.split('\n') : []);
+    const prot = M.protegidas(excs, rel, src);
+    src.split('\n').forEach((l, i) => {
+      if (!rxPrumo.test(l) || naBase.has(l) || prot === 'todas' || prot.has(i)) return;
+      executa.push(`${rel}:${i + 1}: ${l.trim().slice(0, 100)}`);
+    });
+  }
+  criterio(executa.length === 0, `F4.4 o que o Admin, o socorro ou um programa executa (comando.fica_em) segue "dgclaw": ${executa.length} linha(s) nova(s) com "prumo <comando>" (esperado 0)`, executa);
   if (!LOTE || LOTE === 'M4') {
     const r = M.rodar({ raiz: REPO, pastas: ['bin', 'lib', 'install.sh'], dry: true, regras, excs });
     const falta = r.flatMap((a) => a.ocorrencias.filter((o) => o.regra === 'comando' && (o.estado === 'troca' || o.motivo === 'comando-com-variavel')).map((o) => `${a.rel}:${o.linha}${o.motivo ? ` (${o.motivo})` : ''}`));

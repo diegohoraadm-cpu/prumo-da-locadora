@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# lib/suporte.sh: acesso temporario do suporte DG por chave SSH (docs/PROJETO-DE-CLIENTE.md).
+# lib/suporte.sh: acesso temporario do suporte por chave SSH (docs/PROJETO-DE-CLIENTE.md).
 #
 # Carregado com `source` pelo bin/dgclaw, nunca executado. Usa as funcoes dele e da lib/comum.sh
 # (falha, ok, info, aviso, executar, escrever_arquivo, exigir_ferramentas, s_ok, s_aviso, agora_ms...).

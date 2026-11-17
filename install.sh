@@ -1869,7 +1869,7 @@ FIM
 
 # --- 9e. limpeza diaria das chaves do suporte ---------------------------------------
 # configurar_suporte_limpar: um timer diario roda `dgclaw suporte limpar`, que tira do authorized_keys do
-# root as chaves do suporte DG que ja venceram (docs/PROJETO-DE-CLIENTE.md). O sshd ja recusa a chave vencida
+# root as chaves do suporte que ja venceram (docs/PROJETO-DE-CLIENTE.md). O sshd ja recusa a chave vencida
 # sozinho (expiry-time); o timer so tira a linha morta do arquivo. Nao liga acesso nenhum: sem chave do
 # suporte no arquivo ele nao faz nada. ProtectHome fica desligado porque o arquivo mora em /root/.ssh.
 configurar_suporte_limpar() {
@@ -1878,7 +1878,7 @@ configurar_suporte_limpar() {
     criar_pasta 700 "$DG_LIB/suporte"
     cat <<FIM | escrever_arquivo "$DG_UNITS/dgclaw-suporte-limpar.service" 644
 [Unit]
-Description=DG Claw tira as chaves vencidas do suporte DG (authorized_keys do root)
+Description=Prumo da Locadora tira as chaves vencidas do suporte (authorized_keys do root)
 
 [Service]
 Type=oneshot
@@ -1895,7 +1895,7 @@ TimeoutStartSec=60
 FIM
     cat <<'FIM' | escrever_arquivo "$DG_UNITS/dgclaw-suporte-limpar.timer" 644
 [Unit]
-Description=DG Claw tira as chaves vencidas do suporte DG (uma vez por dia)
+Description=Prumo da Locadora tira as chaves vencidas do suporte (uma vez por dia)
 
 [Timer]
 OnCalendar=daily

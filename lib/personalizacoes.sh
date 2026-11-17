@@ -565,17 +565,17 @@ _om_relatorio() {
         if [ "$np" -gt "$max" ]; then printf '  e mais %s arquivo(s)\n' "$((np - max))"; fi
     fi
     if [ "${#USO_CRUZ[@]}" -gt 0 ]; then
-        printf '  Cruzando com o que este DG Claw usa:\n'
+        printf '  Cruzando com o que este Prumo da Locadora usa:\n'
         for f in "${USO_CRUZ[@]}"; do printf '  - %s\n' "$f"; done
     fi
     for f in ${USO_LIM[@]+"${USO_LIM[@]}"}; do printf '  limite atingido: %s\n' "$f"; done
-    printf '\nO que este DG Claw usa e o que a versao nova toca:\n'
+    printf '\nO que este Prumo da Locadora usa e o que a versao nova toca:\n'
     printf '%s' "$USO_TXT" | sed 's/^/  /'
     velho="$(personalizacoes_registro)"
     printf '\nSuas personalizacoes estao no registro %s.\n' "$velho"
     printf '\nVersao de destino (para conferencia, nao precisa ler):\nDESTINO=%s\nPERSONALIZACOES=%s\nMODO=%s\nINSTALADO=%s\nINSTALADO_ORIGEM=%s\n' "$para" "${ATU_PERS_HEAD:-nenhuma}" "${ATU_MODO_INST:-oficial}" "${ATU_COMMIT_ANTIGO:-}" "${ATU_COMMIT_ORIGEM:-}"
     if [ -n "$head" ]; then printf 'HEAD=%s\n' "$head"; fi
-    printf '\nAntes de instalar: leia o que muda e o que este DG Claw usa (secao acima), diga ao dono em linguagem simples se a atualizacao e segura e se vale a pena, e grave o parecer: sudo dgclaw atualizar --parecer segura --commit <commit do DESTINO> --motivo "<texto curto>" (ou arriscada, que bloqueia). Espere o ok dele. Com o ok: sudo dgclaw atualizar --ok-do-dono --segundo-plano\n'
+    printf '\nAntes de instalar: leia o que muda e o que este Prumo da Locadora usa (secao acima), diga ao dono em linguagem simples se a atualizacao e segura e se vale a pena, e grave o parecer: sudo dgclaw atualizar --parecer segura --commit <commit do DESTINO> --motivo "<texto curto>" (ou arriscada, que bloqueia). Espere o ok dele. Com o ok: sudo dgclaw atualizar --ok-do-dono --segundo-plano\n'
 }
 
 # _om_changelog <origem> <destino>: linhas de item que o CHANGELOG do destino tem e o da origem nao
@@ -599,7 +599,7 @@ _om_exigir_ok() {
     fi
     if [ "$ENSAIO" = 1 ]; then
         info "a atualizacao de verdade vai exigir --ok-do-dono, depois que o dono ler o relatorio acima."
-        info "Antes dele, a analise: com o relatorio lido e cruzado com o que este DG Claw usa, grave o parecer: sudo dgclaw atualizar --parecer segura|arriscada --motivo \"<texto curto>\". Parecer arriscada bloqueia a instalacao."
+        info "Antes dele, a analise: com o relatorio lido e cruzado com o que este Prumo da Locadora usa, grave o parecer: sudo dgclaw atualizar --parecer segura|arriscada --motivo \"<texto curto>\". Parecer arriscada bloqueia a instalacao."
         return 0
     fi
     falha "$motivo e eu ainda nao tenho o ok do dono.${arq:+ O relatorio esta em $arq.}" \

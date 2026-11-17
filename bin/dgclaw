@@ -160,7 +160,7 @@ Atualizar o DG Claw
       reinicia o Admin por ultimo. Se o clone estiver na branch `personalizacoes`, confere o registro
       de personalizacoes contra a versao nova: para se algo cruzar e reaplica por cima se nao cruzar
       (--simular ja mostra o cruzamento). Antes do backup, mostra o relatorio "O que muda" (commits,
-      CHANGELOG, pontos de atencao e o que este DG Claw usa; gravado em /var/log/dgclaw/) e so segue com --ok-do-dono. Opcoes:
+      CHANGELOG, pontos de atencao e o que este Prumo da Locadora usa; gravado em /var/log/dgclaw/) e so segue com --ok-do-dono. Opcoes:
         --simular               mostra tudo o que faria, sem mudar nada
         --repo <pasta>          onde esta o clone do DG Claw (o instalador anota; so precisa se ele nao souber)
         --forcar-local          se o clone tiver alteracao local, guarda num stash datado e segue
@@ -170,7 +170,7 @@ Atualizar o DG Claw
                                 (o padrao e voltar sozinho ao backup; agente que nao sobe NUNCA faz voltar)
         --parecer segura|arriscada --motivo "<texto curto>"
                                 grava o parecer de quem analisou o relatorio (o que muda cruzado com o que este
-                                DG Claw usa) para a versao de destino; nao instala nada. Obrigatorio antes do ok
+                                Prumo da Locadora usa) para a versao de destino; nao instala nada. Obrigatorio antes do ok
         --ok-do-dono            o dono leu o relatorio "O que muda" e autorizou; sem isso a atualizacao de verdade nao segue.
                                 Exige parecer 'segura' para a mesma versao; parecer 'arriscada' bloqueia
         --apesar-do-alerta      com --ok-do-dono: instala mesmo com parecer 'arriscada'. So quando o dono, depois de
@@ -221,9 +221,9 @@ Botao de emergencia (tirar o servidor do ar)
       que 'preparar' gera (vale 2 minutos). Ordem: simular (so mostra), preparar (codigo + plano), cortar --codigo <c>,
       confirmar, e religar --codigo <c> quando passar. O painel tambem sai do ar durante o corte. Guia: docs/BOTAO-DE-EMERGENCIA.md
       Exemplo:  sudo dgclaw emergencia simular
-Suporte DG
+suporte
   dgclaw suporte ligar --chave '<linha ssh-ed25519 ...>' [--dias N]
-      Libera o time de suporte DG por uma chave SSH TEMPORARIA (padrao 7 dias, maximo 30). Depois do prazo o
+      Libera o time de suporte por uma chave SSH TEMPORARIA (padrao 7 dias, maximo 30). Depois do prazo o
       servidor recusa a chave sozinho. So as chaves do suporte sao tocadas; as suas ficam como estao.
       Exemplo:  sudo dgclaw suporte ligar --chave 'ssh-ed25519 AAAAC3... suporte' --dias 7
   dgclaw suporte desligar [--derrubar-sessoes]

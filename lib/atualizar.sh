@@ -506,13 +506,13 @@ atualizar_conferir_parecer() {
         # Sem identidade verificavel do destino nao ha a que prender o parecer: bloqueia, em vez de deixar passar.
         atualizar_registrar bloqueio "motivo=destino-sem-identidade"
         falha "nao consigo identificar a versao de destino (o clone nao e um repositorio git ou nao tem de onde puxar), entao nao ha como conferir o parecer." \
-              "faca da pasta um clone git do DG Claw oficial (git clone https://github.com/DGatoM/DG-Claw), aponte para ele com --repo e rode de novo: sudo dgclaw atualizar --simular, depois o parecer e o --ok-do-dono. Nada foi mudado (parei antes do backup)."
+              "faca da pasta um clone git do Prumo da Locadora oficial (git clone https://github.com/DGatoM/DG-Claw), aponte para ele com --repo e rode de novo: sudo dgclaw atualizar --simular, depois o parecer e o --ok-do-dono. Nada foi mudado (parei antes do backup)."
     fi
     arq="$(atualizar_parecer_arquivo)"
     if [ ! -f "$arq" ]; then
         atualizar_registrar bloqueio "alvo=${alvo:0:12} motivo=sem-parecer"
         falha "falta o parecer sobre a versao ${alvo:0:10} (nao existe $arq). Nunca se atualiza as cegas." \
-              "rode o relatorio (sudo dgclaw atualizar --simular), leia o que muda e o que este DG Claw usa, diga ao dono se e segura e vale a pena, e grave o veredito: sudo dgclaw atualizar --parecer segura --commit <commit do DESTINO> --motivo \"<texto curto>\" (ou arriscada). Depois repita com --ok-do-dono. Nada foi mudado (parei antes do backup)."
+              "rode o relatorio (sudo dgclaw atualizar --simular), leia o que muda e o que este Prumo da Locadora usa, diga ao dono se e segura e vale a pena, e grave o veredito: sudo dgclaw atualizar --parecer segura --commit <commit do DESTINO> --motivo \"<texto curto>\" (ou arriscada). Depois repita com --ok-do-dono. Nada foi mudado (parei antes do backup)."
     fi
     if ! lido="$(jq -r '[(.commit_alvo // ""), (.veredito // ""), (.motivo // ""), (.data // ""), (.personalizacoes // "-"), (.modo // "-"), (.commit_instalado // "-")] | @tsv' "$arq" 2>&1)"; then
         falha "nao consegui ler o parecer em $arq ($(printf '%s' "$lido" | head -n 1 | tr -d '\000-\037\177' | cut -c1-120))." \

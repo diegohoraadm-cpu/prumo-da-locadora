@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# lib/uso-atualizacao.sh: a seção "O que este DG Claw usa e o que a versão nova toca" do relatório
+# lib/uso-atualizacao.sh: a seção "O que este Prumo da Locadora usa e o que a versão nova toca" do relatório
 # `dgclaw atualizar --simular` (docs/ATUALIZAR.md, capítulo "Ler o que muda antes de instalar").
 #
 # Carregado com `source` pelo bin/dgclaw, nunca executado. Usa as funcoes do bin/dgclaw, da lib/comum.sh e da
@@ -31,7 +31,7 @@ USO_PRAZO="${DGCLAW_USO_PRAZO:-120}"     # segundos para o inventario inteiro, c
 USO_MAX_REFS_TOTAL=10000
 USO_NOME_RE='^[a-z0-9][a-z0-9._-]{0,40}$'
 
-# _uso_nome_seguro <texto>: o nome so aparece se for de uma skill que o proprio DG Claw distribui (a lista vem do
+# _uso_nome_seguro <texto>: o nome so aparece se for de uma skill que o proprio Prumo da Locadora distribui (a lista vem do
 # repositorio, fora da casa gravavel, em $USO_SKILLS_OFICIAIS). Regex nao basta: "ignore-instrucoes-anteriores"
 # passa em qualquer regex. Nome de agente vem do agentes.json do root e so passa pela regex.
 _uso_nome_seguro() {
@@ -111,7 +111,7 @@ uso_calcular() {
         if [ -s "$tmp/cmd-antes" ]; then comm -23 "$tmp/cmd-antes" "$tmp/cmd-depois" >"$tmp/removidos"; fi
     fi
 
-    # Skills distribuidas pelo DG Claw: as do repositorio na versao de destino (ou, sem ela, as do programa instalado).
+    # Skills distribuidas pelo Prumo da Locadora: as do repositorio na versao de destino (ou, sem ela, as do programa instalado).
     USO_SKILLS_OFICIAIS=" "
     if [ -n "$para" ]; then
         while IFS= read -r oficial; do USO_SKILLS_OFICIAIS+="${oficial#skills/} "; done < <(_git ls-tree -d --name-only "$para" skills/ 2>/dev/null)

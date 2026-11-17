@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# lib/uso-coletor.sh: junta, de UMA casa de agente, o que a secao "O que este DG Claw usa" precisa.
+# lib/uso-coletor.sh: junta, de UMA casa de agente, o que a secao "O que este Prumo da Locadora usa" precisa.
 #
 # Roda como root, num processo a parte e sob `timeout` (lib/uso-atualizacao.sh), porque a casa e gravavel pelo
 # proprio agente: tudo o que existe la e DADO NAO CONFIAVEL. Por isso o coletor nunca devolve texto livre. Ele
 # escreve no arquivo de saida so linhas de formato fixo (campos separados por TAB):
 #   rotinas<TAB>N | scripts<TAB>N | puladosgrandes<TAB>N | canal<TAB>WhatsApp|Telegram | identidade<TAB>1
-#   rotina<TAB>rotina-N | skill<TAB>propria | skill<TAB>oficial<TAB>nome (so nome igual a skill distribuida pelo DG Claw)
+#   rotina<TAB>rotina-N | skill<TAB>propria | skill<TAB>oficial<TAB>nome (so nome igual a skill distribuida pelo Prumo da Locadora)
 #   ref<TAB>rotina-N|script-N<TAB>arq|cli<TAB>referencia   (so caracteres de caminho ou de comando)
 #   lim<TAB>texto fixo do coletor
 # Nomes de rotina nunca saem. Quem consome confere cada referencia contra a lista confiavel (diff da versao, ajuda do bin/dgclaw) antes de mostrar qualquer coisa.
@@ -90,7 +90,7 @@ else
         nsk=$((nsk + 1))
         if [ "$nsk" -gt "$MAX_SKILLS" ]; then emite lim "mais de $MAX_SKILLS skills; listei so as primeiras $MAX_SKILLS"; break; fi
         nome="${sk##*/}"
-        # O nome nunca sai do coletor, a nao ser que seja IGUAL a uma skill distribuida pelo DG Claw (lista de fora da casa).
+        # O nome nunca sai do coletor, a nao ser que seja IGUAL a uma skill distribuida pelo Prumo da Locadora (lista de fora da casa).
         if [[ "$nome" =~ ^[a-z0-9][a-z0-9._-]{0,40}$ ]] && grep -qxF -- "$nome" "$oficiais" 2>/dev/null; then emite skill oficial "$nome"; else emite skill propria; fi
     # Ordem fixa (sort, LC_ALL=C): o find devolve na ordem do disco, que muda de uma maquina para outra, e os ids skill-N do
     # relatorio e o corte das "primeiras N" dependem dela.

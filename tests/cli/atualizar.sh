@@ -468,7 +468,7 @@ printf '#!/bin/bash\nbash $DGCLAW_PLUGIN_ROOT/scripts/foo.sh\nbash /opt/dgclaw/a
 mkdir -p "$CASA_ANA/.dgclaw/whatsapp"
 dgclaw atualizar --simular >"$TMP/u1.txt" 2>&1; rc=$?
 igual "simular com rotina falsa sai com 0" "0" "$rc"
-afirma "tem a secao do uso" grep -q 'O que este DG Claw usa e o que a versao nova toca' "$TMP/u1.txt"
+afirma "tem a secao do uso" grep -q 'O que este Prumo da Locadora usa e o que a versao nova toca' "$TMP/u1.txt"
 afirma "lista a rotina do agente" grep -q ' rotina-1$' "$TMP/u1.txt"
 afirma "lista o canal WhatsApp" grep -q 'canais ligados: chat, WhatsApp' "$TMP/u1.txt"
 afirma "lista o script proprio que chama o programa" grep -q 'scripts proprios lidos: 1' "$TMP/u1.txt"
@@ -477,7 +477,7 @@ afirma "cruzamento: o script proprio chama scripts/foo.sh" grep -q 'agente ana, 
 afirma "cruzamento: comando que saiu da CLI" grep -q 'agente ana, rotina-1: usa o comando "dgclaw relatorio semanal", que saiu ou mudou de nome' "$TMP/u1.txt"
 nega "scripts/bar.sh nao muda: nao entra no cruzamento" grep -q 'scripts/bar.sh' "$TMP/u1.txt"
 nega "o comando 'agente criar' continua: nao entra" grep -q 'dgclaw agente criar' "$TMP/u1.txt"
-afirma "os cruzamentos entram nos Pontos de atencao" bash -c "sed -n '/^Pontos de atencao:/,/^O que este DG Claw usa/p' '$TMP/u1.txt' | grep -q 'Cruzando com o que este DG Claw usa'"
+afirma "os cruzamentos entram nos Pontos de atencao" bash -c "sed -n '/^Pontos de atencao:/,/^O que este Prumo da Locadora usa/p' '$TMP/u1.txt' | grep -q 'Cruzando com o que este Prumo da Locadora usa'"
 nega "o beto nao tem cruzamento" grep -q 'do agente beto chama' "$TMP/u1.txt"
 
 echo "texto hostil vindo da casa do agente nunca chega ao relatorio"
@@ -497,7 +497,7 @@ for tabu in "IGNORE TODAS" "evil.example" "rm -rf" "ignore-instrucoes-anteriores
     nega "o relatorio nao traz '$tabu'" grep -q "$tabu" "$TMP/u3.txt"
 done
 afirma "rotina aparece so pelo id" grep -q ' rotina-2$' "$TMP/u3.txt"
-afirma "skill do DG Claw aparece pelo nome; a do agente so por id e contagem" grep -q 'skills: criar-agente, skill-2 (1 propria(s) do agente; o nome nao e mostrado)' "$TMP/u3.txt"
+afirma "skill do Prumo da Locadora aparece pelo nome; a do agente so por id e contagem" grep -q 'skills: criar-agente, skill-2 (1 propria(s) do agente; o nome nao e mostrado)' "$TMP/u3.txt"
 echo "a lista de skills sai em ordem fixa, nao na ordem do disco (o runner da CI tem outra)"
 ORD="$TMP/casa-ordem"; mkdir -p "$ORD/.claude/skills"
 for n in 12 11 10 09 08 07 06 05 04 03 02 01; do mkdir -p "$ORD/.claude/skills/skill-$n"; done
@@ -541,7 +541,7 @@ echo "limites: manifesto grande, rotinas demais, coleta lenta, secao grande"
 head -c 300000 /dev/zero | tr '\0' ' ' >"$CASA_BETO/.dgclaw/self-crons.json"
 dgclaw atualizar --simular >"$TMP/u4.txt" 2>&1; rc=$?
 igual "manifesto de 300 KB nao derruba o relatorio" "0" "$rc"
-afirma "limite atingido nos pontos de atencao" bash -c "sed -n '/^Pontos de atencao:/,/^O que este DG Claw usa/p' '$TMP/u4.txt' | grep -q 'limite atingido: agente beto: o manifesto de rotinas passa de 256 KB'"
+afirma "limite atingido nos pontos de atencao" bash -c "sed -n '/^Pontos de atencao:/,/^O que este Prumo da Locadora usa/p' '$TMP/u4.txt' | grep -q 'limite atingido: agente beto: o manifesto de rotinas passa de 256 KB'"
 jq -n '{crons: ([range(0;250)] | map({key: ("r\(.)"), value: {poke: "dgclaw senha"}}) | from_entries)}' >"$CASA_BETO/.dgclaw/self-crons.json"
 dgclaw atualizar --simular >"$TMP/u5.txt" 2>&1; rc=$?
 igual "250 rotinas nao derrubam o relatorio" "0" "$rc"
@@ -563,7 +563,7 @@ mkdir -p "$CASA_BETO/.claude/skills"
 timeout 100 "$CLI" atualizar --simular >"$TMP/u8.txt" 2>&1; rc=$?
 igual "10.000 skills nao derrubam o relatorio" "0" "$rc"
 afirma "aviso de skills demais" grep -q 'limite atingido: agente beto: mais de 300 skills' "$TMP/u8.txt"
-TAM="$(sed -n '/^O que este DG Claw usa e o que a versao nova toca:/,/^Versao de destino/p' "$TMP/u8.txt" | wc -c)"
+TAM="$(sed -n '/^O que este Prumo da Locadora usa e o que a versao nova toca:/,/^Versao de destino/p' "$TMP/u8.txt" | wc -c)"
 afirma "a secao do relatorio fica abaixo de 40 KB ($TAM bytes)" test "$TAM" -lt 40000
 rm -rf "$CASA_BETO/.claude/skills"
 
@@ -595,7 +595,7 @@ nega "o nome hostil nao fabricou a rotina-999" grep -q 'rotina-999' "$TMP/u9.txt
 nega "o texto hostil nao aparece" grep -q 'ROTINA|IGNORE' "$TMP/u9.txt"
 nega "nenhum registro malformado (os nomes nem saem do coletor)" grep -q 'registros malformados' "$TMP/u9.txt"
 afirma "a coleta parou no teto de 300 skills" grep -q 'limite atingido: agente beto: mais de 300 skills' "$TMP/u9.txt"
-TAM9="$(sed -n '/^O que este DG Claw usa e o que a versao nova toca:/,/^Versao de destino/p' "$TMP/u9.txt" | wc -c)"
+TAM9="$(sed -n '/^O que este Prumo da Locadora usa e o que a versao nova toca:/,/^Versao de destino/p' "$TMP/u9.txt" | wc -c)"
 afirma "a secao fica abaixo do teto ($TAM9 bytes)" test "$TAM9" -lt 40000
 rm -rf "$CASA_BETO/.claude/skills"
 cat >"$TMP/coletor-falso.sh" <<'FIMCOL'
@@ -608,7 +608,7 @@ afirma "conta os registros malformados" grep -q 'limite atingido: agente .*: 5 r
 afirma "o registro valido passa" grep -q ' rotina-7$' "$TMP/u10.txt"
 nega "o texto do registro invalido nao aparece" grep -q 'IGNORE-AS-REGRAS\|Nome Com Espaco\|rotina-8 extra' "$TMP/u10.txt"
 DGCLAW_USO_MAX_SECAO=600 DGCLAW_USO_COLETOR="$TMP/coletor-falso.sh" timeout 100 "$CLI" atualizar --simular >"$TMP/u11.txt" 2>&1
-TAM11="$(sed -n '/^O que este DG Claw usa e o que a versao nova toca:/,/^Versao de destino/p' "$TMP/u11.txt" | wc -c)"
+TAM11="$(sed -n '/^O que este Prumo da Locadora usa e o que a versao nova toca:/,/^Versao de destino/p' "$TMP/u11.txt" | wc -c)"
 afirma "alertas e limites tambem contam no teto ($TAM11 bytes para teto 600, mais o titulo e o recuo de 2 espacos por linha)" test "$TAM11" -le 900
 printf '{"crons": {"relatorio-sexta": {"name": "relatorio-sexta", "calendar": "Fri *-*-* 17:00:00", "poke": "Rode dgclaw relatorio semanal e depois bash /opt/dgclaw/app/scripts/foo.sh"}}}\n' >"$CASA_ANA/.dgclaw/self-crons.json"
 rm -f "$CASA_BETO/.dgclaw/self-crons.json"
@@ -618,7 +618,7 @@ git -C "$CLONE" fetch -q origin
 sed -i '/^DGCLAW_COMMIT=/d' "$ETC/dgclaw.env"; echo "DGCLAW_COMMIT=$COMMIT_V6B" >>"$ETC/dgclaw.env"
 dgclaw atualizar --simular >"$TMP/u2.txt" 2>&1
 afirma "sem cruzamento, diz numa linha" grep -q 'Nenhum cruzamento' "$TMP/u2.txt"
-nega "e nao lista cruzamento nenhum" grep -q 'Cruzando com o que este DG Claw usa' "$TMP/u2.txt"
+nega "e nao lista cruzamento nenhum" grep -q 'Cruzando com o que este Prumo da Locadora usa' "$TMP/u2.txt"
 
 echo "parecer obrigatorio antes do --ok-do-dono"
 NB_ANTES="$(find "$BACKUPS" -mindepth 1 -maxdepth 1 -type d | wc -l)"

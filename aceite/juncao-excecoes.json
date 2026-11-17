@@ -1,0 +1,82 @@
+{
+  "original_ausentes": [
+    {
+      "arquivo": "README.md",
+      "linha": "- **Projeto de cliente**: o DG Claw oficial na VPS do cliente, com acesso temporário do suporte por chave SSH ([docs/PROJETO-DE-CLIENTE.md](docs/PROJETO-DE-CLIENTE.md)).",
+      "motivo": "README e o nosso (regra do plano F1); docs/PROJETO-DE-CLIENTE.md entra como veio e nao e linkado em tela nem manual nosso"
+    },
+    {
+      "arquivo": "panel/public/index.html",
+      "linha": "<button class=\"tab\" data-tab=\"identity\"><span class=\"ico\"><svg class=\"ds-ico\" aria-hidden=\"true\"><use href=\"/ds/icones.svg#i-id\"/></svg></span>Identidade</button>",
+      "motivo": "a aba continua com o rotulo \"Quem sou\" (PR painel-quem-sou); o original a chama de Identidade; o resto do botao (icone SVG) e o do original"
+    },
+    {
+      "arquivo": "web/lib/marca.js",
+      "linha": "return { nome: 'DG Claw', nome_curto: 'DG Claw', slogan: '', titulo_login: 'Entre para falar com os seus agentes.', logo_tem_nome: false, tema: 'claro' };",
+      "motivo": "marca de fabrica de reserva do Prumo da Locadora: nome e nome_curto nossos (plano F1, J1)"
+    },
+    {
+      "arquivo": "web/marca-padrao.json",
+      "linha": "\"nome_curto\": \"DG Claw\",",
+      "motivo": "marca de fabrica do Prumo da Locadora: nome_curto \"Prumo\" (plano F1, J1)"
+    },
+    {
+      "arquivo": "web/marca-padrao.json",
+      "linha": "\"slogan\": \"Seus agentes, no seu servidor.\",",
+      "motivo": "slogan de fabrica nosso, o mesmo do README (plano F1, J1)"
+    },
+    {
+      "arquivo": "web/test/marca.test.js",
+      "linha": "assert.equal(lg.texto, '<meta name=\"marca-nome\" content=\"DG Claw\"><p>Seus agentes, no seu servidor.</p>');",
+      "motivo": "teste da marca de fabrica espera o slogan nosso (plano F1, J1)"
+    }
+  ],
+  "nossas_ausentes": [
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "- Abre, mas pede senha e não aceita: a senha do painel se troca com",
+      "motivo": "reescrito pelo PR 12 (1c7992d), trazido no J0: capitulo \"nao consegue entrar no painel\""
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "`sudo dgclaw senha` (a senha é digitada no terminal, sem aparecer; nunca a escreva no chat). Se a pessoa",
+      "motivo": "reescrito pelo PR 12 (1c7992d), trazido no J0"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "nunca chegou a cadastrar a senha ou o link expirou, `sudo dgclaw primeiro-acesso` gera um link novo.",
+      "motivo": "reescrito pelo PR 12 (1c7992d), trazido no J0"
+    },
+    {
+      "arquivo": "panel/public/index.html",
+      "linha": "<button class=\"tab\" data-tab=\"identity\"><span class=\"ico\">◈</span>Quem sou</button>",
+      "motivo": "o #104 troca o icone de texto por SVG; a aba segue \"Quem sou\" (linha equivalente esta no resultado)"
+    },
+    {
+      "arquivo": "templates/admin/instrucoes-admin.md.tmpl",
+      "linha": "Cada Prumo da Locadora é usado de um jeito e pode guardar informações sensíveis, então antes de instalar qualquer",
+      "motivo": "paragrafo reescrito pelo #76 (parecer obrigatorio antes de atualizar); texto do original vence, com o nosso nome"
+    },
+    {
+      "arquivo": "web/public/avisos.js",
+      "linha": "como: 'Os agentes postam pela caixa deles. Você posta aqui. O Prumo da Locadora guarda o aviso e regrava o quadro na casa de cada agente que pode vê-lo.',",
+      "motivo": "o original tirou o nome do texto (\"O sistema guarda o aviso\"); segue o original"
+    },
+    {
+      "arquivo": "web/public/casca.js",
+      "linha": "if (!ag) ag = { id: erro ? slug : '', nome: 'Prumo da Locadora', cor: '#2f9e5e', avatar: 'P' };",
+      "motivo": "o #104 troca o nome fixo por NOME, que vem da marca configuravel (de fabrica, Prumo da Locadora)"
+    },
+    {
+      "arquivo": "web/public/login.html",
+      "linha": "<div class=\"marca\"><span class=\"emoji\" aria-hidden=\"true\">⚙️</span><h1>Prumo da Locadora</h1></div>",
+      "motivo": "o #104 troca o cabecalho do login por logo + {{MARCA_NOME}} (de fabrica, Prumo da Locadora)"
+    },
+    {
+      "arquivo": "web/public/primeiro-acesso.html",
+      "linha": "<div class=\"marca\"><span class=\"emoji\" aria-hidden=\"true\">⚙️</span><h1>Primeiro acesso</h1></div>",
+      "motivo": "o #104 troca o cabecalho por logo + {{MARCA_NOME}} (de fabrica, Prumo da Locadora)"
+    }
+  ],
+  "emergencia_novas": []
+}

@@ -28,7 +28,7 @@ test('links: http/https abrem fora, páginas do manual viram /manual, o resto vi
   }
   const { html } = M.renderiza('[a](javascript:alert(1)) [b](../ATUALIZAR.md) [c](x.md#y) [d](https://e.com)');
   assert.doesNotMatch(html, /href="javascript/i);
-  assert.match(html, /<a href="https:\/\/github\.com\/DGatoM\/DG-Claw\/blob\/main\/docs\/ATUALIZAR\.md" target="_blank" rel="noopener noreferrer">b<\/a>/);
+  assert.match(html, /<a href="https:\/\/github\.com\/diegohoraadm-cpu\/prumo-da-locadora\/blob\/main\/docs\/ATUALIZAR\.md" target="_blank" rel="noopener noreferrer">b<\/a>/);
   assert.equal(M.destinoLink('../../web/docs/MESA.md#rotas').href, 'https://github.com/DGatoM/DG-Claw/blob/main/web/docs/MESA.md#rotas');
   assert.match(html, /<a href="\/manual\/x#y">c<\/a>/);
   assert.match(html, /<a href="https:\/\/e\.com" target="_blank" rel="noopener noreferrer">d<\/a>/);

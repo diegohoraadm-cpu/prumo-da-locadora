@@ -20,7 +20,7 @@
     return semAcento(texto).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'secao';
   }
 
-  const REPO_DOCS = 'https://github.com/DGatoM/DG-Claw/blob/main/';
+  const REPO_DOCS = 'https://github.com/diegohoraadm-cpu/prumo-da-locadora/blob/main/';
 
   /** Decide o que fazer com o destino de um link. Devolve { tipo: 'externo'|'interno'|'ancora'|'texto', href?, ref? }. */
   function destinoLink(bruto) {

@@ -44,6 +44,11 @@
       "arquivo": "tests/cli/restricoes-suporte.sh",
       "linha": "dgclaw ${cmd#dgclaw } >\"$TMP/m-cmd.txt\" 2>&1",
       "motivo": "o teste extrai da mensagem os comandos citados ao dono, que agora vêm como 'prumo agente ...'; tira o prefixo 'prumo ' e continua executando o 'dgclaw' (lote M4 da marca)"
+    },
+    {
+      "arquivo": "tests/cli/restricoes-suporte.sh",
+      "linha": "cmds=\"$(grep -oE 'dgclaw agente (reiniciar|iniciar|restricoes) ana( --[a-z-]+( (sim|nao))?)*' \"$TMP/m-$caso.txt\" | sort -u)\"",
+      "motivo": "a extracao aceita os dois nomes, (prumo|dgclaw), para o teste nao ignorar em silencio uma mensagem que volte a citar dgclaw (QA-M4, B1)"
     }
   ],
   "nossas_ausentes": [

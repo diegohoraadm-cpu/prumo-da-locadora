@@ -290,13 +290,13 @@ for caso in remota-com-chave sem-suporte; do
     dgclaw agente restricoes ana --sem-bash sim >"$TMP/m-$caso.txt" 2>&1
     igual "$caso: parou" "exited" "$(cat "$STUB_ESTADO/c-dgclaw-ana")"
     rm -f "$STUB_ESTADO/$caso"
-    cmds="$(grep -oE 'prumo agente (reiniciar|iniciar|restricoes) ana( --[a-z-]+( (sim|nao))?)*' "$TMP/m-$caso.txt" | sort -u)"
+    cmds="$(grep -oE '(prumo|dgclaw) agente (reiniciar|iniciar|restricoes) ana( --[a-z-]+( (sim|nao))?)*' "$TMP/m-$caso.txt" | sort -u)"
     if [ "$caso" = remota-com-chave ]; then afirma "$caso: a mensagem cita comandos" test -n "$cmds"; fi
     while IFS= read -r cmd; do
         [ -n "$cmd" ] || continue
         echo exited >"$STUB_ESTADO/c-dgclaw-ana"
         # shellcheck disable=SC2086 # o comando citado vira palavras
-        dgclaw ${cmd#prumo } >"$TMP/m-cmd.txt" 2>&1
+        dgclaw ${cmd#* } >"$TMP/m-cmd.txt" 2>&1
         nega "$caso: '$cmd' nao diz que esta parado" grep -q 'nao tem o que reiniciar' "$TMP/m-cmd.txt"
     done <<<"$cmds"
     dgclaw agente restricoes ana --sem-bash nao --sem-enviar-arquivo nao --escrita-livre >/dev/null 2>&1

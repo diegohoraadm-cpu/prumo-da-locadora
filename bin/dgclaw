@@ -63,6 +63,7 @@ ajuda() {
 dgclaw: cria e cuida dos agentes do Prumo da Locadora.
 
 Uso:  dgclaw [--ensaio] <comando> [opcoes]
+Atalho: prumo e o mesmo comando (o instalador o cria). Se 'prumo' nao existir neste servidor ou for outro programa, use dgclaw: os exemplos valem com os dois nomes.
 
   --ensaio    mostra o que faria, passo a passo, sem mudar nada (vale em qualquer comando)
   --ajuda     mostra este texto

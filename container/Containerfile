@@ -47,7 +47,7 @@ ARG CLAUDE_CODE_VERSAO=2.1.296
 ARG CODEX_VERSAO=0.162.1
 ARG BUN_VERSAO=1.4.3
 
-LABEL org.opencontainers.image.title="Prumo da Locadora agente" \
+LABEL org.opencontainers.image.title="DG Claw agente" \
       org.opencontainers.image.version="${DGCLAW_VERSAO}" \
       org.opencontainers.image.source="https://github.com/diegohoraadm-cpu/prumo-da-locadora"
 
@@ -275,3 +275,8 @@ RUN cd /opt/dgclaw/app/panel && npm install --omit=dev --no-audit --no-fund && n
 # --ignore-scripts impede que qualquer script de instalação de dependência rode no build.
 # Não precisa de git nem de GitHub: o libsignal vem do registro npm ("overrides" no package.json).
 RUN cd /opt/dgclaw/app/canais/whatsapp && npm ci --omit=dev --ignore-scripts --no-audit --no-fund && npm cache clean --force
+
+# Título da imagem. Fica no fim de propósito: um LABEL no estágio base, antes do apt e do npm -g, invalidaria
+# o cache dessas camadas em toda atualização. Este sobrepõe o "title" do estágio base sem custo (a COPY do
+# código, acima, já muda a cada versão).
+LABEL org.opencontainers.image.title="Prumo da Locadora agente"

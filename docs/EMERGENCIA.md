@@ -172,10 +172,12 @@ ganha a Sentinela no próximo `sudo dgclaw atualizar`.
 Na ordem; pare no primeiro que explicar. Quem não entra no painel não fala com o Admin: este
 caminho é todo pelo terminal do servidor.
 
-1. **Apareceu "muitas tentativas seguidas"?** São 5 erros seguidos do mesmo endereço; o bloqueio
-   dura 15 minutos a contar do primeiro erro. A contagem vive na memória do `dgclaw-web`: o
-   `sudo dgclaw senha` do passo 4 reinicia o painel e a zera. Não tente entrar de novo antes de
-   conferir os passos 2 e 3, senão o bloqueio volta.
+1. **Apareceu "muitas tentativas seguidas"?** São 5 erros seguidos vindos da mesma
+   internet (o mesmo IP); o bloqueio dura 15 minutos a contar do primeiro erro. A contagem vive na
+   memória do `dgclaw-web` e some quando ele reinicia. Se a pessoa tem certeza do usuário e da
+   senha e só quer destravar: `sudo systemctl restart dgclaw-web` (não derruba nenhum agente). Se
+   vai trocar a senha, o `sudo dgclaw senha` do passo 4 já reinicia o painel e zera a contagem.
+   Antes de tentar entrar de novo, confira os passos 2 e 3, senão o bloqueio volta.
 2. **Usuário ou e-mail?** O campo diz "Usuário ou e-mail", mas o **dono entra com o nome de
    usuário** escolhido na instalação (`--usuario`), nunca com o e-mail. E-mail só vale para
    colaborador convidado por dentro do painel. Sinal típico: a pessoa diz "é o mesmo e-mail que uso
@@ -184,8 +186,8 @@ caminho é todo pelo terminal do servidor.
    ```bash
    sudo grep DGCLAW_PANEL_USER /etc/dgclaw/web.env
    ```
-   A linha mostra o usuário exatamente como deve ser digitado (maiúsculas contam). A senha não está
-   ali, só o hash dela.
+   A linha mostra o usuário exatamente como deve ser digitado (maiúsculas contam). A senha não fica
+   guardada ali, só um código embaralhado dela.
 4. **Trocar a senha:** `sudo dgclaw senha`. Pede a senha nova duas vezes, sem mostrar o que é
    digitado; mínimo de 12 caracteres; não pede a antiga; nunca a escreva no chat. O painel
    reinicia sozinho. Se a pessoa nunca cadastrou a senha ou o link de primeiro acesso venceu,

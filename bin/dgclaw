@@ -2841,6 +2841,7 @@ status_geral() {
     carregar_env_dgclaw
     versao_linha
     printf 'Situacao do Prumo da Locadora\n'
+    if prumo_alheio; then s_aviso "o comando 'prumo' deste servidor nao e o do Prumo da Locadora. Onde as mensagens disserem 'sudo prumo ...', use 'sudo dgclaw ...'"; fi
 
     if [ -n "${DGCLAW_DOMINIO:-}" ]; then s_ok "dominio: $DGCLAW_DOMINIO"; else s_aviso "dominio: nao definido em $DG_ETC/dgclaw.env"; fi
 

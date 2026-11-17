@@ -2449,7 +2449,7 @@ atualizar_identidades() {
 # travas por nome de processo dependem. Se ja existe um `prumo` que nao e o nosso, fica como esta.
 criar_atalho_prumo() {
     local alvo="$DG_BIN/prumo" esperado
-    esperado="$(printf '#!/bin/sh\nexec %s/dgclaw "$@"\n' "$DG_BIN")"
+    esperado="$(atalho_prumo_conteudo)"
     if [ -L "$alvo" ] || { [ -e "$alvo" ] && [ "$(cat "$alvo" 2>/dev/null)" != "$esperado" ]; }; then
         aviso "ja existe um 'prumo' em ${alvo#"$R"} que nao e o nosso; deixei como esta. Use o comando 'dgclaw', que faz o mesmo."
         return 0

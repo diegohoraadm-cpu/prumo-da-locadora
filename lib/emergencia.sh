@@ -12,7 +12,18 @@
 # Raiz falsa (testes): DGCLAW_RAIZ=<pasta>, igual ao resto do Prumo da Locadora.
 set -euo pipefail
 
+# Este script e independente do lib/comum.sh (as funcoes de mensagem dele colidem com as daqui): a conferencia
+# do `prumo` alheio repete a de comum.sh: prumo_alheio. Se o `prumo` do PATH nao e o nosso, as mensagens dizem dgclaw.
+prumo_alheio() {
+  local bin="${DGCLAW_RAIZ:-}/usr/local/bin" achado
+  achado="$(command -v prumo 2>/dev/null)" || return 1
+  [[ -n "$achado" ]] || return 1
+  [[ ! -L "$bin/prumo" && "$achado" == "$bin/prumo" \
+    && "$(cat "$bin/prumo" 2>/dev/null)" == "$(printf '#!/bin/sh\nexec %s/dgclaw "$@"\n' "$bin")" ]] && return 1
+  return 0
+}
 PROG="prumo emergencia"
+prumo_alheio && PROG="dgclaw emergencia"
 SELF="$(readlink -f "${BASH_SOURCE[0]}")"
 RAIZ="${DGCLAW_RAIZ:-}"
 RAIZ="${RAIZ%/}"

@@ -857,3 +857,18 @@ imprimir_trechos_proxy() {
     printf '\n   --- Se voce usa um tunel da Cloudflare ---\n\n'
     trecho_proxy_cloudflare "$1" "$2" | sed 's/^/   /'
 }
+
+# --- o atalho `prumo` (so leitura) ---------------------------------------------------------------
+# Conteudo exato do atalho que o install.sh grava: uma fonte so, usada por ele e por prumo_alheio.
+atalho_prumo_conteudo() { printf '#!/bin/sh\nexec %s/dgclaw "$@"\n' "$DG_BIN"; }
+
+# prumo_alheio: verdadeiro so quando o dono alcanca um `prumo` (no PATH em uso) que NAO e o nosso atalho.
+# Sem nenhum `prumo` no PATH e falso: a ausencia nao e perigosa (da "comando nao encontrado" e ha o dgclaw).
+prumo_alheio() {
+    local achado
+    achado="$(command -v prumo 2>/dev/null)" || return 1
+    [ -n "$achado" ] || return 1
+    [ ! -L "$DG_BIN/prumo" ] && [ "$achado" = "$DG_BIN/prumo" ] \
+        && [ "$(cat "$DG_BIN/prumo" 2>/dev/null)" = "$(atalho_prumo_conteudo)" ] && return 1
+    return 0
+}

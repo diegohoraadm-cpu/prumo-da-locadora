@@ -10,7 +10,8 @@
 //   /home/prumo/AgentePrumo/bin/caixa-testes.sh node aceite/juncao-e-marca.mjs --bloco F1
 //   /home/prumo/AgentePrumo/bin/caixa-testes.sh node aceite/juncao-e-marca.mjs --bloco R1
 //   /home/prumo/AgentePrumo/bin/caixa-testes.sh node aceite/juncao-e-marca.mjs --bloco F2
-//   ... --bloco tudo            (F1, F2 e R1 em sequência)
+//   ... --bloco F4 [--lote M1|M3|M4|M5]   (marca própria; com --lote, só os arquivos daquele lote)
+//   ... --bloco tudo            (F1, F2, R1 e F4 em sequência)
 // Opções:
 //   --commit <rev>   confere o conteúdo de um commit em vez da árvore de trabalho (útil ao QA)
 //   --mostrar <n>    quantos exemplos listar por critério que falhou (padrão 15)
@@ -92,13 +93,18 @@ function opcao(nome, padrao) { const i = args.indexOf(nome); return i >= 0 && ar
 const BLOCO = opcao('--bloco', '');
 const COMMIT = opcao('--commit', '');
 const MOSTRAR = Number(opcao('--mostrar', '15')) || 15;
-const BLOCOS_VALIDOS = ['F1', 'F2', 'R1', 'tudo'];
-if (!BLOCOS_VALIDOS.includes(BLOCO)) {
-  if (['F3', 'F4'].includes(BLOCO)) {
+const LOTE = opcao('--lote', '');   // só no F4: M1|M3|M4|M5 confere apenas os arquivos daquele lote
+const BLOCOS_VALIDOS = ['F1', 'F2', 'R1', 'F4', 'tudo'];
+if (!BLOCOS_VALIDOS.includes(BLOCO) || (LOTE && !['M1', 'M3', 'M4', 'M5'].includes(LOTE)) || (LOTE && BLOCO !== 'F4')) {
+  if (BLOCO === 'F3') {
     console.error(`O bloco ${BLOCO} ainda não foi escrito: o Teia escreve antes do lote correspondente.`);
   } else {
-    console.error('Uso: node aceite/juncao-e-marca.mjs --bloco F1|F2|R1|tudo [--commit <rev>] [--mostrar <n>]');
+    console.error('Uso: node aceite/juncao-e-marca.mjs --bloco F1|F2|R1|F4|tudo [--lote M1|M3|M4|M5 (só F4)] [--commit <rev>] [--mostrar <n>]');
   }
+  process.exit(2);
+}
+if (BLOCO === 'F4' && COMMIT) {
+  console.error('O bloco F4 lê a árvore de trabalho (usa a ferramenta scripts/marca, que lê o disco). Faça checkout do commit e rode sem --commit.');
   process.exit(2);
 }
 
@@ -440,9 +446,164 @@ function blocoR1() {
   info('REGISTRO: voltar_sem_upstream=sim é defeito do original (--voltar deixa o clone sem upstream; o atualizar seguinte para). O teste contorna com git checkout main. Não corrigido aqui.');
 }
 
-console.log(`Aceite juncao-e-marca: bloco ${BLOCO}, alvo ${COMMIT || 'árvore de trabalho'} (${git(['rev-parse', '--short', ALVO]).trim()}), repositório ${REPO}`);
+// ================================================================================================
+// F4: marca própria (plano PLANO-marca-M1-M5.md, seção "Aceite do bloco F4"). Escrito pelo Teia em
+// 17/11/2026, antes dos lotes M1, M3, M4 e M5. Usa a própria ferramenta (scripts/marca/aplicar.mjs) para
+// saber o que é exceção e de que lote é cada arquivo, e a mesma impressão digital do CHANGELOG
+// (scripts/novidades-lib.mjs). Com --lote MX, cada critério só olha os arquivos daquele lote; sem --lote,
+// o repositório inteiro (é a prova final, com os quatro lotes juntos).
+const RX_NOME = /DG (Claw|Chat|Telegram|Alive)|suporte DG/i;
+const RX_BARRA = /(?<![\w.-])\/dgclaw:([a-z][a-z0-9-]*|\*)?/g;
+
+/** Linhas do CHANGELOG (índice 0-based) que podem citar a marca: item cujo digest já existia na base, ou linha fora de item idêntica a uma linha da base. */
+function changelogTolerado(texto, digital) {
+  const base = git(['show', `${ANTERIOR}:CHANGELOG.md`]);
+  const linhasBase = new Set(base.split('\n'));
+  const itens = (t) => {   // mesma regra de itensDoChangelog (novidades-lib.mjs:12-30), guardando as linhas
+    const out = []; let atual = null;
+    const fecha = () => { if (atual) out.push({ ...atual, texto: atual.partes.join(' ').replace(/\s+/g, ' ').trim() }); atual = null; };
+    t.split(/\r?\n/).forEach((linha, i) => {
+      if (/^##\s+/.test(linha) || /^#{3,}\s/.test(linha)) { fecha(); return; }
+      if (/^-\s+/.test(linha)) { fecha(); atual = { linhas: [i], partes: [linha.replace(/^-\s+/, '')] }; return; }
+      if (atual && /^\s+\S/.test(linha)) { atual.partes.push(linha.trim()); atual.linhas.push(i); return; }
+      fecha();
+    });
+    fecha();
+    return out;
+  };
+  const digBase = new Set(itens(base).map((x) => digital(x.texto)));
+  const ok = new Set();
+  const emItem = new Set();
+  for (const it of itens(texto)) {
+    for (const i of it.linhas) emItem.add(i);
+    if (digBase.has(digital(it.texto))) for (const i of it.linhas) ok.add(i);
+  }
+  texto.split('\n').forEach((l, i) => { if (!emItem.has(i) && linhasBase.has(l)) ok.add(i); });
+  return ok;
+}
+
+async function blocoF4() {
+  console.log(`\n== F4: marca própria${LOTE ? ` (só o lote ${LOTE})` : ' (repositório inteiro)'} ==`);
+  const M = await import(path.join(REPO, 'scripts/marca/aplicar.mjs'));
+  const { digital } = await import(path.join(REPO, 'scripts/novidades-lib.mjs'));
+  const regras = M.carregarRegras(path.join(REPO, 'scripts/marca/regras.json'));
+  const excs = M.lerExcecoes(fs.readFileSync(path.join(REPO, 'scripts/marca/excecoes.txt'), 'utf8'));
+  const doLote = (rel) => !LOTE || M.loteDe(rel, regras.lotes) === LOTE;
+  const arquivos = M.listarArquivos(REPO, [], regras.ignorar).filter((r) => !r.startsWith('aceite/') && doLote(r));
+  const fonte = new Map();
+  for (const rel of arquivos) { const s = fs.readFileSync(path.join(REPO, rel), 'utf8'); if (!s.includes('\0')) fonte.set(rel, s); }
+  const clTexto = fonte.get('CHANGELOG.md');
+  const clOk = clTexto ? changelogTolerado(clTexto, digital) : new Set();
+  info(`${fonte.size} arquivo(s) de texto conferido(s)`);
+
+  // 1. Nome antigo fora de exceção. Linha protegida por trecho só vale se, tirado o trecho, não sobrar nome antigo.
+  const sobra = [];
+  let protegidasN = 0;
+  for (const [rel, src] of fonte) {
+    const linhas = src.split('\n');
+    const prot = M.protegidas(excs, rel, src);
+    if (prot === 'todas') continue;
+    const trechos = excs.filter((e) => (e.arquivo.endsWith('/') ? rel.startsWith(e.arquivo) : e.arquivo === rel) && e.trecho !== '*' && !e.trecho.startsWith('secao:')).map((e) => e.trecho);
+    const porSecao = excs.some((e) => e.arquivo === rel && e.trecho.startsWith('secao:'));
+    linhas.forEach((l, i) => {
+      if (!RX_NOME.test(l)) return;
+      if (rel === 'CHANGELOG.md') { if (clOk.has(i)) { protegidasN++; return; } sobra.push(`${rel}:${i + 1}: ${l.trim().slice(0, 110)}`); return; }
+      if (prot.has(i)) {
+        let resto = l;
+        for (const t of trechos) resto = resto.split(t).join(' ');
+        const soPorTrecho = trechos.some((t) => l.includes(t));
+        if (!soPorTrecho && porSecao) { protegidasN++; return; }   // protegida por seção inteira (ex.: mesa antiga)
+        if (!RX_NOME.test(resto)) { protegidasN++; return; }
+        sobra.push(`${rel}:${i + 1} (protegida, mas o nome sobra fora do trecho): ${l.trim().slice(0, 100)}`);
+        return;
+      }
+      sobra.push(`${rel}:${i + 1}: ${l.trim().slice(0, 110)}`);
+    });
+  }
+  criterio(sobra.length === 0, `F4.1 nome antigo (DG Claw/Chat/Telegram/Alive, suporte DG) fora de exceção: ${sobra.length} linha(s) (esperado 0; ${protegidasN} protegida(s) por exceção ou por item antigo do CHANGELOG)`, sobra);
+
+  // 2. Crédito e licença (arquivos do M5 e de fora de lote).
+  if (!LOTE || LOTE === 'M5') {
+    const igualBase = (rel) => { const r = spawnSync('git', ['-C', REPO, 'show', `${ANTERIOR}:${rel}`], { encoding: 'utf8' }); return r.status === 0 && r.stdout === ler(rel); };
+    criterio(igualBase('LICENSE'), 'F4.2 LICENSE igual a 4be8b2f byte a byte');
+    criterio(igualBase('NOTICE.md'), 'F4.2 NOTICE.md igual a 4be8b2f byte a byte');
+    const nb = git(['show', `${ANTERIOR}:NOTICE`]).split('\n');
+    const na = (ler('NOTICE') || '').split('\n');
+    criterio(na[0] === 'Prumo da Locadora' && na.slice(1).join('\n') === nb.slice(1).join('\n'), `F4.2 NOTICE: linha 1 = "Prumo da Locadora" (veio ${JSON.stringify(na[0])}) e o resto igual a 4be8b2f`);
+    const rd = ler('README.md') || '';
+    const cred = ['[DG Claw](https://github.com/DGatoM/DG-Claw), de DG Medeiros', 'sobre o DG Claw, de DG Medeiros'];
+    criterio(cred.every((c) => rd.includes(c)), 'F4.2 README.md mantém os dois trechos de crédito', cred.filter((c) => !rd.includes(c)));
+  }
+
+  // 3. Exceções de lógica vivas: o trecho continua no arquivo (uma edição à mão não pode sumir com ele).
+  const LOGICA_SEM_PREFIXO = new Set(['lib/comum.sh', 'seguranca/ronda/ronda.py', 'web/public/ronda-comum.js']);
+  const logicas = excs.filter((e) => (/^logica:/.test(e.motivo) || LOGICA_SEM_PREFIXO.has(e.arquivo)) && !e.arquivo.endsWith('/') && doLote(e.arquivo));
+  const mortas = logicas.filter((e) => { const s = ler(e.arquivo); return s === null || (e.trecho !== '*' && !e.trecho.startsWith('secao:') && !s.includes(e.trecho)); }).map((e) => `${e.arquivo}: trecho ${JSON.stringify(e.trecho)} não está no arquivo`);
+  criterio(mortas.length === 0, `F4.3 exceções de lógica com o trecho presente: ${logicas.length - mortas.length} de ${logicas.length}`, mortas);
+
+  // 4. Comando: texto ao dono diz `prumo`; o que é executado segue `dgclaw`.
+  const ficaEm = (rel) => (regras.comando.fica_em || []).some((p) => rel === p || rel.startsWith(p.endsWith('/') ? p : `${p}/`));
+  const textoAoDono = (rel) => /^(docs\/manual\/|templates\/|skills\/)/.test(rel) || ['docs/EMERGENCIA.md', 'README.md', 'INSTALL.md'].includes(rel);
+  const sudo = [];
+  for (const [rel, src] of fonte) if (textoAoDono(rel) && !ficaEm(rel)) src.split('\n').forEach((l, i) => { if (l.includes('sudo dgclaw ')) sudo.push(`${rel}:${i + 1}: ${l.trim().slice(0, 100)}`); });
+  criterio(sudo.length === 0, `F4.4 "sudo dgclaw " em manual, EMERGENCIA, README, INSTALL, templates e skills (fora de comando.fica_em): ${sudo.length} (esperado 0)`, sudo);
+  if (!LOTE || LOTE === 'M4') {
+    const r = M.rodar({ raiz: REPO, pastas: ['bin', 'lib', 'install.sh'], dry: true, regras, excs });
+    const falta = r.flatMap((a) => a.ocorrencias.filter((o) => o.regra === 'comando' && o.estado === 'troca').map((o) => `${a.rel}:${o.linha}`));
+    criterio(falta.length === 0, `F4.4 comando ao dono ainda "dgclaw" em string de bin, lib e install.sh: ${falta.length} (esperado 0)`, falta);
+  }
+  if (!LOTE || LOTE === 'M3') {
+    const fixos = ['templates/ambiente/admin.md', 'skills/criar-agente/SKILL.md'].filter((f) => !(ler(f) || '').includes('dgclaw colaborador criar'));
+    criterio(fixos.length === 0, 'F4.4 o que o Admin executa segue "dgclaw colaborador criar" (templates/ambiente/admin.md e skills/criar-agente)', fixos);
+  }
+  if (!LOTE || LOTE === 'M1') {
+    const diag = [];
+    for (const [rel, src] of fonte) if (rel.startsWith('web/lib/diagnostico/')) src.split('\n').forEach((l, i) => { if (/\bprumo (agente|status|atualizar|seguranca|emergencia)\b/.test(l)) diag.push(`${rel}:${i + 1}`); });
+    criterio(diag.length === 0, `F4.4 web/lib/diagnostico sem "prumo <comando>" (lista fechada de util.js:288): ${diag.length}`, diag);
+  }
+
+  // 5. Comandos com barra.
+  const casca = new Set(excs.filter((e) => /dgclaw:/.test(e.trecho)).map((e) => e.arquivo));
+  const barras = [];
+  for (const [rel, src] of fonte) {
+    if (casca.has(rel)) continue;
+    src.split('\n').forEach((l, i) => {
+      if (rel === 'CHANGELOG.md' && clOk.has(i)) return;
+      for (const m of l.matchAll(RX_BARRA)) barras.push(`${rel}:${i + 1}: ${m[0]}`);
+    });
+  }
+  criterio(barras.length === 0, `F4.5 "/dgclaw:" restante (mesmo em linha de exceção): ${barras.length} (esperado 0)`, barras);
+  const ligadas = new Set(regras.barra.ligadas);
+  const existentes = new Set(fs.readdirSync(path.join(REPO, 'skills'), { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name));
+  // "/mesa" também é tela do Web: rota de tela (inventário do docs-em-dia) não é comando de skill.
+  let telas = new Set();
+  try {
+    const inv = JSON.parse(execFileSync('node', [path.join(REPO, 'scripts/docs-inventario.mjs')], { cwd: REPO, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }));
+    telas = new Set(inv.telas.map((t) => t.id).filter((x) => /^\/[a-z0-9-]+$/.test(x)).map((x) => x.slice(1)));
+  } catch (e) { criterio(false, `F4.5 não consegui ler as telas do inventário (scripts/docs-inventario.mjs): ${e.message.slice(0, 120)}`); }
+  const mortos = [];
+  for (const [rel, src] of fonte) {
+    if (!(rel === 'templates/CLAUDE.md.tmpl' || rel === 'templates/admin/CLAUDE.md' || /^skills\/[^/]+\/SKILL\.md$/.test(rel))) continue;
+    src.split('\n').forEach((l, i) => { for (const m of l.matchAll(/(?<![\w./-])\/([a-z][a-z0-9-]*)(?![\w/.-])/g)) if (existentes.has(m[1]) && !ligadas.has(m[1]) && !telas.has(m[1])) mortos.push(`${rel}:${i + 1}: /${m[1]}`); });
+  }
+  criterio(mortos.length === 0, `F4.5 "/x" de skill que existe mas não é ligada, em templates e skills: ${mortos.length} (esperado 0)`, mortos);
+
+  // 6. Idempotência e gerador.
+  const pass = M.rodar({ raiz: REPO, dry: true, regras, excs, lote: LOTE }).filter((a) => a.muda && !a.rel.startsWith('aceite/'));
+  criterio(pass.length === 0, `F4.6 a ferramenta ainda mudaria ${pass.length} arquivo(s)${LOTE ? ` do lote ${LOTE}` : ''} (esperado 0: troca aplicada e idempotente)`, pass.map((a) => a.rel));
+  if (!LOTE || LOTE === 'M3') {
+    const g = spawnSync('bash', [path.join(REPO, 'scripts/gerar-instrucoes.sh'), '--conferir'], { cwd: REPO, encoding: 'utf8' });
+    criterio(g.status === 0, `F4.6 gerar-instrucoes.sh --conferir sai com 0 (saiu ${g.status})`, (g.stdout + g.stderr).split('\n').filter(Boolean));
+  }
+
+  // 7. Suíte: não roda aqui (pesada). Fica com o tests/rodar.sh parte por parte, pela caixa, contra a base.
+  info('F4.7 suíte: rode as partes do lote pela caixa (bin/caixa-testes.sh) e compare com a base de 4be8b2f; este bloco não a executa.');
+}
+
+console.log(`Aceite juncao-e-marca: bloco ${BLOCO}${LOTE ? ` --lote ${LOTE}` : ''}, alvo ${COMMIT || 'árvore de trabalho'} (${git(['rev-parse', '--short', ALVO]).trim()}), repositório ${REPO}`);
 if (BLOCO === 'F1' || BLOCO === 'tudo') blocoF1();
 if (BLOCO === 'F2' || BLOCO === 'tudo') blocoF2();
 if (BLOCO === 'R1' || BLOCO === 'tudo') blocoR1();
+if (BLOCO === 'F4' || BLOCO === 'tudo') await blocoF4();
 console.log(`\n${falhas === 0 ? 'ACEITE OK' : `ACEITE COM ${falhas} FALHA(S)`}`);
 process.exit(falhas === 0 ? 0 : 1);

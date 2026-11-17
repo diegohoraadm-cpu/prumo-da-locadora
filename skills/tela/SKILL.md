@@ -93,8 +93,8 @@ O que cada resultado quer dizer e o que eu faço:
 - **Uma unidade `inactive` ou `failed`:** posso religá-la com `sudo systemctl restart <unidade>` e olhar
   `journalctl -u <unidade> -n 30`. Se voltar a cair, conto o erro ao dono.
 - **Nenhuma unidade existe (`could not be found`):** esta máquina foi criada sem a Tela. Quem administra o
-  DG Claw precisa recriar o agente com a imagem com navegador; peço ao dono que fale com o Admin.
-- **O Admin tem uma conferência vista do servidor:** `dgclaw agente tela <slug>`, que diz linha a linha o
+  Prumo da Locadora precisa recriar o agente com a imagem com navegador; peço ao dono que fale com o Admin.
+- **O Admin tem uma conferência vista do servidor:** `prumo agente tela <slug>`, que diz linha a linha o
   que falta. Se o dono quiser, peço que o Admin a rode.
 
 Depois de religar qualquer coisa, repito o `curl` do CDP antes de dizer que voltou.

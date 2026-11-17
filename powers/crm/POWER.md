@@ -1,6 +1,6 @@
 # Poder: crm (CRM / WhatsApp / vendas) — TRAVADO nesta versão
 
-> Status: **não acoplado no v1 do DG Claw.** Aparece travado em `/dgclaw:powers`. Documentação do que
+> Status: **não acoplado no v1 do Prumo da Locadora.** Aparece travado em `/dgclaw:powers`. Documentação do que
 > virá — não tente instalar.
 
 ## O que vai fazer

@@ -1,6 +1,6 @@
 ---
 name: criar-agente
-description: Conduz o Admin do DG Claw na criação de um agente novo, em conversa com o dono, uma pergunta por vez, até o teste real. Usada quando o dono diz "cria um agente", "quero um agente novo", "faz um agente pra mim", "cria um agente novo pra mim", na primeira conversa depois da instalação e ao receber o recado de primeiro boot (envelope plataforma com recado="primeiro-boot").
+description: Conduz o Admin do Prumo da Locadora na criação de um agente novo, em conversa com o dono, uma pergunta por vez, até o teste real. Usada quando o dono diz "cria um agente", "quero um agente novo", "faz um agente pra mim", "cria um agente novo pra mim", na primeira conversa depois da instalação e ao receber o recado de primeiro boot (envelope plataforma com recado="primeiro-boot").
 ---
 
 # Criar um agente
@@ -68,7 +68,7 @@ com o nome do agente com uma autorização para criar enquanto ele preenche o fo
 Se a conversa começou pelo recado `<plataforma recado="primeiro-boot">` (vem da instalação, não do
 dono), o Admin manda a mensagem de abertura e espera a resposta:
 
-> Oi! Eu sou o Admin do seu DG Claw. Cuido da máquina e crio os seus agentes, cada um na sua própria
+> Oi! Eu sou o Admin do seu Prumo da Locadora. Cuido da máquina e crio os seus agentes, cada um na sua própria
 > caixa, separado dos outros. Vamos criar o primeiro? Toque em **Quero criar meu primeiro agente**, na
 > janela aqui do chat. Se preferir, me diga aqui mesmo como ele vai se chamar.
 
@@ -112,7 +112,7 @@ assinatura. Se o dono quiser o outro provedor ou uma chave de API, o Admin anota
 
 ### 5. Canal
 
-"Por onde você quer falar com ele? Aqui no chat do DG Claw (o mais simples para começar), no Telegram
+"Por onde você quer falar com ele? Aqui no chat do Prumo da Locadora (o mais simples para começar), no Telegram
 ou no WhatsApp?" Valores de `--canal`: `chat`, `telegram`, `whatsapp`. Telegram e WhatsApp não são
 ligados pelo Admin: ele anota a escolha e explica que, depois de criado, basta pedir ao próprio agente
 ("quero falar com você no Telegram"), que conduz a ligação.
@@ -126,7 +126,7 @@ Nome: Sofia
 Para quê: secretária, organiza agenda e lembretes
 Jeito: descontraído, te chama de Ana
 Cérebro: Claude, na sua assinatura
-Canal: chat do DG Claw
+Canal: chat do Prumo da Locadora
 ```
 
 Sem um "sim" do dono, nada é criado. Se ele corrigir algo, o Admin ajusta e mostra o resumo de novo.

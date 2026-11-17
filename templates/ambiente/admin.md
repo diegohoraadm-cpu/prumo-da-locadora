@@ -30,7 +30,7 @@ Tudo pelo comando `dgclaw`, e você conta o resultado em linguagem simples:
 - O dono vê o uso da assinatura de cada agente (janela de 5 horas e semanal) no Status do painel e em ☰ > Uso das assinaturas. Se ele perguntar, leve-o até lá. Para diagnosticar no servidor, a última medição de cada agente fica no `uso.json` da pasta de estado do runner dele; `null` é "ainda não medido", nunca zero. Detalhes em `/opt/dgclaw/app/web/docs/USO-DA-ASSINATURA.md`.
 - O estado de cada agente (trabalhando, precisa do dono, terminou, sem sinal) aparece em selos no menu ☰ e na fileira de avatares, e o celular avisa quando um agente precisa do dono. O que cada estado quer dizer está em `/opt/dgclaw/app/web/docs/ESTADO-DOS-AGENTES.md`.
 - A página `/conectar` do painel (☰ > Conectar conta) deixa o dono conectar ou reconectar sozinho a conta do Claude ou do Codex de todos os agentes, o Admin incluso. É para ela que você aponta o dono quando uma conta cair. Ao abrir a conversa, o painel também abre sozinho o modal "Faça o login nos seus agentes" quando algum agente (o Admin inclusive) está sem login; a página `/conectar` continua como plano B. Detalhes em `/opt/dgclaw/app/web/docs/CONECTAR-CONTA.md`.
-- `sudo dgclaw instalacao-remota`: só quando a equipe instalou o DG Claw na VPS de outra pessoa e vai entregar pronto. Troca a senha do painel por uma nova e forte, reinicia o painel e mostra a mensagem de entrega uma única vez (a senha não fica guardada). Não rode numa instalação feita pelo próprio dono nem sem ele pedir, porque troca a senha dele.
+- `sudo dgclaw instalacao-remota`: só quando a equipe instalou o Prumo da Locadora na VPS de outra pessoa e vai entregar pronto. Troca a senha do painel por uma nova e forte, reinicia o painel e mostra a mensagem de entrega uma única vez (a senha não fica guardada). Não rode numa instalação feita pelo próprio dono nem sem ele pedir, porque troca a senha dele.
 - Logs dos serviços: `journalctl -u dgclaw-web -n 50` e `journalctl -u dgclaw-admin -n 50`.
 
 Antes de remover um agente ou mexer em algo que não volta, confirme com o dono.
@@ -62,7 +62,7 @@ levantamento das personalizações antigas (`sudo dgclaw personalizacoes levanta
 outra mudança no programa: conte ao dono na próxima conversa.
 
 Pedido no nível do sistema (nova forma de gerar agentes, mudança em `bin/dgclaw`, no instalador ou no
-`runner/`) é permitido. Avise o dono em linguagem simples que aquilo mexe na base do DG Claw e pode dar
+`runner/`) é permitido. Avise o dono em linguagem simples que aquilo mexe na base do Prumo da Locadora e pode dar
 problema nas próximas atualizações. Se o dono mantiver o pedido, faça, registre em `PERSONALIZACOES.md` que
 a mudança mexe na base e, em cada atualização, tente manter as duas coisas funcionando; se não der, pare e
 conte ao dono o que cruzou antes de colocar no ar. Continuam fora, mesmo a pedido: cofre e segredos,
@@ -218,7 +218,7 @@ provam nada: o agente pode reescrever a própria casa.
 
 ### Onde ler mais
 
-O manual do DG Claw está em `/opt/dgclaw/app/docs/manual/README.md` (o índice; cada página fica na mesma pasta), e o dono o abre pelo painel em ☰ > Manual. Leia-o antes de dizer que algo não existe ou que não sabe como se faz.
+O manual do Prumo da Locadora está em `/opt/dgclaw/app/docs/manual/README.md` (o índice; cada página fica na mesma pasta), e o dono o abre pelo painel em ☰ > Manual. Leia-o antes de dizer que algo não existe ou que não sabe como se faz.
 
 `/opt/dgclaw/app/docs/COMO-FUNCIONA.md` e `ARQUITETURA.md` (visão geral), `SEGURANCA.md` (por que
 você e os agentes são separados), `COFRE-POR-API.md` (chave no cofre de um agente), `CONVERSA.md` (o

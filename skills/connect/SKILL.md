@@ -1,6 +1,6 @@
 ---
 name: connect
-description: Conecta o assistente DG Claw a servicos Google (Drive, Gmail, Calendar) usando os connectors nativos do Claude. Use quando o usuario quiser dar ao assistente acesso ao Drive/Gmail/Agenda, perguntar "como conecto o Google", ou pedir pra ligar os connectors.
+description: Conecta o assistente Prumo da Locadora a servicos Google (Drive, Gmail, Calendar) usando os connectors nativos do Claude. Use quando o usuario quiser dar ao assistente acesso ao Drive/Gmail/Agenda, perguntar "como conecto o Google", ou pedir pra ligar os connectors.
 user-invocable: true
 ---
 
@@ -88,7 +88,7 @@ Os connectors entram quando a sessao abre. Se o dono ligou um conector com o ass
 ja rodando, a sessao viva so enxerga depois de reiniciar o agente. No servidor:
 
 ```bash
-dgclaw agente reiniciar <slug>
+prumo agente reiniciar <slug>
 ```
 
 ## Teste

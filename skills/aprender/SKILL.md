@@ -1,10 +1,10 @@
 ---
 name: aprender
-description: Transforma um processo que o agente acabou de fazer com o dono numa skill dele (pasta .claude/skills/<nome>/SKILL.md no workspace), pra fazer igual da próxima vez, e melhora essa skill quando o dono corrige o resultado. Use quando terminar com o dono um processo de 3 passos ou mais que dá pra repetir (montar um relatório, preparar um roteiro, conferir números numa fonte, organizar um material), quando o dono disser "aprende isso", "guarda esse jeito de fazer", "faz uma skill disso", "da próxima vez faz igual", "transforma isso num processo", "/dgclaw:aprender", ou quando ele corrigir alguma coisa feita por uma skill que você mesmo escreveu. Também serve pra reflexão da noite decidir se vale sugerir uma skill. Nunca cria skill sem o sim do dono.
+description: Transforma um processo que o agente acabou de fazer com o dono numa skill dele (pasta .claude/skills/<nome>/SKILL.md no workspace), pra fazer igual da próxima vez, e melhora essa skill quando o dono corrige o resultado. Use quando terminar com o dono um processo de 3 passos ou mais que dá pra repetir (montar um relatório, preparar um roteiro, conferir números numa fonte, organizar um material), quando o dono disser "aprende isso", "guarda esse jeito de fazer", "faz uma skill disso", "da próxima vez faz igual", "transforma isso num processo", "/aprender", ou quando ele corrigir alguma coisa feita por uma skill que você mesmo escreveu. Também serve pra reflexão da noite decidir se vale sugerir uma skill. Nunca cria skill sem o sim do dono.
 user-invocable: true
 ---
 
-# /dgclaw:aprender: virar skill o que deu certo
+# /aprender: virar skill o que deu certo
 
 Uma skill é um passo a passo escrito que eu leio antes de fazer um trabalho. Ela é o jeito de
 eu não depender de lembrar: o processo que levou uma hora de conversa para acertar vira uma

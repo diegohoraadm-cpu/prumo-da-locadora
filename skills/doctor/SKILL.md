@@ -1,6 +1,6 @@
 ---
 name: doctor
-description: Diagnostica e conserta um assistente DG Claw que nao sobe, ficou mudo no Telegram, perdeu a personalidade, parou de rodar as rotinas ou esta com o painel fora do ar. Use quando o usuario rodar /dgclaw:doctor, disser que "o bot nao responde", "o servico fica reiniciando", "ele voltou a responder generico", "o painel nao abre", "deu erro na instalacao", ou quiser so conferir se esta tudo certo.
+description: Diagnostica e conserta um assistente Prumo da Locadora que nao sobe, ficou mudo no Telegram, perdeu a personalidade, parou de rodar as rotinas ou esta com o painel fora do ar. Use quando o usuario rodar /dgclaw:doctor, disser que "o bot nao responde", "o servico fica reiniciando", "ele voltou a responder generico", "o painel nao abre", "deu erro na instalacao", ou quiser so conferir se esta tudo certo.
 user-invocable: true
 ---
 
@@ -100,9 +100,9 @@ Ele reinicia o servico sozinho quando o conserto so vale depois do restart.
   proativo. `--fix` religa.
 - **sessao viva fora do ar:** esperado se o dono desligou o bot pra poupar. As
   rotinas simplesmente nao fazem nada, e nada quebra.
-- **camada DG Alive antiga (`.dg-alive/`):** o agente e da era anterior a fusao.
+- **camada da extensão de emoções antiga (`.dg-alive/`):** o agente e da era anterior a fusao.
   Nao tente consertar em volta disso: as duas camadas disputam os mesmos arquivos. A
-  migracao automatica do DG Alive antigo nao faz parte desta versao. Explique ao dono
+  migracao automatica da extensão de emoções antigo nao faz parte desta versao. Explique ao dono
   e combine com ele: guardar uma copia de `.dg-alive/` e seguir num workspace novo, ou
   copiar a memoria que ele quiser manter e so entao remover a pasta.
 - **busca em conversas desligada:** o "lembra quando..." cai na busca simples. O
@@ -132,7 +132,7 @@ Ele reinicia o servico sozinho quando o conserto so vale depois do restart.
   acontece; instalado a mao, siga `docs/QUADRO-DE-AVISOS.md` (secao Ligar o hook). A sessao
   pega o hook sem reiniciar; so se o log nao mostrar "injetado" depois da proxima mensagem,
   reinicie o servico num momento ocioso, perguntando ao dono antes.
-- **gancho de extensao com erro de sintaxe:** a extensao (por exemplo o DG Alive)
+- **gancho de extensao com erro de sintaxe:** a extensao (por exemplo a extensão de emoções)
   nao vai rodar aquele pedaco. O nucleo continua de pe; conserte o arquivo
   apontado ou reinstale a extensao.
 

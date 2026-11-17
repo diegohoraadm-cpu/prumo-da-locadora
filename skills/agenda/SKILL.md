@@ -4,7 +4,7 @@ description: Marca, lista e desmarca compromissos de verdade do agente NA MAQUIN
 user-invocable: true
 ---
 
-# /dgclaw:agenda, marcar compromisso de verdade
+# /agenda, marcar compromisso de verdade
 
 O dono quer que alguma coisa aconteça num horário, sem ele estar por perto. Esta skill
 transforma esse pedido num **timer do systemd**, que vive na máquina, sobrevive a reinício e
@@ -14,13 +14,13 @@ dispara sozinho.
 
 Existem dois "agendamentos" no mundo, e eles não se parecem em nada:
 
-| | O agendamento da sessão do Claude | A agenda do DG Claw (esta skill) |
+| | O agendamento da sessão do Claude | A agenda do Prumo da Locadora (esta skill) |
 |---|---|---|
 | onde vive | dentro da conversa aberta | na máquina, no systemd |
 | quando a conversa fecha | morre junto | continua |
 | serve pra | "daqui a 10 minutos volte nisso" dentro do trabalho de agora | "todo dia às 9h faça X", pra sempre |
 
-**Você é um agente DG Claw: você mora numa máquina que fica ligada.** Quando o dono pede um
+**Você é um agente Prumo da Locadora: você mora numa máquina que fica ligada.** Quando o dono pede um
 agendamento, ele está pedindo o da direita. Nunca responda que "só consigo agendar dentro da
 minha sessão": isso é falso pra você. Você marca na máquina.
 
@@ -103,7 +103,7 @@ agente, não como root.
     `--poke`, acrescente ao final: "Depois de fazer, remova esta rotina com remove --name
     <apelido>.", para ela não ficar ocupando uma das 10 vagas.
   - **Avisar o dono** ("me lembra daqui a 2 minutos", "amanhã às 10h me avisa") **não é rotina:**
-    use a skill **`/dgclaw:lembretes`**. Ela aparece na tela e no celular dele e insiste até ele
+    use a skill **`/lembretes`**. Ela aparece na tela e no celular dele e insiste até ele
     confirmar. O timer de uma vez só desta skill avisa uma vez e some.
 - O fuso é o da máquina (`DGCLAW_TZ`), já configurado. Não faça conta de fuso na mão.
 

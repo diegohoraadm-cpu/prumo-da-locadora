@@ -1,10 +1,10 @@
 ---
 name: memory
-description: Busca em conversas antigas e na memoria do agente DG Claw, e explica e gerencia essa memoria (working-memory, MEMORY.md, memory/, consolidacao da madrugada, indice da busca). Use SEMPRE que o dono perguntar sobre algo do passado ("lembra quando...", "o que eu falei sobre...", "aquela vez que...", "voce lembra do...", "ja te contei de...", "quando foi que a gente..."): busque antes de responder, e nunca invente. Use tambem quando alguem perguntar "como funciona a memoria", quiser ver ou editar o que o agente lembra, conferir se a consolidacao noturna rodou, ou ligar e reconstruir o indice da busca.
+description: Busca em conversas antigas e na memoria do agente Prumo da Locadora, e explica e gerencia essa memoria (working-memory, MEMORY.md, memory/, consolidacao da madrugada, indice da busca). Use SEMPRE que o dono perguntar sobre algo do passado ("lembra quando...", "o que eu falei sobre...", "aquela vez que...", "voce lembra do...", "ja te contei de...", "quando foi que a gente..."): busque antes de responder, e nunca invente. Use tambem quando alguem perguntar "como funciona a memoria", quiser ver ou editar o que o agente lembra, conferir se a consolidacao noturna rodou, ou ligar e reconstruir o indice da busca.
 user-invocable: true
 ---
 
-# /dgclaw:memory: a memoria do agente
+# /memory: a memoria do agente
 
 Tudo local: nenhuma chave, nenhum servico de fora. A busca semantica com `GEMINI_API_KEY`
 existe como complemento opcional; a busca em conversas funciona sem ela.

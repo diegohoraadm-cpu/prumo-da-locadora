@@ -1,6 +1,6 @@
 ---
 name: uninstall
-description: Tira um assistente DG Claw do ar no servidor, desligando o servico, as rotinas e o painel, e guardando tudo num backup datado. Use quando o usuario pedir "desinstalar o DG Claw", "tirar o agente do ar", "remover o assistente da VPS", "parar tudo dele", "apagar o agente", ou rodar /dgclaw:uninstall. Por padrao preserva identidade, memoria e credenciais; com --purge move tambem os dados pro backup, sempre com confirmacao.
+description: Tira um assistente Prumo da Locadora do ar no servidor, desligando o servico, as rotinas e o painel, e guardando tudo num backup datado. Use quando o usuario pedir "desinstalar o Prumo da Locadora", "tirar o agente do ar", "remover o assistente da VPS", "parar tudo dele", "apagar o agente", ou rodar /dgclaw:uninstall. Por padrao preserva identidade, memoria e credenciais; com --purge move tambem os dados pro backup, sempre com confirmacao.
 user-invocable: true
 ---
 

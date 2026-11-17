@@ -1,6 +1,6 @@
 # Poder: meetings (Reuniões) — TRAVADO nesta versão
 
-> Status: **não acoplado no v1 do DG Claw.** Aparece como tile travado no painel (aba REUNIOES) e em
+> Status: **não acoplado no v1 do Prumo da Locadora.** Aparece como tile travado no painel (aba REUNIOES) e em
 > `/dgclaw:powers`. Este arquivo documenta o que o poder fará quando for acoplado — não tente instalar.
 
 ## O que vai fazer

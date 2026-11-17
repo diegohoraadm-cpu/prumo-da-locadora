@@ -1,12 +1,12 @@
 ---
 name: mesa
-description: Registra o seu trabalho na Mesa de tarefas do DG Claw Web, a tela em que o dono vê o que cada agente está fazendo, quanto falta, o que travou e o que espera por ele. Use quando o dono perguntar "o que você está fazendo?", "como está a tarefa?", "acompanha isso", "põe na mesa", "cria uma tarefa", "dá como concluído", "pode concluir", "/dgclaw:mesa", e SEMPRE que for começar um trabalho de verdade (conteúdo, desenvolvimento, projeto, levantamento de várias etapas), travar nele, precisar de uma decisão do dono ou terminá-lo. Usa o comando dgclaw-mesa, que fala com o Web pela caixa do agente.
+description: Registra o seu trabalho na Mesa de tarefas do Prumo da Locadora Web, a tela em que o dono vê o que cada agente está fazendo, quanto falta, o que travou e o que espera por ele. Use quando o dono perguntar "o que você está fazendo?", "como está a tarefa?", "acompanha isso", "põe na mesa", "cria uma tarefa", "dá como concluído", "pode concluir", "/dgclaw:mesa", e SEMPRE que for começar um trabalho de verdade (conteúdo, desenvolvimento, projeto, levantamento de várias etapas), travar nele, precisar de uma decisão do dono ou terminá-lo. Usa o comando dgclaw-mesa, que fala com o Web pela caixa do agente.
 user-invocable: true
 ---
 
 # /dgclaw:mesa: o seu trabalho na mesa do dono
 
-A Mesa fica em `/mesa` no DG Claw Web. Você cria, atualiza e conclui as suas tarefas pelo
+A Mesa fica em `/mesa` no Prumo da Locadora Web. Você cria, atualiza e conclui as suas tarefas pelo
 comando `dgclaw-mesa`. O dono acompanha pela tela e também mexe: responde o que você
 perguntou, conclui, cancela ou cria uma tarefa para você.
 
@@ -64,7 +64,7 @@ dgclaw-mesa listar --dia todos         # inclui as fechadas de qualquer dia (ou 
 | --- | --- |
 | 1 | Erro no que você digitou (id que não é número, falta `--motivo`). A mensagem diz o que corrigir |
 | 2 | O Web não respondeu. Espere um minuto e tente de novo. Não insista em laço |
-| 3 | A caixa do agente não está disponível. Conte ao dono: ele precisa rodar `sudo dgclaw agente reparar <seu-slug>` |
+| 3 | A caixa do agente não está disponível. Conte ao dono: ele precisa rodar `sudo prumo agente reparar <seu-slug>` |
 | 4 | O Web recusou o pedido. A frase do erro (e os campos) saem no stderr: corrija e repita. `403` é tarefa de outro agente |
 | 5 | Erro do lado do Web. Tente de novo em instantes; se continuar, conte ao dono com a frase do erro |
 

@@ -33,6 +33,25 @@ sobrecarga, limite de uso, recusa), o canal está vivo (3.5), a conversa está e
 a sessão travou (3.7), a memória parou (3.9). Para o último turno, o `saude_sessao.py` já diz o
 tipo do problema e o que fazer (manual 2.3).
 
+Três queixas têm capítulo próprio no manual. Todas se resolvem pelo terminal do servidor, com o
+"posso?" antes de mudar qualquer coisa:
+
+- **"Não consigo entrar no painel"** (manual 3.1.1): quase nunca é a senha. Veja primeiro se foi
+  bloqueio por tentativas e se a pessoa usou e-mail em vez do usuário. `sudo prumo usuario` mostra o
+  usuário e o endereço do painel; `sudo prumo senha` troca a senha (nunca a escreva no chat).
+- **"Travou no Face ID"** (manual 3.1.2): o Face ID nunca faz login, então a saída é o botão
+  **Entrar com a senha** na tela travada. Se a pessoa esqueceu a senha, `sudo prumo senha`.
+- **"Um agente ficou de fora da atualização"** (manual 3.2.1): na primeira atualização para a 1.0.5 a
+  tela termina com "Atualizacao INCOMPLETA" e uma linha FALHOU por agente. É esperado nesta versão. Leia
+  o aviso da 1.0.5 e a lista `perdido-no-recriar-*.txt` do agente, diga ao dono o que o `--forcar`
+  perde (só o que foi instalado à mão dentro da caixa; as rotinas padrão voltam ao padrão) e, com o
+  sim dele, rode `sudo dgclaw agente recriar <slug> --forcar`.
+
+Agente que ficou parado logo depois de criado (`created`) agora liga sozinho: o instalador liga no fim
+da instalação e da atualização, e a Sentinela tenta uma vez a cada 6 horas. Só se ele continuar
+parado é que se liga à mão com `dgclaw agente iniciar <slug>`. O agente desligado (`exited`) nunca
+liga sozinho: pode ter sido de propósito.
+
 Enquanto investiga, não narre comando. No máximo: "estou olhando, um minuto".
 
 ## Passo 3: explique, proponha, pergunte

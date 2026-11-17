@@ -104,7 +104,7 @@ tem "recado traz o id" "GHSA-AAAA-1111" "$RECADO"
 tem "recado traz a gravidade" "crítica" "$RECADO"
 tem "recado manda olhar o painel" "painel" "$RECADO"
 # shellcheck disable=SC2016  # as crases fazem parte do texto procurado, nada a expandir
-tem "recado proibe atualizar sem o sim do dono" 'NUNCA rode `dgclaw atualizar` sem o sim explícito do dono' "$RECADO"
+tem "recado proibe atualizar sem o sim do dono" 'NUNCA rode `prumo atualizar` sem o sim explícito do dono' "$RECADO"
 nao_tem "recado nao traz texto livre do boletim (detalhe)" "$TEXTO_LIVRE" "$RECADO"
 nao_tem "recado nao traz o componente" "Pillow" "$RECADO"
 nao_tem "recado nao traz o titulo" "Vulnerabilidade no Pillow" "$RECADO"
@@ -155,7 +155,7 @@ publica 2 "$(bol GHSA-AAAA-1111)"
 roda
 igual "corrompido: sai 1" 1 "$RC"
 tem "diz qual arquivo" "$INSTALADO" "$ERR"
-tem "diz o que fazer" "dgclaw atualizar" "$ERR"
+tem "diz o que fazer" "prumo atualizar" "$ERR"
 
 echo "validacao do contrato"
 raiz_nova

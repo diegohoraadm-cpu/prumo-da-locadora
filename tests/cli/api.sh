@@ -106,7 +106,7 @@ echo "caixa indisponivel (saida 3)"
 : >"$TMP/arquivo-comum"
 DGCLAW_CAIXA_DIR="$TMP/arquivo-comum/caixa" "$API" GET /api/v1/x >/dev/null 2>"$TMP/e.txt"; rc=$?
 igual "caixa dentro de um arquivo: sai com 3" "3" "$rc"
-afirma "diz para chamar o dono" grep -q 'dgclaw agente reparar' "$TMP/e.txt"
+afirma "diz para chamar o dono" grep -q 'prumo agente reparar' "$TMP/e.txt"
 env -u DGCLAW_CAIXA_DIR -u HOME "$API" GET /api/v1/x >/dev/null 2>"$TMP/e.txt"; rc=$?
 igual "sem HOME e sem DGCLAW_CAIXA_DIR: sai com 3" "3" "$rc"
 

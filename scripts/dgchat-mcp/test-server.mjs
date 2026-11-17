@@ -301,7 +301,7 @@ const dirSock = fs.mkdtempSync(path.join(os.tmpdir(), 'dgwa-'));
   ], { DGCLAW_WHATSAPP_SOCK: path.join(dirSock, 'nao-existe.sock'), DGCHAT_OUTBOUND: outbound });
   const a = respostas.find((r) => r.id === 1)?.result;
   const b = respostas.find((r) => r.id === 2)?.result;
-  if (a?.isError && b?.isError && /O WhatsApp está desligado; fale pelo chat do DG Claw \(tool reply\)/.test(texto0(a) + texto0(b))) {
+  if (a?.isError && b?.isError && /O WhatsApp está desligado; fale pelo chat do Prumo da Locadora \(tool reply\)/.test(texto0(a) + texto0(b))) {
     ok('11. socket ausente: as duas tools falham dizendo que o WhatsApp esta desligado');
   } else {
     falhou(`11. ausente devolveu ${JSON.stringify([a, b])}`);

@@ -123,7 +123,7 @@ VENCIDA_FIM="$(date -u -d "@$((AGORA_S - 86400))" +%Y%m%d%H%M)"
 printf 'expiry-time="%sZ" ssh-ed25519 %s dgclaw-suporte:deadbeef:%s\n' "$VENCIDA_FIM" "$(awk '{print $2}' "$TMP/outra.pub")" "$VENCIDA_FIM" >>"$ARQ"
 dgclaw suporte status >"$TMP/o.txt" 2>&1
 afirma "lista a vencida" grep -q "vencida .*venceu em 31/10/2026 12:00 UTC" "$TMP/o.txt"
-afirma "oferece remover" grep -q "dgclaw suporte limpar" "$TMP/o.txt"
+afirma "oferece remover" grep -q "prumo suporte limpar" "$TMP/o.txt"
 
 echo "--limpar tira so as vencidas"
 dgclaw suporte limpar >"$TMP/o.txt" 2>&1; rc=$?
@@ -238,7 +238,7 @@ saida="$(bash -c '
     . "$1"; . "$2/lib/suporte.sh"
     s_ok() { printf "ok %s\n" "$1"; }; s_aviso() { printf "aviso %s\n" "$1"; }
     suporte_status_linha' _ "$REPO/lib/comum.sh" "$REPO" 2>&1)"
-afirma "dgclaw status avisa da sessao aberta" grep -q "suporte: chave revogada ou vencida, acesso ainda nao confirmado como encerrado (1 sessao(oes) de root abertas), veja sudo dgclaw suporte status" <<<"$saida"
+afirma "dgclaw status avisa da sessao aberta" grep -q "suporte: chave revogada ou vencida, acesso ainda nao confirmado como encerrado (1 sessao(oes) de root abertas), veja sudo prumo suporte status" <<<"$saida"
 dgclaw suporte status >"$TMP/o.txt" 2>&1
 afirma "suporte status lista a sessao" grep -q "198.51.100.8:42000, desde" "$TMP/o.txt"
 kill "$PID_A" "$PID_C" "$PID_D" 2>/dev/null; wait 2>/dev/null

@@ -44,7 +44,7 @@ caso_aviso_desligado_no_dgclaw_env_nao_liga_o_timer_e_preserva_as_linhas() {
     nega "o timer NAO foi ligado" tem "$STUB_LOG" "systemctl enable dgclaw-checar-atualizacao.timer"
     nega "nenhuma checagem foi disparada" tem "$STUB_LOG" "dgclaw-checar-atualizacao.service"
     afirma "o timer foi desligado" tem "$STUB_LOG" "systemctl disable --now dgclaw-checar-atualizacao.timer"
-    afirma "a saida explica como ligar" tem "$SAIDA" "dgclaw atualizar --aviso ligar"
+    afirma "a saida explica como ligar" tem "$SAIDA" "prumo atualizar --aviso ligar"
     limpar_cenario
 }
 

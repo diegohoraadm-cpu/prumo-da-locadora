@@ -17,7 +17,7 @@ printf '{"versao":1}\n' >"$ETC/primeiro-acesso.json"
 dgclaw instalacao-remota >"$TMP/o.out" 2>"$TMP/o.err"
 igual "sai com 0" "0" "$?"
 afirma "a mensagem traz o endereco, o usuario e o texto de entrega" \
-    grep -q '^Seu DG Claw esta pronto\. Acesse https://teste\.exemplo\.org/, entre com o usuario dono e a senha ' "$TMP/o.out"
+    grep -q '^Seu Prumo da Locadora esta pronto\. Acesse https://teste\.exemplo\.org/, entre com o usuario dono e a senha ' "$TMP/o.out"
 afirma "a mensagem fala do login do Claude e do tutorial" grep -q 'login do Claude nos seus agentes, um de cada vez.*tutorial rapido' "$TMP/o.out"
 SENHA="$(sed -n 's/.* e a senha \([^ ]*\)\. La dentro.*/\1/p' "$TMP/o.out")"
 afirma "a senha tem 5 grupos de 4 sem caracteres ambiguos" bash -c "[[ '$SENHA' =~ ^[a-km-np-z2-9]{4}(-[a-km-np-z2-9]{4}){4}\$ ]]"

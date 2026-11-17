@@ -114,7 +114,7 @@ ID_SEM="$D_SEM/identidade.txt"
 if grep -q "mcp__dgchat__reply" "$ID_SEM" 2>/dev/null && grep -q "REGRA ZERO DO CANAL DG CHAT" "$ID_SEM"; then
     ok "4. a identidade ensina a responder pelo painel"
 else
-    falhou "4. a identidade nao tem a REGRA ZERO do DG Chat"
+    falhou "4. a identidade nao tem a REGRA ZERO do chat do painel"
 fi
 if ! grep -q "REGRA ZERO DO CANAL TELEGRAM" "$ID_SEM" 2>/dev/null; then
     ok "4b. e nao ensina a do Telegram para quem nao tem Telegram"

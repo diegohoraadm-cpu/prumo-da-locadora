@@ -327,7 +327,7 @@ caso_sem_senha_gera_link_de_primeiro_acesso() {
     nega "o link em algum arquivo da raiz" grep -rqF -- "$tk" "$RAIZ"
     nega "o link no registro dos stubs" tem "$STUB_LOG" "$tk"
     nega "a saida mostra uma senha" grep -q "Senha:    [^ae]" "$SAIDA"
-    afirma "explica como gerar outro" tem "$SAIDA" "sudo dgclaw primeiro-acesso"
+    afirma "explica como gerar outro" tem "$SAIDA" "sudo prumo primeiro-acesso"
     limpar_cenario
 }
 
@@ -587,7 +587,7 @@ caso_app_alterado_a_mao_vai_para_a_pasta_de_migracao() {
     afirma "o tar guarda a edicao" bash -c "tar -xzOf '$pasta/app-antes.tar.gz' ./web/server.js | grep -q 'editado pelo Admin'"
     afirma "tem o LEIA.txt" test -s "$pasta/LEIA.txt"
     afirma "o PENDENTE existe" test -s "$adm/personalizacoes-migracao/PENDENTE"
-    afirma "o aviso aparece na saida" tem "$SAIDA" "dgclaw personalizacoes levantar"
+    afirma "o aviso aparece na saida" tem "$SAIDA" "prumo personalizacoes levantar"
     afirma "o app voltou a ser igual ao oficial (editado)" bash -c "! grep -q 'editado pelo Admin' '$app/web/server.js'"
     afirma "o app voltou a ser igual ao oficial (acrescentado)" test ! -e "$app/web/extra.js"
     afirma "o app voltou a ser igual ao oficial (apagado)" test -f "$app/web/apagar-depois.js"
@@ -1157,10 +1157,10 @@ caso_rede_containers_preserva_tabela_com_container_ativo() {
         EXTRA_ENV=("DGCLAW_STUB_NFT_NETAVARK=1" "DGCLAW_STUB_PS=dgclaw-ana exited\ndgclaw-beto $estado\noutro-servico running")
         afirma "estado $estado: a instalacao termina com sucesso" instalacao_basica
         nega "estado $estado: a tabela fica" tem "$STUB_LOG" "nft delete"
-        afirma "estado $estado: manda parar o agente" tem "$SAIDA" "sudo dgclaw agente parar <slug>"
+        afirma "estado $estado: manda parar o agente" tem "$SAIDA" "sudo prumo agente parar <slug>"
         afirma "estado $estado: lista o agente que nao esta parado" tem "$SAIDA" "dgclaw-beto"
         afirma "estado $estado: manda rodar o install.sh" tem "$SAIDA" "rode sudo ./install.sh de novo"
-        afirma "estado $estado: manda iniciar de novo" tem "$SAIDA" "sudo dgclaw agente iniciar <slug>"
+        afirma "estado $estado: manda iniciar de novo" tem "$SAIDA" "sudo prumo agente iniciar <slug>"
         afirma "estado $estado: container de fora tambem precisa parar" tem "$SAIDA" "nao sao do Prumo da Locadora tambem precisam estar parados"
         limpar_cenario
     done

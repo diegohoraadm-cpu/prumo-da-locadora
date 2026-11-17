@@ -41,7 +41,7 @@ echo '# Admin (Codex) v1' >"$TRAB/templates/admin/AGENTS.md"
 echo '# criar-agente' >"$TRAB/skills/criar-agente/SKILL.md"
 echo '# trocar-dominio' >"$TRAB/skills/trocar-dominio/SKILL.md"
 echo '//' >"$TRAB/scripts/dgchat-mcp/server.mjs"
-echo 'DG Claw de mentira' >"$TRAB/README.md"
+echo 'Prumo da Locadora de mentira' >"$TRAB/README.md"
 git -C "$TRAB" init -q -b main
 git -C "$TRAB" add -A
 git -C "$TRAB" commit -q -m v1
@@ -174,7 +174,7 @@ afirma "a saida traz o caminho do relatorio" test -n "$REL"
 afirma "o arquivo do relatorio existe" test -s "$REL"
 afirma "o relatorio lista o commit novo (v2)" grep -q ' v2$' "$REL"
 afirma "lib/firewall.sh aparece em Pontos de atencao" bash -c "sed -n '/Pontos de atencao/,\$p' '$REL' | grep -q 'lib/firewall.sh: .*rede e isolamento'"
-afirma "o relatorio termina com a instrucao do ok" grep -q -- 'sudo dgclaw atualizar --ok-do-dono --segundo-plano' "$REL"
+afirma "o relatorio termina com a instrucao do ok" grep -q -- 'sudo prumo atualizar --ok-do-dono --segundo-plano' "$REL"
 
 echo "atualizar de verdade"
 echo imagem-v2 >"$STUB_ESTADO/imagem-id"   # a imagem "mudou": os containers velhos precisam ser recriados
@@ -185,7 +185,7 @@ igual "atualizar sai com 0" "0" "$rc"
 nega "o atualizar de verdade apaga a propria marca da Sentinela" test -e "$RAIZ/var/lib/dgclaw/atualizando"
 [ "$rc" -eq 0 ] || sed 's/^/      | /' "$TMP/o3.txt" | tail -n 30
 afirma "diz que concluiu" grep -q 'Atualizacao concluida' "$TMP/o3.txt"
-afirma "diz como voltar atras" grep -q 'sudo dgclaw atualizar --voltar ' "$TMP/o3.txt"
+afirma "diz como voltar atras" grep -q 'sudo prumo atualizar --voltar ' "$TMP/o3.txt"
 igual "o clone foi para o commit novo" "$COMMIT_V2" "$(git -C "$CLONE" rev-parse HEAD)"
 fotografar >"$TMP/depois.txt"
 igual "TODOS os arquivos do aluno intactos (memoria, conversas, cofre, uploads, identidade, rotina, Admin)" "" "$(diff "$TMP/antes.txt" "$TMP/depois.txt")"
@@ -302,7 +302,7 @@ dgclaw atualizar --forcar-local --ok-do-dono >"$TMP/o7.txt" 2>&1; rc=$?
 igual "a atualizacao que apaga uma chave termina com erro (1)" "1" "$rc"
 afirma "aponta a chave que sumiu" grep -q "FALHOU.*'GROQ_API_KEY'" "$TMP/o7.txt"
 afirma "diz em portugues que a atualizacao foi desfeita sozinha" grep -q 'foi desfeita sozinha' "$TMP/o7.txt"
-afirma "diz o que deu errado, o que foi desfeito, o backup e o que fazer" bash -c "grep -q 'O que deu errado: a conferencia de configuracao' '$TMP/o7.txt' && grep -q 'O que foi desfeito' '$TMP/o7.txt' && grep -q 'O DG Claw esta de volta na versao de antes. O backup que usei esta em $BACKUPS/' '$TMP/o7.txt' && grep -q 'O que fazer agora' '$TMP/o7.txt'"
+afirma "diz o que deu errado, o que foi desfeito, o backup e o que fazer" bash -c "grep -q 'O que deu errado: a conferencia de configuracao' '$TMP/o7.txt' && grep -q 'O que foi desfeito' '$TMP/o7.txt' && grep -q 'O Prumo da Locadora esta de volta na versao de antes. O backup que usei esta em $BACKUPS/' '$TMP/o7.txt' && grep -q 'O que fazer agora' '$TMP/o7.txt'"
 afirma "a chave voltou: web.env igual ao de antes" bash -c "[ \"\$(sha256sum <'$ETC/web.env')\" = '$WEB_ANTES' ]"
 afirma "as linhas do aluno continuam" linhas_do_aluno_ok
 igual "o dgclaw.env voltou a anotar o commit de antes" "$COMMIT_INSTALADO_ANTES" "$(grep '^DGCLAW_COMMIT=' "$ETC/dgclaw.env")"
@@ -365,7 +365,7 @@ parecer_segura --sem-voltar-sozinho
 dgclaw atualizar --sem-voltar-sozinho --ok-do-dono >"$TMP/o7d.txt" 2>&1; rc=$?
 igual "termina com erro (1)" "1" "$rc"
 nega "nao desfez sozinho" grep -q 'foi desfeita sozinha' "$TMP/o7d.txt"
-afirma "diz como voltar a mao" grep -q 'sudo dgclaw atualizar --voltar' "$TMP/o7d.txt"
+afirma "diz como voltar a mao" grep -q 'sudo prumo atualizar --voltar' "$TMP/o7d.txt"
 nega "o web.env ficou como o instalador quebrado deixou (sem rollback)" bash -c "[ \"\$(sha256sum <'$ETC/web.env')\" = '$WEB_ANTES' ]"
 # Volta ao instalador bom e restaura o web.env para o que o resto do teste espera.
 git -C "$TRAB" revert --no-edit HEAD >/dev/null 2>&1; git -C "$TRAB" push -q origin main
@@ -387,7 +387,7 @@ nega "sai com codigo diferente de 0" test "$rc" -eq 0
 afirma "diz INCOMPLETA" grep -q 'Atualizacao INCOMPLETA' "$TMP/o8.txt"
 nega "nao diz concluida" grep -q 'Atualizacao concluida' "$TMP/o8.txt"
 afirma "lista o agente com problema" grep -q 'Agentes COM PROBLEMA: ana' "$TMP/o8.txt"
-afirma "traz o comando para refazer o agente" grep -q 'dgclaw agente recriar ana --forcar' "$TMP/o8.txt"
+afirma "traz o comando para refazer o agente" grep -q 'prumo agente recriar ana --forcar' "$TMP/o8.txt"
 afirma "o Beto, que recriou, aparece como bem" grep -q 'Agentes que ficaram bem: beto' "$TMP/o8.txt"
 afirma "explica por que o Admin nao reinicia" grep -q 'NAO vou reiniciar o Admin' "$TMP/o8.txt"
 nega "nao agenda o reinicio do Admin" grep -q '^systemd-run' "$STUB_LOG"
@@ -395,7 +395,7 @@ afirma "o resumo INCOMPLETA tambem foi gravado" grep -rq 'Atualizacao INCOMPLETA
 afirma "o container do Beto foi trocado" grep -q '^podman create .*--name dgclaw-beto ' "$STUB_LOG"
 confere_travas beto "atualizar de novo: o Beto"
 nega "agente que nao sobe NAO faz a atualizacao voltar sozinha" grep -q 'foi desfeita sozinha' "$TMP/o8.txt"
-afirma "explica que nao desfez e manda recriar o agente com --forcar" grep -q 'NAO desfiz a atualizacao.*dgclaw agente recriar <slug> --forcar' "$TMP/o8.txt"
+afirma "explica que nao desfez e manda recriar o agente com --forcar" grep -q 'NAO desfiz a atualizacao.*prumo agente recriar <slug> --forcar' "$TMP/o8.txt"
 nega "o clone nao foi levado a uma branch dgclaw-volta por causa do agente" bash -c "git -C '$CLONE' rev-parse --abbrev-ref HEAD | grep -q '^dgclaw-volta-'"
 fotografar >"$TMP/depois.txt"
 igual "os arquivos do aluno continuam intactos" "" "$(diff "$TMP/antes.txt" "$TMP/depois.txt")"
@@ -435,7 +435,7 @@ dgclaw atualizar --sem-baixar --simular >/dev/null 2>&1
 parecer_segura --sem-baixar
 dgclaw atualizar --sem-baixar --ok-do-dono >"$TMP/o10.txt" 2>&1; rc=$?
 igual "atualizar --sem-baixar sai com 0" "0" "$rc"
-afirma "o resumo lista o agente sem senha da Tela, com o que fazer" grep -q 'Tela sem senha: a senha da Tela do agente beto ainda nao foi definida.*dgclaw agente tela-senha beto' "$TMP/o10.txt"
+afirma "o resumo lista o agente sem senha da Tela, com o que fazer" grep -q 'Tela sem senha: a senha da Tela do agente beto ainda nao foi definida.*prumo agente tela-senha beto' "$TMP/o10.txt"
 nega "o resumo nao lista a Ana, que tem a senha" grep -q 'Tela sem senha: a senha da Tela do agente ana' "$TMP/o10.txt"
 [ "$rc" -eq 0 ] || sed 's/^/      | /' "$TMP/o10.txt" | tail -n 30
 afirma "algum manifesto grava o commit antigo certo" grep -rqx "commit=$COMMIT_ANTES" "$BACKUPS"
@@ -464,7 +464,7 @@ afirma "o agente created foi ligado" grep -qx running "$STUB_ESTADO/c-dgclaw-ana
 afirma "o log mostra o start do created" grep -q '^podman start dgclaw-ana' "$STUB_LOG"
 afirma "o agente exited continua exited" grep -qx exited "$STUB_ESTADO/c-dgclaw-beto"
 nega "o exited nunca recebe start" grep -q '^podman start dgclaw-beto' "$STUB_LOG"
-afirma "o exited so ganha o aviso de como ligar" grep -q 'agente beto: container exited.*dgclaw agente iniciar beto' "$TMP/o11c.txt"
+afirma "o exited so ganha o aviso de como ligar" grep -q 'agente beto: container exited.*prumo agente iniciar beto' "$TMP/o11c.txt"
 echo running >"$STUB_ESTADO/c-dgclaw-ana"; echo running >"$STUB_ESTADO/c-dgclaw-beto"
 
 echo "analise do uso: o relatorio cruza rotinas e scripts dos agentes com o que a versao nova muda"
@@ -661,7 +661,7 @@ rm -f "$PARECER"
 dgclaw atualizar --ok-do-dono >"$TMP/p1.txt" 2>&1; rc=$?
 igual "ok-do-dono sem parecer recusa" "1" "$rc"
 afirma "explica que falta o parecer" grep -q 'falta o parecer sobre a versao' "$TMP/p1.txt"
-afirma "diz o comando do parecer" grep -q 'dgclaw atualizar --parecer segura --commit' "$TMP/p1.txt"
+afirma "diz o comando do parecer" grep -q 'prumo atualizar --parecer segura --commit' "$TMP/p1.txt"
 igual "parou antes do backup" "$NB_ANTES" "$(find "$BACKUPS" -mindepth 1 -maxdepth 1 -type d | wc -l)"
 afirma "o bloqueio ficou no registro" grep -q 'bloqueio .*sem-parecer' "$RAIZ/var/log/dgclaw/atualizar-pareceres.log"
 
@@ -697,7 +697,7 @@ DEST_LIDO="$(sed -n 's/^DESTINO=//p' "$TMP/p2y.txt" | head -n 1)"
 git -C "$TRAB" commit -q --allow-empty -m v6c2; git -C "$TRAB" push -q origin main
 dgclaw atualizar --parecer segura --commit "$DEST_LIDO" --motivo "li o relatorio anterior" >"$TMP/p2z.txt" 2>&1; rc=$?
 igual "parecer sobre commit que o remoto ja passou recusa" "1" "$rc"
-afirma "manda rodar o --simular de novo" grep -q "rode 'sudo dgclaw atualizar --simular' de novo" "$TMP/p2z.txt"
+afirma "manda rodar o --simular de novo" grep -q "rode 'sudo prumo atualizar --simular' de novo" "$TMP/p2z.txt"
 
 echo "parecer de outro commit recusa"
 git -C "$TRAB" commit -q --allow-empty -m v6d; git -C "$TRAB" push -q origin main

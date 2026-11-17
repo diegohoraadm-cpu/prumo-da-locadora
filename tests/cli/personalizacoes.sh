@@ -41,7 +41,7 @@ montar() {
     echo '# criar-agente' >"$TRAB/skills/criar-agente/SKILL.md"
     echo '# trocar-dominio' >"$TRAB/skills/trocar-dominio/SKILL.md"
     echo '//' >"$TRAB/scripts/dgchat-mcp/server.mjs"
-    echo 'DG Claw de mentira' >"$TRAB/README.md"
+    echo 'Prumo da Locadora de mentira' >"$TRAB/README.md"
     git -C "$TRAB" init -q -b main
     git -C "$TRAB" add -A; git -C "$TRAB" commit -q -m v1
     git clone -q --bare "$TRAB" "$ORIGEM"

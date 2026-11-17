@@ -66,7 +66,7 @@ dgclaw agente iniciar ana >"$TMP/o.txt" 2>&1
 igual "iniciar com 255 sai com 1" "1" "$?"
 afirma "fala de inotify" grep -q 'causa mais comum e falta de inotify' "$TMP/o.txt"
 afirma "traz os numeros (3 de 128)" grep -q 'o root usa 3 de 128 instancias' "$TMP/o.txt"
-afirma "diz o sysctl e o proximo passo" grep -q 'dgclaw agente iniciar ana' "$TMP/o.txt"
+afirma "diz o sysctl e o proximo passo" grep -q 'prumo agente iniciar ana' "$TMP/o.txt"
 dgclaw agente iniciar ana --ensaio >"$TMP/o.txt" 2>&1
 igual "iniciar --ensaio nao confere o estado" "0" "$?"
 rm -f "$STUB_ESTADO/saida-255"

@@ -32,7 +32,7 @@ nega "nao diz que aplicou" grep -qi 'aplicad' "$TMP/o2.txt"
 nega "nem que reiniciou o runner" grep -q 'runner do agente ana reiniciado' "$TMP/o2.txt"
 afirma "diz que a imagem e antiga" grep -q 'imagem' "$TMP/o2.txt"
 afirma "diz que as restricoes NAO valem" grep -q 'NAO valem' "$TMP/o2.txt"
-afirma "manda recriar com o comando do CLI" grep -q 'dgclaw agente recriar ana' "$TMP/o2.txt"
+afirma "manda recriar com o comando do CLI" grep -q 'prumo agente recriar ana' "$TMP/o2.txt"
 afirma "o marcador de reinicio continua" test -e "$PEND"
 afirma "o container foi parado (agente com trava nao roda sem ela)" grep -q '^podman stop dgclaw-ana' "$STUB_LOG"
 igual "e ficou parado" "exited" "$(cat "$STUB_ESTADO/c-dgclaw-ana")"
@@ -71,7 +71,7 @@ afirma "avisa que a conferencia sera feita quando ligar" grep -q 'quando o agent
 dgclaw agente iniciar ana >"$TMP/o5.txt" 2>&1; nega "iniciar com imagem sem suporte falha" test "$?" -eq 0
 afirma "o container foi parado (a trava e obrigatoria)" grep -q '^podman stop dgclaw-ana' "$STUB_LOG"
 igual "e ficou parado" "exited" "$(cat "$STUB_ESTADO/c-dgclaw-ana")"
-afirma "manda recriar" grep -q 'dgclaw agente recriar ana' "$TMP/o5.txt"
+afirma "manda recriar" grep -q 'prumo agente recriar ana' "$TMP/o5.txt"
 nega "nao diz que iniciou" grep -q 'agente ana iniciado' "$TMP/o5.txt"
 afirma "o marcador continua" test -e "$PEND_SUP"
 rm -f "$STUB_ESTADO/sem-suporte"
@@ -142,7 +142,7 @@ for caso in remota-com-chave remota-merge remota-merge-desliga remota-link remot
     afirma "$caso: leu o arquivo dentro da caixa como agente" grep -q ' /home/agente/\.claude/remote-settings\.json$' "$STUB_LOG"
     afirma "$caso: diz que as restricoes NAO valem" grep -q 'NAO valem' "$TMP/o10.txt"
     afirma "$caso: fala da organizacao do claude.ai" grep -q 'organizacao do claude.ai' "$TMP/o10.txt"
-    afirma "$caso: orienta o procedimento com o agente parado" grep -q 'conta pessoal (Pro ou Max) ou uma chave de API.*dgclaw agente restricoes ana --sem-bash sim' "$TMP/o10.txt"
+    afirma "$caso: orienta o procedimento com o agente parado" grep -q 'conta pessoal (Pro ou Max) ou uma chave de API.*prumo agente restricoes ana --sem-bash sim' "$TMP/o10.txt"
     nega "$caso: nao sugere mais o merge" grep -qi 'managedSourcesBehavior\|merge' "$TMP/o10.txt"
     nega "$caso: nao manda recriar a imagem" grep -q 'agente recriar' "$TMP/o10.txt"
     afirma "$caso: parou o container" grep -q '^podman stop dgclaw-ana' "$STUB_LOG"
@@ -202,7 +202,7 @@ dgclaw agente restricoes ana --sem-bash sim >"$TMP/o15.txt" 2>&1; rc=$?
 nega "o comando falha" test "$rc" -eq 0
 afirma "tentou o kill" grep -q '^podman kill dgclaw-ana' "$STUB_LOG"
 afirma "diz LIGADO SEM A TRAVA" grep -q 'LIGADO SEM A TRAVA' "$TMP/o15.txt"
-afirma "manda parar na mao" grep -q 'dgclaw agente parar ana' "$TMP/o15.txt"
+afirma "manda parar na mao" grep -q 'prumo agente parar ana' "$TMP/o15.txt"
 rm -f "$STUB_ESTADO/sem-suporte" "$STUB_ESTADO/stop-nao-para" "$STUB_ESTADO/kill-nao-mata"
 echo running >"$STUB_ESTADO/c-dgclaw-ana"
 rm -f "$PEND_SUP"
@@ -268,8 +268,8 @@ touch "$STUB_ESTADO/remota-com-chave"
 dgclaw agente restricoes ana --sem-bash sim >"$TMP/r1.txt" 2>&1; rc=$?
 nega "a conferencia falha" test "$rc" -eq 0
 igual "e o container ficou parado" "exited" "$(cat "$STUB_ESTADO/c-dgclaw-ana")"
-afirma "o passo 1 desliga as restricoes" grep -q 'dgclaw agente restricoes ana --sem-bash nao --sem-enviar-arquivo nao --escrita-livre' "$TMP/r1.txt"
-afirma "o passo 2 liga o agente" grep -q 'dgclaw agente iniciar ana' "$TMP/r1.txt"
+afirma "o passo 1 desliga as restricoes" grep -q 'prumo agente restricoes ana --sem-bash nao --sem-enviar-arquivo nao --escrita-livre' "$TMP/r1.txt"
+afirma "o passo 2 liga o agente" grep -q 'prumo agente iniciar ana' "$TMP/r1.txt"
 afirma "o passo 3 troca a conta no painel" grep -q 'painel do agente' "$TMP/r1.txt"
 nega "nao manda reiniciar um agente parado" grep -q 'agente reiniciar' "$TMP/r1.txt"
 dgclaw agente restricoes ana --sem-bash nao --sem-enviar-arquivo nao --escrita-livre >"$TMP/r2.txt" 2>&1; igual "passo 1 sai com 0 (agente parado)" "0" "$?"
@@ -290,13 +290,13 @@ for caso in remota-com-chave sem-suporte; do
     dgclaw agente restricoes ana --sem-bash sim >"$TMP/m-$caso.txt" 2>&1
     igual "$caso: parou" "exited" "$(cat "$STUB_ESTADO/c-dgclaw-ana")"
     rm -f "$STUB_ESTADO/$caso"
-    cmds="$(grep -oE 'dgclaw agente (reiniciar|iniciar|restricoes) ana( --[a-z-]+( (sim|nao))?)*' "$TMP/m-$caso.txt" | sort -u)"
+    cmds="$(grep -oE 'prumo agente (reiniciar|iniciar|restricoes) ana( --[a-z-]+( (sim|nao))?)*' "$TMP/m-$caso.txt" | sort -u)"
     if [ "$caso" = remota-com-chave ]; then afirma "$caso: a mensagem cita comandos" test -n "$cmds"; fi
     while IFS= read -r cmd; do
         [ -n "$cmd" ] || continue
         echo exited >"$STUB_ESTADO/c-dgclaw-ana"
         # shellcheck disable=SC2086 # o comando citado vira palavras
-        dgclaw ${cmd#dgclaw } >"$TMP/m-cmd.txt" 2>&1
+        dgclaw ${cmd#prumo } >"$TMP/m-cmd.txt" 2>&1
         nega "$caso: '$cmd' nao diz que esta parado" grep -q 'nao tem o que reiniciar' "$TMP/m-cmd.txt"
     done <<<"$cmds"
     dgclaw agente restricoes ana --sem-bash nao --sem-enviar-arquivo nao --escrita-livre >/dev/null 2>&1

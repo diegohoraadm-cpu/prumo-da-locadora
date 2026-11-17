@@ -2167,7 +2167,7 @@ class CLI(Base):
     def test_ajuda_e_subcomando_desconhecido(self):
         r = self.dgclaw("seguranca")
         self.assertEqual(r.returncode, 0)
-        self.assertIn("dgclaw seguranca aplicar <id>", r.stdout)
+        self.assertIn("prumo seguranca aplicar <id>", r.stdout)
         r = self.dgclaw("seguranca", "pedido-todos")
         self.assertEqual(r.returncode, 0, r.stderr)
         r = self.dgclaw("seguranca", "apagar-tudo")

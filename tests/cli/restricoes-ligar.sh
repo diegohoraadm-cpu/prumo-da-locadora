@@ -64,7 +64,7 @@ touch "$STUB_ESTADO/sem-label"
 : >"$STUB_LOG"
 dgclaw agente iniciar ana >"$TMP/l3.txt" 2>&1; nega "iniciar falha" test "$?" -eq 0
 afirma "nao chamou podman start" sem_start
-afirma "manda recriar" grep -q 'dgclaw agente recriar ana' "$TMP/l3.txt"
+afirma "manda recriar" grep -q 'prumo agente recriar ana' "$TMP/l3.txt"
 igual "continua parado" "exited" "$(cat "$STUB_ESTADO/c-dgclaw-ana")"
 rm -f "$STUB_ESTADO/sem-label"
 
@@ -89,7 +89,7 @@ touch "$STUB_ESTADO/sem-label"
 : >"$STUB_LOG"
 dgclaw agente reiniciar ana >"$TMP/l6.txt" 2>&1; nega "sem label: reiniciar falha" test "$?" -eq 0
 nega "sem label: nao reiniciou o runner" grep -q 'systemctl restart dgclaw-runner' "$STUB_LOG"
-afirma "sem label: manda recriar" grep -q 'dgclaw agente recriar ana' "$TMP/l6.txt"
+afirma "sem label: manda recriar" grep -q 'prumo agente recriar ana' "$TMP/l6.txt"
 rm -f "$STUB_ESTADO/sem-label"
 rm -f "$RS"; printf 'lixo' >"$RS"
 : >"$STUB_LOG"

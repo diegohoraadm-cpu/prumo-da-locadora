@@ -241,7 +241,7 @@ afirma "DNS privado: o podman create leva --dns 1.1.1.1 e --dns 8.8.8.8" grep -q
 afirma "explica o motivo, com o DNS do servidor" grep -q 'o DNS deste servidor (192.168.25.6) fica numa rede privada' "$TMP/saida.txt"
 echo "[]" >"$STUB_ESTADO/dns-dgclaw-dns1"   # simula o container criado antes do DNS publico
 criar_agente dns1 --nome "Dns Um"
-afirma "container ja existente: avisa que o DNS nao muda sozinho e cita o comando real" grep -q 'dgclaw agente recriar dns1' "$TMP/saida.txt"
+afirma "container ja existente: avisa que o DNS nao muda sozinho e cita o comando real" grep -q 'prumo agente recriar dns1' "$TMP/saida.txt"
 
 preparar
 mkdir -p "$DGCLAW_RAIZ/run/systemd/resolve"

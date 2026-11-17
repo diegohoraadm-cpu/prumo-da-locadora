@@ -92,11 +92,11 @@ chmod 644 "$R/restricoes.json"; cp "$TMP/rs.json" "$R/restricoes.json"
 dgclaw agente restricoes ana >"$TMP/c2.txt" 2>&1; igual "a consulta sai com 0" "0" "$?"
 nega "o cenario (so Bash travado, envio acrescentado) nao mostra TRAVADO" grep -q TRAVADO "$TMP/c2.txt"
 afirma "diz AINDA NAO VALE" grep -q 'AINDA NAO VALE' "$TMP/c2.txt"
-afirma "diz NAO VALE com o comando que resolve" grep -q 'NAO VALE:.*Resolve: dgclaw agente reiniciar ana' "$TMP/c2.txt"
+afirma "diz NAO VALE com o comando que resolve" grep -q 'NAO VALE:.*Resolve: prumo agente reiniciar ana' "$TMP/c2.txt"
 echo exited >"$STUB_ESTADO/c-dgclaw-ana"
 dgclaw agente restricoes ana >"$TMP/c3.txt" 2>&1
 nega "parado: tambem nao mostra TRAVADO" grep -q TRAVADO "$TMP/c3.txt"
-afirma "parado: o comando que resolve e iniciar" grep -q 'NAO VALE:.*Resolve: dgclaw agente iniciar ana' "$TMP/c3.txt"
+afirma "parado: o comando que resolve e iniciar" grep -q 'NAO VALE:.*Resolve: prumo agente iniciar ana' "$TMP/c3.txt"
 echo running >"$STUB_ESTADO/c-dgclaw-ana"
 dgclaw agente reiniciar ana >/dev/null 2>&1; igual "reiniciar refaz os arquivos" "0" "$?"
 dgclaw agente restricoes ana >"$TMP/c4.txt" 2>&1

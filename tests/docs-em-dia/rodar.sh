@@ -99,7 +99,7 @@ echo "bancada do verificador (manual falso):" >&2
 M="$TMP/m"; novo_manual "$M"
 caso "manual falso em dia" 0 "manual em dia" DOCS_MANUAL_DIR="$M" DOCS_INVENTARIO_ARQUIVO="$INV"
 
-# apelido do comando: `prumo <palavra>` so vale quando `prumo <palavra>` e comando do inventario
+# apelido do comando: `prumo <palavra>` so vale quando `dgclaw <palavra>` e comando do inventario
 node -e 'const j=JSON.parse(require("fs").readFileSync(process.argv[1]));j.apelidos_de_comando={prumo:"dgclaw"};require("fs").writeFileSync(process.argv[2],JSON.stringify(j))' "$INV" "$TMP/inv-ap.json"
 cp -r "$M" "$TMP/m-ap"; sed -i 's/dgclaw agente criar/prumo agente criar/g' "$TMP/m-ap/README.md" "$TMP/m-ap/referencia-admin.md"
 printf '\nO prumo da locadora e o Prumo da Locadora.\n' >>"$TMP/m-ap/guia.md"

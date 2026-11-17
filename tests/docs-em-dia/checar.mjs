@@ -53,7 +53,7 @@ if (process.env.DOCS_INVENTARIO_ARQUIVO) {
 // pode citar qualquer um dos dois. Normalizo o texto do manual para o nome canonico antes de comparar.
 const APELIDOS = inv.apelidos_de_comando || {};
 const SEGUNDAS = new Set((inv.comandos || []).map((c) => c.id.split(' ')).filter((p) => p.length > 1).map((p) => `${p[0]} ${p[1]}`));
-// Sem `incondicional`, so converte quando `prumo <palavra>` e comando do inventario (o corpo do manual fala de "Prumo da
+// Sem `incondicional`, so converte quando `dgclaw <palavra>` e comando do inventario (o corpo do manual fala de "Prumo da
 // Locadora" e de prumo em prosa). Com ele (bloco de inventario da referencia, que so tem comandos), converte sempre: assim
 // `prumo xyz` inexistente e acusado como `dgclaw xyz`.
 const comoCanonico = (texto, incondicional = false) => Object.entries(APELIDOS).reduce((t, [apelido, canonico]) => t.replace(
@@ -245,7 +245,7 @@ for (const [arq, texto] of textos) {
       for (const m of comoCanonico(l.texto, true).matchAll(/(?<![\w-])(dgclaw(?:-agente|-card)?)((?: [a-z][a-z0-9-]*)+)/g)) {
         const palavras = m[2].trim().split(' ');
         // vale se algum prefixo e um comando exato (o resto sao argumentos), ou se a citacao e so o pai
-        // de comandos que existem ("prumo agente"); pai seguido de palavra que nao e filho nao vale.
+        // de comandos que existem ("dgclaw agente"); pai seguido de palavra que nao e filho nao vale.
         let casou = false;
         for (let k = palavras.length; k >= 1 && !casou; k--) casou = cmds.includes(`${m[1]} ${palavras.slice(0, k).join(' ')}`);
         if (!casou) casou = cmds.some((c) => c.startsWith(`${m[1]} ${palavras.join(' ')} `));

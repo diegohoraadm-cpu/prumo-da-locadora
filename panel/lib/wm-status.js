@@ -2,7 +2,7 @@
 /**
  * wm-status.js: a saúde da memória de trabalho (working memory), para a aba Status.
  *
- * O PEDIDO (05/10/2026): ele abriu o painel e achou que o DG Claw não tinha
+ * O PEDIDO (05/10/2026): ele abriu o painel e achou que o Prumo da Locadora não tinha
  * working memory, porque ela só aparecia na aba Memória, e na Status vinha com outro
  * nome ("Memória de curto prazo") mostrando só a linha "Agora". Esta rota responde,
  * numa leitura só, as perguntas que ele tinha: ela existe? está em dia? quando foi

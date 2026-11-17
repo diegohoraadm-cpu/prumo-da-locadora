@@ -156,6 +156,11 @@
       "arquivo": "docs/EMERGENCIA.md",
       "linha": "instalador grava `/etc/sysctl.d/90-dgclaw-inotify.conf`) e rode `dgclaw agente iniciar $SLUG`.",
       "motivo": "o acerto final do C5 (Esquadro, 17/11) trocou nesta linha o \"$SLUG\" e o comando sem sudo por \"sudo dgclaw ... <nome do agente>\", a convencao unica da secao 3.2 para o texto que vai ao dono; o resto da linha e igual"
+    },
+    {
+      "arquivo": "web/public/seguranca.js",
+      "linha": "oque: 'Os avisos sobre falhas em ferramentas que o seu sistema usa, conferidos e aprovados pela equipe do DG Claw (o projeto de origem) e publicados aqui quando a correção já está no Prumo da Locadora. Cada um mostra a data, a gravidade, o link da fonte oficial e o que muda quando você corrige.',",
+      "motivo": "a troca por regra uniu os dois nomes (equipe do DG Claw (o projeto de origem) ... no Prumo da Locadora) e a frase perdeu o sentido; reescrita a mao para 'equipe do projeto de origem' (M1, rodada 2)"
     }
   ],
   "emergencia_novas": []

@@ -103,7 +103,7 @@ function criarAuth({ config, log, agora, colaboradores: colabsInicial }) {
   if (trancado) {
     motivoTrancado = calculaMotivo();
     if (semSenha) {
-      log('info', 'Painel sem senha ainda: aguardando o primeiro acesso pelo link (sudo dgclaw primeiro-acesso gera outro).');
+      log('info', 'Painel sem senha ainda: aguardando o primeiro acesso pelo link (sudo prumo primeiro-acesso gera outro).');
     } else {
       log('aviso', `Login TRANCADO: ${motivoTrancado} Rode o gerador de hash do instalador e coloque DGCLAW_PANEL_USER e DGCLAW_PANEL_PASSWORD_HASH no web.env. Ninguém consegue entrar até lá.`);
     }
@@ -281,7 +281,7 @@ function criarAuth({ config, log, agora, colaboradores: colabsInicial }) {
         const dele = [...sessoes.entries()].filter(([, v]) => v.colaborador_id === colaborador.id).map(([k]) => k);
         while (dele.length >= MAX_SESSOES_POR_COLABORADOR) sessoes.delete(dele.shift());
         if (sessoes.size >= MAX_SESSOES) {
-          const e = new Error('O servidor está com o limite de sessões abertas cheio agora. Tente entrar de novo em alguns minutos ou avise o dono do DG Claw.');
+          const e = new Error('O servidor está com o limite de sessões abertas cheio agora. Tente entrar de novo em alguns minutos ou avise o dono do Prumo da Locadora.');
           e.status = 503;
           throw e;
         }
@@ -461,7 +461,7 @@ function criarAuth({ config, log, agora, colaboradores: colabsInicial }) {
     }
     if (ip) limpaFalhasDe(identidade, ip);
     if (atual.trocar_senha && Number(atual.temporaria_expira) < relogio()) {
-      return { ok: false, vencida: true, erro: 'A senha temporária venceu. Peça ao dono do DG Claw um convite novo.' };
+      return { ok: false, vencida: true, erro: 'A senha temporária venceu. Peça ao dono do Prumo da Locadora um convite novo.' };
     }
     colaboradores.registrarLogin(visto.id);
     return { ok: true, usuario: visto.email, papel: 'colaborador', colaborador: { id: visto.id, agente: visto.agente, senha_versao: visto.versao, hash: visto.hash } };

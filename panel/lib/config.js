@@ -1,4 +1,4 @@
-// config.js — Carrega a configuração do painel DG Claw.
+// config.js — Carrega a configuração do painel Prumo da Locadora.
 //
 // Precedência:
 //   1. process.env.DGCLAW_PANEL_CONFIG  (path absoluto pro config.json)
@@ -43,7 +43,7 @@ function defaults() {
     chat: null,
     // bunkerCard / bunkerUrl: quando a sessão viva do agente é um CARD do painel do
     //   Bunker (é o caso do gestor e do agente entregue) em vez de um `claude
-    //   --channels` deste host. Ausentes = DG Claw sozinho, e o injetor usa TIOCSTI.
+    //   --channels` deste host. Ausentes = Prumo da Locadora sozinho, e o injetor usa TIOCSTI.
     //   ⚠️ bunkerUrl NUNCA sai de SERVER_PORT: ver o aviso no _lib/inject.py.
     bunkerCard: null,
     bunkerUrl: null,

@@ -474,7 +474,7 @@ test('sinais contraditórios (errored sem-login com conferido.ok true) são dúv
 test('runner sem o pedido fresco (antigo) é dúvida, e a recusa manda avisar o dono para atualizar', async () => {
   await comColab({ runnerAntigo: true }, async (s, x) => {
     const p = await x.c.post(LOGIN, { json: {} });
-    assert.equal(p.status, 503); assert.match(p.json.erro, /versão antiga/); assert.match(p.json.erro, /dgclaw atualizar/);
+    assert.equal(p.status, 503); assert.match(p.json.erro, /versão antiga/); assert.match(p.json.erro, /prumo atualizar/);
     assert.equal(s.rAna.rec.loginPosts, 0);
   });
 });

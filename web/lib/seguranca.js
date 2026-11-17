@@ -164,7 +164,7 @@ function criarSeguranca(opcoes) {
       res.end(t);
     } catch (e) {
       log('erro', `Segurança: não consegui ler docs/SEGURANCA-BOLETINS.md (${e.code || e.message}).`);
-      H.erroJson(res, 500, 'O documento do aviso de segurança não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
+      H.erroJson(res, 500, 'O documento do aviso de segurança não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo prumo atualizar).');
     }
   }
 

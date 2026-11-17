@@ -44,14 +44,14 @@
 // prefixos fechados são comparados sem diferenciar maiúsculas e tolerando barra final, como o Express do painel roteia.
 
 const TROCAR_SENHA_MOTIVO = 'Troque a senha temporária antes de continuar.';
-const MOTIVO_PAINEL = 'Este endereço do painel é só do dono do DG Claw.';
-const MOTIVO_COFRE = 'O cofre é só do dono do DG Claw.';
-const MOTIVO_CHAVES_API = 'As chaves de API do painel são só do dono do DG Claw.';
+const MOTIVO_PAINEL = 'Este endereço do painel é só do dono do Prumo da Locadora.';
+const MOTIVO_COFRE = 'O cofre é só do dono do Prumo da Locadora.';
+const MOTIVO_CHAVES_API = 'As chaves de API do painel são só do dono do Prumo da Locadora.';
 const MOTIVO_CONTA_IA = 'A conta de IA se conecta pela página Conectar conta, não pelo painel do agente. Se o agente já tem conta, só o dono do Prumo da Locadora mexe nela.';
-const MOTIVO_PERMANENTE = 'Isso muda o agente de forma permanente (instruções, memória, arquivos, configuração ou rotinas) e é só do dono do DG Claw.';
-const MOTIVO_CANAL = 'As credenciais dos canais (Telegram, WhatsApp) são só do dono do DG Claw.';
-const MOTIVO_TELA = 'A Tela do agente dá acesso aos arquivos e às contas dele, por isso é só do dono do DG Claw.';
-const MOTIVO_ENVIO = 'Mandar mensagem, instrução ou decisão ao agente pelo painel é só do dono do DG Claw. Converse pela conversa do agente: ali as suas mensagens e confirmações têm o seu nome.';
+const MOTIVO_PERMANENTE = 'Isso muda o agente de forma permanente (instruções, memória, arquivos, configuração ou rotinas) e é só do dono do Prumo da Locadora.';
+const MOTIVO_CANAL = 'As credenciais dos canais (Telegram, WhatsApp) são só do dono do Prumo da Locadora.';
+const MOTIVO_TELA = 'A Tela do agente dá acesso aos arquivos e às contas dele, por isso é só do dono do Prumo da Locadora.';
+const MOTIVO_ENVIO = 'Mandar mensagem, instrução ou decisão ao agente pelo painel é só do dono do Prumo da Locadora. Converse pela conversa do agente: ali as suas mensagens e confirmações têm o seu nome.';
 const MOTIVO_DESVIO = 'Este endereço tem caracteres que não são aceitos para colaboradores. Você só tem acesso ao seu agente.';
 const MOTIVO_GERAL = 'Este endereço não está liberado para colaboradores. Você tem acesso ao seu agente inteiro, pelo menu dele.';
 const MOTIVO_OUTRO_AGENTE = 'Você só tem acesso ao agente para o qual foi convidado(a).';
@@ -166,7 +166,7 @@ function avaliaPainel(m, p, bruto, meuSlug) {
   if (prefixo(resto, '/api/cofre')) return nega(403, MOTIVO_COFRE, { extra: { error: MOTIVO_COFRE, howToFix: 'Peça ao dono para cadastrar ou trocar a chave.' } });
   if (prefixo(resto, '/api/chaves-api')) return nega(403, MOTIVO_CHAVES_API, { extra: { error: MOTIVO_CHAVES_API } });
   // /api/provedor inteiro, até a leitura: o GET devolve o link e o código do login em andamento.
-  if (prefixo(resto, '/api/provedor')) return nega(403, MOTIVO_CONTA_IA, { extra: { error: MOTIVO_CONTA_IA, howToFix: 'Avise o dono do DG Claw.' } });
+  if (prefixo(resto, '/api/provedor')) return nega(403, MOTIVO_CONTA_IA, { extra: { error: MOTIVO_CONTA_IA, howToFix: 'Avise o dono do Prumo da Locadora.' } });
   // A Tela (navegador remoto) roda como o agente e abre file:// nas credenciais dele: página, noVNC, WebSocket e senha.
   if (prefixo(resto, '/api/tela') || prefixo(resto, '/tela')) return nega(403, MOTIVO_TELA, { extra: { error: MOTIVO_TELA } });
   if (!leitura && ['/api/canais', '/api/canal', '/api/telegram', '/api/whatsapp'].some((b) => prefixo(resto, b))) {

@@ -1,10 +1,10 @@
-// cofre-host.js: o cofre no modo "host" (DG Claw v1), em que este painel so le os nomes.
+// cofre-host.js: o cofre no modo "host" (Prumo da Locadora v1), em que este painel so le os nomes.
 const fs = require('fs');
 const { NOME_FORMA_OK, PROVEDORES, recusa } = require('./cofre-regras');
 
-// ─── O modo "host" (DG Claw v1) ──────────────────────────────────────────────
+// ─── O modo "host" (Prumo da Locadora v1) ──────────────────────────────────────────────
 //
-// Na v1 o agente roda num contêiner e quem guarda a chave é o DG Claw Web, no host,
+// Na v1 o agente roda num contêiner e quem guarda a chave é o Prumo da Locadora Web, no host,
 // num arquivo que o agente não alcança (`web/lib/cofre-agente.js`). Este painel, de
 // dentro, só consegue LER os nomes das chaves (o Web os escreve em
 // `/run/dgclaw/config/cofre-nomes`, pasta montada só para leitura).
@@ -20,10 +20,10 @@ function buildCofreHost(config, arquivoDeNomes) {
 
   function recusaDoHost() {
     return recusa(
-      'Neste agente quem guarda a chave e reinicia o agente é o DG Claw Web, e não este painel. Nada foi guardado.',
+      'Neste agente quem guarda a chave e reinicia o agente é o Prumo da Locadora Web, e não este painel. Nada foi guardado.',
       409,
-      'Abra o painel pelo endereço do DG Claw (o do site, com o login), e não pela porta direta do painel. ' +
-      'Quem administra o servidor também pode usar "dgclaw agente cofre <agente> guardar NOME" nele.',
+      'Abra o painel pelo endereço do Prumo da Locadora (o do site, com o login), e não pela porta direta do painel. ' +
+      'Quem administra o servidor também pode usar "prumo agente cofre <agente> guardar NOME" nele.',
     );
   }
 
@@ -53,7 +53,7 @@ function buildCofreHost(config, arquivoDeNomes) {
         provedor: 'outro',
         provedorNome: (PROVEDORES.find((p) => p.sugestao === n) || {}).nome || 'Outro serviço',
         ultimos4: '',
-        cadastradaPor: 'DG Claw Web',
+        cadastradaPor: 'Prumo da Locadora Web',
         origem: 'host',
         cadastradaEm: null,
         revogadaEm: null,
@@ -64,12 +64,12 @@ function buildCofreHost(config, arquivoDeNomes) {
         motor: 'host',
         motorExplicacao: 'A chave fica num arquivo do servidor, fora da pasta do agente, que só o administrador da máquina lê. O agente recebe o valor quando é reiniciado.',
         emMemoria: false,
-        emMemoriaExplicacao: 'Aqui este painel só mostra os nomes das chaves. Guardar e reiniciar são feitos pelo DG Claw Web.',
+        emMemoriaExplicacao: 'Aqui este painel só mostra os nomes das chaves. Guardar e reiniciar são feitos pelo Prumo da Locadora Web.',
       },
       aplicar: {
         pode: false,
-        motivo: 'Neste agente quem guarda a chave e reinicia o agente é o DG Claw Web.',
-        howToFix: 'Abra o painel pelo endereço do DG Claw (o do site, com o login) para guardar a chave e aplicar.',
+        motivo: 'Neste agente quem guarda a chave e reinicia o agente é o Prumo da Locadora Web.',
+        howToFix: 'Abra o painel pelo endereço do Prumo da Locadora (o do site, com o login) para guardar a chave e aplicar.',
       },
       arquivoDeAmbiente: '/run/dgclaw/cofre/cofre.env',
     };

@@ -165,9 +165,12 @@
   }
 
   /** A frase da API, com o que fazer. Nunca vazia e nunca "erro desconhecido". */
-  function textoErro(res) {
+  function textoErro(res, config = cfg) {
     const c = (res && res.corpo) || {};
-    let t = c.erro || c.error || `O painel respondeu com o erro ${res ? res.status : '?'} e sem explicação. Recarregue a aba; se repetir, o DG Telegram pode estar fora do ar.`;
+    // Modo local: o painel é quem responde; proxy: o app externo; sem config (ainda não carregou ou rede falhou): não dá para dizer qual.
+    const sePersistir = !config || config.falhaDeRede ? 'o servidor pode estar fora do ar'
+      : config.modo === 'local' ? 'avise o Admin' : 'o DG Telegram pode estar fora do ar';
+    let t = c.erro || c.error || `O painel respondeu com o erro ${res ? res.status : '?'} e sem explicação. Recarregue a aba; se repetir, ${sePersistir}.`;
     if (c.como_resolver || c.howToFix) t += ` ${c.como_resolver || c.howToFix}`;
     return t;
   }
@@ -640,7 +643,7 @@
     prompt.value = n.prompt;
     const local = modoLocal();
     const pasta = el('input', { id: 'sx-n-pasta', autocomplete: 'off', value: n.pasta, placeholder: local ? 'Deixe vazio para trabalhar na pasta do agente' : 'Deixe vazio para usar a pasta padrão da agente' });
-    const perm = el('select', { id: 'sx-n-perm', title: 'Automática: o Bunker só barra o que é arriscado. Pedir sempre: cada ação passa por você, no DG Telegram.' },
+    const perm = el('select', { id: 'sx-n-perm', title: local ? 'Automática: só barra o que é arriscado. Pedir sempre: cada ação passa por você.' : 'Automática: o Bunker só barra o que é arriscado. Pedir sempre: cada ação passa por você, no DG Telegram.' },
       el('option', { value: 'auto' }, 'Automática (só barra o arriscado)'),
       el('option', { value: 'default' }, 'Pedir sempre (cada ação passa por você)'));
     perm.value = n.permissao;
@@ -1372,7 +1375,7 @@
     await carregaLista(true);
   }
 
-  /** A aba nasce escondida no menu e só aparece se este servidor tem o DG Telegram ligado. */
+  /** A aba nasce escondida no menu e só aparece se as sessões estão ligadas neste servidor (modo local, o padrão, ou modo proxy com o DG Telegram). */
   async function pendurar() {
     const aba = document.querySelector('.tab[data-tab="sessoes"]');
     if (!aba || aba._sessoes) return;

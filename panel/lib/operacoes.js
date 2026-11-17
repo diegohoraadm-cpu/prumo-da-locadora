@@ -111,7 +111,7 @@ function buildOperacoes(config, deps = {}) {
   function nomeAmigavel(oQueE, descricao, chave) {
     if (oQueE) return oQueE.replace(/\.\s*$/, '');
     if (descricao) {
-      const d = descricao.replace(/^DG Claw\s+/i, '').replace(/\s*\(timer\)/i, '').replace(new RegExp(`:\\s*${SLUG}\\s*$`), '').trim();
+      const d = descricao.replace(/^(?:DG Claw|Prumo da Locadora):?\s+/i, '').replace(/\s*\(timer\)/i, '').replace(new RegExp(`:\\s*${SLUG}\\s*$`), '').trim();
       if (d) return d.charAt(0).toUpperCase() + d.slice(1);
     }
     return chave;

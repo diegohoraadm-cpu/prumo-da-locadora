@@ -131,7 +131,7 @@ const COMO_RESOLVER =
 
 // ─── O segredo do proxy ──────────────────────────────────────────────────────
 //
-// Quando o painel roda atrás de um proxy que já fez o login do dono (o "DG Claw
+// Quando o painel roda atrás de um proxy que já fez o login do dono (o "Prumo da Locadora
 // Web"), o proxy prova quem é mandando `X-DGClaw-Proxy: <segredo>`. O segredo vem de
 // um ARQUIVO (preferido: variável de ambiente aparece em `systemctl show` e em
 // /proc/<pid>/environ) ou, na falta, de DGCLAW_PANEL_PROXY_SECRET.
@@ -310,8 +310,8 @@ function buildAuth(o) {
     const ehApi = req.path.startsWith('/api/');
 
     // TRANCADO desliga só a SENHA (e o cookie que nasce dela). O proxy, a chave de API
-    // e o Access continuam valendo, porque cada um tem a própria credencial: no DG Claw
-    // v1 o painel do container nem tem senha, quem faz o login do dono é o DG Claw Web,
+    // e o Access continuam valendo, porque cada um tem a própria credencial: no Prumo da Locadora
+    // v1 o painel do container nem tem senha, quem faz o login do dono é o Prumo da Locadora Web,
     // que chega aqui pelo proxy. Sem nenhuma dessas três configurada, nada entra.
 
     // O Cloudflare Access já provou quem é: sinal explícito, e não um cookie falso.

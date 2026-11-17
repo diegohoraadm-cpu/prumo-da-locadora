@@ -1,4 +1,4 @@
-// montar-ambiente.mjs: sobe, numa pasta temporária, o DG Claw Web e o painel de um agente falso
+// montar-ambiente.mjs: sobe, numa pasta temporária, o Prumo da Locadora Web e o painel de um agente falso
 // do jeito que a produção liga os dois (agentes.json, web.env com hash scrypt, segredo do proxy,
 // painel sob /p/<slug>), mais um runner falso mínimo. Nada toca /etc, /var nem o sistema.
 //
@@ -162,7 +162,7 @@ export async function montarAmbiente(opcoes = {}) {
     web.stdout.on('data', (d) => { saidas.web += d; }); web.stderr.on('data', (d) => { saidas.web += d; });
     try {
       await esperarNoAr(`http://127.0.0.1:${portaPainel}/`, 'O painel do agente', painel);
-      await esperarNoAr(`http://127.0.0.1:${portaWeb}/login`, 'O DG Claw Web', web);
+      await esperarNoAr(`http://127.0.0.1:${portaWeb}/login`, 'O Prumo da Locadora Web', web);
     } catch (e) {
       throw new Error(`${e.message}\n--- saída do painel ---\n${saidas.painel.slice(-1500)}\n--- saída do web ---\n${saidas.web.slice(-1500)}`);
     }

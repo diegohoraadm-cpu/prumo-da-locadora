@@ -1,5 +1,5 @@
 'use strict';
-// As rotas do cofre que o DG Claw Web responde SOZINHO, sem repassar ao painel do agente.
+// As rotas do cofre que o Prumo da Locadora Web responde SOZINHO, sem repassar ao painel do agente.
 //
 // Por que aqui: na v1 o painel roda dentro do container, e o container não pode guardar a chave
 // (o agente leria). Quem grava é o Web, no host (./cofre-agente). O navegador continua falando com
@@ -74,7 +74,7 @@ function criarCofreRotas({ config, runner, cofre, voz, log, entregar, esperaAvis
   function falhaGeral(res, slug, oQue, e) {
     // A mensagem da exceção não leva o corpo do pedido junto: o valor da chave está lá.
     log('erro', `Cofre /p/${slug}: ${oQue} quebrou (${e && e.stack ? limpar(e.stack) : limpar(e && e.message)}).`);
-    enviaJson(res, 500, { error: `Não consegui ${oQue}: ${limpar(e && e.message)}`, howToFix: 'Tente de novo. Se continuar, o registro do DG Claw Web tem o detalhe.' });
+    enviaJson(res, 500, { error: `Não consegui ${oQue}: ${limpar(e && e.message)}`, howToFix: 'Tente de novo. Se continuar, o registro do Prumo da Locadora Web tem o detalhe.' });
   }
 
   /** Lê o corpo (até 64 KB). Devolve { buf, json } ou null depois de ter respondido o erro. */

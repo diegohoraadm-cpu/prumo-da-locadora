@@ -47,7 +47,7 @@ async function lerDiario(executar, padroes, desdeMs) {
       eventos: [],
       motivo: 'o painel não tem permissão para ler o diário do sistema (journal), '
         + 'então o histórico das rotinas não pode ser mostrado. Isso não quer dizer que elas não rodaram. '
-        + 'Para resolver, peça ao Admin para reparar este agente (dgclaw agente reparar), '
+        + 'Para resolver, peça ao Admin para reparar este agente (prumo agente reparar), '
         + 'o que dá ao painel o grupo "systemd-journal".',
     };
   }

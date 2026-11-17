@@ -116,8 +116,8 @@ test('colaborador: cofre, chaves de API, conta de IA, canais e senha da Tela nã
     assert.equal(painel.visto.length, 0, `nada disso pode ter chegado ao painel: ${JSON.stringify(painel.visto)}`);
     // a frase do cofre é a do painel (error) e a do Web (erro)
     const cofre = await x.c.get('/p/ana/api/cofre');
-    assert.equal(cofre.json.error, 'O cofre é só do dono do DG Claw.');
-    assert.equal(cofre.json.erro, 'O cofre é só do dono do DG Claw.');
+    assert.equal(cofre.json.error, 'O cofre é só do dono do Prumo da Locadora.');
+    assert.equal(cofre.json.erro, 'O cofre é só do dono do Prumo da Locadora.');
     // o dono segue com tudo
     assert.equal((await s.dono.get('/p/ana/api/cofre')).status, 200);
     assert.equal((await s.dono.pedir('PUT', '/p/ana/api/tela/senha', { json: {} })).status, 200);

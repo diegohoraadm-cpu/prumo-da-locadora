@@ -132,7 +132,7 @@ function criarProxy({ config, registro, log, cofreRotas }) {
       if (repasse && repasse.corpo) encaminhar(req, res, slug, usuario, repasse.corpo, undefined, quem);
     }).catch((e) => {
       log('erro', `Proxy /p/${slug}: o tratamento do cofre quebrou (${e && e.message}).`);
-      if (!res.headersSent) erroJson(res, 500, 'Não consegui atender o pedido do cofre. Veja o registro do DG Claw Web.');
+      if (!res.headersSent) erroJson(res, 500, 'Não consegui atender o pedido do cofre. Veja o registro do Prumo da Locadora Web.');
       else res.destroy();
     });
     return undefined;

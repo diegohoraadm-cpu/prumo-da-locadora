@@ -324,7 +324,7 @@ try {
   ok((await eco(u.socket, bytes)).includes(bytes), 'os bytes vão e voltam em eco, pelo repasse');
   u.socket.destroy();
   u = await upgrade(p, '/tela/websockify', { 'X-DGClaw-Proxy': SEGREDO_PROXY, 'X-DGClaw-Usuario': 'Dono' });
-  ok(u.status === 101 && (await eco(u.socket, 'via-proxy')).includes('via-proxy'), 'pelo segredo do proxy do DG Claw Web: 101 e eco');
+  ok(u.status === 101 && (await eco(u.socket, 'via-proxy')).includes('via-proxy'), 'pelo segredo do proxy do Prumo da Locadora Web: 101 e eco');
   u.socket.destroy();
   u = await upgrade(p, '/tela/websockify', { Cookie: cookie });
   ok(u.status === 101, 'cookie sem Origin (cliente que não é navegador): 101');

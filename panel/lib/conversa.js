@@ -71,7 +71,7 @@ function buildConversa(CONFIG, serverDir) {
     console.error(
       '[painel] NAO ACHEI o inject.py, entao a aba Conversa nao vai conseguir ler nem escrever.\n' +
       '         Procurei em:\n' + candidatos.map((c) => `           - ${c}\n`).join('') +
-      '         O que fazer: aponte DGCLAW_LIB_DIR para a pasta scripts/_lib do plugin DG Claw.',
+      '         O que fazer: aponte DGCLAW_LIB_DIR para a pasta scripts/_lib do plugin Prumo da Locadora.',
     );
   }
   const INJECT = libDir ? path.join(libDir, 'inject.py') : null;
@@ -121,7 +121,7 @@ function buildConversa(CONFIG, serverDir) {
         ok: false,
         code: 127,
         stdout: '',
-        stderr: 'faltando: nao achei o inject.py/thread_log.py do plugin DG Claw (veja o erro no log do painel)',
+        stderr: 'faltando: nao achei o inject.py/thread_log.py do plugin Prumo da Locadora (veja o erro no log do painel)',
       });
     }
     return new Promise((resolve) => {

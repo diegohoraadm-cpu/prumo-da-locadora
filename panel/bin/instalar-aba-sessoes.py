@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Enxerta a aba Sessões num painel DG Claw já instalado, sem trocar o painel inteiro.
+"""Enxerta a aba Sessões num painel Prumo da Locadora já instalado, sem trocar o painel inteiro.
 
 Uso:  instalar-aba-sessoes.py <pasta-do-painel-instalado> [--aplicar]
 

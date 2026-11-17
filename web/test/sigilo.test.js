@@ -108,7 +108,7 @@ test('nome do agente, o campo dono do registro e as plataformas nunca são escon
   try {
     const s = criarSigilo({ env: { DGCLAW_SIGILO_LIBERADOS: 'Danilo' }, registro: t.web.registro, dataDir: t.dados, log: () => {} });
     const lib = s.liberados();
-    for (const n of ['ana', 'beto', 'danilo', 'claude', 'dg claw', 'whatsapp', 'github', 'telegram']) assert.ok(lib.has(n), n);
+    for (const n of ['ana', 'beto', 'danilo', 'claude', 'dg claw', 'prumo da locadora', 'whatsapp', 'github', 'telegram']) assert.ok(lib.has(n), n);
   } finally { await t.fechar(); }
 });
 

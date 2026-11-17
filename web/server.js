@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict';
-// DG Claw Web: login, conversa com os agentes, proxy dos painéis. Node 22, sem dependências.
+// Prumo da Locadora Web: login, conversa com os agentes, proxy dos painéis. Node 22, sem dependências.
 
 const fs = require('node:fs');
 const crypto = require('node:crypto');
@@ -96,7 +96,7 @@ function montaDiagnostico(deps) {
     deps.log('erro', 'O coletor de diagnóstico não está instalado (falta web/lib/diagnostico). A rota /api/v1/diagnostico vai responder 503 até a instalação ser refeita.');
     return {
       async responder(req, res) {
-        H.erroJson(res, 503, 'O coletor de diagnóstico não está instalado neste servidor.', { como_resolver: 'Atualize o Prumo da Locadora (sudo dgclaw atualizar) para instalar o coletor.' });
+        H.erroJson(res, 503, 'O coletor de diagnóstico não está instalado neste servidor.', { como_resolver: 'Atualize o Prumo da Locadora (sudo prumo atualizar) para instalar o coletor.' });
       },
     };
   }
@@ -1424,7 +1424,7 @@ function criarServidor(opcoes) {
     }
     if (p === '/api/login-estado' && m === 'GET') {
       if (auth.semSenha) {
-        return H.enviaJson(res, 200, { ok: true, trancado: auth.trancado, sem_senha: true, usuario: auth.usuario, mensagem: 'Use o link de primeiro acesso que apareceu no fim da instalação. Se perdeu, rode no servidor: sudo dgclaw primeiro-acesso' });
+        return H.enviaJson(res, 200, { ok: true, trancado: auth.trancado, sem_senha: true, usuario: auth.usuario, mensagem: 'Use o link de primeiro acesso que apareceu no fim da instalação. Se perdeu, rode no servidor: sudo prumo primeiro-acesso' });
       }
       return H.enviaJson(res, 200, { ok: true, trancado: auth.trancado, sem_senha: false, mensagem: auth.trancado ? `O acesso está trancado: ${auth.motivoTrancado} Rode o gerador de hash do instalador e coloque o resultado no web.env.` : null });
     }
@@ -1489,7 +1489,7 @@ function criarServidor(opcoes) {
     if (p === '/primeiro-acesso' && (m === 'GET' || m === 'HEAD')) {
       if (!servirArquivo(req, res, path.join(config.publicDir, 'primeiro-acesso.html'), 'no-store')) {
         log('erro', `A tela de primeiro acesso não está instalada: falta ${path.join(config.publicDir, 'primeiro-acesso.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de primeiro acesso não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de primeiro acesso não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo prumo atualizar).');
       }
       return undefined;
     }
@@ -1638,7 +1638,7 @@ function criarServidor(opcoes) {
       if (!sessao) return semSessaoPagina(req, res, url);
       if (!servirArquivo(req, res, path.join(config.publicDir, 'lembretes.html'), 'no-store')) {
         log('erro', `A tela de lembretes não está instalada: falta ${path.join(config.publicDir, 'lembretes.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de lembretes não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de lembretes não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo prumo atualizar).');
       }
       return undefined;
     }
@@ -1647,7 +1647,7 @@ function criarServidor(opcoes) {
       if (!sessao) return semSessaoPagina(req, res, url);
       if (!servirArquivo(req, res, path.join(config.publicDir, 'avisos.html'), 'no-store')) {
         log('erro', `A tela do quadro de avisos não está instalada: falta ${path.join(config.publicDir, 'avisos.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela do quadro de avisos não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela do quadro de avisos não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo prumo atualizar).');
       }
       return undefined;
     }
@@ -1678,7 +1678,7 @@ function criarServidor(opcoes) {
       if (ehColab(sessao) && servirConversaColab(res, m)) return undefined;
       if (!servirArquivo(req, res, path.join(config.publicDir, 'conversa.html'), 'no-store')) {
         log('erro', `A tela da conversa não está instalada: falta ${path.join(config.publicDir, 'conversa.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela da conversa não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela da conversa não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo prumo atualizar).');
       }
       return undefined;
     }
@@ -1697,7 +1697,7 @@ function criarServidor(opcoes) {
       if (!sessao) return semSessaoPagina(req, res, url);
       if (!servirArquivo(req, res, path.join(config.publicDir, 'seguranca.html'), 'no-store')) {
         log('erro', `A tela de segurança não está instalada: falta ${path.join(config.publicDir, 'seguranca.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de segurança não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de segurança não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo prumo atualizar).');
       }
       return undefined;
     }
@@ -1724,7 +1724,7 @@ function criarServidor(opcoes) {
       if (!sessao) return semSessaoPagina(req, res, url);
       if (!servirArquivo(req, res, path.join(config.publicDir, 'mesa.html'), 'no-store')) {
         log('erro', `A tela da Mesa não está instalada: falta ${path.join(config.publicDir, 'mesa.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela da Mesa de tarefas não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo dgclaw atualizar).');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela da Mesa de tarefas não foi encontrado no servidor. Reinstale o Prumo da Locadora (sudo prumo atualizar).');
       }
       return undefined;
     }
@@ -1805,7 +1805,7 @@ function criarServidor(opcoes) {
   });
 
   // ── socket de administração do host ──────────────────────────────────────────
-  // O comando `dgclaw colaborador` (root, no servidor) fala com o Web por um socket Unix em <dataDir>/admin.sock
+  // O comando `prumo colaborador` (root, no servidor) fala com o Web por um socket Unix em <dataDir>/admin.sock
   // (pasta 0700, socket 0600). Só atende /api/v1/colaboradores*; a sessão é a do dono, sem cookie. Quem chega por ele já
   // é root no servidor, e nenhum agente, caixa ou colaborador consegue abrir esse arquivo.
   const caminhoSocketAdmin = path.join(config.dataDir, 'admin.sock');
@@ -1829,10 +1829,10 @@ function criarServidor(opcoes) {
     }
   });
 
-  /** Abre o socket. Nunca derruba o Web: se não der, o comando `dgclaw colaborador` diz que o Web não responde e o log diz por quê. */
+  /** Abre o socket. Nunca derruba o Web: se não der, o comando `prumo colaborador` diz que o Web não responde e o log diz por quê. */
   function abreSocketAdmin() {
     return new Promise((resolve) => {
-      const falhou = (motivo) => { log('erro', `Não abri o socket de administração ${caminhoSocketAdmin} (${motivo}). O Web segue funcionando, mas o comando "dgclaw colaborador" não vai conseguir falar com ele até isso ser resolvido. Confira a permissão da pasta ${config.dataDir} e o tamanho do caminho (o limite de um socket Unix é de uns 100 caracteres).`); resolve(false); };
+      const falhou = (motivo) => { log('erro', `Não abri o socket de administração ${caminhoSocketAdmin} (${motivo}). O Web segue funcionando, mas o comando "prumo colaborador" não vai conseguir falar com ele até isso ser resolvido. Confira a permissão da pasta ${config.dataDir} e o tamanho do caminho (o limite de um socket Unix é de uns 100 caracteres).`); resolve(false); };
       try {
         let st = null;
         try { st = fs.lstatSync(caminhoSocketAdmin); } catch (e) { if (e.code !== 'ENOENT') throw e; }

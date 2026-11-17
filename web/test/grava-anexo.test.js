@@ -153,7 +153,7 @@ test('rodada 9, achado 1: agente que sumiu do registro derruba a sessão do cola
     const x = await colaboradorAtivo(s);
     assert.equal((await x.c.get('/api/v1/agents/ana/messages')).status, 200);
     const j = JSON.parse(fs.readFileSync(s.t.agentesPath, 'utf8'));
-    j.agentes = j.agentes.filter((a) => a.slug !== 'ana'); // `dgclaw agente remover ana`: sai do agentes.json
+    j.agentes = j.agentes.filter((a) => a.slug !== 'ana'); // `prumo agente remover ana`: sai do agentes.json
     fs.writeFileSync(s.t.agentesPath, JSON.stringify(j));
     const futuro = new Date(Date.now() + 5000); fs.utimesSync(s.t.agentesPath, futuro, futuro);
     assert.equal((await x.c.get('/api/v1/agents/ana/messages')).status, 401, 'a sessão existente caiu');

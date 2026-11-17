@@ -274,7 +274,7 @@ test('rodada 7, achado 1: a Tela (página, noVNC, API, senha e WebSocket) é fec
     for (const p of ['/p/ana/api/tela', '/p/ana/api/tela/senha', '/p/ana/tela/novnc/vnc.html', '/p/ana/tela/websockify', '/p/ana/TELA/novnc/', '/p/ana/API/Tela/']) {
       const r = avaliar(COLAB, m, p, p);
       assert.equal(r.ok, false, `${m} ${p}`); assert.equal(r.status, 403);
-      assert.equal(r.motivo, 'A Tela do agente dá acesso aos arquivos e às contas dele, por isso é só do dono do DG Claw.');
+      assert.equal(r.motivo, 'A Tela do agente dá acesso aos arquivos e às contas dele, por isso é só do dono do Prumo da Locadora.');
     }
   }
   assert.equal(websocketLiberado(COLAB, '/p/ana/tela/websockify', '/p/ana/tela/websockify').ok, false);
@@ -334,7 +334,7 @@ test('rodada 8, achado 2: agente removido e recriado com o mesmo nome derruba a 
   try {
     const x = await colaboradorAtivo(s);
     assert.equal((await x.c.get('/api/v1/agents/ana/messages')).status, 200);
-    trocaInstancia(s, 'segunda-2'); // `dgclaw agente remover ana` + `dgclaw agente criar ana`: o slug volta igual, a instância não
+    trocaInstancia(s, 'segunda-2'); // `prumo agente remover ana` + `prumo agente criar ana`: o slug volta igual, a instância não
     const velha = await x.c.get('/api/v1/agents/ana/messages');
     assert.equal(velha.status, 401, 'a sessão que já existia caiu');
     const outro = require('./ajuda').cliente(s.t.porta);
@@ -371,7 +371,7 @@ test('rodada 10: convidar é recusado quando a instância do agente não pode se
     const futuro = new Date(Date.now() + 5000); fs.utimesSync(s.t.agentesPath, futuro, futuro);
     const r = await s.convida({ agente: 'ana', email: 'jose@x.com', nome: 'José' });
     assert.equal(r.status, 500, r.texto);
-    assert.match(r.json.erro, /Não consegui identificar esta instância do agente ana \(casa ausente ou ilegível\).*dgclaw agente reparar ana/);
+    assert.match(r.json.erro, /Não consegui identificar esta instância do agente ana \(casa ausente ou ilegível\).*prumo agente reparar ana/);
     const lista = (await s.dono.get('/api/v1/colaboradores')).json.colaboradores;
     assert.equal(lista.length, 1, 'nenhum convite novo foi gravado');
     assert.equal(lista[0].id, x.id);

@@ -1,4 +1,4 @@
-/* main.css: o painel do DG Claw.
+/* main.css: o painel do Prumo da Locadora.
  *
  * Desenho "Sereno": menu lateral fixo com o retrato do agente no topo, conteudo em
  * cartoes com respiro, acento em gradiente frio e sombra bem fraca. Tema claro e escuro,
@@ -155,7 +155,7 @@ button,input,select{font:inherit;color:inherit}
  * assim a coluna mais alta nao estica a vizinha nem abre buraco do lado.
  */
 .faixa{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:14px;margin-bottom:16px}
-/* auto-fit, e não "4 colunas": sem o DG Alive o cartão de humor some e os outros três
+/* auto-fit, e não "4 colunas": sem a extensão de emoções o cartão de humor some e os outros três
    ocupam a largura toda, sem a quarta coluna vazia que parecia defeito. */
 .faixa > .ext-off{display:none}
 .destaque{background:var(--painel);border:1px solid var(--linha);border-radius:var(--raio);
@@ -321,7 +321,7 @@ html[data-tema="escuro"] .rotina-quando{color:var(--acento-texto)}
 
 /* ─── extensao desligada ────────────────────────────────────────────────────
  * Desde 01/10/2026 o bloco de uma extensão que não está instalada SOME inteiro: sem
- * nota "isso só aparece com o DG Alive", sem caixa apagada. O dono de um DG Claw puro
+ * nota "isso só aparece com a extensão de emoções", sem caixa apagada. O dono de um Prumo da Locadora puro
  * não precisa ver anúncio do que não tem. Os layouts em volta são de grade
  * automática, então o sumiço não deixa buraco. */
 [data-ext].ext-off{display:none!important}

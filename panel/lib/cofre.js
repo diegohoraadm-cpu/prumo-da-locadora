@@ -90,7 +90,7 @@ function buildCofre(config) {
   const RUNTIME_TMPFS = fs.existsSync('/run');
   const RUNTIME_DIR = config.cofreRuntimeDir || (RUNTIME_TMPFS ? '/run/dgclaw' : path.join(AGENTE, '.dgclaw', 'run'));
   // `cofreArquivoAmbiente` dá o caminho inteiro quando quem monta o agente já
-  // escolheu um nome (no DG Claw v1: `<casa>/cofre/cofre.env`, numa PASTA montada só
+  // escolheu um nome (no Prumo da Locadora v1: `<casa>/cofre/cofre.env`, numa PASTA montada só
   // leitura no contêiner; montar o arquivo solto prenderia o contêiner ao inode velho).
   const ENV_DO_AGENTE = config.cofreArquivoAmbiente
     ? String(config.cofreArquivoAmbiente)

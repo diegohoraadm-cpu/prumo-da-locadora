@@ -29,7 +29,7 @@ const MODELO_OPENAI = 'gpt-4.1-mini';
 // Nomes que nunca somem, mesmo se o modelo apontar: um trecho achado numa mensagem some de TODAS,
 // então "Claude" apontado uma vez apagaria o nome do assistente na conversa inteira.
 const LIBERADOS_PADRAO = [
-  'DG Claw', 'Claude', 'Claude Code', 'Anthropic', 'OpenAI', 'ChatGPT', 'Codex', 'Gemini', 'Telegram',
+  'DG Claw', 'Claude', 'Claude Code', 'Prumo da Locadora', 'Anthropic', 'OpenAI', 'ChatGPT', 'Codex', 'Gemini', 'Telegram',
   'WhatsApp', 'Google', 'GitHub', 'Instagram', 'Meta', 'Facebook', 'YouTube', 'TikTok', 'LinkedIn',
   'Cloudflare', 'Hotmart', 'Kiwify', 'Pix', 'Gmail', 'Notion', 'Slack', 'Zoom', 'Canva', 'Stripe',
   'Vercel', 'Docker', 'Ubuntu', 'Linux', 'Hostinger', 'RunPod',

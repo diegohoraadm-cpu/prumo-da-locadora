@@ -20,7 +20,7 @@ module.exports = function buildHtmlTemplate({ BASE, CONFIG, serverDir, getAuth }
 
   // {{VOLTAR}}: a setinha de voltar para a estante.
   //
-  // Só existe atrás da fachada, e por isso é template e não CSS: um DG Claw instalado
+  // Só existe atrás da fachada, e por isso é template e não CSS: um Prumo da Locadora instalado
   // sozinho na máquina do dono não tem estante nenhuma para onde voltar, e um link morto
   // ali em cima seria pior que link nenhum. Servido pela plataforma, o painel vive na
   // MESMA origem da estante, que mora na raiz, e por isso o href é "/" e não precisa saber

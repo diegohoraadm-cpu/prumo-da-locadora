@@ -81,7 +81,7 @@ function criarRegistro({ caminho, log, arquivoPrincipal }) {
       st = fs.statSync(caminho);
     } catch (e) {
       assinatura = 'ausente';
-      falha(`Não achei o registro de agentes em ${caminho} (${e.code || e.name}). Rode o instalador do DG Claw para criá-lo ou aponte DGCLAW_AGENTES para o arquivo certo.`);
+      falha(`Não achei o registro de agentes em ${caminho} (${e.code || e.name}). Rode o instalador do Prumo da Locadora para criá-lo ou aponte DGCLAW_AGENTES para o arquivo certo.`);
       return;
     }
     const nova = `${st.mtimeMs}:${st.size}`;
@@ -121,7 +121,7 @@ function criarRegistro({ caminho, log, arquivoPrincipal }) {
   /* O agente principal é o único com quem o dono conversa; os outros agentes de trabalho são a equipe dele.
      Sem arquivoPrincipal, o primeiro agente de trabalho do agentes.json vira o principal e fica gravado.
      Depois de gravado, o arquivo nunca é trocado sozinho: remover e criar de novo um agente (o que o
-     `dgclaw agente remover` sugere) tira o slug do registro por um instante, e regravar ali trocaria o
+     `prumo agente remover` sugere) tira o slug do registro por um instante, e regravar ali trocaria o
      principal para sempre. Enquanto o gravado está fora do registro, vale o primeiro agente de trabalho, sem
      gravar. Quem troca o principal é o Admin, a pedido do dono (seção "Criar agentes" das instruções dele). */
   let ultimoAvisoPrincipal = null;

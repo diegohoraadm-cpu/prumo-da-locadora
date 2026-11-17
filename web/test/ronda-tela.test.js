@@ -24,7 +24,7 @@ test('topo: "Última ronda: hoje, 13h02. Próxima: 19h00." e variações de dia'
   assert.equal(R.resumoTopo(r, AGORA), 'Última ronda: hoje, 13h02. Próxima: 19h00.');
   assert.equal(R.resumoTopo({ rodada_em: '2026-10-30T16:02:00Z', proxima_em: '2026-11-02T09:00:00Z' }, AGORA), 'Última ronda: ontem, 13h02. Próxima: 02/11/2026, 06h00.');
   assert.equal(R.resumoTopo({ rodada_em: '2026-10-31T16:02:00Z', proxima_em: '2026-11-01T22:00:00Z' }, AGORA), 'Última ronda: hoje, 13h02. Próxima: amanhã, 19h00.');
-  assert.match(R.resumoTopo({ nunca_rodou: true }, AGORA), /ainda não rodou.*sudo dgclaw seguranca rodar/);
+  assert.match(R.resumoTopo({ nunca_rodou: true }, AGORA), /ainda não rodou.*sudo prumo seguranca rodar/);
   assert.equal(R.dataBr('2026-10-15T12:00:00Z'), '15/10/2026');
   assert.equal(R.dataBr('lixo'), 'data não informada');
 });
@@ -38,7 +38,7 @@ test('faixa amarela: uma fonte, várias fontes, sem nome; completa não mostra n
 
 test('faixa vermelha do vigia e a frase fixa do dia sem novidade', () => {
   assert.equal(R.textoVigia({ vigia_alerta: null }), '');
-  assert.match(R.textoVigia({ vigia_alerta: { quando: null, motivo: 'A ronda não rodou às 13h.' } }), /^A ronda automática falhou: A ronda não rodou às 13h\..*sudo dgclaw seguranca rodar/);
+  assert.match(R.textoVigia({ vigia_alerta: { quando: null, motivo: 'A ronda não rodou às 13h.' } }), /^A ronda automática falhou: A ronda não rodou às 13h\..*sudo prumo seguranca rodar/);
   assert.equal(R.FRASE_SEM_NOVIDADE, 'Nenhuma vulnerabilidade nova que afete o seu sistema nesta ronda.');
   assert.equal(R.TEXTO_NIVEL3, 'Nova vulnerabilidade de impacto leve/médio. Sugestão: corrija o quanto antes; a correção já está pronta, é só dar o ok.');
 });

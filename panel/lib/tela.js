@@ -112,7 +112,7 @@ function montarProblemas(e) {
     p.push({
       codigo: 'sem-navegador', nivel: 'erro',
       texto: 'Este agente foi criado com uma imagem sem a Tela, então ele não tem navegador para você abrir.',
-      como_resolver: 'Peça ao Admin para reconstruir a imagem com navegador e recriar este agente (dgclaw imagem construir --agora e depois dgclaw agente recriar <nome do agente>). A casa e as conversas dele não são tocadas.',
+      como_resolver: 'Peça ao Admin para reconstruir a imagem com navegador e recriar este agente (prumo imagem construir --agora e depois prumo agente recriar <nome do agente>). A casa e as conversas dele não são tocadas.',
     });
     return p;
   }
@@ -120,7 +120,7 @@ function montarProblemas(e) {
     p.push({
       codigo: 'websockify-parado', nivel: 'erro',
       texto: 'O serviço que leva a tela até o painel (noVNC/websockify) não está respondendo.',
-      como_resolver: 'Peça ao Admin para conferir com "dgclaw agente tela <nome do agente>" e reiniciar o serviço dgclaw-tela-web. Se acabou de recriar o agente, espere um minuto e atualize esta página.',
+      como_resolver: 'Peça ao Admin para conferir com "prumo agente tela <nome do agente>" e reiniciar o serviço dgclaw-tela-web. Se acabou de recriar o agente, espere um minuto e atualize esta página.',
     });
   }
   if (e.senha === false) {
@@ -133,14 +133,14 @@ function montarProblemas(e) {
     p.push({
       codigo: 'vnc-parado', nivel: 'erro',
       texto: 'A senha da tela existe, mas o programa que mostra a tela (x11vnc) está parado.',
-      como_resolver: 'Espere uns 10 segundos e atualize: ele religa sozinho depois de uma troca de senha. Se continuar assim, peça ao Admin para rodar "dgclaw agente tela <nome do agente>".',
+      como_resolver: 'Espere uns 10 segundos e atualize: ele religa sozinho depois de uma troca de senha. Se continuar assim, peça ao Admin para rodar "prumo agente tela <nome do agente>".',
     });
   }
   if (e.cdp === false) {
     p.push({
       codigo: 'cdp-parado', nivel: 'erro',
       texto: 'O navegador do agente não está respondendo, então o agente não consegue usá-lo.',
-      como_resolver: 'Peça ao Admin para rodar "dgclaw agente tela <nome do agente>" e reiniciar o serviço dgclaw-tela-chrome.',
+      como_resolver: 'Peça ao Admin para rodar "prumo agente tela <nome do agente>" e reiniciar o serviço dgclaw-tela-chrome.',
     });
   }
   if (e.chromeExiste === false) {

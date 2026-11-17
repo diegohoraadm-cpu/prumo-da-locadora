@@ -1,7 +1,7 @@
 {
   "name": "dgclaw-panel",
   "version": "1.0.5",
-  "description": "Painel robusto parametrizado do plugin DG Claw",
+  "description": "Painel robusto parametrizado do plugin Prumo da Locadora",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

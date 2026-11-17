@@ -302,7 +302,7 @@ function buildMemoria(config) {
       return { ...base, previa: p.texto, cortado: p.cortado };
     }
     // Tira o comentário HTML de cabeçalho que o instalador deixa nos arquivos
-    // ("<!-- CREATOR.md: gerado por DG Claw ... -->"): é recado para máquina.
+    // ("<!-- CREATOR.md: gerado por Prumo da Locadora ... -->"): é recado para máquina.
     const limpo = lido.conteudo.replace(/^\s*<!--[\s\S]*?-->\s*/, '');
     const p = previa(limpo, extra.teto || 1100);
     return { ...base, previa: p.texto, cortado: p.cortado };

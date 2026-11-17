@@ -3,7 +3,7 @@
 
    Ao abrir a conversa, confere se algum agente está sem login (ou com o login vencido). Se estiver, abre este
    <dialog> modal com um cartão por agente (os mesmos cartões da página /conectar, de conectar-cartoes.js). Quando
-   todos ficam conectados, o modal troca para a tela final, com o que fazer agora e o vídeo "Conhecendo o DG Claw".
+   todos ficam conectados, o modal troca para a tela final, com o que fazer agora e o vídeo "Conhecendo o Prumo da Locadora".
 
    - O modal aparece uma única vez por pessoa: ao abrir, o servidor guarda os agentes sem login que ele mostrou
      (POST /api/v1/modal-login/preferencia). "Fazer depois", Esc e recarregar não o trazem de volta. Só um agente

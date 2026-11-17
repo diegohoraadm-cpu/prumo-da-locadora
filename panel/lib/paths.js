@@ -1,4 +1,4 @@
-// paths.js — Factory de caminhos parametrizada por config (DG Claw).
+// paths.js — Factory de caminhos parametrizada por config (Prumo da Locadora).
 //
 // Nada hardcoded: todos os caminhos derivam de
 // config.agentDir / config.logDir / config.logPrefix.
@@ -29,8 +29,8 @@ function buildPaths(config) {
     LOG_DIR,
     LOG_PREFIX: PREFIX,
 
-    // Extensoes instaladas (.dgclaw/ext/<nome>/). O nucleo do DG Claw nao tem emocao:
-    // quem tiver a extensao DG Alive instalada ganha state.json e a aba de humor; quem
+    // Extensoes instaladas (.dgclaw/ext/<nome>/). O nucleo do Prumo da Locadora nao tem emocao:
+    // quem tiver a extensao de emocoes instalada ganha state.json e a aba de humor; quem
     // nao tiver simplesmente nao ve esses widgets (ver lib/extensions.js).
     EXT_DIR: path.join(AGENT_DIR, '.dgclaw/ext'),
     STATE_FILE: path.join(AGENT_DIR, '.dgclaw/ext/alive/state.json'),

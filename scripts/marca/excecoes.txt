@@ -1,0 +1,25 @@
+# Excecoes da troca de marca. Uma por linha, tres campos separados por TAB:
+#   arquivo<TAB>trecho<TAB>motivo
+# arquivo: caminho exato, ou pasta terminada em / (vale para tudo dentro).
+# trecho:  texto literal que, se estiver na linha, protege a linha inteira; * protege o arquivo todo;
+#          secao:REGEX protege as secoes Markdown "## ..." cujo titulo casa com a regex.
+# O motivo e obrigatorio. Nada aqui depende de numero de linha.
+#
+# Credito e licenca (MIT exige o aviso; o install.sh copia LICENSE e NOTICE para a instalacao)
+LICENSE	*	licenca MIT: o aviso de copyright do autor original nao se troca
+NOTICE	*	credito ao autor original e ao Orca; install.sh copia este arquivo para a instalacao
+NOTICE.md	*	credito ao autor original (achado 2 do Esquadro)
+README.md	[DG Claw](https://github.com/DGatoM/DG-Claw)	credito do README: nome do projeto original com o link dele
+README.md	sobre o DG Claw, de DG Medeiros	credito do README: nome do projeto original
+# Historico: o digest de cada item (scripts/novidades-lib.mjs) e o sha1 do texto; reescrever reaparece como novidade
+CHANGELOG.md	secao:^## \[(?!1\.0\.5\])	secoes antigas do CHANGELOG: reescrever mudaria o digest e o item voltaria como novidade (F2)
+# Logica que le o nome (nao e texto para o aluno)
+lib/comum.sh	^# (Prumo da Locadora|DG Claw)	reconhece o Caddyfile gerado por versoes antigas: as duas alternativas ficam
+web/public/ronda-comum.js	*	o campo "onde" da ronda e trocado so na exibicao (replace do prefixo)
+seguranca/ronda/ronda.py	"DG Claw: 	prefixo do campo "onde" da ronda, lido por startswith na tela
+seguranca/ronda/ronda.py	"DG Claw (app)"	origem do componente, comparada por igualdade (ronda.py)
+seguranca/ronda/ronda.py	startswith("DG Claw")	le o prefixo do campo "onde"
+# Material da propria ferramenta e do aceite (citam o nome antigo de proposito)
+scripts/marca/	*	a ferramenta, as regras e os testes dela citam o nome antigo de proposito
+docs/MARCA-PROPRIA.md	*	descreve a troca, entao cita o nome antigo de proposito
+aceite/	*	aceite escrito pelo Teia: o dev nao edita

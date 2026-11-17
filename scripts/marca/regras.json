@@ -1,0 +1,26 @@
+{
+  "frases": [
+    { "de": "suporte DG", "para": "suporte" },
+    { "de": "Suporte DG", "para": "Suporte" },
+    { "de": "DG Claw", "para": "Prumo da Locadora" },
+    { "de": "DG Chat", "para": "Prumo Chat", "variante": true },
+    { "de": "DG Telegram", "para": "Prumo Telegram", "variante": true },
+    { "de": "DG Alive", "para": "Prumo Alive", "variante": true }
+  ],
+  "comando": {
+    "de": "dgclaw",
+    "para": "prumo",
+    "subcomandos": ["agente", "atualizar", "backup", "chave-api", "colaborador", "dominio", "emergencia", "imagem", "instalacao-remota", "personalizacoes", "primeiro-acesso", "restaurar", "seguranca", "senha", "status", "suporte", "usuario", "versao"]
+  },
+  "barra": {
+    "prefixo": "/dgclaw:",
+    "ligadas": ["agenda", "lembretes", "aprender", "avisos", "memory", "foco", "avatar", "report", "slide-animado", "site-animado", "video-animado", "groq-audio", "gemini-gratuito", "visuais-na-conversa", "criar-agente", "trocar-dominio"]
+  },
+  "shell_chamadas": ["printf", "echo", "falha", "aviso", "info", "ok", "passo"],
+  "lotes": {
+    "M5": ["docs", "web/docs", "panel/docs", "README.md", "INSTALL.md", "NOTICE", "tests/docs-em-dia", "tests/changelog"],
+    "M3": ["templates", "skills", "tests/ambiente", "tests/instrucoes"],
+    "M1": ["web/public", "web/lib", "web/server.js", "web/test", "panel/public", "panel/lib", "panel/server.js", "panel/test-*"],
+    "M4": ["bin", "lib", "install.sh", "scripts", "runner/src", "hooks", "canais", "container", "seguranca", "tests"]
+  }
+}

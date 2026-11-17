@@ -324,6 +324,8 @@ const saida = {
   telas: telas.itens(), rotas: rotas.itens(), rotas_detalhe: detalhe.itens(),
   comandos: comandos.itens(), skills: skills.itens(), powers: powers.itens(),
   canais: canais.itens(), provedores: provedores.itens(),
+  // O manual e o texto ao dono dizem `prumo`; o `dgclaw` continua existindo (a CLI e a mesma). O checar normaliza.
+  apelidos_de_comando: { prumo: 'dgclaw' },
 };
 for (const k of ['telas', 'rotas', 'comandos', 'skills', 'powers', 'canais', 'provedores']) {
   if (saida[k].length === 0) quebrou(`a lista "${k}" saiu vazia em ${RAIZ}.`, 'o extrator nao entendeu o codigo (ou a pasta nao e o DG Claw). Ajuste scripts/docs-inventario.mjs.');

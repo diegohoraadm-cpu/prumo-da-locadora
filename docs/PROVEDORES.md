@@ -192,7 +192,7 @@ sessões do runner já usam.
 
 O agente principal (Claude) abre uma sessão paralela em outro provedor, por exemplo o Codex (GPT),
 manda um pedido, espera, lê a resposta e fecha. O dono diz "abre um card no GPT para revisar isso" e
-o agente cuida do resto. É a skill `cards` (`/dgclaw:cards`) usando o comando `bin/dgclaw-card`
+o agente cuida do resto. É a skill `cards`, usando o comando `bin/dgclaw-card`
 (`abrir`, `mandar`, `estado`, `esperar`, `ler`, `listar`, `fechar`), que fala com as rotas
 `POST /api/sessoes`, `/input`, `/conversation` e `DELETE /api/sessoes/<id>` do runner.
 

@@ -23,7 +23,7 @@ permite à atualização conferir se a sua mudança cruza com a versão nova.
 
 ## Mudança no nível do sistema: pode, com aviso
 
-Você pode pedir mudanças na base do Prumo da Locadora, como uma nova forma de gerar agentes, um ajuste no comando `dgclaw`, no
+Você pode pedir mudanças na base do Prumo da Locadora, como uma nova forma de gerar agentes, um ajuste no comando `prumo`, no
 instalador ou no `runner/`. O combinado:
 
 1. O Admin avisa, em linguagem simples, que o pedido mexe na base e pode dar problema nas próximas atualizações.

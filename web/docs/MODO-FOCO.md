@@ -12,7 +12,7 @@ destica, o Web grava um evento, e o agente fica sabendo de dois jeitos:
    ao contexto do turno o que o dono marcou desde a última vez, com o placar ("3 de 6").
 2. **Quando quiser conferir** (Claude e Codex): lendo os eventos pela API, com um cursor.
 
-Funciona sem DG Telegram, sem Bunker e sem serviço externo: tudo fica no Web desta VPS.
+Funciona sem serviço externo: tudo fica no Web desta VPS.
 
 ## Na tela
 

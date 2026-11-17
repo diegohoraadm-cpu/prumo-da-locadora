@@ -1,5 +1,5 @@
 name: Ideia ou melhoria
-description: Sugira algo novo ou uma melhoria para o DG Claw
+description: Sugira algo novo ou uma melhoria para o Prumo da Locadora
 title: "[Ideia] "
 labels: ["melhoria"]
 body:
@@ -26,7 +26,7 @@ body:
   - type: input
     id: versao
     attributes:
-      label: Versão do DG Claw
+      label: Versão do Prumo da Locadora
       description: Rode `git -C ~/DG-Claw rev-parse --short HEAD` na VPS (ajuste a pasta do clone).
     validations:
       required: false

@@ -163,7 +163,7 @@ O agente conecta no Chrome da Tela por `playwright connect_over_cdp('http://127.
 reaproveita `browser.contexts[0]` (onde estão os logins), abre uma página nova e fecha **só a página**,
 nunca o navegador. Antes de usar, confere `curl -s 127.0.0.1:9222/json/version`. Quando trava em um
 login, pede ao dono que entre pela Tela e nunca pede a senha na conversa. O roteiro completo é a
-skill `skills/tela/SKILL.md` (`/dgclaw:tela`), e o `CLAUDE.md` do agente aponta para ela.
+skill `skills/tela/SKILL.md`, e o `CLAUDE.md` do agente aponta para ela.
 
 ## Memória
 

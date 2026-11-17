@@ -61,6 +61,42 @@ Admin refaz cada um com `sudo prumo agente recriar <slug> --forcar`. O Admin só
 
 Roteiro completo, com todos os conflitos conhecidos: [ATUALIZAR.md](../ATUALIZAR.md).
 
+## Atualização incompleta na 1.0.5
+
+**O que você vê.** Na primeira vez que você atualiza para a 1.0.5, a tela termina com "Atualizacao INCOMPLETA" e uma
+linha FALHOU para cada agente. É o esperado desta versão, só desta vez. Não é defeito.
+
+**O que continua valendo.** Cada agente segue funcionando na versão anterior. A casa do agente (a pasta dele no
+servidor), a memória, o cofre e as conversas não foram tocados.
+
+**Por quê.** A 1.0.5 passou a conferir, antes de trocar a caixa de um agente, o que existe só dentro dela. A caixa é o
+espaço isolado onde o agente roda. Os agentes antigos não guardam a lista do que veio de fábrica, então essa conferência
+não consegue rodar, e a troca para por segurança.
+
+**O que fazer, um agente de cada vez.** Peça ao Admin, em português: "troca a caixa do agente `<nome do agente>` pela
+versão nova". O nome do agente é o que aparece nas linhas FALHOU e na primeira coluna de `sudo prumo agente listar`.
+O Admin confere o que se perde, conta para você e só troca depois do seu "posso". Por baixo, o comando é
+`sudo prumo agente recriar <nome do agente> --forcar`. Depois da troca, as próximas atualizações desse agente não
+pedem mais nada.
+
+**O que a troca perde.** Perde só o que foi instalado à mão dentro da caixa, como um programa extra. As rotinas padrão
+do agente voltam ao padrão: se você mudou o horário de alguma, essa mudança se perde, e uma rotina que estava
+desligada volta a rodar. Peça de novo depois, se precisar. A memória, o cofre e as conversas ficam como estão.
+
+**Como conferir antes de trocar.** Peça ao Admin: "mostra o que eu perco ao trocar a caixa do agente `<nome do agente>`".
+Ele lê o arquivo `perdido-no-recriar-<data>.txt`, que fica na casa do agente. O arquivo só existe quando há algo a
+perder. Se não existe, não há nada a perder. Se aparecem só rotinas com nome `dgclaw-<nome do agente>-...`, é o
+esperado. Se aparece um programa que você instalou e ainda usa, você escolhe: adiar a troca (o agente continua na
+versão anterior) ou anotar o nome do programa, trocar e instalá-lo de novo depois.
+
+**Como saber que deu certo.** `sudo prumo agente listar` deve mostrar o agente em `running` e `ok`. O
+`sudo prumo status` não serve de prova: ele mostra a versão do sistema e só diz que o agente está de pé.
+
+**Agente desligado ou sem caixa.** O agente desligado não aparece como FALHOU. Quando você quiser usá-lo, peça ao Admin
+para ligar, e na atualização seguinte ele passa por esta mesma etapa. O agente sem caixa não liga com
+`sudo prumo agente iniciar`, porque não há o que ligar: a receita é a mesma troca de caixa acima, e como não existe
+caixa, não há nada a perder.
+
 ## Aviso de versão nova
 
 **O que é.** A cada 6 horas o seu servidor consulta o repositório oficial (leitura pública, sem conta). Quando a
@@ -69,7 +105,7 @@ Roteiro completo, com todos os conflitos conhecidos: [ATUALIZAR.md](../ATUALIZAR
 o aviso até sair uma versão mais nova. O Admin também recebe um recado, no máximo uma vez por versão.
 
 **Como usar na linha de comando.** `sudo prumo atualizar --checar` confere na hora (só lê o GitHub, não baixa nem
-instala). `sudo prumo atualizar --aviso desligar` desliga o aviso automático e `--aviso ligar` volta. `sudo dgclaw
+instala). `sudo prumo atualizar --aviso desligar` desliga o aviso automático e `--aviso ligar` volta. `sudo prumo
 status` mostra uma linha com o resultado da última checagem.
 
 **Limites.** O que sai do servidor é o IP e o número do commit instalado. Nada é baixado ou instalado sem o seu ok.

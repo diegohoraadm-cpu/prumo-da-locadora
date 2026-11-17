@@ -77,3 +77,6 @@ bin/dgclaw	  dgclaw 	logica: a ajuda() e lida por lib/uso-atualizacao.sh:80 (gre
 # --- M4 ---
 #
 # --- M5 ---
+tests/docs-em-dia/checar.mjs	converte quando `dgclaw <palavra>`	comentario que explica o apelido: o nome canonico que o inventario guarda continua dgclaw
+tests/docs-em-dia/checar.mjs	("dgclaw agente")	comentario: o nome canonico do comando no inventario e dgclaw
+tests/docs-em-dia/rodar.sh	so vale quando `dgclaw <palavra>`	comentario que explica o apelido: o nome canonico no inventario e dgclaw

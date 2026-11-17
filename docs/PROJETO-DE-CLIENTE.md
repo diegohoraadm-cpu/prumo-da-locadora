@@ -1,6 +1,6 @@
 # Projeto de cliente: o Prumo da Locadora oficial na VPS do próprio cliente
 
-Este guia é para o time DG que monta um agente para um cliente. Ele diz qual é o padrão, o passo a passo, por
+Este guia é para a equipe que monta um agente para um cliente. Ele diz qual é o padrão, o passo a passo, por
 que o acesso é por chave SSH temporária e o que conferir antes de entregar.
 
 ## 1. O padrão

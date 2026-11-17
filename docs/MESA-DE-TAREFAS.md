@@ -25,8 +25,7 @@ dgclaw-mesa listar
 ```
 
 A regra de quando criar uma tarefa está na seção "Mesa de tarefas" do `CLAUDE.md` do agente
-(`templates/CLAUDE.md.tmpl`; o agente Codex le o mesmo arquivo, mandado pelo `templates/AGENTS.md.tmpl`) e na skill `mesa`
-(`/dgclaw:mesa`). Quando o dono mexe numa tarefa pela tela, o Web manda ao agente um recado
+(`templates/CLAUDE.md.tmpl`; o agente Codex le o mesmo arquivo, mandado pelo `templates/AGENTS.md.tmpl`) e na skill `mesa`. Quando o dono mexe numa tarefa pela tela, o Web manda ao agente um recado
 começando com `[Mesa]`.
 
 ## Referência completa
@@ -37,7 +36,7 @@ começando com `[Mesa]`.
 
 ## O que o doctor diz
 
-O bloco "mesa de tarefas local" do `/dgclaw:doctor` confere três coisas: se `dgclaw-mesa` e
+O bloco "mesa de tarefas local" da skill `doctor` confere três coisas: se `dgclaw-mesa` e
 `dgclaw-api` existem, e se o `CLAUDE.md` do agente tem a seção "Mesa de tarefas" atual. Sem os
 comandos, o aviso diz para atualizar o Prumo da Locadora e rodar `sudo prumo agente reparar <slug>`. Sem a
 seção, o aviso pede `--fix`, que a acrescenta no fim do `CLAUDE.md` (com cópia de segurança ao lado).

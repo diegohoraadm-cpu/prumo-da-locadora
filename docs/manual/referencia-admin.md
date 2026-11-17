@@ -31,7 +31,7 @@ Regras que valem para tudo:
 
 <!-- inventario:inicio -->
 
-## Comandos do servidor (`dgclaw`)
+## Comandos do servidor (`prumo`)
 
 Rodam como root: `sudo prumo <comando>`. A opção `--ensaio` vale em qualquer um e mostra o que seria feito sem
 mudar nada. Quem: Root. Detalhe geral em [ATUALIZAR.md](../ATUALIZAR.md) e no `prumo --ajuda`. A exceção é o `prumo emergencia`, que ignora o `--ensaio` e age de verdade: para ver o plano sem mudar nada, use `prumo emergencia simular`.

@@ -72,7 +72,7 @@ agente (régua: feature de ~2 mil linhas leva 10 a 30 min).
 | Fio do Telegram na mensagem | hook `inject-telegram-thread.py` | não se aplica | depende do Telegram | volta junto com a ponte de Telegram | (na ponte) |
 | Trava de resposta do chat (devolve o turno que terminou só em texto) | hook `Stop` nativo `trava-resposta.mjs` (`runner/src/trava-resposta-source.ts`, instalado em `escreverSettings`), só nos agentes Claude | não funciona | `runner/src/provedores/codex.ts:173` ignora `stopHooks`; o hook `Stop` do Codex exige confiança por hook e o runner hoje não instala um `Stop` bloqueante lá | exceção registrada: no Codex vale a regra do canal na identidade (`bin/dgclaw`, `regra_canal_dgchat`, e `templates/ambiente/agente.md`), que manda responder pela tool `mcp__dgchat__reply`; instalar um `Stop` bloqueante no `hooks.json` com a confiança resolvida é o caminho se a falha aparecer no Codex | 0 (exceção) |
 | Skills do Prumo da Locadora | link em `~/.claude/skills` (`bin/dgclaw:926-940`) | parcial | só o painel contorna, mandando o caminho do `SKILL.md` (`web/lib/comandos.js:357`) | linkar as mesmas pastas em `.agents/skills` do agente Codex; trocar `${CLAUDE_PLUGIN_ROOT}` pelo caminho `.dgclaw/plugin` que já existe | 0,5 |
-| Comandos `/dgclaw:*` | namespace do plugin | exclusivo Anthropic | o Codex não tem plugin com namespace de comandos | a skill nativa cobre o mesmo uso (o agente chama a skill pelo nome) | (nas skills) |
+| Comandos `/nome-da-skill` | namespace do plugin | exclusivo Anthropic | o Codex não tem plugin com namespace de comandos | a skill nativa cobre o mesmo uso (o agente chama a skill pelo nome) | (nas skills) |
 | Leitura da conversa (`thread_log`) | transcript JSONL | funciona | `scripts/_lib/thread_log.py:279-281,510`; `test_thread_log_rollout.py` 23/23 verdes | nada | 0 |
 | Lista de conversas (working memory, FTS, reflexão) | `glob("*.jsonl")` em `~/.claude/projects` | parcial | `build-working-memory.py:436`, `conversas_fts.py:380`, `reflection.sh:143` | `listar_sessoes()` em `thread_log.py` incluindo `CODEX_HOME/sessions/**/rollout-*.jsonl` | 0,25 |
 | Memória semântica (índice) | arquivos `.md` + embedder | funciona | `scripts/memory_index/reindex.py`, `embedder.py` não dependem do motor | nada | 0 |
@@ -110,7 +110,7 @@ agente (régua: feature de ~2 mil linhas leva 10 a 30 min).
 | --- | --- |
 | Telegram oficial por `--channels` | ponte própria de Telegram pelo runner (Fase 4) |
 | Conectores do claude.ai (Gmail, Agenda, Drive e outros) | MCP próprio por serviço; até lá, o que precisa deles fica num agente Claude ou num card Claude |
-| Namespace de comandos de plugin (`/dgclaw:x`) | skills nativas do Codex pelo nome |
+| Namespace de comandos de plugin (`/nome-da-skill`) | skills nativas do Codex pelo nome |
 | `statusLine` | o rollout e o app-server já trazem o uso do plano |
 | Regras `allow`/`ask`/`deny` por ferramenta | `enabled_tools`/`disabled_tools` por servidor MCP e a política de aprovação do Codex |
 

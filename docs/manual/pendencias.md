@@ -17,7 +17,7 @@ manual, porque ele foi conferido no código.
 | `docs/QUADRO-DE-AVISOS.md`, `docs/MEMORIA-SEMANTICA.md` | Ganchos `avisos.py` e `memory-recall.sh` rodam a cada mensagem | Não encontrei a ligação deles na criação do agente. Falta conferir em um servidor |
 | `docs/POKES.md`, `docs/MEMORY-HOOK.md` | Transporte por teclas | O Prumo da Locadora atual entrega pelo runner |
 | `docs/PROVEDORES.md` | Codex sem ganchos | `docs/PARIDADE-CODEX.md` registra ganchos nativos no Codex |
-| `panel/public/js/app.js` (aba Sessões) | Permissão só se decide no DG Telegram | `panel/docs/SESSOES.md` descreve a decisão na própria tela |
+| `panel/public/js/app.js` (aba Sessões) | Permissão só se decide no app externo de sessões, que esta instalação não tem | `panel/docs/SESSOES.md` descreve a decisão na própria tela |
 | `templates/ambiente/agente.md` | Manda usar as skills `tela` e `canais` | A criação do agente liga 14 skills, e essas duas ficam de fora |
 
 ## Documentos desatualizados

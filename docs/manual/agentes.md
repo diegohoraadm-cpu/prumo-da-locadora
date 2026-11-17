@@ -2,7 +2,7 @@
 
 Esta página cobre o que o dono faz com os agentes de trabalho: criar, parar, reparar e remover, dar identidade, acompanhar o trabalho pela Mesa, guardar chaves, deixar o agente usar um navegador, abrir sessões paralelas e convidar outra pessoa. No fim estão todas as skills e todos os poderes (powers). Cada recurso diz o que é, como pedir ou onde clicar, o que precisa estar configurado, os limites e o que fazer quando dá erro.
 
-Quem cria e cuida dos agentes é o Admin, a sessão administradora do servidor. O dono pede em português na conversa `/a/admin`, e o Admin roda os comandos da CLI `dgclaw`. Os comandos estão listados em [referencia-admin.md](referencia-admin.md).
+Quem cria e cuida dos agentes é o Admin, a sessão administradora do servidor. O dono pede em português na conversa `/a/admin`, e o Admin roda os comandos da CLI `prumo`. Os comandos estão listados em [referencia-admin.md](referencia-admin.md).
 
 ## Criar um agente
 

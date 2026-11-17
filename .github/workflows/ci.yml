@@ -1,4 +1,4 @@
-# Integração contínua do DG Claw.
+# Integração contínua do Prumo da Locadora.
 #
 # Cada job cobre uma parte do repositório e roda sozinho, para que uma falha
 # apareça com o nome da parte que quebrou. Nada aqui precisa de segredo, de
@@ -71,7 +71,7 @@ jobs:
           exit "$falhou"
 
   # ---------------------------------------------------------------------------
-  # DG Claw Web (web/): zero dependências, só o test runner nativo do Node.
+  # Prumo da Locadora Web (web/): zero dependências, só o test runner nativo do Node.
   # ---------------------------------------------------------------------------
   web:
     name: web

@@ -40,7 +40,11 @@ root). A sessão de socorro do painel roda **dentro do container do agente**, co
 command -v podman dgclaw || echo "dentro do container"
 ```
 
-Dentro do container não existem `podman`, `dgclaw` nem `sudo`. Traduza assim:
+**`prumo` e `dgclaw` são o mesmo comando** (o instalador cria o `prumo` como atalho). Os exemplos deste manual usam
+`prumo`, que é o nome que o dono vê na tela de login. A conferência acima usa `dgclaw`, o nome que existe mesmo
+quando o atalho não foi criado.
+
+Dentro do container não existem `podman`, `dgclaw` (nem o `prumo`) nem `sudo`. Traduza assim:
 
 | No servidor | Dentro do container |
 |---|---|
@@ -195,8 +199,8 @@ na frente de cada comando, como nos exemplos abaixo. Se o dono não lembra como 
 outra pessoa que instalou, ele precisa pedir a ela o acesso ao servidor: pelo painel não há outro
 caminho, porque é justamente o painel que não abre.
 
-**`prumo` e `dgclaw` são o mesmo comando** (o instalador cria o `prumo` como atalho). Os exemplos desta
-seção usam `prumo`, que é o que a tela de login mostra; `sudo prumo usuario` faz a mesma coisa.
+Como na seção 0.1, `prumo` e `dgclaw` são o mesmo comando. Os exemplos desta seção usam `prumo`, que é o
+que a tela de login mostra; `sudo prumo usuario` faz a mesma coisa.
 
 1. **Apareceu "muitas tentativas seguidas"?** São 5 erros seguidos vindos da mesma
    internet (o mesmo IP); o bloqueio dura 15 minutos a contar do primeiro erro. A contagem vive na
@@ -262,7 +266,7 @@ nome muda:
   aba, mas o cofre recusa o acesso dele: a chave é do dono.
 
 ### 3.2 O agente aparece e o container está de pé?
-Quem entra no servidor com usuário comum põe `sudo` na frente de cada comando `dgclaw` desta seção.
+Quem entra no servidor com usuário comum põe `sudo` na frente de cada comando `prumo` desta seção.
 `container` é a caixa onde o agente roda; `<nome do agente>` é o `SLUG`, a primeira coluna do
 `listar`.
 ```bash
@@ -296,6 +300,7 @@ prumo agente listar
   `prumo imagem status`.
 
 ### 3.2.1 Agente de fora da atualização para a 1.0.5, ou sem container
+O texto para o dono, em linguagem simples, está em [manual/atualizar-e-backup.md](manual/atualizar-e-backup.md#atualização-incompleta-na-105); o que segue é o roteiro para você executar.
 Você (o Admin ou a sessão de socorro) fala com o dono; ele costuma ser leigo. Palavras que ele vai
 ouvir: **caixa** é o container do agente, o espaço isolado onde ele roda; **casa** é a pasta do agente
 no servidor (`/var/lib/dgclaw/agentes/<nome do agente>/`), onde ficam a memória, o cofre e as
@@ -424,7 +429,7 @@ daquela conversa, não a memória.
   Se o plano estiver certo, rode o mesmo comando sem o `--dry-run`. O script lê do
   `config.sh` o endereço do runner do agente (`DGCLAW_BUNKER_URL`, `DGCLAW_BUNKER_CARD`). Se o
   plano disser que vai usar `systemctl`, o `config.sh` está sem essas linhas (foi gerado por
-  uma versão antiga do `dgclaw`) e o modo de segurança não vai funcionar por aqui: use o botão
+  uma versão antiga do Prumo da Locadora) e o modo de segurança não vai funcionar por aqui: use o botão
   do painel e avise quem cuida do servidor.
 
 ### 3.7 A sessão está travada (de pé, sem erro, sem responder)

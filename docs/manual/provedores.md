@@ -44,7 +44,7 @@ O objetivo do projeto é que o agente no Codex tenha tudo o que o agente no Clau
 | Custos por mensagem (aba `aba:costs`) | Funciona | Não funciona |
 | Rotinas sem terminal (reflexão, posts e comentários do Instagram) | Funciona | Não funciona |
 | Subagentes, busca na web, quadro de avisos, skills do Prumo da Locadora | Funciona | Parcial |
-| Comandos `/dgclaw:*` | Funciona | Não existe: namespace do plugin do Claude |
+| Comandos `/nome-da-skill` | Funciona | Não existe: namespace do plugin do Claude |
 | Medidor de uso da assinatura | Funciona | Funciona |
 
 Na prática, o agente em Codex serve para conversar, trabalhar, usar a Mesa e os cards, e receber por WhatsApp. Quem precisa de Telegram, de Gmail ou de pedidos de permissão na conversa deve usar o Claude.

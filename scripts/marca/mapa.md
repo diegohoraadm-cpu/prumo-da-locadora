@@ -8,30 +8,30 @@ Gerado sem escrever nada. Ocorrencia = um achado da regra; "troca" so acontece e
 | --- | ---: | ---: | ---: | ---: |
 | M1 | 84 | 285 | 3 | 33 |
 | M3 | 44 | 270 | 0 | 43 |
-| M4 | 153 | 834 | 11 | 62 |
-| M5 | 85 | 643 | 4 | 15 |
+| M4 | 151 | 815 | 11 | 79 |
+| M5 | 85 | 640 | 4 | 15 |
 | sem-lote | 22 | 54 | 173 | 17 |
-| **total** | 388 | 2086 | 191 | 170 |
+| **total** | 386 | 2064 | 191 | 187 |
 
 Por regra (todos os lotes):
 
 | Regra | Trocaria | Excecao | Manual |
 | --- | ---: | ---: | ---: |
 | barra | 21 | 2 | 79 |
-| comando | 1233 | 110 | 27 |
-| frase | 680 | 78 | 48 |
-| variante | 152 | 1 | 16 |
+| comando | 1228 | 110 | 27 |
+| frase | 666 | 78 | 62 |
+| variante | 149 | 1 | 19 |
 
 Manual, por motivo:
 
 | Motivo | Ocorrencias |
 | --- | ---: |
-| barra-generica | 7 |
-| barra-inexistente | 15 |
+| barra-generica | 6 |
+| barra-inexistente | 14 |
 | barra-nao-ligada | 44 |
 | comando-no-inicio-de-string | 21 |
 | comparacao-de-logica | 2 |
-| fora-de-contexto | 55 |
+| fora-de-contexto | 74 |
 | tipo-nao-coberto | 26 |
 
 Arquivos sem lote no plano (o Teia atribui a um lote):
@@ -103,7 +103,7 @@ Regra do plano: skill ligada vira `/x`; skill que existe mas nao e ligada, reesc
 | scripts/gerar-instrucoes.sh | `/dgclaw:nome` (linha 11) | M4 | sair (a skill nao existe) |
 | scripts/gerar-instrucoes.sh | `/dgclaw:` (linha 42) | M4 | revisar (fora de texto) |
 | scripts/install-core.sh | `/dgclaw:setup` (linha 4) | M4 | sair (a skill nao existe) |
-| scripts/install-core.sh | `/dgclaw:setup` (linha 202) | M4 | sair (a skill nao existe) |
+| scripts/install-core.sh | `/dgclaw:setup` (linha 202) | M4 | revisar (fora de texto) |
 | scripts/install-timers.sh | `/dgclaw:setup` (linha 112) | M4 | sair (a skill nao existe) |
 | scripts/launch.sh | `/dgclaw:setup` (linha 18) | M4 | sair (a skill nao existe) |
 | scripts/materialize-identity.sh | `/dgclaw:doctor` (linha 44) | M4 | revisar (fora de texto) |
@@ -165,7 +165,7 @@ Regra do plano: skill ligada vira `/x`; skill que existe mas nao e ligada, reesc
 | templates/MEMORY.md.tmpl | `/dgclaw:awaken` (linha 1) | M3 | sair (a skill nao existe) |
 | templates/powers.json.tmpl | `/dgclaw:powers` (linha 19) | M3 | reescrever a mao (skill existe, nao e ligada ao agente) |
 | templates/report-config.json.tmpl | `/dgclaw:report` (linha 2) | M3 | trocar por `/report` (mecanico) |
-| tests/docs-em-dia/rodar.sh | `/dgclaw:` (linha 55) | M5 | reescrever a mao (nome generico ou placeholder) |
+| tests/docs-em-dia/rodar.sh | `/dgclaw:` (linha 55) | M5 | revisar (fora de texto) |
 | tests/docs-em-dia/rodar.sh | `/dgclaw:` (linha 103) | M5 | revisar (fora de texto) |
 | tests/docs-em-dia/rodar.sh | `/dgclaw:` (linha 105) | M5 | revisar (fora de texto) |
 | tests/instrucoes/rodar.sh | `/dgclaw:` (linha 61) | M3 | revisar (fora de texto) |
@@ -207,7 +207,7 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 | tests/aviso-atualizacao/rodar.sh | 2 | 0 | 3 |
 | tests/changelog/rodar.sh | 2 | 2 | 0 |
 | tests/cli/atualizar-entre-versoes.sh | 1 | 1 | 0 |
-| tests/cli/atualizar.sh | 5 | 3 | 2 |
+| tests/cli/atualizar.sh | 3 | 1 | 2 |
 | tests/cli/aviso-atualizacao.sh | 3 | 3 | 2 |
 | tests/cli/backup.sh | 1 | 3 | 0 |
 | tests/cli/chave-api.sh | 1 | 1 | 0 |
@@ -227,7 +227,7 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 | tests/cli/usuario.sh | 1 | 2 | 0 |
 | tests/cli/versao.sh | 1 | 3 | 0 |
 | tests/docs-em-dia/checar.mjs | 2 | 2 | 0 |
-| tests/docs-em-dia/rodar.sh | 6 | 4 | 3 |
+| tests/docs-em-dia/rodar.sh | 4 | 1 | 3 |
 | tests/emergencia/rodar.sh | 2 | 2 | 0 |
 | tests/instalador/ffmpeg.sh | 1 | 1 | 0 |
 | tests/instalador/fim.sh | 1 | 1 | 0 |
@@ -246,7 +246,7 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 | web/test/grava-anexo.test.js | 1 | 1 | 0 |
 | web/test/socket-admin.test.js | 1 | 1 | 0 |
 
-Total: 148 linhas em 59 arquivos de teste.
+Total: 144 linhas em 59 arquivos de teste.
 
 ## 4. Pede decisao humana (nao trocado), por arquivo
 
@@ -293,6 +293,7 @@ Total: 148 linhas em 59 arquivos de teste.
 | panel/test-sessoes.mjs | M1 | fora-de-contexto | 238 | `DG Telegram` |
 | qa/roteiro-navegacao.mjs | sem-lote | comparacao-de-logica | 191 | `DG Claw` |
 | runner/src/sessao/ciclo.ts | M4 | comando-no-inicio-de-string | 524 | `dgclaw` |
+| scripts/bootstrap-identity.sh | M4 | fora-de-contexto | 69 | `DG Claw` |
 | scripts/dgchat-mcp/test-server.mjs | M4 | fora-de-contexto | 304 | `DG Claw` |
 | scripts/doctor.sh | M4 | fora-de-contexto | 615 | `DG Alive` |
 | scripts/doctor.sh | M4 | fora-de-contexto | 623 | `DG Claw` |
@@ -304,6 +305,22 @@ Total: 148 linhas em 59 arquivos de teste.
 | scripts/doctor.sh | M4 | fora-de-contexto | 716 | `DG Claw` |
 | scripts/doctor.sh | M4 | fora-de-contexto | 763 | `DG Alive` |
 | scripts/doctor.sh | M4 | fora-de-contexto | 764 | `DG Alive` |
+| scripts/install-channel-fix.sh | M4 | fora-de-contexto | 48 | `DG Claw` |
+| scripts/install-channel-watchdog.sh | M4 | fora-de-contexto | 52 | `DG Claw` |
+| scripts/install-channel-watchdog.sh | M4 | fora-de-contexto | 66 | `DG Claw` |
+| scripts/install-consolidate-timer.sh | M4 | fora-de-contexto | 23 | `DG Claw` |
+| scripts/install-consolidate-timer.sh | M4 | fora-de-contexto | 35 | `DG Claw` |
+| scripts/install-core.sh | M4 | fora-de-contexto | 202 | `DG Claw` |
+| scripts/install-core.sh | M4 | fora-de-contexto | 226 | `DG Telegram` |
+| scripts/install-core.sh | M4 | fora-de-contexto | 226 | `DG Telegram` |
+| scripts/install-core.sh | M4 | fora-de-contexto | 229 | `DG Telegram` |
+| scripts/install-ig-timers.sh | M4 | fora-de-contexto | 124 | `DG Claw` |
+| scripts/install-ig-timers.sh | M4 | fora-de-contexto | 136 | `DG Claw` |
+| scripts/install-ig-timers.sh | M4 | fora-de-contexto | 165 | `DG Claw` |
+| scripts/install-panel-service.sh | M4 | fora-de-contexto | 400 | `DG Claw` |
+| scripts/install-service.sh | M4 | fora-de-contexto | 90 | `DG Claw` |
+| scripts/install-timers.sh | M4 | fora-de-contexto | 120 | `DG Claw` |
+| scripts/install-timers.sh | M4 | fora-de-contexto | 177 | `DG Claw` |
 | scripts/notify-owner.sh | M4 | fora-de-contexto | 161 | `DG Chat` |
 | scripts/notify-owner.sh | M4 | fora-de-contexto | 169 | `DG Chat` |
 | scripts/test-canal-dgchat.sh | M4 | fora-de-contexto | 117 | `DG Chat` |

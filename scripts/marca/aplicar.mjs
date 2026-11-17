@@ -109,7 +109,7 @@ function zonasSh(src, chamadas) {
   const n = src.length;
   const CHAMADAS = new Set(chamadas);
   const PALAVRAS = new Set(['if', 'then', 'else', 'elif', 'do', 'while', 'until', '!', '{', 'sudo', 'time']);
-  let i = 0, inicio = true, chamada = -1, cmd = '';
+  let i = 0, inicio = true, chamada = -1, cmd = '', redir = false;
   const heredocs = [];
   const fecha = (e) => { if (chamada >= 0 && e > chamada) z.push({ ini: chamada, fim: e, modo: 'prosa' }); chamada = -1; };
   while (i < n) {
@@ -130,7 +130,7 @@ function zonasSh(src, chamadas) {
         heredocs.length = 0;
         fecha(i); inicio = true; continue;
       }
-      if (src[i - 1] !== '\\') { fecha(i); inicio = true; }
+      if (src[i - 1] !== '\\') { fecha(i); inicio = true; redir = false; }
       i++; continue;
     }
     if (c === '\\') { i += 2; continue; }
@@ -142,14 +142,14 @@ function zonasSh(src, chamadas) {
     if (c === "'") { const f = src.indexOf("'", i + 1); i = f < 0 ? n : f + 1; if (inicio) inicio = false; continue; }
     if (c === '"') { let j = i + 1; while (j < n && src[j] !== '"') j += src[j] === '\\' ? 2 : 1; i = j + 1; if (inicio) inicio = false; continue; }
     // `cmd ... | outro` e `printf ... > arquivo` mandam o texto para um programa ou arquivo: e dado, nao tela.
-    if (c === '|' && src[i + 1] !== '|' && src[i - 1] !== '|') { chamada = -1; inicio = true; i++; continue; }
+    if (c === '|' && src[i + 1] !== '|' && src[i - 1] !== '|') { chamada = -1; inicio = true; redir = true; i++; continue; }
     if (c === ';' || c === '|' || c === '(' || c === ')' || (c === '&' && !/[<>]/.test(src[i - 1] || ''))) { fecha(i); inicio = true; i++; continue; }
-    if (c === '>') { if (src[i + 1] === '&' || src[i - 1] === '&') fecha(i); else chamada = -1; i++; continue; }
+    if (c === '>') { if (src[i + 1] === '&' || src[i - 1] === '&') fecha(i); else { chamada = -1; redir = true; } i++; continue; }
     if (c === '<') {
       const m = /^<<(-?)\s*(['"]?)([A-Za-z_]\w*)\2/.exec(src.slice(i, i + 80));
       if (m && src[i + 2] !== '<') {
         const f = src.indexOf('\n', i); const resto = src.slice(i + m[0].length, f < 0 ? n : f);
-        heredocs.push({ palavra: m[3], tab: m[1] === '-', texto: cmd === 'cat' && !/[>|]/.test(resto) });
+        heredocs.push({ palavra: m[3], tab: m[1] === '-', texto: cmd === 'cat' && !redir && !/[>|]/.test(resto) });
         i += m[0].length; continue;
       }
       i++; continue;
@@ -342,7 +342,7 @@ export function analisar(rel, src, ctx) {
 const IGNORAR_DIR = new Set(['.git', 'node_modules', 'dist']);
 const BINARIO = /\.(png|jpe?g|gif|ico|webp|pdf|woff2?|ttf|zip|gz|lock|wasm|svg)$/i;
 
-export function listarArquivos(raiz, pastas) {
+export function listarArquivos(raiz, pastas, ignorar = []) {
   let rels;
   try { rels = execFileSync('git', ['-C', raiz, 'ls-files', '-z'], { encoding: 'utf8', maxBuffer: 1 << 28 }).split('\0').filter(Boolean); } catch { rels = null; }
   if (!rels) { // pasta que nao e repositorio git (testes): anda na arvore
@@ -350,7 +350,7 @@ export function listarArquivos(raiz, pastas) {
     const anda = (d) => { for (const e of fs.readdirSync(path.join(raiz, d), { withFileTypes: true })) { if (e.isDirectory()) { if (!IGNORAR_DIR.has(e.name)) anda(path.join(d, e.name)); } else rels.push(path.join(d, e.name)); } };
     anda('');
   }
-  rels = rels.filter((r) => !BINARIO.test(r) && fs.existsSync(path.join(raiz, r)) && fs.lstatSync(path.join(raiz, r)).isFile());
+  rels = rels.filter((r) => !ignorar.some((i) => r === i || r.startsWith(i)) && !BINARIO.test(r) && fs.existsSync(path.join(raiz, r)) && fs.lstatSync(path.join(raiz, r)).isFile());
   if (pastas?.length) rels = rels.filter((r) => pastas.some((p) => r === p || r.startsWith(p.endsWith('/') ? p : `${p}/`)));
   return rels.sort();
 }
@@ -364,7 +364,7 @@ export function rodar({ raiz, pastas = [], dry = true, regras, excs }) {
   const skillsDir = path.join(raiz, 'skills');
   const skillsExistentes = new Set(fs.existsSync(skillsDir) ? fs.readdirSync(skillsDir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name) : []);
   const arquivos = [];
-  for (const rel of listarArquivos(raiz, pastas)) {
+  for (const rel of listarArquivos(raiz, pastas, regras.ignorar)) {
     const src = fs.readFileSync(path.join(raiz, rel), 'utf8');
     if (src.includes('\0')) continue;
     const r = analisar(rel, src, { regras, excs, skillsExistentes });

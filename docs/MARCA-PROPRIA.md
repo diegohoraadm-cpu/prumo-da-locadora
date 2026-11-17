@@ -75,6 +75,9 @@ Ficam de fora, por motivo registrado: `LICENSE`, `NOTICE`, `NOTICE.md` e o créd
 texto; reescrever faria o item voltar como novidade) e as exceções de lógica (Caddyfile antigo em `lib/comum.sh`, o campo `onde`
 da ronda).
 
+A própria ferramenta (`scripts/marca/`) e este documento citam o nome antigo de propósito; ficam na lista `ignorar` do
+`regras.json`, que a ferramenta nem lê.
+
 Atenção ao fechar a versão seguinte: a regra do CHANGELOG protege tudo, menos a seção `[1.0.5]`. Quando sair a 1.0.6, ajuste o
 `1\.0\.5` da exceção para a seção que ainda é nossa.
 

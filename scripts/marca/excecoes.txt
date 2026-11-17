@@ -19,7 +19,5 @@ web/public/ronda-comum.js	*	o campo "onde" da ronda e trocado so na exibicao (re
 seguranca/ronda/ronda.py	"DG Claw: 	prefixo do campo "onde" da ronda, lido por startswith na tela
 seguranca/ronda/ronda.py	"DG Claw (app)"	origem do componente, comparada por igualdade (ronda.py)
 seguranca/ronda/ronda.py	startswith("DG Claw")	le o prefixo do campo "onde"
-# Material da propria ferramenta e do aceite (citam o nome antigo de proposito)
-scripts/marca/	*	a ferramenta, as regras e os testes dela citam o nome antigo de proposito
-docs/MARCA-PROPRIA.md	*	descreve a troca, entao cita o nome antigo de proposito
+# Aceite escrito pelo Teia (cita o nome antigo de proposito). A propria ferramenta e o MARCA-PROPRIA.md ficam em "ignorar" no regras.json
 aceite/	*	aceite escrito pelo Teia: o dev nao edita

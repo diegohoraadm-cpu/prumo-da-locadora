@@ -25,7 +25,7 @@ Identidade, Personalidade, Apps, Socorro e as dos poderes):
 1. **A causa principal foi a atualização.** O painel de cada agente roda dentro da imagem do
    container. Na VPS de teste, o Web foi atualizado, mas a imagem não foi reconstruída: as páginas
    do painel continuaram na versão de 17/10, com o menu roxo e outra foto. Clicar em Status trocava
-   de servidor e, por isso, de visual. Correção: `dgclaw atualizar` (PR #29) sempre reconstrói a
+   de servidor e, por isso, de visual. Correção: `prumo atualizar` (PR #29) sempre reconstrói a
    imagem e recria o container de cada agente.
 2. **Sessões só aparecia no menu depois de abrir o painel.** Quem acrescentava o item era o
    próprio painel. Na Conversa ele não existia, e foi por isso que o Danilo não achou o mini-Bunker.
@@ -41,7 +41,7 @@ Identidade, Personalidade, Apps, Socorro e as dos poderes):
 
 ## Ordem do conserto
 
-1. **Atualização segura** (PR #29): `dgclaw atualizar` com backup, imagem nova, container recriado,
+1. **Atualização segura** (PR #29): `prumo atualizar` com backup, imagem nova, container recriado,
    conferência dos dados do aluno e reinício do Admin. `docs/ATUALIZAR.md` é o roteiro do Admin.
 2. **Casca única** (este PR):
    - a Conversa passa a montar o menu pela mesma marcação da casca (uma fonte só);

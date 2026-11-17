@@ -27,9 +27,9 @@ Pela tela: menu **Suporte remoto**, botão de criar chave. O valor aparece uma v
 Pelo servidor:
 
 ```bash
-sudo dgclaw chave-api criar --escopo diagnostico --nome "suporte"
-sudo dgclaw chave-api listar
-sudo dgclaw chave-api revogar <id>
+sudo prumo chave-api criar --escopo diagnostico --nome "suporte"
+sudo prumo chave-api listar
+sudo prumo chave-api revogar <id>
 ```
 
 O cliente revoga quando quiser, pela mesma tela ou pelo comando. Revogada, a chave para de funcionar na hora e o
@@ -182,7 +182,7 @@ ou desconhecida aparece só como título do item na tela, e o prompt dela usa um
 um container nunca chega a um prompt que o dono cola na conversa do Admin.
 O `prompt_sugerido` também nunca manda o Admin (que roda como root) ler conteúdo escrito pelo container: nada de log
 do agente, journal ou `systemctl status` de dentro do container, `podman exec` ou arquivo da casa do agente. Ele só
-pede para conferir comandos do servidor cuja saída é do próprio Prumo da Locadora (`dgclaw status`, `podman ps`, `df -h` e
+pede para conferir comandos do servidor cuja saída é do próprio Prumo da Locadora (`prumo status`, `podman ps`, `df -h` e
 parecidos, de uma lista fechada). Quando o detalhe está num log do agente, o `o_que_fazer` diz ao dono onde olhar e
 avisa para não colar esse conteúdo no Admin.
 Por fim, o texto lido de fora tem tamanho máximo antes de qualquer análise (1000 caracteres por linha), para que

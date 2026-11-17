@@ -4,14 +4,14 @@ Canal é o caminho por onde o dono fala com o agente. O chat do painel funciona 
 
 | Canal | Estado | Quem pode usar |
 | --- | --- | --- |
-| Chat do painel (DG Chat) | Pronto | Agentes em Claude e em Codex |
+| Chat do painel | Pronto | Agentes em Claude e em Codex |
 | Telegram | Pronto | Só agentes em Claude |
 | `whatsapp` | Parcial | Agentes em Claude e em Codex |
 | E-mail e agenda do Google (conectores) | Pronto, com limites | Só agentes em Claude, logados na assinatura |
 
 O Admin não tem canal externo. Quem ligou ou religou um canal precisa reiniciar o agente para valer; os comandos fazem isso sozinhos.
 
-## Chat do painel (DG Chat)
+## Chat do painel
 
 **O que é.** O canal principal. O dono abre `/a/<slug>`, escreve, e o agente responde por uma ferramenta própria do chat (o MCP `dgchat`), que também envia arquivos e visuais. A conversa que o painel mostra vem do registro da própria sessão do agente, sem uma segunda cópia.
 **Como pedir.** Nada a configurar. Os detalhes da tela estão em [conversa-e-telas.md](conversa-e-telas.md).
@@ -24,7 +24,7 @@ O Admin não tem canal externo. Quem ligou ou religou um canal precisa reiniciar
 **Como pedir.** Diga ao agente: "quero falar com você no Telegram". A skill `canais` conduz um passo por vez: criar o bot no @BotFather com `/newbot`, entregar o token, parear e ligar. O dono cola o token no chat do painel: o Web o guarda na pasta privada do agente e entrega ao agente só uma marca com o final do token, sem o valor. Por baixo, o agente usa `dgclaw-agente canal telegram token`, `dgclaw-agente canal telegram conferir`, `dgclaw-agente canal telegram parear`, `dgclaw-agente canal telegram ligar` e `dgclaw-agente canal telegram desligar`. O estado de todos os canais aparece em `dgclaw-agente canal status`.
 **Precisa de.** Um agente em Claude, com a conta do Claude conectada. Conta do Telegram do dono e o token do bot.
 **Limites.** O Telegram funciona só no Claude, pelo plugin oficial do Claude Code. Agente em Codex não tem Telegram, e o catálogo de provedores registra isso. Os comandos de barra nativos (`/compact`, `/clear`) não rodam pelo Telegram: o agente responde que é para usar o chat do painel. Só skills do próprio agente rodam pela barra no Telegram.
-**Se der erro.** Token inválido: nada é gravado e o comando diz o motivo. O bot ficou mudo depois de reiniciar: o Admin roda `dgclaw agente reparar <slug>`. Saída 3 ou 4 do comando significa que o canal foi salvo mas o reinício não foi pedido ou o runner não respondeu: reinicie com `dgclaw agente reiniciar <slug>`.
+**Se der erro.** Token inválido: nada é gravado e o comando diz o motivo. O bot ficou mudo depois de reiniciar: o Admin roda `prumo agente reparar <slug>`. Saída 3 ou 4 do comando significa que o canal foi salvo mas o reinício não foi pedido ou o runner não respondeu: reinicie com `prumo agente reiniciar <slug>`.
 
 ## WhatsApp (`whatsapp`)
 

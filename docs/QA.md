@@ -1,4 +1,4 @@
-# QA de navegação do DG Claw
+# QA de navegação do Prumo da Locadora
 
 Este roteiro existe porque o QA antigo abria cada URL direto e olhava só o computador. O dono
 percebe o problema de outro jeito: ele **clica no menu da esquerda** e vê a tela inteira mudar
@@ -15,7 +15,7 @@ percebe o problema de outro jeito: ele **clica no menu da esquerda** e vê a tel
 node qa/roteiro-navegacao.mjs
 ```
 
-O `qa/montar-ambiente.mjs` liga o DG Claw Web (`web/server.js`) e o painel de um agente falso
+O `qa/montar-ambiente.mjs` liga o Prumo da Locadora Web (`web/server.js`) e o painel de um agente falso
 (`panel/server.js`, sob `/p/tina`) do mesmo jeito que a produção liga os dois: `agentes.json` com o
 Admin e o agente "tina" (foto, cor, `porta_painel`, `proxy_segredo_arquivo`), `web.env` com usuário e
 hash scrypt, runner falso e um histórico de 40 trocas de mensagem. Nada toca `/etc`, `/var` nem
@@ -87,7 +87,7 @@ Avisos (não reprovam): arquivos que responderam 4xx ou 5xx, erro de JavaScript,
 
 O código do painel mora **dentro da imagem do container do agente** (`container/Containerfile`
 copia `panel/` e roda `npm install`). Atualizar o clone na VPS não muda o painel que o dono vê: só
-`dgclaw imagem construir` seguido da recriação do container muda. Se o roteiro disser "o painel
+`prumo imagem construir` seguido da recriação do container muda. Se o roteiro disser "o painel
 entregou uma página SEM o casca.js", é isso: a imagem ficou velha. O Web (que serve a Conversa, a
 Mesa e os Lembretes) já está novo e o painel está velho, e o dono vê duas aparências.
 

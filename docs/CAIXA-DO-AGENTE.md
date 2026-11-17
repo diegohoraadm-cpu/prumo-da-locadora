@@ -1,7 +1,7 @@
 # Caixa do agente: o agente chamando a API do Web
 
 O agente vive num container que **não alcança o host** (a cadeia `DGCLAW_HOST` do
-[firewall](../lib/firewall.sh) bloqueia). O DG Claw Web roda no host. Então o agente
+[firewall](../lib/firewall.sh) bloqueia). O Prumo da Locadora Web roda no host. Então o agente
 não consegue fazer `curl` para o Web. A caixa resolve isso por arquivo: o agente deixa
 um pedido numa pasta da casa dele, o Web (que é root e enxerga todas as casas) executa
 o pedido como se fosse uma chamada HTTP normal e devolve a resposta noutra pasta.
@@ -38,7 +38,7 @@ dgclaw-api <METODO> <ROTA> [CORPO_JSON | --arquivo F | -] [--com-status] [--espe
 | 0 | resposta 2xx |
 | 1 | erro de uso (método, rota fora de `/api/v1/`, JSON inválido, arquivo ilegível) |
 | 2 | o Web não respondeu dentro da espera (fora do ar ou reiniciando). O pedido é descartado pelo Web se chegar com mais de 5 minutos |
-| 3 | a caixa não está disponível (pasta ausente ou sem permissão). O instalador cria a pasta; peça ao dono para rodar `sudo dgclaw agente reparar <slug>` |
+| 3 | a caixa não está disponível (pasta ausente ou sem permissão). O instalador cria a pasta; peça ao dono para rodar `sudo prumo agente reparar <slug>` |
 | 4 | resposta 4xx (pedido errado: leia o `erro`) |
 | 5 | resposta 5xx (problema do lado do Web: leia o `erro`) |
 

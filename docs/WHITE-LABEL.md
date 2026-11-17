@@ -1,6 +1,6 @@
 # Marca própria (white label)
 
-Uma empresa pode usar o DG Claw com o próprio nome, logo, favicon, cores e fontes, sem mexer no código e sem perder nada
+Uma empresa pode usar o Prumo da Locadora com o próprio nome, logo, favicon, cores e fontes, sem mexer no código e sem perder nada
 na próxima atualização. Tudo fica em uma pasta fora da instalação, `/etc/dgclaw/marca/`, que o instalador cria quando ela
 falta e nunca apaga, recria ou esvazia. Quem quiser conhecer os valores de cor e de tipografia por trás do visual lê o
 [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md).
@@ -100,5 +100,5 @@ Rotas públicas (sem sessão, porque a tela de login precisa delas): `/marca.css
 
 ## Atualizar e reinstalar
 
-`dgclaw atualizar` e `./install.sh` não tocam em `/etc/dgclaw/marca/`. A pasta entra no backup (`dgclaw backup`) junto com o
+`prumo atualizar` e `./install.sh` não tocam em `/etc/dgclaw/marca/`. A pasta entra no backup (`prumo backup`) junto com o
 resto de `/etc/dgclaw`.

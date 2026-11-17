@@ -4,12 +4,12 @@ Esta página cobre o que você faz (ou pede ao Admin) para manter o Prumo da Loc
 fazer e restaurar backup, trocar o domínio e a senha do painel, reconstruir a imagem dos agentes e conferir se
 tudo está de pé. Quase tudo isso é um comando que o Admin roda no servidor; você só precisa dizer em português o que quer.
 
-Todos os comandos rodam como root (`sudo dgclaw ...`) e aceitam `--ensaio`, que mostra o que seria feito sem mudar
-nada. A lista completa dos comandos está em [referencia-admin.md](referencia-admin.md). A exceção é o `dgclaw emergencia`, que ignora o `--ensaio` e age de verdade: para ver o plano sem mudar nada, use `dgclaw emergencia simular`.
+Todos os comandos rodam como root (`sudo prumo ...`) e aceitam `--ensaio`, que mostra o que seria feito sem mudar
+nada. A lista completa dos comandos está em [referencia-admin.md](referencia-admin.md). A exceção é o `prumo emergencia`, que ignora o `--ensaio` e age de verdade: para ver o plano sem mudar nada, use `prumo emergencia simular`.
 
 ## Atualizar o Prumo da Locadora
 
-**O que é.** `dgclaw atualizar` baixa a versão nova, faz um backup datado, reinstala o programa, reconstrói a imagem
+**O que é.** `prumo atualizar` baixa a versão nova, faz um backup datado, reinstala o programa, reconstrói a imagem
 dos agentes, recria o container de cada agente e confere que nada do que existia sumiu ou mudou. Só no fim reinicia
 o Admin, e solto do chat, para a conversa em que você está não cair no meio.
 
@@ -18,10 +18,10 @@ segue com o seu sim. A atualização leva de 10 a 30 minutos, e cada agente fica
 
 **Fluxo recomendado, em ordem.**
 
-1. `sudo dgclaw atualizar --simular`: mostra tudo o que faria, sem mudar nada, e grava o relatório "O que muda"
+1. `sudo prumo atualizar --simular`: mostra tudo o que faria, sem mudar nada, e grava o relatório "O que muda"
    (commits novos, itens do CHANGELOG e pontos de atenção em áreas sensíveis) em `/var/log/dgclaw/`.
 2. O Admin lê o relatório e conta a você, em linguagem simples, o que vem e se há risco.
-3. Com o seu ok: `sudo dgclaw atualizar --ok-do-dono --segundo-plano`. Sem o `--ok-do-dono`, e havendo algo novo, o
+3. Com o seu ok: `sudo prumo atualizar --ok-do-dono --segundo-plano`. Sem o `--ok-do-dono`, e havendo algo novo, o
    comando para antes do backup e não muda nada.
 4. Se a versão nova traz um passo manual, ele está na subseção "Como atualizar" do `CHANGELOG.md`, escrita para
    você. O Admin aplica.
@@ -51,7 +51,7 @@ unidades do systemd e a imagem dos agentes. No fim, o comando confere isso e rep
 **Quando volta sozinha.** Se o instalador novo terminar com erro, ou a conferência de configuração reprovar, o
 comando desfaz tudo sozinho usando o backup que acabou de fazer. Se um agente apenas não subir, ele **não** volta
 (voltar repetiria o problema do container): o resumo diz "Atualizacao INCOMPLETA", lista os agentes com problema e o
-Admin refaz cada um com `sudo dgclaw agente recriar <slug> --forcar`. O Admin só é reiniciado quando tudo está bem.
+Admin refaz cada um com `sudo prumo agente recriar <slug> --forcar`. O Admin só é reiniciado quando tudo está bem.
 
 **Se der erro.**
 
@@ -68,8 +68,8 @@ Roteiro completo, com todos os conflitos conhecidos: [ATUALIZAR.md](../ATUALIZAR
 **Ver o que mudou** abre o resumo; **Instalar** leva ao chat do Admin com o pedido já escrito; **Agora não** esconde
 o aviso até sair uma versão mais nova. O Admin também recebe um recado, no máximo uma vez por versão.
 
-**Como usar na linha de comando.** `sudo dgclaw atualizar --checar` confere na hora (só lê o GitHub, não baixa nem
-instala). `sudo dgclaw atualizar --aviso desligar` desliga o aviso automático e `--aviso ligar` volta. `sudo dgclaw
+**Como usar na linha de comando.** `sudo prumo atualizar --checar` confere na hora (só lê o GitHub, não baixa nem
+instala). `sudo prumo atualizar --aviso desligar` desliga o aviso automático e `--aviso ligar` volta. `sudo dgclaw
 status` mostra uma linha com o resultado da última checagem.
 
 **Limites.** O que sai do servidor é o IP e o número do commit instalado. Nada é baixado ou instalado sem o seu ok.
@@ -77,13 +77,13 @@ Detalhes em [AVISO-DE-ATUALIZACAO.md](../AVISO-DE-ATUALIZACAO.md).
 
 ## Backup
 
-**O que é.** `dgclaw backup` guarda tudo o que é seu numa pasta datada e conferida em
+**O que é.** `prumo backup` guarda tudo o que é seu numa pasta datada e conferida em
 `/var/backups/dgclaw/<AAAAMMDD-HHMMSS>-manual/` (acesso só do root). Cada arquivo é aberto para ver se não ficou
 corrompido; se algum não abrir, o comando para e diz o motivo.
 
-**Como pedir.** "Admin, faz um backup." Ou, no terminal: `sudo dgclaw backup`. Variações: `--sem-casas` deixa de
+**Como pedir.** "Admin, faz um backup." Ou, no terminal: `sudo prumo backup`. Variações: `--sem-casas` deixa de
 fora a memória e as conversas dos agentes (só se o disco estiver curto) e `--simular` mostra o que faria.
-`sudo dgclaw backup listar` mostra a data, o motivo, a versão, o tamanho e se as casas entraram. Uma pasta sem
+`sudo prumo backup listar` mostra a data, o motivo, a versão, o tamanho e se as casas entraram. Uma pasta sem
 `MANIFESTO.txt` aparece como "incompleto" e não serve para restaurar.
 
 **O que entra:**
@@ -105,17 +105,17 @@ agentes, que o Prumo da Locadora refaz; e programas que alguém instalou dentro 
 
 ## Restaurar
 
-**O que é.** `dgclaw restaurar <pasta-do-backup>` devolve a configuração, os dados e o Admin de um backup. Antes de
+**O que é.** `prumo restaurar <pasta-do-backup>` devolve a configuração, os dados e o Admin de um backup. Antes de
 tocar em qualquer coisa, ele guarda o estado de agora num backup com o motivo `antes-de-restaurar`. Por isso restaurar
 nunca perde dado: dá sempre para desfazer.
 
-**Como pedir.** "Admin, volta ao backup de ontem." Ele roda primeiro `sudo dgclaw restaurar <pasta> --simular`, mostra
+**Como pedir.** "Admin, volta ao backup de ontem." Ele roda primeiro `sudo prumo restaurar <pasta> --simular`, mostra
 o que vai acontecer e só depois restaura.
 
 **Quando ele recusa.**
 
 - Se a versão do backup for diferente da instalada. Para voltar código e dados juntos, o caminho é
-  `sudo dgclaw atualizar --voltar <pasta>`. Para restaurar só os dados mesmo assim, `--mesmo-assim`.
+  `sudo prumo atualizar --voltar <pasta>`. Para restaurar só os dados mesmo assim, `--mesmo-assim`.
 - Se existirem agentes criados depois do backup (eles sumiriam do painel). `--mesmo-assim` também libera.
 
 **O que ele faz.** Para os agentes que estavam ligados, devolve os arquivos por cima (sem apagar o que o backup não
@@ -123,18 +123,18 @@ conhecia), confere por sha256 que configuração, Admin e cofres ficaram idênti
 o reinício do Admin para o fim. A conversa do Admin não é tocada, para o chat em que você está não voltar no tempo.
 O painel só relê o `web.env` quando sobe: se ele mostrar valores antigos, reinicie com `sudo systemctl restart dgclaw-web`.
 
-**Desfazer uma restauração.** `sudo dgclaw restaurar <pasta antes-de-restaurar>`. O comando imprime essa pasta no fim.
+**Desfazer uma restauração.** `sudo prumo restaurar <pasta antes-de-restaurar>`. O comando imprime essa pasta no fim.
 
 ## Voltar atrás numa atualização
 
-Se a atualização deu problema e você quer o código de antes: `sudo dgclaw atualizar --voltar <pasta>`. Ele faz o que o
+Se a atualização deu problema e você quer o código de antes: `sudo prumo atualizar --voltar <pasta>`. Ele faz o que o
 `restaurar` faz com a configuração e o Admin, e também volta o clone ao commit do backup, reinstala, reconstrói a
 imagem e recria os agentes. **Não** restaura as casas dos agentes: a memória e as conversas ficam como estão.
 
 | Situação | Comando |
 | --- | --- |
-| Você apagou ou estragou dados, e a versão instalada é a mesma do backup | `dgclaw restaurar <pasta>` |
-| A atualização deu problema e você quer o código de antes | `dgclaw atualizar --voltar <pasta>` |
+| Você apagou ou estragou dados, e a versão instalada é a mesma do backup | `prumo restaurar <pasta>` |
+| A atualização deu problema e você quer o código de antes | `prumo atualizar --voltar <pasta>` |
 
 ## Trocar o domínio do painel
 
@@ -142,9 +142,9 @@ imagem e recria os agentes. **Não** restaura as casas dos agentes: a memória e
 
 **Como pedir.** "Admin, quero usar o domínio painel.minhaempresa.com.br." Existe a skill `trocar-dominio`, que
 explica cada passo a quem é leigo. Antes de tudo você cria, no lugar onde comprou o domínio, um registro DNS do tipo A
-apontando para o IP da VPS. `sudo dgclaw dominio mostrar` mostra o domínio atual e o IP que você deve usar.
+apontando para o IP da VPS. `sudo prumo dominio mostrar` mostra o domínio atual e o IP que você deve usar.
 
-**O que o comando faz.** `sudo dgclaw dominio trocar painel.minhaempresa.com.br` confere o DNS (e não muda nada se não
+**O que o comando faz.** `sudo prumo dominio trocar painel.minhaempresa.com.br` confere o DNS (e não muda nada se não
 apontar), reescreve o Caddy, recarrega, grava o domínio no `dgclaw.env` e espera o HTTPS (o certificado sai sozinho).
 
 **Limites.** O endereço antigo deixa de abrir o painel, e quem estava logado precisa entrar de novo no endereço novo.
@@ -155,42 +155,42 @@ A senha e os agentes continuam os mesmos. A opção `--sem-conferir-dns` pula a 
 - *"O DNS ainda não aponta":* crie ou corrija o registro A (apague um registro AAAA antigo do mesmo nome; na Cloudflare,
   deixe a nuvem cinza) e espere a propagação, que leva de minutos a algumas horas.
 - *"O HTTPS não respondeu em 90 segundos":* o Caddy já está com o nome novo. Confira se as portas 80 e 443 estão
-  abertas no firewall do provedor da VPS. Ele tenta de novo sozinho. Para voltar: `dgclaw dominio trocar <nome antigo>`.
+  abertas no firewall do provedor da VPS. Ele tenta de novo sozinho. Para voltar: `prumo dominio trocar <nome antigo>`.
 
 ## Senha do painel e primeiro acesso
 
-- **Trocar a senha:** `sudo dgclaw senha trocar`. Mínimo de 12 caracteres, digitados sem aparecer na tela. Troca só a
+- **Trocar a senha:** `sudo prumo senha trocar`. Mínimo de 12 caracteres, digitados sem aparecer na tela. Troca só a
   linha da senha no `web.env`, apaga um link de primeiro acesso pendente e reinicia o Web. As sessões abertas deixam de valer.
-- **Perdeu o link de primeiro acesso:** `sudo dgclaw primeiro-acesso` gera um novo (uso único, vale 30 minutos); o
+- **Perdeu o link de primeiro acesso:** `sudo prumo primeiro-acesso` gera um novo (uso único, vale 30 minutos); o
   anterior deixa de valer.
-- **Instalação feita pela equipe na VPS de outra pessoa:** `sudo dgclaw instalacao-remota` troca a senha por uma forte
+- **Instalação feita pela equipe na VPS de outra pessoa:** `sudo prumo instalacao-remota` troca a senha por uma forte
   e mostra a mensagem de entrega uma única vez. Não rode numa instalação que você mesmo fez: ele troca a sua senha.
 
 ## Imagem dos agentes
 
 A imagem é o "molde" de onde sai o container de cada agente. A atualização já a reconstrói sozinha. Para olhar:
-`sudo dgclaw imagem status` diz se ela está pronta, construindo ou falhou (com `--exigir-pronta` sai com erro se não
-estiver). Para reconstruir: `sudo dgclaw imagem construir` (em segundo plano) ou com `--agora`, na hora. Reconstruir a
-imagem não muda os containers que já existem; para um agente usar a imagem nova, `sudo dgclaw agente recriar <slug>`
+`sudo prumo imagem status` diz se ela está pronta, construindo ou falhou (com `--exigir-pronta` sai com erro se não
+estiver). Para reconstruir: `sudo prumo imagem construir` (em segundo plano) ou com `--agora`, na hora. Reconstruir a
+imagem não muda os containers que já existem; para um agente usar a imagem nova, `sudo prumo agente recriar <slug>`
 (mantém a casa, o cofre, as portas e as rotinas).
 
 ## Conferir se tudo está de pé
 
-- `sudo dgclaw status` confere o que é essencial e sai com erro se algo caiu. As linhas `FALHOU` dizem o que
+- `sudo prumo status` confere o que é essencial e sai com erro se algo caiu. As linhas `FALHOU` dizem o que
   consertar.
-- `sudo dgclaw versao` mostra a versão e o commit instalados.
-- `sudo dgclaw agente listar` lista os agentes e diz se estão de pé.
+- `sudo prumo versao` mostra a versão e o commit instalados.
+- `sudo prumo agente listar` lista os agentes e diz se estão de pé.
 
 ## Consertar um agente
 
 | Problema | O que fazer |
 | --- | --- |
-| O agente travou, mas o container está bem | `sudo dgclaw agente reiniciar <slug>` |
-| Falta arquivo ou configuração dentro do agente | `sudo dgclaw agente reparar <slug>`: regrava o `config.sh` e refaz runner, painel e rotinas |
-| O container ficou preso ou usa a imagem velha | `sudo dgclaw agente recriar <slug>` (com `--forcar` se for preciso) |
-| A identidade do agente mudou e ele precisa reler | `sudo dgclaw agente identidade <slug>` (vale na próxima sessão) |
-| A Tela não aparece | `sudo dgclaw agente tela <slug>`: diz, linha a linha, o que falta |
+| O agente travou, mas o container está bem | `sudo prumo agente reiniciar <slug>` |
+| Falta arquivo ou configuração dentro do agente | `sudo prumo agente reparar <slug>`: regrava o `config.sh` e refaz runner, painel e rotinas |
+| O container ficou preso ou usa a imagem velha | `sudo prumo agente recriar <slug>` (com `--forcar` se for preciso) |
+| A identidade do agente mudou e ele precisa reler | `sudo prumo agente identidade <slug>` (vale na próxima sessão) |
+| A Tela não aparece | `sudo prumo agente tela <slug>`: diz, linha a linha, o que falta |
 | O agente parou de responder ou ficou estranho | Aba **Socorro** do painel (skill `socorro`) |
 
-Para tirar um agente do ar sem apagar nada: `sudo dgclaw agente remover <slug>`. A casa dele vai para
+Para tirar um agente do ar sem apagar nada: `sudo prumo agente remover <slug>`. A casa dele vai para
 `/var/lib/dgclaw/aposentados/`.

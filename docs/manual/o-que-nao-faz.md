@@ -25,7 +25,7 @@ vale só para a assinatura do Claude ou do Codex está em [PARIDADE-CODEX.md](..
 | Compartilha uma chave entre agentes | Cada agente tem o próprio cofre, para um vazamento não passar de um agente | Guarde a chave em cada agente que precisa dela |
 | Esconde a chave de um agente comprometido | O agente precisa do valor para usar a chave; com `sudo` dentro do container, consegue lê-lo | Limite de gasto no provedor de cada chave |
 | Deixa uma chave de API do painel criar outra | Se uma chave vazar, ela não consegue gerar uma substituta | Crie as chaves pela aba Cofre, entrando com a senha |
-| Deixa uma chave de API do painel trocar a senha da Tela | A Tela controla um navegador logado nos seus sistemas | Troque pela aba Tela, ou com `dgclaw agente tela-senha` no servidor |
+| Deixa uma chave de API do painel trocar a senha da Tela | A Tela controla um navegador logado nos seus sistemas | Troque pela aba Tela, ou com `prumo agente tela-senha` no servidor |
 | Usa a `OPENAI_API_KEY` do cofre num agente Codex na assinatura | Ela disputaria com o login do ChatGPT | Use o login da assinatura do ChatGPT no agente |
 | Deixa o colaborador entrar no cofre, trocar a conta de IA ou gravar na memória | O painel registraria a ação como sendo sua, e memória e arquivos viram instrução permanente do agente | Faça você mesmo, ou converse com o agente pela conversa |
 | Deixa dois colaboradores num mesmo agente | A API recusa convite se o agente já tem colaborador ativo (erro 409) | Revogue o acesso atual antes de convidar outra pessoa |
@@ -54,9 +54,9 @@ vale só para a assinatura do Claude ou do Codex está em [PARIDADE-CODEX.md](..
 
 | O Prumo da Locadora não... | Porque | O que fazer em vez disso |
 | --- | --- | --- |
-| Instala atualização sem o seu ok | O aviso de versão nova e os boletins só informam | Diga "sim" ao Admin, que roda `dgclaw atualizar --ok-do-dono` |
+| Instala atualização sem o seu ok | O aviso de versão nova e os boletins só informam | Diga "sim" ao Admin, que roda `prumo atualizar --ok-do-dono` |
 | Corrige sozinho qualquer falha | A ronda só aplica ações que uma pessoa escreveu antes no catálogo fechado, e hoje o catálogo tem uma proteção provisória | Peça ao Admin para analisar e aplicar a correção, com o seu sim |
-| Mantém o corte de emergência depois de reiniciar o servidor | O corte vive na memória por desenho; depois do reinício a tela mostra "Falha de proteção" | `sudo dgclaw emergencia preparar` e `cortar` de novo, ou `religar` |
+| Mantém o corte de emergência depois de reiniciar o servidor | O corte vive na memória por desenho; depois do reinício a tela mostra "Falha de proteção" | `sudo prumo emergencia preparar` e `cortar` de novo, ou `religar` |
 | Deixa o painel no ar durante o corte de emergência | O painel é servido pelo mesmo proxy que sai do ar | Confirme e religue por SSH pelo Tailscale |
 | Esconde a conversa do modelo de IA com o modo escondido | Ele só troca por asteriscos o que aparece na sua tela | Para o agente não ver o dado, use a anonimização de documentos |
 | Garante 100% na anonimização | Nenhum detector acha todos os nomes. Sem o detector instalado, só números de documento, telefone e e-mail são trocados | Confira documentos sensíveis e instale o detector de nomes |
@@ -65,11 +65,11 @@ vale só para a assinatura do Claude ou do Codex está em [PARIDADE-CODEX.md](..
 
 | O Prumo da Locadora não... | Porque | O que fazer em vez disso |
 | --- | --- | --- |
-| Guarda no backup o programa, a imagem e os containers | Vêm do GitHub e o instalador refaz; o backup fica menor | Reinstale com `dgclaw atualizar` ou `dgclaw imagem construir` |
+| Guarda no backup o programa, a imagem e os containers | Vêm do GitHub e o instalador refaz; o backup fica menor | Reinstale com `prumo atualizar` ou `prumo imagem construir` |
 | Guarda programas que você instalou dentro do container, fora da casa do agente | O container é refeito a cada atualização | Anote o que instalou e instale de novo depois de cada atualização |
-| Guarda memória e conversas com `dgclaw backup --sem-casas` | Essa opção deixa de fora as casas dos agentes | Faça o backup completo |
+| Guarda memória e conversas com `prumo backup --sem-casas` | Essa opção deixa de fora as casas dos agentes | Faça o backup completo |
 | Restaura a conversa do Admin | Restaurar não toca nela, para o chat em que você está não voltar no tempo | A conversa do Admin entra no backup, mas a restauração a deixa como está |
-| Restaura as casas dos agentes ao voltar uma atualização | `dgclaw atualizar --voltar` restaura configuração e Admin, não os dados dos agentes | Para os dados, use `dgclaw restaurar` com um backup da mesma versão |
+| Restaura as casas dos agentes ao voltar uma atualização | `prumo atualizar --voltar` restaura configuração e Admin, não os dados dos agentes | Para os dados, use `prumo restaurar` com um backup da mesma versão |
 | Restaura backup de outra versão sem aviso | Configuração e dados de uma versão podem não servir ao código de outra | `--mesmo-assim`, só quando você sabe o que está fazendo |
 | Apaga backups antigos | Nenhum comando do Prumo da Locadora apaga backup | Peça ao Admin para apagar um específico; ele nunca apaga o mais recente |
 | Guarda cópia fora da VPS | Um backup que fica só no servidor some junto com ele | Copie por `scp` ou `rsync` ([BACKUP.md](../BACKUP.md)) |

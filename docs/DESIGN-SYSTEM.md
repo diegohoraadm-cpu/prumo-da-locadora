@@ -1,6 +1,6 @@
-# Design system do DG Claw (visual "Névoa")
+# Design system do Prumo da Locadora (visual "Névoa")
 
-Este guia diz onde ficam as cores, os ícones e o indicador de carregamento do DG Claw, e como mudar cada um sem
+Este guia diz onde ficam as cores, os ícones e o indicador de carregamento do Prumo da Locadora, e como mudar cada um sem
 quebrar o resto. Vale para o Web (`web/public/`) e para o painel de cada agente (`panel/public/`), que usam os mesmos
 arquivos. Para trocar nome, logo e cores da sua empresa sem mexer no código, leia [WHITE-LABEL.md](WHITE-LABEL.md).
 

@@ -32,7 +32,7 @@ Em toda tela existe o botão **Tutorial**, ao lado do título. Ele faz uma visit
 **Como usar.** Abra o link em `/primeiro-acesso`, cadastre a senha (mínimo de 12 caracteres) e a partir daí entre por `/login`.
 **Precisa de.** Nada além do endereço do painel.
 **Limites.** Erros seguidos de senha bloqueiam a tentativa por um tempo, e a tela diz quantos segundos faltam. O link de primeiro acesso vale uma vez e por 30 minutos.
-**Se der erro.** Link vencido ou perdido: no servidor, `sudo dgclaw primeiro-acesso` gera outro e o antigo deixa de valer. Senha esquecida: o Admin ou o terminal trocam com `dgclaw senha trocar`. Mais em [atualizar-e-backup.md](atualizar-e-backup.md) e em [referencia-admin.md](referencia-admin.md).
+**Se der erro.** Link vencido ou perdido: no servidor, `sudo prumo primeiro-acesso` gera outro e o antigo deixa de valer. Senha esquecida: o Admin ou o terminal trocam com `prumo senha trocar`. Mais em [atualizar-e-backup.md](atualizar-e-backup.md) e em [referencia-admin.md](referencia-admin.md).
 
 ## A conversa
 
@@ -40,7 +40,7 @@ Em toda tela existe o botão **Tutorial**, ao lado do título. Ele faz uma visit
 **Como usar.** Abra `/a/<slug>`, escreva e envie. A resposta aparece quando o agente a manda. O cabeçalho mostra "agente sem sinal" quando o serviço dele não responde.
 **Precisa de.** O agente criado e a conta de IA dele conectada (veja [provedores.md](provedores.md)).
 **Limites.** A conversa mostra o que o agente envia pelo chat. Um agente trabalhando em silêncio parece parado, por isso ele deve avisar quando começa algo demorado.
-**Se der erro.** "Agente sem sinal": peça ao Admin `dgclaw agente reparar <slug>` (veja [agentes.md](agentes.md)). Pedido de login: a conversa abre o cartão para entrar na conta, descrito em [Conectar conta](#conectar-conta).
+**Se der erro.** "Agente sem sinal": peça ao Admin `prumo agente reparar <slug>` (veja [agentes.md](agentes.md)). Pedido de login: a conversa abre o cartão para entrar na conta, descrito em [Conectar conta](#conectar-conta).
 Mais em [../CONVERSA.md](../CONVERSA.md).
 
 ### Primeiro agente
@@ -144,7 +144,7 @@ Mais em [../MODO-ESCONDIDO.md](../MODO-ESCONDIDO.md).
 ## Alertas de entrega e de pedido
 
 **O que é.** O agente começa a resposta com `[ENTREGA]` quando algo importante ficou pronto, ou com `[PEDIDO]` quando parou esperando uma decisão. A tela colore o balão e põe um ícone (✅ ou ⚠️) na pilha à direita. Tocar no ícone leva à mensagem e o retira.
-**Limites.** Reconhecer um pedido não o autoriza: a resposta é dada na conversa. Não há expiração nem tela de gestão. Vale para os dois motores e para as respostas por DG Chat, Telegram e WhatsApp.
+**Limites.** Reconhecer um pedido não o autoriza: a resposta é dada na conversa. Não há expiração nem tela de gestão. Vale para os dois motores e para as respostas por chat do painel, Telegram e WhatsApp.
 Mais em [../../web/docs/ALERTAS.md](../../web/docs/ALERTAS.md).
 
 ## Uso da assinatura

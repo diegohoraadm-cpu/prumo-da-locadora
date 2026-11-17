@@ -1,6 +1,6 @@
 # Manual no painel
 
-O manual do DG Claw são arquivos markdown em `docs/manual/` (o `README.md` é o índice). O Web só os lê e
+O manual do Prumo da Locadora são arquivos markdown em `docs/manual/` (o `README.md` é o índice). O Web só os lê e
 mostra: nada aqui escreve em disco. O dono abre a tela em `/manual` (menu ☰ > Manual); o Admin lê os
 arquivos direto da pasta e os agentes pedem pela API.
 
@@ -25,7 +25,7 @@ Os agentes chegam pela caixa: `dgclaw-api GET /api/v1/manual/docs.md`. A caixa l
 - O arquivo precisa ser regular e o caminho real dele ficar dentro da pasta do manual. Atalho para fora
   é recusado e registrado no log.
 - Página inexistente: `404` com o nome pedido e o endereço da lista. Manual ausente na instalação: `503`
-  dizendo qual pasta faltou e que a solução é atualizar o DG Claw.
+  dizendo qual pasta faltou e que a solução é atualizar o Prumo da Locadora.
 - Colaborador: a tela e a lista seguem a regra geral (rota sem o slug do agente nasce fechada, ver
   `web/lib/escopo.js`). Só `docs.md` fica aberto, como toda documentação.
 

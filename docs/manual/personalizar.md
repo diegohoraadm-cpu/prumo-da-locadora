@@ -47,10 +47,10 @@ Se o pedido esbarra em algum deles, o Admin explica o risco e propõe outro cami
 
 | Comando | Para que serve |
 | --- | --- |
-| `sudo dgclaw personalizacoes levantar` | Lista o que foi personalizado: registro, clone, cópias do instalador e conversas do Admin |
-| `sudo dgclaw personalizacoes conferir` | Confere o registro contra a versão nova e diz se algo cruza. Não muda nada |
-| `sudo dgclaw personalizacoes concluir` | Marca o levantamento pendente como concluído |
-| `sudo dgclaw atualizar --simular` | Mostra, entre outras coisas, o cruzamento das personalizações com a versão nova |
+| `sudo prumo personalizacoes levantar` | Lista o que foi personalizado: registro, clone, cópias do instalador e conversas do Admin |
+| `sudo prumo personalizacoes conferir` | Confere o registro contra a versão nova e diz se algo cruza. Não muda nada |
+| `sudo prumo personalizacoes concluir` | Marca o levantamento pendente como concluído |
+| `sudo prumo atualizar --simular` | Mostra, entre outras coisas, o cruzamento das personalizações com a versão nova |
 
 ## Se der erro
 

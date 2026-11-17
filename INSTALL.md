@@ -58,8 +58,8 @@ Nesse modo o Caddy usa um certificado interno, o instalador não consulta o IP p
 80 e 443 no firewall. O Caddy escuta só no loopback (127.0.0.1 e ::1), por isso o túnel (cloudflared) precisa
 rodar no próprio servidor. Com isso o Caddy passa o IP real do visitante ao painel (cabeçalho
 `Cf-Connecting-IP`), e o limite de tentativas de login vale por pessoa, e não para todo mundo junto. A escolha fica gravada em
-`/etc/dgclaw/dgclaw.env` e vale também para reinstalações, para o `dgclaw atualizar` e para o
-`dgclaw dominio trocar`. Para desligar o modo, rode o instalador de novo com `--sem-tunel`.
+`/etc/dgclaw/dgclaw.env` e vale também para reinstalações, para o `prumo atualizar` e para o
+`prumo dominio trocar`. Para desligar o modo, rode o instalador de novo com `--sem-tunel`.
 
 No túnel (Cloudflare Zero Trust), crie o Public Hostname com o domínio escolhido e aponte para
 `https://127.0.0.1:443`. Em TLS, preencha **Origin Server Name** com o próprio domínio e ligue **No TLS Verify**.
@@ -94,7 +94,7 @@ O instalador mostra o andamento em português, com explicações e mensagens de 
 
 A duração depende da rede e dos pacotes já instalados. `--ensaio` mostra as mudanças previstas sem
 aplicá-las. Com `--com-imagem`, a imagem dos futuros agentes é construída enquanto você cadastra a senha
-e conhece o painel (de 10 a 20 minutos na primeira vez); acompanhe com `dgclaw imagem status`. Sem essa
+e conhece o painel (de 10 a 20 minutos na primeira vez); acompanhe com `prumo imagem status`. Sem essa
 opção, o Admin faz a preparação quando você cria o primeiro agente, e a espera acontece nessa hora.
 
 ## Opções do instalador
@@ -136,11 +136,11 @@ O que muda nesse modo:
   comando do DNS. Para o nginx: salve em `/etc/nginx/sites-available/dgclaw`, ligue com um link em
   `sites-enabled`, rode `nginx -t && systemctl reload nginx` e peça o HTTPS com `certbot --nginx -d <dominio>`.
 - **O link de primeiro acesso só abre depois que o proxy estiver apontando** para o Prumo da Locadora, e vale 30
-  minutos. Se expirar, `sudo dgclaw primeiro-acesso` gera outro.
+  minutos. Se expirar, `sudo prumo primeiro-acesso` gera outro.
 - **O modo fica guardado** (`DGCLAW_PROXY_EXISTENTE=1` no `dgclaw.env`), então rodar o instalador de novo
-  e `sudo dgclaw atualizar` continuam atrás do seu proxy sem repetir a opção. Para voltar ao Caddy do DG
+  e `sudo prumo atualizar` continuam atrás do seu proxy sem repetir a opção. Para voltar ao Caddy do DG
   Claw: `sudo ./install.sh --usuario maria --sem-proxy-existente`.
-- `sudo dgclaw dominio` mostra o domínio, a porta e os trechos de novo, e `sudo dgclaw dominio trocar
+- `sudo prumo dominio` mostra o domínio, a porta e os trechos de novo, e `sudo prumo dominio trocar
   <nome>` só grava o nome e imprime os trechos novos (o proxy você atualiza). Fora isso, a cerca de rede
   que isola os agentes do servidor é instalada igual nos dois modos.
 
@@ -161,9 +161,9 @@ rede de cada agente, então ele para e explica.
 ## Primeiro acesso
 
 Abra o **link de primeiro acesso** no navegador, cadastre a senha e você já entra no chat do **Admin**.
-O link vale 30 minutos e funciona uma única vez. Se expirar, gere outro com `sudo dgclaw primeiro-acesso`
+O link vale 30 minutos e funciona uma única vez. Se expirar, gere outro com `sudo prumo primeiro-acesso`
 (ou `sudo ./install.sh --novo-primeiro-acesso`; a senha antiga vale até o link ser usado). Para trocar a
-senha depois, use `sudo dgclaw senha`. Rodar o instalador de novo numa máquina que já tem senha mantém a
+senha depois, use `sudo prumo senha`. Rodar o instalador de novo numa máquina que já tem senha mantém a
 atual, porque só o hash fica guardado.
 
 ## Primeiro agente
@@ -203,19 +203,19 @@ que algo parou) com uma chave de suporte. Ela não lê conversas, memória nem a
 máquina é sua: você revoga a chave quando quiser.
 
 - Para criar, abra **Suporte remoto** no menu e toque em **Criar chave**, ou rode
-  `sudo dgclaw chave-api criar --escopo diagnostico --nome "suporte"`. O token aparece uma única vez.
-- Para revogar, use o botão **Revogar** na tela ou `sudo dgclaw chave-api revogar <código>` (o código
-  aparece em `sudo dgclaw chave-api listar`).
+  `sudo prumo chave-api criar --escopo diagnostico --nome "suporte"`. O token aparece uma única vez.
+- Para revogar, use o botão **Revogar** na tela ou `sudo prumo chave-api revogar <código>` (o código
+  aparece em `sudo prumo chave-api listar`).
 - Com a instalação padrão não há nada a configurar na rede. Se você pôs o Cloudflare Access ou outro
   porteiro na frente do painel, libere o caminho `/api/v1/diagnostico` para a chave passar.
 
 ## Atualizar
 
 Para atualizar um Prumo da Locadora já instalado, peça ao Admin: **"atualiza o Prumo da Locadora"**. Ele segue o roteiro
-[docs/ATUALIZAR.md](docs/ATUALIZAR.md) e usa `sudo dgclaw atualizar`, que faz um backup datado em
+[docs/ATUALIZAR.md](docs/ATUALIZAR.md) e usa `sudo prumo atualizar`, que faz um backup datado em
 `/var/backups/dgclaw/`, baixa a versão nova, reinstala, recria a máquina de cada agente e confere que
-chaves, senha, memória, conversas, cofres e rotinas continuam como estavam. `sudo dgclaw atualizar --simular`
-mostra tudo sem mudar nada, e `sudo dgclaw atualizar --voltar <pasta-do-backup>` desfaz.
+chaves, senha, memória, conversas, cofres e rotinas continuam como estavam. `sudo prumo atualizar --simular`
+mostra tudo sem mudar nada, e `sudo prumo atualizar --voltar <pasta-do-backup>` desfaz.
 
 A [arquitetura](docs/ARQUITETURA.md) descreve os componentes. O [README](README.md) lista os serviços,
 as pastas e o procedimento para desfazer a instalação.
@@ -223,13 +223,13 @@ as pastas e o procedimento para desfazer a instalação.
 ## Instalação remota (opção secundária)
 
 O fluxo padrão acima continua sendo o da aula: a própria pessoa instala na VPS dela. Use esta opção só
-quando a equipe instala o DG Claw na VPS de outra pessoa e quer entregar tudo pronto.
+quando a equipe instala o Prumo da Locadora na VPS de outra pessoa e quer entregar tudo pronto.
 
 1. Faça a instalação normal, como descrito acima.
 2. No fim, rode:
 
    ```bash
-   sudo dgclaw instalacao-remota
+   sudo prumo instalacao-remota
    ```
 
 O comando troca a senha do painel por uma senha forte nova (cinco grupos de quatro letras e números,

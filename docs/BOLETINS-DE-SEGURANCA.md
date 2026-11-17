@@ -1,7 +1,7 @@
-# Boletins de segurança do DG Claw
+# Boletins de segurança do Prumo da Locadora
 
-Quando é descoberta uma falha de segurança numa das ferramentas que o DG Claw usa, a equipe publica um
-**boletim** no repositório oficial. O DG Claw instalado percebe sozinho e avisa o dono: o aviso único
+Quando é descoberta uma falha de segurança numa das ferramentas que o Prumo da Locadora usa, a equipe publica um
+**boletim** no repositório oficial. O Prumo da Locadora instalado percebe sozinho e avisa o dono: o aviso único
 "Seu ambiente está em risco" no painel (uma janela só, que reúne os boletins e as falhas críticas da
 [ronda de segurança](RONDA-DE-SEGURANCA.md)), um selo discreto que fica no alto das telas até o assunto se
 resolver, e um recado ao Admin, que conta ao dono no chat.
@@ -12,13 +12,13 @@ com o sim explícito do dono, pelo roteiro de [ATUALIZAR.md](ATUALIZAR.md).
 ## De onde vem o aviso
 
 1. Uma ronda de segurança acompanha as fontes oficiais (avisos do GitHub, das distribuições Linux, dos
-   projetos que o DG Claw usa) e prepara o boletim.
+   projetos que o Prumo da Locadora usa) e prepara o boletim.
 2. O boletim só é publicado depois que o Danilo aprova, por um pull request, e **depois que a correção
    entrou na `main`**. O boletim vai no arquivo `seguranca/boletins.json` do repositório.
 3. Todo boletim tem uma **fonte oficial** (o registro da falha feito por quem mantém a ferramenta). Sem
    fonte, o boletim é descartado: nada de alerta sem prova.
 
-No Prumo da Locadora, os boletins chegam junto com a atualização que traz a correção do DG Claw para cá: o aviso só aparece quando o `dgclaw atualizar` já resolve.
+No Prumo da Locadora, os boletins chegam junto com a atualização que traz a correção do Prumo da Locadora para cá: o aviso só aparece quando o `prumo atualizar` já resolve.
 
 O formato do arquivo está em `docs/interno/CONTRATO-BOLETINS.md`.
 
@@ -51,7 +51,7 @@ antes de aparecer na tela. A tela escapa todo texto.
 - **O selo "🛡 N pontos de segurança"** fica no alto das telas enquanto houver algum ponto em risco, e leva à
   tela Segurança. Conta os boletins ainda não dispensados (inclusive os adiados com "Lembrar depois") e as
   falhas críticas da ronda em aberto, sem decisão do dono.
-- **O detalhe fica na tela Segurança**, na seção "Avisos de segurança do DG Claw": a data, a gravidade, o link
+- **O detalhe fica na tela Segurança**, na seção "Avisos de segurança do Prumo da Locadora": a data, a gravidade, o link
   da fonte oficial, a notícia, o que muda no sistema e os detalhes, com as ações de sempre.
 - **Atualizar**: leva ao chat do Admin com o pedido já escrito no campo. O dono só envia.
 - **Lembrar depois**: adia o lembrete do boletim por 24 horas no servidor. O aviso continua contando no selo e
@@ -63,7 +63,7 @@ antes de aparecer na tela. A tela escapa todo texto.
 
 O recado ao Admin tem **texto fixo**, com só o id e a gravidade do boletim (conferidos por regex e lista de
 valores). Nenhum texto escrito por terceiros chega ao Admin. Ele manda o Admin contar ao dono, recomendar a
-atualização e **nunca rodar `dgclaw atualizar` sem o sim explícito do dono**. Sai um recado por id.
+atualização e **nunca rodar `prumo atualizar` sem o sim explícito do dono**. Sai um recado por id.
 
 ## Como desligar
 

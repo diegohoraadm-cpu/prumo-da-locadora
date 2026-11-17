@@ -1,6 +1,6 @@
 # Changelog
 
-Todas as mudanças importantes do DG Claw ficam neste arquivo.
+Todas as mudanças importantes do Prumo da Locadora ficam neste arquivo.
 
 O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto adota o
 [Versionamento Semântico](https://semver.org/lang/pt-BR/).
@@ -9,7 +9,7 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 Base do original: f4efccc (#129).
 
-- Atualizando da versão anterior para a 1.0.5, a tela termina com "Atualizacao INCOMPLETA" e uma linha FALHOU para cada agente, pedindo `dgclaw agente recriar <slug> --forcar`. Isso é esperado só desta vez: a 1.0.5 passou a conferir o que existe só dentro da caixa de cada agente antes de trocá-la, e os agentes antigos ainda não têm a referência dessa conferência. Enquanto você não roda o comando, cada agente segue funcionando na versão anterior. A casa do agente, a memória, o cofre e as conversas não são tocados. O `--forcar` troca a caixa pela versão nova e perde só o que foi instalado à mão dentro dela; a lista fica em `/var/lib/dgclaw/agentes/<slug>/perdido-no-recriar-<data>.txt`. As rotinas padrão do agente voltam ao padrão (se você tinha pedido para mudar o horário de alguma, peça de novo depois). Depois do `--forcar`, as próximas atualizações não pedem mais nada.
+- Atualizando da versão anterior para a 1.0.5, a tela termina com "Atualizacao INCOMPLETA" e uma linha FALHOU para cada agente, pedindo `prumo agente recriar <slug> --forcar`. Isso é esperado só desta vez: a 1.0.5 passou a conferir o que existe só dentro da caixa de cada agente antes de trocá-la, e os agentes antigos ainda não têm a referência dessa conferência. Enquanto você não roda o comando, cada agente segue funcionando na versão anterior. A casa do agente, a memória, o cofre e as conversas não são tocados. O `--forcar` troca a caixa pela versão nova e perde só o que foi instalado à mão dentro dela; a lista fica em `/var/lib/dgclaw/agentes/<slug>/perdido-no-recriar-<data>.txt`. As rotinas padrão do agente voltam ao padrão (se você tinha pedido para mudar o horário de alguma, peça de novo depois). Depois do `--forcar`, as próximas atualizações não pedem mais nada.
 
 ## [Não lançado]
 

@@ -26,7 +26,7 @@ Não confunda o provedor `gemini` com a skill `gemini-gratuito`: a skill só con
 **Chave de API.** Ao trocar para a API, a janela pede a chave se o cofre não a tem. O painel confere a forma (a da Anthropic começa com `sk-ant-` e a da OpenAI com `sk-`), guarda no cofre e reinicia o agente. A chave não vai para o log nem volta em nenhuma resposta.
 **Precisa de.** Uma conta no provedor escolhido. Cada pessoa usa a própria conta.
 **Limites.** O cartão fica amarelo quando o que foi escolhido e o que o programa confirma não batem (por exemplo, "configurado na API, mas a chave não está no Cofre" ou "o agente não está logado na assinatura"), e o texto diz o que fazer.
-**Se der erro.** Siga o texto do cartão. Se o agente ficou sem sinal, o Admin roda `dgclaw agente reparar <slug>`. Mais em [../../panel/docs/PROVEDOR-NA-TELA.md](../../panel/docs/PROVEDOR-NA-TELA.md), [../PROVEDORES.md](../PROVEDORES.md) e [../../web/docs/CONECTAR-CONTA.md](../../web/docs/CONECTAR-CONTA.md).
+**Se der erro.** Siga o texto do cartão. Se o agente ficou sem sinal, o Admin roda `prumo agente reparar <slug>`. Mais em [../../panel/docs/PROVEDOR-NA-TELA.md](../../panel/docs/PROVEDOR-NA-TELA.md), [../PROVEDORES.md](../PROVEDORES.md) e [../../web/docs/CONECTAR-CONTA.md](../../web/docs/CONECTAR-CONTA.md).
 
 ## O que muda entre Claude e Codex
 

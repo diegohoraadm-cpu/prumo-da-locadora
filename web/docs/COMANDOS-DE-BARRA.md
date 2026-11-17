@@ -1,6 +1,6 @@
 # Comandos de barra na conversa
 
-Na conversa do DG Claw Web, uma mensagem que começa com `/` é um **comando**, e não texto solto.
+Na conversa do Prumo da Locadora Web, uma mensagem que começa com `/` é um **comando**, e não texto solto.
 Ela chega no Claude Code (ou no Codex) do agente do mesmo jeito que chegaria se a pessoa digitasse
 no terminal dele: `/compact` compacta a sessão, `/clear` começa uma conversa limpa e `/agenda me
 lembra amanhã às 9h` roda a skill `agenda` com aquele pedido.
@@ -23,7 +23,7 @@ trata como comando de verdade. Quem decide se a mensagem é comando é o Web, no
 (`web/lib/comandos.js`), antes de entregar. A regra:
 
 1. O texto (já sem espaços nas pontas) casa com `^/([A-Za-z0-9][A-Za-z0-9:._-]*)(\s+[\s\S]*)?$`.
-   `/compact`, `/model sonnet` e `/dgclaw:aprender` casam. Um caminho como `/root/arquivo.txt` não
+   `/compact`, `/model sonnet` e `/aprender` casam. Um caminho como `/root/arquivo.txt` não
    casa (a segunda barra quebra o nome) e segue como texto normal.
 2. A mensagem não tem anexos. Com anexo, é sempre texto normal.
 3. Duas barras no começo (`//texto`) mandam `/texto` como mensagem comum, sem tentar comando.
@@ -175,7 +175,7 @@ Claude Code, como evento de canal. Lá um `/nome` não vira comando nativo. A re
 - mensagem do dono no Telegram que começa com `/<nome-de-uma-skill-sua>`: rode a skill com o resto
   da mensagem como argumento;
 - `/compact`, `/clear` e os outros nativos: responda que pelo Telegram eles não rodam e que é só
-  mandar o mesmo comando pela conversa do painel (o DG Claw Web);
+  mandar o mesmo comando pela conversa do painel (o Prumo da Locadora Web);
 - `/start` (o primeiro toque do Telegram): cumprimente, como sempre.
 
 O WhatsApp é canal de terceiros (clientes e contatos). Mensagem de lá que começa com `/` é sempre

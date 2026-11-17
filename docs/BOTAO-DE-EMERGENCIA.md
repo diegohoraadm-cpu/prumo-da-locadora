@@ -4,7 +4,7 @@ Quando uma falha crítica está sendo explorada e a correção ainda não pode s
 tira o servidor da internet. O painel, os sites e tudo o que é público saem do ar. **O seu acesso de administração
 pelo Tailscale continua entrando.** Se ninguém confirmar em 5 minutos, o servidor religa sozinho.
 
-Tela: menu **Segurança**, bloco "Botão de emergência". Terminal: `sudo dgclaw emergencia ...`. Rotas para agentes:
+Tela: menu **Segurança**, bloco "Botão de emergência". Terminal: `sudo prumo emergencia ...`. Rotas para agentes:
 `GET /api/v1/seguranca/ronda/docs.md`.
 
 ## O que ele faz, na ordem
@@ -23,7 +23,7 @@ Tela: menu **Segurança**, bloco "Botão de emergência". Terminal: `sudo dgclaw
    com `--isolar-saida` sobram só o DNS, o admin e a rede dos agentes, e o tráfego dos containers para a internet
    (`forward`) também é bloqueado. O IPv6 mantém a descoberta de vizinhos (NDP), senão o endereço de administração
    some da rede. Com `--isolar-saida`, a resposta de DNS (conexão estabelecida na porta 53) também passa.
-5. **Você confirma** do seu aparelho (`sudo dgclaw emergencia confirmar`) e o religar automático é cancelado.
+5. **Você confirma** do seu aparelho (`sudo prumo emergencia confirmar`) e o religar automático é cancelado.
    O corte fica até você religar.
 
 **O painel também sai do ar**, porque ele é servido pelo mesmo proxy. Por isso a confirmação e o religar são feitos
@@ -36,13 +36,13 @@ pelo servidor (SSH pelo Tailscale). A tela avisa isso antes de cortar.
 `cortar` e `religar` exigem esse código. Na tela, além do código, você digita `TIRAR-DO-AR` (ou `RELIGAR`).
 
 ```
-sudo dgclaw emergencia simular                 # só mostra o plano, não muda nada
-sudo dgclaw emergencia preparar                # gera o código e mostra o plano
-sudo dgclaw emergencia cortar --codigo K7M2PQ  # tira do ar (--isolar-saida também bloqueia a saída)
-sudo dgclaw emergencia confirmar               # cancela o religar automático
-sudo dgclaw emergencia preparar                # (de novo) código para religar
-sudo dgclaw emergencia religar --codigo X4TN8B # volta ao normal e testa que tudo voltou
-sudo dgclaw emergencia estado                  # cortado ou normal, e o que está parado
+sudo prumo emergencia simular                 # só mostra o plano, não muda nada
+sudo prumo emergencia preparar                # gera o código e mostra o plano
+sudo prumo emergencia cortar --codigo K7M2PQ  # tira do ar (--isolar-saida também bloqueia a saída)
+sudo prumo emergencia confirmar               # cancela o religar automático
+sudo prumo emergencia preparar                # (de novo) código para religar
+sudo prumo emergencia religar --codigo X4TN8B # volta ao normal e testa que tudo voltou
+sudo prumo emergencia estado                  # cortado ou normal, e o que está parado
 ```
 
 O religar apaga a tabela inteira (`nft delete table inet dgclaw_emergencia`, identidade fixa, sem número de regra),
@@ -66,22 +66,22 @@ O que o sistema faz com isso:
 - O `estado` confere o firewall efetivo: marcador `cortado` sem a tabela nft carregada aparece como **INCONSISTENTE**
   (`"inconsistente": true` e `"motivo_inconsistente"` no `--json`). O painel mostra isso em vermelho, como "Falha de proteção".
 - A ronda e o vigia avisam o Admin com um recado de texto fixo: "o corte de emergência não está mais valendo,
-  provavelmente depois de um reinício; reaplique com sudo dgclaw emergencia preparar e cortar, ou religue".
+  provavelmente depois de um reinício; reaplique com sudo prumo emergencia preparar e cortar, ou religue".
 
 **O que fazer depois de reiniciar:**
 
-1. Se ainda quer o servidor fora do ar: `sudo dgclaw emergencia preparar` e depois `sudo dgclaw emergencia cortar --codigo <código>`.
+1. Se ainda quer o servidor fora do ar: `sudo prumo emergencia preparar` e depois `sudo prumo emergencia cortar --codigo <código>`.
    O `cortar` é aceito no estado inconsistente, recarrega a tabela, para de novo os serviços públicos e **preserva** o
    estado guardado de antes do corte (`antes/`) e a lista original de serviços parados, então o religar seguinte
    ainda sabe o que religar. Depois rode `confirmar` de novo, porque a confirmação antiga é descartada.
-2. Se a situação já passou: `sudo dgclaw emergencia preparar` e `sudo dgclaw emergencia religar --codigo <código>`.
+2. Se a situação já passou: `sudo prumo emergencia preparar` e `sudo prumo emergencia religar --codigo <código>`.
 
 Se o corte ainda não tinha sido confirmado, o timer transitório de religar automático também se perde no reinício; o
 estado fica inconsistente do mesmo jeito e vale o mesmo caminho.
 
 ## Ver o arquivo nft antes de cortar
 
-`sudo dgclaw emergencia simular [--isolar-saida]` mostra o arquivo nft exato que seria carregado. O `cortar` grava
+`sudo prumo emergencia simular [--isolar-saida]` mostra o arquivo nft exato que seria carregado. O `cortar` grava
 esse arquivo em `/var/lib/dgclaw/emergencia/emergencia.nft` e o valida com `nft -c -f` **antes** de agendar o
 religar ou parar qualquer serviço: se o nft recusar, nada é mudado.
 
@@ -102,7 +102,7 @@ URLS_TESTE_RELIGAR=""      # vazio = https://<DGCLAW_DOMINIO do dgclaw.env>/
 ## Para o painel
 
 Cada comando regrava `/var/lib/dgclaw/web/seguranca/emergencia.json` (estado, se está disponível e o motivo, e o
-plano), que a tela lê. O motor da ronda mantém esse arquivo fresco rodando `dgclaw emergencia estado` de tempos
+plano), que a tela lê. O motor da ronda mantém esse arquivo fresco rodando `prumo emergencia estado` de tempos
 em tempos. Os cliques da tela viram pedidos que o root executa (`docs/interno/CONTRATO-RONDA.md`).
 
 ## Testes

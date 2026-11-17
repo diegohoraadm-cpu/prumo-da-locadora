@@ -7,9 +7,9 @@ Quem cria e cuida dos agentes é o Admin, a sessão administradora do servidor. 
 ## Criar um agente
 
 **O que é.** Cada agente de trabalho é uma máquina própria (um container sem root) com casa de arquivos, identidade, painel, conversa e cofre. Ele não enxerga o servidor, o Admin nem os outros agentes.
-**Como pedir.** Na conversa com o Admin: "cria um agente para organizar a minha agenda". O Admin pergunta uma coisa por vez (nome, função, jeito de falar, como chamar o dono) e roda `dgclaw agente criar <slug> --nome "<Nome>"`. A primeira vez tem o formulário descrito em [conversa-e-telas.md](conversa-e-telas.md).
+**Como pedir.** Na conversa com o Admin: "cria um agente para organizar a minha agenda". O Admin pergunta uma coisa por vez (nome, função, jeito de falar, como chamar o dono) e roda `prumo agente criar <slug> --nome "<Nome>"`. A primeira vez tem o formulário descrito em [conversa-e-telas.md](conversa-e-telas.md).
 **Opções.** `--provedor claude|codex` (padrão `claude`), `--auth assinatura|api` (padrão `assinatura`), `--modelo`, `--papel`, `--jeito`, `--dono`, `--canal chat|telegram|whatsapp` (padrão `chat`), `--avatar` e `--cor`.
-**Precisa de.** A imagem dos agentes pronta (`dgclaw imagem status`; na primeira criação ela é construída). Depois, a conta do provedor conectada em `/conectar`.
+**Precisa de.** A imagem dos agentes pronta (`prumo imagem status`; na primeira criação ela é construída). Depois, a conta do provedor conectada em `/conectar`.
 **Limites.** `--canal telegram` ou `whatsapp` só deixa anotada a intenção; ligar o canal é um passo à parte (veja [canais.md](canais.md)). Rodar o mesmo comando de novo continua de onde parou, sem duplicar nada.
 **Se der erro.** O comando diz o que falhou e o que fazer. Se parar no meio, repita a mesma linha.
 
@@ -17,21 +17,21 @@ Quem cria e cuida dos agentes é o Admin, a sessão administradora do servidor. 
 
 | Pedido ao Admin | Comando | O que faz |
 | --- | --- | --- |
-| "lista meus agentes" | `dgclaw agente listar` | Mostra quem existe e quem está de pé |
-| "para / liga / reinicia a Ana" | `dgclaw agente parar`, `dgclaw agente iniciar`, `dgclaw agente reiniciar` | Controla o container do agente |
-| "o agente da Ana está com problema, conserta" | `dgclaw agente reparar <slug>` | Regrava a configuração e refaz a parte de dentro (runner, painel e rotinas) |
-| (feito pela atualização) | `dgclaw agente recriar <slug>` | Troca o container pela imagem nova e mantém a casa, o cofre, as portas e as rotinas |
-| "tira a Ana do ar" | `dgclaw agente remover <slug>` | Tira o agente do ar sem apagar: a casa vai para `/var/lib/dgclaw/aposentados/` |
+| "lista meus agentes" | `prumo agente listar` | Mostra quem existe e quem está de pé |
+| "para / liga / reinicia a Ana" | `prumo agente parar`, `prumo agente iniciar`, `prumo agente reiniciar` | Controla o container do agente |
+| "o agente da Ana está com problema, conserta" | `prumo agente reparar <slug>` | Regrava a configuração e refaz a parte de dentro (runner, painel e rotinas) |
+| (feito pela atualização) | `prumo agente recriar <slug>` | Troca o container pela imagem nova e mantém a casa, o cofre, as portas e as rotinas |
+| "tira a Ana do ar" | `prumo agente remover <slug>` | Tira o agente do ar sem apagar: a casa vai para `/var/lib/dgclaw/aposentados/` |
 
 **Limites.** `remover` pede confirmação e nunca apaga a casa do agente. `recriar` só age quando a imagem mudou (`--forcar` recria mesmo assim). Agente parado fica parado.
-**Se der erro.** O primeiro passo é `dgclaw agente reparar <slug>`. Se o agente parece mudo ou estranho, a aba `aba:socorro` abre um ajudante de plantão (veja [Socorro](#socorro)).
+**Se der erro.** O primeiro passo é `prumo agente reparar <slug>`. Se o agente parece mudo ou estranho, a aba `aba:socorro` abre um ajudante de plantão (veja [Socorro](#socorro)).
 
 ## Identidade e personalidade
 
 **O que é.** A identidade do agente fica em arquivos de texto na casa dele: `AGENT.md` (quem ele é), `IDENTITY.md`, `PERSONALITY.md`, `MEMORY.md`, entre outros. A aba `aba:identity` do painel mostra e edita esses arquivos; a aba `aba:personality` mostra os números que regulam o jeito dele e as metas.
 **Como pedir.** "Muda o jeito da Ana falar para mais direto." O agente ou o Admin edita o arquivo. O dono também edita direto na aba. Depois de salvar, o painel oferece **Avisar ele agora**, porque o agente só relê o arquivo no começo da próxima conversa.
 **Precisa de.** Nada.
-**Limites.** Se o agente escreveu no mesmo arquivo enquanto o dono editava, o servidor recusa a gravação e deixa o texto do dono na caixa, com botões para copiar o texto ou carregar a versão do agente. Para regravar só a identidade sem reiniciar o agente, o Admin usa `dgclaw agente identidade <slug>`: vale na próxima sessão.
+**Limites.** Se o agente escreveu no mesmo arquivo enquanto o dono editava, o servidor recusa a gravação e deixa o texto do dono na caixa, com botões para copiar o texto ou carregar a versão do agente. Para regravar só a identidade sem reiniciar o agente, o Admin usa `prumo agente identidade <slug>`: vale na próxima sessão.
 **Se der erro.** Mais em [../../panel/docs/CEREBRO.md](../../panel/docs/CEREBRO.md) e em [personalizar.md](personalizar.md).
 
 ## Mesa de tarefas
@@ -47,7 +47,7 @@ Quem cria e cuida dos agentes é o Admin, a sessão administradora do servidor. 
 **O que é.** A primeira aba da Mesa (`/mesa`): cada pedido do dono a um agente vira um item, na ordem em que chegou, com o estado `fazendo`, `esperando_dono`, `entregue`, `feito` ou `cancelado`. O agente abre o item antes de começar e o move enquanto trabalha; o dono acompanha, abre o item entregue, marca como feito ou cancela.
 **Como pedir.** "O que eu pedi e ainda não foi entregue?", "me mostra a fila de pedidos". Pelo lado do agente, o comando é `dgclaw-mesa pedido` (`criar`, `fazendo`, `esperar`, `entregar`, `cancelar`, `listar`, `ver`).
 **Precisa de.** Nada. A fila fica na pasta de dados do Web, sem serviço externo.
-**Limites.** O agente nunca marca `feito`: o pedido entregue vira `feito` quando o dono abre o item na tela ou escreve na conversa daquele agente depois da entrega. O agente só vê e mexe nos próprios pedidos. A lista padrão mostra os abertos e os fechados de hoje e de ontem; o resto fica arquivado e sai com "Ver arquivados". Não existe vigia que abra sozinho o item que o agente esqueceu. A regra "Fila de pedidos" entra nos agentes antigos regravando a identidade deles (`dgclaw agente identidade <agente>`).
+**Limites.** O agente nunca marca `feito`: o pedido entregue vira `feito` quando o dono abre o item na tela ou escreve na conversa daquele agente depois da entrega. O agente só vê e mexe nos próprios pedidos. A lista padrão mostra os abertos e os fechados de hoje e de ontem; o resto fica arquivado e sai com "Ver arquivados". Não existe vigia que abra sozinho o item que o agente esqueceu. A regra "Fila de pedidos" entra nos agentes antigos regravando a identidade deles (`prumo agente identidade <agente>`).
 **Se der erro.** Os erros da rota vêm em português com o motivo. Mais em [../../web/docs/PEDIDOS.md](../../web/docs/PEDIDOS.md).
 
 ## Quadro de avisos
@@ -64,7 +64,7 @@ Quem cria e cuida dos agentes é o Admin, a sessão administradora do servidor. 
 **Como usar.** Item **Navegador** do menu do agente, ou a aba `aba:tela` do painel. Na primeira vez, a tela pede uma senha própria da Tela, de 6 a 8 caracteres. A skill `tela` ensina o agente a mandar o dono para lá quando um site pedir login, código de duas etapas ou captcha.
 **Precisa de.** A imagem dos agentes com navegador (é a padrão).
 **Limites.** O Admin não tem Tela. O colaborador não abre a Tela, porque ela dá acesso às contas do agente. Os logins ficam em `/home/agente/.tela-chrome` e acompanham a casa do agente.
-**Se der erro.** O Admin confere com `dgclaw agente tela <slug>`, que diz o que está de pé e o que falta, e troca a senha com `dgclaw agente tela-senha <slug>`. Mais em [../TELA-DO-AGENTE.md](../TELA-DO-AGENTE.md) e [../../panel/docs/TELA.md](../../panel/docs/TELA.md).
+**Se der erro.** O Admin confere com `prumo agente tela <slug>`, que diz o que está de pé e o que falta, e troca a senha com `prumo agente tela-senha <slug>`. Mais em [../TELA-DO-AGENTE.md](../TELA-DO-AGENTE.md) e [../../panel/docs/TELA.md](../../panel/docs/TELA.md).
 
 ## Sessões e cards (mini-Bunker)
 
@@ -84,7 +84,7 @@ Quem cria e cuida dos agentes é o Admin, a sessão administradora do servidor. 
 ## Cofre e chaves
 
 **O que é.** O cofre guarda as chaves dos serviços que o agente usa (gerar imagem, transcrever áudio, chave de API do provedor). Fica na aba `aba:cofre`. Cada agente tem o seu, e a chave de um não vale para outro. O dono vê quem guardou, quando e os quatro últimos caracteres, nunca o valor.
-**Como pedir.** O agente mostra um cartão com campo de senha na conversa (veja [conversa-e-telas.md](conversa-e-telas.md)), ou o dono cola na aba. O Admin guarda por comando, com o valor pela entrada padrão: `dgclaw agente cofre <slug> guardar NOME --aplicar`. Também existem `revogar`, `listar` e `aplicar`.
+**Como pedir.** O agente mostra um cartão com campo de senha na conversa (veja [conversa-e-telas.md](conversa-e-telas.md)), ou o dono cola na aba. O Admin guarda por comando, com o valor pela entrada padrão: `prumo agente cofre <slug> guardar NOME --aplicar`. Também existem `revogar`, `listar` e `aplicar`.
 **Chaves de API do painel.** A mesma aba cria chaves `dgc_...` para outro programa ou agente usar a API do painel. Uma chave de API não cria outra, e só se guarda o hash.
 **Limites.** A chave é do dono e a conta também: o gasto é cobrado dele pelo serviço. Guardar reinicia o agente, a não ser que se peça o contrário. O colaborador não mexe no cofre.
 **Se der erro.** Mais em [../../panel/docs/COFRE.md](../../panel/docs/COFRE.md) e [../COFRE-POR-API.md](../COFRE-POR-API.md).
@@ -102,7 +102,7 @@ Quem cria e cuida dos agentes é o Admin, a sessão administradora do servidor. 
 **Como convidar.** Só o dono convida, pela tela `/colaboradores` (menu ☰, item **Convidar colaborador**, com o agente escolhido). Digite o e-mail da pessoa, toque em **Convidar** e mande o texto do convite (ou deixe o e-mail sair, se o SMTP estiver configurado). A senha temporária vale 7 dias e a pessoa cria a própria senha em `/trocar-senha` no primeiro acesso.
 **O Admin não convida.** A rota `/api/v1/colaboradores` só aceita a sessão do dono no navegador: pedido que chega pela caixa de um agente (`dgclaw-api`) leva 403, e não achei no código outro jeito de o Admin chamar essa rota. O texto de instrução do Admin ainda sugere a API, mas vale o que está aqui: o Admin orienta o dono a usar a tela.
 **Limites.** Um agente pode ter vários colaboradores, e cada colaborador acessa um agente só. O Admin nunca é compartilhado. As mensagens dele chegam ao agente marcadas como vindas de um colaborador. O dono revoga o acesso a qualquer momento e a sessão cai na hora.
-**Se der erro.** E-mail não enviado: a tela mostra o motivo e o texto do convite para copiar. Mais em [../../web/docs/COLABORADORES.md](../../web/docs/COLABORADORES.md). A criação do colaborador pelo Admin (`dgclaw colaborador`) está em [em-desenvolvimento.md](em-desenvolvimento.md).
+**Se der erro.** E-mail não enviado: a tela mostra o motivo e o texto do convite para copiar. Mais em [../../web/docs/COLABORADORES.md](../../web/docs/COLABORADORES.md). A criação do colaborador pelo Admin (`prumo colaborador`) está em [em-desenvolvimento.md](em-desenvolvimento.md).
 
 ## Skills
 
@@ -145,7 +145,7 @@ A criação de um agente liga estas 14 skills à casa dele: `agenda`, `lembretes
 
 **Nota sobre as skills do plugin antigo.** `doctor`, `importar`, `panel`, `service`, `uninstall` e `powers` foram escritas para o assistente de um agente só, instalado sem containers, e chamam scripts e serviços que esse modelo usava. No Prumo da Locadora v1 o equivalente vem do Admin e da CLI `dgclaw`. Por isso, confira cada uma antes de oferecê-la a alguém.
 
-**Se uma skill não funciona.** Conte ao Admin o que falhou e peça `dgclaw agente reparar <slug>`. Uma skill com o mesmo nome de um comando nativo perde a disputa na barra de comandos.
+**Se uma skill não funciona.** Conte ao Admin o que falhou e peça `prumo agente reparar <slug>`. Uma skill com o mesmo nome de um comando nativo perde a disputa na barra de comandos.
 
 ## Poderes (powers)
 

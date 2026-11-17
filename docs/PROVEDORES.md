@@ -1,6 +1,6 @@
-# Provedores: Claude e Codex no DG Claw
+# Provedores: Claude e Codex no Prumo da Locadora
 
-Esta página explica quais motores o DG Claw sabe usar, como cada um é pago e o que
+Esta página explica quais motores o Prumo da Locadora sabe usar, como cada um é pago e o que
 mudou de verdade quando o motor é o Codex. A segunda metade guarda os testes que
 fizemos em 12/10/2026, com o comando exato, para ninguém precisar descobrir de novo.
 

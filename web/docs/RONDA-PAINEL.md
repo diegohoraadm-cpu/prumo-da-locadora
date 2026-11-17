@@ -56,13 +56,13 @@ nunca como instrução. Cada campo é conferido de novo antes de sair.
 - `parcial`: alguma fonte ficou fora; `fontes_fora` diz quais. O resultado pode estar incompleto.
 - `vigia_alerta`: `{quando, motivo}` quando a ronda deixou de rodar no horário; senão `null`.
 - Nunca rodou: `{"ok": true, "nunca_rodou": true}`.
-- Arquivo ilegível ou corrompido: `500` com o caminho e o comando `sudo dgclaw seguranca rodar`.
+- Arquivo ilegível ou corrompido: `500` com o caminho e o comando `sudo prumo seguranca rodar`.
 
 ## POST /api/v1/seguranca/ronda/<id>/aplicar
 
 Pede que o servidor aplique a correção do achado. Sem corpo. Só aceita id que existe na última ronda, com
 `estado` `aberto` (ou `agendado`), `correcao.disponivel` e `correcao.executavel` verdadeiros; senão `404` ou `409` com o motivo.
-Correção que não é ação do catálogo (atualização de pacote, atualização do DG Claw) responde `409`: o caminho é pedir ao
+Correção que não é ação do catálogo (atualização de pacote, atualização do Prumo da Locadora) responde `409`: o caminho é pedir ao
 Admin, escrevendo "Quero aplicar a correção de segurança <id> (atualização do pacote <pacote>). Analise antes e me diga se vai reiniciar algum serviço." na conversa dele.
 Resposta `202`: `{"ok": true, "pedido": "<uuid>", "tipo": "aplicar", "id": "..."}`.
 Se a correção exige reinício (`correcao.exige_reinicio`), um serviço reinicia por alguns segundos.
@@ -89,7 +89,7 @@ Se o pedido fica pendente por minutos, o executor não está rodando: `systemctl
 
 ## GET /api/v1/seguranca/emergencia
 
-O retrato que `dgclaw emergencia` grava em `/var/lib/dgclaw/web/seguranca/emergencia.json`:
+O retrato que `prumo emergencia` grava em `/var/lib/dgclaw/web/seguranca/emergencia.json`:
 
 ```json
 {
@@ -104,7 +104,7 @@ O retrato que `dgclaw emergencia` grava em `/var/lib/dgclaw/web/seguranca/emerge
 
 - `disponivel: false` com `motivo` quando o corte trancaria todo mundo fora (sem Tailscale logado e sem `IPS_ADMIN`), o nft não está instalado
   etc. A tela explica e desabilita o botão.
-- `desconhecido: true`: o servidor nunca mediu. Rode `sudo dgclaw emergencia estado`.
+- `desconhecido: true`: o servidor nunca mediu. Rode `sudo prumo emergencia estado`.
 - `desatualizado: true`: a medição tem mais de 2 horas.
 - `plano.comandos` é a sequência exata que o corte executaria (é o "Simular").
 
@@ -117,7 +117,7 @@ chegam em `dados` do resultado. Nada é mudado.
 
 Corpo: `{"codigo": "K7M2PQ", "frase": "TIRAR-DO-AR"}`. Sem a frase exata, `400`. Tira o sistema do ar: para o Caddy,
 fecha o firewall e mantém só o Tailscale. **O painel também sai do ar.** Se ninguém confirmar pelo servidor
-(`sudo dgclaw emergencia confirmar`) em 5 minutos, o servidor religa sozinho.
+(`sudo prumo emergencia confirmar`) em 5 minutos, o servidor religa sozinho.
 
 ## POST /api/v1/seguranca/emergencia/religar
 

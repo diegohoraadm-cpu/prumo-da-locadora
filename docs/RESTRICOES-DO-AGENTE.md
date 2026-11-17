@@ -1,8 +1,8 @@
 # Restrições de cada agente
 
-Este guia é para o dono do DG Claw. Ele explica como tirar de um agente o terminal (Bash), o envio de
+Este guia é para o dono do Prumo da Locadora. Ele explica como tirar de um agente o terminal (Bash), o envio de
 arquivos ou o direito de gravar fora de certas pastas, e por que essa trava continua valendo depois de
-`sudo dgclaw atualizar`.
+`sudo prumo atualizar`.
 
 ## O problema que isto resolve
 
@@ -23,7 +23,7 @@ arquivo que só o servidor altera.
 Ver o estado de um agente:
 
 ```
-sudo dgclaw agente restricoes ana
+sudo prumo agente restricoes ana
 ```
 
 A consulta mostra o que está **configurado** e, separado disso, o que está **valendo**. Ela só lê: não grava nada, não
@@ -48,13 +48,13 @@ código, e uma consulta é informação). O que ela acrescenta ao configurado:
 Travar (as opções que você não escrever ficam como estavam):
 
 ```
-sudo dgclaw agente restricoes ana --sem-bash sim --sem-enviar-arquivo sim --escrita-so-em relatorios,rascunhos
+sudo prumo agente restricoes ana --sem-bash sim --sem-enviar-arquivo sim --escrita-so-em relatorios,rascunhos
 ```
 
 Soltar:
 
 ```
-sudo dgclaw agente restricoes ana --sem-bash nao --sem-enviar-arquivo nao --escrita-livre
+sudo prumo agente restricoes ana --sem-bash nao --sem-enviar-arquivo nao --escrita-livre
 ```
 
 As pastas são sempre dentro da casa do agente (`/home/agente`, por dentro da caixa). Escreva só o nome,
@@ -72,7 +72,7 @@ Versões antigas guardavam o gancho de escrita no `settings.json` da casa do age
 caixa**, como o usuário `agente` (o root nunca lê nem grava na casa do agente, porque o agente poderia trocar uma pasta por um
 atalho no meio do caminho). Com o agente parado, o gancho antigo fica onde está, o comando avisa e guarda a pendência em
 `runner/restricoes-migracao.pendente`; ele sai quando o agente ligar e
-`dgclaw agente reparar <nome>` rodar de novo.
+`prumo agente reparar <nome>` rodar de novo.
 
 ## Onde fica e por que sobrevive
 
@@ -88,14 +88,14 @@ dono root, só leitura, e montado como somente leitura dentro da caixa. O agente
 Sem o arquivo, não há restrição (o comportamento de sempre). `escrita_so_em: null` quer dizer "grava em
 qualquer lugar".
 
-Toda vez que o DG Claw regrava a configuração de um agente, ele relê esse arquivo e refaz as travas:
+Toda vez que o Prumo da Locadora regrava a configuração de um agente, ele relê esse arquivo e refaz as travas:
 
 | Comando | O que acontece |
 | --- | --- |
-| `dgclaw agente criar <nome>` (inclusive repetido) | o `runner.json` nasce com os padrões e as travas voltam por cima |
-| `dgclaw agente reparar <nome>` | as travas são reaplicadas antes de refazer a parte de dentro |
-| `dgclaw agente recriar <nome>` | confere o arquivo antes de tocar na caixa e reaplica no fim |
-| `sudo dgclaw atualizar` | recria cada agente, então vale o mesmo |
+| `prumo agente criar <nome>` (inclusive repetido) | o `runner.json` nasce com os padrões e as travas voltam por cima |
+| `prumo agente reparar <nome>` | as travas são reaplicadas antes de refazer a parte de dentro |
+| `prumo agente recriar <nome>` | confere o arquivo antes de tocar na caixa e reaplica no fim |
+| `sudo prumo atualizar` | recria cada agente, então vale o mesmo |
 
 A aplicação grava três coisas, sempre as mesmas, e valida o `restricoes.json` antes de gravar qualquer uma:
 
@@ -125,35 +125,35 @@ oficial do Claude Code diz (páginas de hooks, de settings e de managed settings
 - As regras `permissions.deny` administradas também somam e vencem qualquer `allow` do agente.
 
 A imagem liga `/etc/claude-code/managed-settings.json` ao arquivo `runner/managed-settings.json` (montado só leitura). A
-documentação oficial não fala de atalho (link) nesse caminho, então isso só foi provado nos testes do DG Claw, não contra o Claude Code
+documentação oficial não fala de atalho (link) nesse caminho, então isso só foi provado nos testes do Prumo da Locadora, não contra o Claude Code
 de verdade: depois de atualizar, peça a um agente travado uma gravação fora das pastas e confira que foi recusada. Como a imagem nova
-é necessária, o `dgclaw atualizar` (que reconstrói a imagem) já cobre; um agente cuja caixa ainda é antiga só ganha a trava depois do
+é necessária, o `prumo atualizar` (que reconstrói a imagem) já cobre; um agente cuja caixa ainda é antiga só ganha a trava depois do
 `agente recriar`.
 
-Por isso `dgclaw agente restricoes` não diz que as travas valem só por ter gravado os arquivos. Com o agente ligado, ele confere
+Por isso `prumo agente restricoes` não diz que as travas valem só por ter gravado os arquivos. Com o agente ligado, ele confere
 dentro do container (como root, só lendo `/etc` e a imagem) que o link existe, que o conteúdo visto lá é o que acabou de ser gravado
 e que o script do gancho está na imagem. Se faltar algo, o comando falha, **para o container** (a mesma regra do `iniciar`:
 agente com restrição ligada não roda sem a trava), registra no `restricoes.log` e manda rodar
-`dgclaw agente recriar <agente> --forcar` (`--forcar` porque o agente ficou parado; se a imagem do servidor também for velha,
-antes `dgclaw imagem construir --agora`). O recriar liga o agente pelo mesmo caminho do `iniciar`, que refaz os arquivos e
-confere de novo; consultar o estado com `dgclaw agente restricoes <agente>` não reinicia nem confere nada.
-Com o agente parado não dá para conferir: o comando grava `runner/restricoes-suporte.pendente` e avisa. No `dgclaw agente iniciar`
+`prumo agente recriar <agente> --forcar` (`--forcar` porque o agente ficou parado; se a imagem do servidor também for velha,
+antes `prumo imagem construir --agora`). O recriar liga o agente pelo mesmo caminho do `iniciar`, que refaz os arquivos e
+confere de novo; consultar o estado com `prumo agente restricoes <agente>` não reinicia nem confere nada.
+Com o agente parado não dá para conferir: o comando grava `runner/restricoes-suporte.pendente` e avisa. No `prumo agente iniciar`
 a conferência roda assim que o container sobe; se falhar, o container é parado e o comando manda recriar com `--forcar`. Se
 passar, os marcadores de suporte e de reinício saem (o runner acabou de subir com os arquivos regenerados).
 
-Para resolver cada pendência: `restricoes.pendente` e `restricoes-suporte.pendente` saem com `dgclaw agente reiniciar <agente>`
-(ligado) ou `dgclaw agente iniciar <agente>` (parado); `restricoes-migracao.pendente` sai com `dgclaw agente reparar <agente>`
+Para resolver cada pendência: `restricoes.pendente` e `restricoes-suporte.pendente` saem com `prumo agente reiniciar <agente>`
+(ligado) ou `prumo agente iniciar <agente>` (parado); `restricoes-migracao.pendente` sai com `prumo agente reparar <agente>`
 com o agente ligado.
 
 **Antes de ligar, não depois.** O runner sobe sozinho pelo systemd assim que o container liga, e uma conferência feita só
-depois deixaria uma janela sem o gancho de escrita. Por isso `dgclaw agente iniciar` e `dgclaw agente reiniciar`, para um
+depois deixaria uma janela sem o gancho de escrita. Por isso `prumo agente iniciar` e `prumo agente reiniciar`, para um
 agente que tem `restricoes.json`, fazem tudo dentro da trava do agente e nesta ordem: (1) refazem `managed-settings.json` e
 `runner.json` a partir do `restricoes.json` e releem o que gravaram (um arquivo permissivo antigo, ausente, `{}` ou inválido
 nunca vale); (2) conferem, sem ligar nada, que a imagem do container tem o marcador `dgclaw.configuracao-administrada`
 (`LABEL` do `container/Containerfile`); (3) só então ligam; (4) conferem de dentro do container, como segunda camada, e param o
 container se falhar. Se o `restricoes.json` estiver ilegível, inválido ou for um link, ou se a gravação falhar (disco cheio), ou
-se a imagem não tiver o marcador, o agente não liga e a mensagem diz o que fazer (`dgclaw agente recriar <agente>`, e antes
-`dgclaw imagem construir --agora` se a imagem do servidor também for velha). Agente sem `restricoes.json` liga como sempre.
+se a imagem não tiver o marcador, o agente não liga e a mensagem diz o que fazer (`prumo agente recriar <agente>`, e antes
+`prumo imagem construir --agora` se a imagem do servidor também for velha). Agente sem `restricoes.json` liga como sempre.
 
 Os `provedor.json` da casa são do agente, então a leitura do aviso do Codex não deixa o root abri-los com o agente ligado: ela
 roda dentro do container, como o usuário `agente`, com prazo de 10 s, só aceitando arquivo regular de até 64 KiB e sem seguir
@@ -177,7 +177,7 @@ restrições, criar, reparar e recriar esperam uma pela outra, então duas alter
 Se o `restricoes.json` não for um JSON válido, ou tiver uma pasta que não serve, o comando para com a
 mensagem dizendo qual arquivo e qual o motivo, e **não solta nenhuma trava**. O `agente recriar` confere o
 arquivo antes de remover a caixa. Na atualização, o agente aparece em "Agentes COM PROBLEMA" no resumo.
-Conserte o arquivo (ou refaça com o comando acima) e rode `sudo dgclaw agente recriar <nome> --forcar`.
+Conserte o arquivo (ou refaça com o comando acima) e rode `sudo prumo agente recriar <nome> --forcar`.
 
 ## Combine a trava de pastas com "sem Bash"
 
@@ -208,7 +208,7 @@ Caminhos protegidos, em qualquer profundidade, depois de normalizar o caminho (`
 | qualquer pasta ou arquivo que comece por ponto (`.dgclaw`, `.claude`, `.codex`, `.plataforma`, `.config`, `.bashrc`, `.profile`, `.mcp.json`, `.git/hooks`...) | `.dgclaw/config.sh` é carregado com `source` pelo batimento e pelos temporizadores; `.dgclaw/ext/*/hooks` e `self-crons.json` são executados pelas rotinas; o Claude Code descobre `.claude/settings*` e `.claude/skills` também em subpastas (`relatorios/.claude/skills/x`); `.plataforma/dgchat.mcp.json` é o comando do servidor MCP; o shell lê `.bashrc` e `.profile` |
 | `SKILL.md`, `CLAUDE.md`, `CLAUDE.local.md` e `AGENTS.md` em qualquer pasta (sem diferenciar maiúsculas) | o Claude Code lê como instrução, e uma skill pode trazer gancho no cabeçalho |
 | `bunfig.toml` em qualquer pasta (sem diferenciar maiúsculas) | o Bun lê esse arquivo da pasta onde é iniciado, e um `preload` nele executa código do agente em todo processo `bun` (e no próprio `claude`, que é um executável do Bun) iniciado com a casa ou uma subpasta como diretório atual |
-| `AGENT.md`, `PERSONALITY.md`, `IDENTITY.md`, `ETHICS.md`, `CREATOR.md` e `LAWS.md` na raiz da casa | a identidade que o DG Claw regrava |
+| `AGENT.md`, `PERSONALITY.md`, `IDENTITY.md`, `ETHICS.md`, `CREATOR.md` e `LAWS.md` na raiz da casa | a identidade que o Prumo da Locadora regrava |
 
 Levantamento feito na imagem (`container/`): as unidades do systemd só executam arquivos de `/opt/dgclaw` e leem, da casa, o
 `.dgclaw/tela/vnc.senha` e `.dgclaw/whatsapp/ligado` (ambos já cobertos pelo ponto). Não há outro arquivo de nome comum na casa
@@ -235,7 +235,7 @@ destaque e escreve uma linha em `/var/lib/dgclaw/agentes/<nome>/restricoes.log`.
 Claude, a restrição já guardada passa a valer no próximo `agente reparar`. Para um agente no Codex que
 precisa de trava hoje, não use o Codex nele.
 
-Texto para a página de paridade: "Restrições do dono (`dgclaw agente restricoes`): no Claude, `sem_bash` e
+Texto para a página de paridade: "Restrições do dono (`prumo agente restricoes`): no Claude, `sem_bash` e
 `sem_enviar_arquivo` viram `denyTools` e `escrita_so_em` vira um gancho PreToolUse. No Codex o runner
 ignora `allowTools`/`denyTools` e os ganchos, então nenhuma das três vale; o comando avisa e registra. Exceção
 de paridade aberta até o Codex ter regras de ferramenta equivalentes."
@@ -244,7 +244,7 @@ de paridade aberta até o Codex ter regras de ferramenta equivalentes."
 
 Uma conta de IA que pertence a uma organização do claude.ai (planos Team ou Enterprise) pode trazer uma política administrada
 remota ("server-managed settings"). No modo padrão do Claude Code essa política é a primeira da fila e **substitui por inteiro**
-o `managed-settings.json` do DG Claw, inclusive o gancho de escrita. O DG Claw não consegue impor o contrário, porque a política
+o `managed-settings.json` do Prumo da Locadora, inclusive o gancho de escrita. O Prumo da Locadora não consegue impor o contrário, porque a política
 remota é do administrador da organização. Nesta versão, conta de organização com política administrada remota não é compatível
 com as restrições: nem uma política que combine com a local serve, porque a própria organização pode desligar os ganchos nela.
 
@@ -259,7 +259,7 @@ lê esse arquivo por dentro da caixa, como o usuário `agente`, com prazo e sem 
 | link, não é arquivo comum, maior que 1 MiB, JSON inválido, prazo estourado | falha, pela dúvida |
 
 O cache só mostra o momento: uma conta Team ou Enterprise sem política hoje pode receber uma depois (o Claude Code busca a política
-de hora em hora), e ela substitui a configuração do DG Claw, inclusive o gancho de escrita. Por isso a conferência também pergunta,
+de hora em hora), e ela substitui a configuração do Prumo da Locadora, inclusive o gancho de escrita. Por isso a conferência também pergunta,
 dentro da caixa e como o usuário `agente`, `claude auth status --json` (prazo de 20 segundos, saída limitada) e olha só `loggedIn`,
 `authMethod` e `subscriptionType`; a saída traz e-mail e organização e nunca é impressa nem gravada. Contas Team e Enterprise
 não são compatíveis com as restrições nesta versão:
@@ -274,19 +274,19 @@ Um token OAuth de uma organização Team ou Enterprise recebe a política remota
 libera a sessão; token sem plano legível vale como dúvida. A defesa é a recusa na conferência (ao aplicar, ao iniciar, ao reiniciar
 e, no runner, depois do login e antes de cada sessão); não há reconferência periódica com a sessão já aberta.
 
-Para resolver, em ordem (funciona com o agente parado, que é como o DG Claw o deixa, e o `reiniciar` recusa agente parado):
+Para resolver, em ordem (funciona com o agente parado, que é como o Prumo da Locadora o deixa, e o `reiniciar` recusa agente parado):
 
-1. desligar as restrições: `dgclaw agente restricoes <agente> --sem-bash nao --sem-enviar-arquivo nao --escrita-livre`;
-2. ligar o agente: `dgclaw agente iniciar <agente>` (pule este passo se ele já estiver ligado);
+1. desligar as restrições: `prumo agente restricoes <agente> --sem-bash nao --sem-enviar-arquivo nao --escrita-livre`;
+2. ligar o agente: `prumo agente iniciar <agente>` (pule este passo se ele já estiver ligado);
 3. no painel do agente, conectar uma conta pessoal (Pro ou Max) ou uma chave de API no lugar da conta da organização;
 4. ligar as restrições de novo com o mesmo comando `restricoes` e as opções desejadas. Ele confere outra vez e para o agente se a
    política remota continuar.
 
-Quando o DG Claw para o agente por causa de uma falha dessas, ele confere que o container parou de verdade (`podman stop`, e
+Quando o Prumo da Locadora para o agente por causa de uma falha dessas, ele confere que o container parou de verdade (`podman stop`, e
 `podman kill` se ainda não houver confirmação) antes de gravar o marcador e o log. Só vale confirmação positiva: o `podman inspect`
 responder com sucesso e o estado ser `exited`, `stopped`, `created` ou `configured`, ou o `podman container exists` dizer que o
 container não existe. Erro, prazo estourado, resposta vazia, `running`, `stopping`, `paused` ou estado desconhecido não confirmam. Se nem assim ele parar, a mensagem diz que o agente está
-LIGADO SEM A TRAVA e manda parar na mão (`dgclaw agente parar <agente>`). Se o marcador não puder ser gravado (disco cheio, por
+LIGADO SEM A TRAVA e manda parar na mão (`prumo agente parar <agente>`). Se o marcador não puder ser gravado (disco cheio, por
 exemplo), o agente continua parado e o comando avisa.
 
 **O runner repete a conferência da conta.** Aplicar as restrições com o agente ainda sem login é aceito (o dono precisa dele ligado para

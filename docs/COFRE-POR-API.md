@@ -116,7 +116,7 @@ origem (`tela` ou `api`). Nunca o valor.
 | O token da chave de API fica guardado? | Só o hash. O token aparece uma vez, na criação. |
 | E o valor da chave de serviço? | Cifrado em repouso, em arquivo próprio, e some do arquivo quando a chave é revogada. |
 
-## Quando passa pelo proxy (DG Claw Web)
+## Quando passa pelo proxy (Prumo da Locadora Web)
 
 Se o painel roda atrás do proxy que faz o login do dono, a chave de API continua
 funcionando do mesmo jeito (cabeçalho `Authorization: Bearer`), desde que o endereço

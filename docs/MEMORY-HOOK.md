@@ -12,7 +12,7 @@
 > para quem quer o eco em TODA mensagem. Como ligar, quanto pesa e como conferir:
 > [MEMORIA-SEMANTICA.md](MEMORIA-SEMANTICA.md).
 
-O DG Claw pode injetar um **"eco do passado"** na DM do assistente: antes de responder, um hook `UserPromptSubmit` roda a busca semantica na memoria dele e, se algo do
+O Prumo da Locadora pode injetar um **"eco do passado"** na DM do assistente: antes de responder, um hook `UserPromptSubmit` roda a busca semantica na memoria dele e, se algo do
 passado bater com a mensagem, injeta esse contexto extra (o assistente usa so se fizer sentido).
 
 E o hook de memoria por sessao viva, generalizado e parametrizado por env `DGCLAW_*`.
@@ -52,16 +52,16 @@ Estas nao ligam/desligam o hook, mas sao necessarias pro plugin rodar fora da ma
 
 | Env | Default | Usada por | Efeito |
 |-----|---------|-----------|--------|
-| `DGCLAW_PLUGIN_ROOT` | (raiz do plugin DG Claw) | timers/crons (`install-life-timers.sh`, `reflection.sh`, `doctor.sh`, `install-ig-timers.sh`, ...) | caminho estavel da instalacao do plugin DG Claw. Os timers chamam os scripts por aqui. |
+| `DGCLAW_PLUGIN_ROOT` | (raiz do plugin Prumo da Locadora) | timers/crons (`install-life-timers.sh`, `reflection.sh`, `doctor.sh`, `install-ig-timers.sh`, ...) | caminho estavel da instalacao do plugin Prumo da Locadora. Os timers chamam os scripts por aqui. |
 | `DGCLAW_CONFIG` |, | hook e crons | aponta pro `.dgclaw/config.sh` (carrega `DGCLAW_WORKSPACE/SLUG/GEMINI...`). |
-| `DGCLAW_PLUGIN_ROOT` | (auto-detect / fallback minimo) | `uninstall.sh` | raiz do plugin DG Claw, pra restaurar o `working-memory.md` no formato original ao desinstalar. Sem ela, o uninstall tenta candidatos conhecidos e, em ultimo caso, gera um template minimo (nunca falha). |
+| `DGCLAW_PLUGIN_ROOT` | (auto-detect / fallback minimo) | `uninstall.sh` | raiz do plugin Prumo da Locadora, pra restaurar o `working-memory.md` no formato original ao desinstalar. Sem ela, o uninstall tenta candidatos conhecidos e, em ultimo caso, gera um template minimo (nunca falha). |
 
 ---
 
 ## Como LIGAR (duas opcoes: ambas opt-in)
 
 O hook nunca liga sozinho. O dono escolhe registrar e setar as envs. **Nao edite o
-dgclaw-plugin**, as duas opcoes abaixo vivem no lado DG Claw / workspace.
+dgclaw-plugin**, as duas opcoes abaixo vivem no lado Prumo da Locadora / workspace.
 
 ### Opcao A (recomendada): workspace `.claude/settings.json`
 
@@ -98,15 +98,15 @@ Vantagem: o registro vive no workspace (sob controle do dono), o gate `DGCLAW_ME
 garante default-OFF, e passar `"${DGCLAW_CONFIG}"` faz o hook herdar `DGCLAW_*` e
 `GEMINI_API_KEY` mesmo que o ambiente do Claude nao os tenha.
 
-### Opcao B: `hooks/hooks.json` proprio do plugin DG Claw
+### Opcao B: `hooks/hooks.json` proprio do plugin Prumo da Locadora
 
 Um plugin Claude Code pode declarar hooks proprios (igual o dgclaw-plugin faz no
-`hooks/hooks.json`). Se quiser que o registro viaje junto com o plugin DG Claw, crie
+`hooks/hooks.json`). Se quiser que o registro viaje junto com o plugin Prumo da Locadora, crie
 `hooks/hooks.json` na raiz do plugin:
 
 ```json
 {
-  "description": "DG Claw, eco do passado (memoria semantica) na DM. Opt-in via DGCLAW_MEMORY_HOOK=1.",
+  "description": "Prumo da Locadora, eco do passado (memoria semantica) na DM. Opt-in via DGCLAW_MEMORY_HOOK=1.",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -124,7 +124,7 @@ Um plugin Claude Code pode declarar hooks proprios (igual o dgclaw-plugin faz no
 ```
 
 > Importante: um hook declarado no plugin dispara em **toda** sessao que carregar o plugin
-> DG Claw. Por isso o gate `DGCLAW_MEMORY_HOOK=1` (default OFF) + `DGCLAW_PRIVATE_CONTEXT=1`
+> Prumo da Locadora. Por isso o gate `DGCLAW_MEMORY_HOOK=1` (default OFF) + `DGCLAW_PRIVATE_CONTEXT=1`
 > sao o que efetivamente liga. Sem as envs, o hook sai 0 imediatamente, inerte.
 > Como a opcao B muda o comportamento default de instalacoes existentes do plugin, ela
 > e marcada como **follow-up**: prefira a Opcao A (registro por-workspace, mais cirurgico)
@@ -152,7 +152,7 @@ Log: `<ws>/.dgclaw/logs/hook-memory-inject.log`.
       (desde 05/10/2026 sem exigir Gemini).
 - [x] Indice semantico de fabrica: timer `memory-reindex` (04:20) e modelo local instalado pelo
       `install.sh`. Ver [MEMORIA-SEMANTICA.md](MEMORIA-SEMANTICA.md).
-- [] **Follow-up**: depende do Module 3 (reindex/memory_search no DG Claw) para o hook ter
+- [] **Follow-up**: depende do Module 3 (reindex/memory_search no Prumo da Locadora) para o hook ter
       o que buscar. Ate la, o hook fica inerte (sai 0).
 - [ ] **Follow-up**: decidir entre Opcao A (workspace settings, default) e Opcao B
       (`hooks/hooks.json` do plugin), ver nota acima. O wiring NAO foi ligado

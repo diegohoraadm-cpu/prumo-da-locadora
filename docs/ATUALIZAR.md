@@ -3,9 +3,9 @@
 Este documento é o roteiro da atualização do Prumo da Locadora, passo a passo. Quase sempre quem segue é o
 Admin, quando o dono pede "atualiza o Prumo da Locadora" no chat; o dono não é programador e vê só a conversa.
 
-Resumo: use **`dgclaw atualizar`**. Ele faz backup, baixa a versão nova, reinstala, recria a máquina de
+Resumo: use **`prumo atualizar`**. Ele faz backup, baixa a versão nova, reinstala, recria a máquina de
 cada agente e confere que nada do dono sumiu ou mudou. Nunca monte esse caminho na mão com `git pull`,
-`install.sh` e `dgclaw imagem construir` soltos: o comando existe justamente para a ordem e as
+`install.sh` e `prumo imagem construir` soltos: o comando existe justamente para a ordem e as
 conferências não dependerem de quem está lembrando.
 
 ## Quando usar
@@ -14,8 +14,8 @@ conferências não dependerem de quem está lembrando.
 - O dono diz que viu uma novidade ou correção que ainda não aparece no painel dele.
 - Uma correção que você precisa já saiu no repositório.
 
-Para só reiniciar um serviço ou um agente travado, não atualize: use `dgclaw agente reiniciar <slug>` ou
-`dgclaw agente reparar <slug>`.
+Para só reiniciar um serviço ou um agente travado, não atualize: use `prumo agente reiniciar <slug>` ou
+`prumo agente reparar <slug>`.
 
 ## O que NUNCA tocar
 
@@ -28,10 +28,10 @@ sobrescreve, nem "só para limpar":
 | `/etc/dgclaw/dgclaw.env` | domínio, provedor do Admin, usuário, imagem, onde está o clone | o instalador troca só as linhas dele (`DGCLAW_VERSAO`, `DGCLAW_COMMIT` mudam de propósito) e mantém as outras |
 | `/etc/dgclaw/agentes.json`, `registro.tsv`, `portas.tsv` | a lista de agentes, a faixa de usuário e as portas de cada um | sem isso os agentes somem do painel ou dois agentes disputam a mesma porta; a faixa de usuário de um agente removido fica "queimada" de propósito |
 | `/etc/dgclaw/runner/*.token`, `/etc/dgclaw/proxy/*.segredo` | credenciais entre o Web e cada agente | trocar derruba a conversa entre eles |
-| `/etc/dgclaw/primeiro-acesso.json` | link de primeiro acesso pendente | só o instalador e o `dgclaw primeiro-acesso` mexem |
+| `/etc/dgclaw/primeiro-acesso.json` | link de primeiro acesso pendente | só o instalador e o `prumo primeiro-acesso` mexem |
 | `/var/lib/dgclaw/agentes/<slug>/home` | a casa do agente: memória, conversas (`.claude/projects`), uploads, `IDENTITY.md`, `PERSONALITY.md`, rotinas (`.dgclaw/self-crons.json`) | é o trabalho de meses do dono |
 | `/var/lib/dgclaw/agentes/<slug>/cofre/cofre.env` | as chaves que o dono guardou no cofre daquele agente | insubstituível: só o dono tem os valores |
-| `/var/lib/dgclaw/agentes/<slug>/runner`, `segredos`, `config` | configuração do agente fora da casa (o agente só lê). O `runner/restricoes.json` guarda as travas do dono (sem Bash, sem enviar arquivo, escrita só em pastas) | o `agente recriar` e o `reparar` regravam o necessário e reaplicam as travas; não edite na mão, use `dgclaw agente restricoes` ([guia](RESTRICOES-DO-AGENTE.md)) |
+| `/var/lib/dgclaw/agentes/<slug>/runner`, `segredos`, `config` | configuração do agente fora da casa (o agente só lê). O `runner/restricoes.json` guarda as travas do dono (sem Bash, sem enviar arquivo, escrita só em pastas) | o `agente recriar` e o `reparar` regravam o necessário e reaplicam as travas; não edite na mão, use `prumo agente restricoes` ([guia](RESTRICOES-DO-AGENTE.md)) |
 | `/var/lib/dgclaw/web/` | `sessoes.json` (conversas do painel), cofre do painel, mesa de tarefas, avisos no aparelho, onboarding | histórico e configuração do painel |
 | `/var/lib/dgclaw/aposentados/` | casas de agentes removidos | o dono pode querer de volta |
 | `/opt/dgclaw/admin` | a pasta do Admin: `CLAUDE.md` e `AGENTS.md` (podem estar personalizados), uploads, skills | o que o dono ensinou ao Admin |
@@ -41,22 +41,22 @@ sobrescreve, nem "só para limpar":
 O que **pode** ser reescrito sem dó, porque é cópia do repositório: `/opt/dgclaw/app` (o instalador faz
 `rsync --delete` ali, sem encostar nos dados acima), as unidades em `/etc/systemd/system/dgclaw-*` e a
 imagem dos agentes. Cada agente também tem rotinas que ele mesmo criou (unidades `dgclaw-<slug>-self-*`
-dentro do container): o `dgclaw agente recriar` guarda e devolve.
+dentro do container): o `prumo agente recriar` guarda e devolve.
 
 Também nunca, em hipótese alguma: `git reset --hard`, `git clean`, `rm -rf` em pasta de agente, `podman
-system prune --volumes`, `podman rm` de container sem passar por `dgclaw agente recriar`.
+system prune --volumes`, `podman rm` de container sem passar por `prumo agente recriar`.
 
 ## Antes de começar
 
 1. Avise o dono, em uma frase: "Vou atualizar o Prumo da Locadora. Faço um backup antes de mexer em qualquer
    coisa. Leva de 10 a 30 minutos, os agentes ficam fora do ar por um minuto cada e eu aviso quando
    terminar."
-2. Veja se há conversa em andamento com algum agente que não pode cair agora (`dgclaw agente listar`).
+2. Veja se há conversa em andamento com algum agente que não pode cair agora (`prumo agente listar`).
    Se o dono disser que sim, combine outro horário.
 3. Simule primeiro. Não muda nada e mostra tudo o que seria feito:
 
    ```bash
-   sudo dgclaw atualizar --simular
+   sudo prumo atualizar --simular
    ```
 
    Se a simulação já parar com um erro (clone com alteração, clone não encontrado, disco curto), resolva
@@ -66,7 +66,7 @@ system prune --volumes`, `podman rm` de container sem passar por `dgclaw agente 
 
 ## Os passos manuais de cada versão ("Como atualizar")
 
-Algumas versões pedem algo que o `dgclaw atualizar` não faz sozinho: uma instrução nova para juntar a
+Algumas versões pedem algo que o `prumo atualizar` não faz sozinho: uma instrução nova para juntar a
 um arquivo que o dono pode ter personalizado, um arquivo que não pode ser substituído, uma chave nova,
 regravar a identidade dos agentes. Esses passos ficam no `CHANGELOG.md`, numa subseção
 `### Como atualizar` dentro de cada versão, escrita para o dono ler.
@@ -82,7 +82,7 @@ regravar a identidade dos agentes. Esses passos ficam no `CHANGELOG.md`, numa su
 3. **Conte ao dono antes de aplicar**, em linguagem simples, o que vai fazer além do comando. Exemplo:
    "Esta versão traz uma instrução nova para os seus agentes entenderem o áudio transcrito. Depois de
    atualizar, eu regravo a identidade de cada um; o que você personalizou neles não muda."
-4. **Aplique cada passo na ordem que o CHANGELOG pede** (antes ou depois do `dgclaw atualizar`). Instrução
+4. **Aplique cada passo na ordem que o CHANGELOG pede** (antes ou depois do `prumo atualizar`). Instrução
    nova em arquivo personalizado se junta linha a linha, do mesmo jeito do `CLAUDE.md.novo` descrito em
    "Conflitos": traga só o trecho novo e não apague nada do dono. Nunca reescreva um arquivo personalizado
    inteiro, nem troque um arquivo que o passo diz para não substituir.
@@ -96,7 +96,7 @@ pessoa, foge do padrão do projeto e merece desconfiança.
 ## Não mexa no clone antes do comando
 
 Quando o dono pede só "atualiza", **não faça `git checkout`, `git pull` nem `git fetch` no clone antes**.
-O `dgclaw atualizar` baixa a versão nova sozinho. Se o clone for mudado à mão antes, o comando ainda
+O `prumo atualizar` baixa a versão nova sozinho. Se o clone for mudado à mão antes, o comando ainda
 descobre qual versão estava instalada (ver o capítulo "O commit de antes"), mas é uma complicação
 que não precisa existir.
 
@@ -106,7 +106,7 @@ e dizer ao comando para não baixar de novo:
 ```bash
 git -C <clone> fetch origin
 git -C <clone> checkout -B <branch> origin/<branch>
-sudo dgclaw atualizar --sem-baixar
+sudo prumo atualizar --sem-baixar
 ```
 
 O commit de antes continua certo (item abaixo), então o `--voltar` volta para a versão que estava
@@ -118,7 +118,7 @@ O Admin tem tempo limite por comando, e a atualização demora por causa da imag
 terminal** e acompanhe o log:
 
 ```bash
-sudo dgclaw atualizar --segundo-plano
+sudo prumo atualizar --segundo-plano
 ```
 
 Ele imprime o nome da unidade e o arquivo de log, algo como `/var/log/dgclaw/dgclaw-atualizar-20261018-093000.log`.
@@ -132,7 +132,7 @@ systemctl is-active dgclaw-atualizar-<data>              # "inactive" = terminou
 Olhe o log a cada poucos minutos e conte ao dono em que passo está. O fim do log traz
 `Atualizacao concluida.` (deu certo), `Atualizacao INCOMPLETA` (algum agente ficou com problema, ver
 adiante) ou `A atualizacao parou em: ...` (veja "Conflitos"). Se o terminal aguentar,
-`sudo dgclaw atualizar` faz o mesmo em primeiro plano.
+`sudo prumo atualizar` faz o mesmo em primeiro plano.
 
 Opções que você usa só quando preciso:
 
@@ -168,8 +168,8 @@ Opções que você usa só quando preciso:
 6. **Roda o `install.sh` do clone** sem nenhuma pergunta, reaproveitando usuário, domínio e provedor que já
    estão configurados. A senha atual do painel continua valendo. O instalador edita as configurações
    linha a linha e não troca um `CLAUDE.md` ou `AGENTS.md` do Admin que foi personalizado (ver adiante).
-7. **Reconstrói a imagem** dos agentes (`dgclaw imagem construir --agora`). É o passo mais longo.
-8. **Recria o container de cada agente** (`dgclaw agente recriar <slug>`): guarda as rotinas que o agente
+7. **Reconstrói a imagem** dos agentes (`prumo imagem construir --agora`). É o passo mais longo.
+8. **Recria o container de cada agente** (`prumo agente recriar <slug>`): guarda as rotinas que o agente
    criou, para e remove **só o container**, cria de novo com a imagem nova e os **mesmos** volumes, portas e
    rede, devolve as rotinas e espera o agente responder. Casa, cofre e segredos não são tocados. Antes de
    remover, o comando para o container (`podman stop -t 60`) e espera até 90 segundos (`DGCLAW_TEMPO_PARADA`)
@@ -192,7 +192,7 @@ Opções que você usa só quando preciso:
    só o começo.
 9. **Confere**: toda linha que existia no `web.env`/`dgclaw.env` continua lá com o mesmo valor; os
    registros dos agentes em `agentes.json` são idênticos; tokens, segredos, cofres e `CLAUDE.md` do Admin
-   personalizado estão intactos; roda `dgclaw status`; cada agente ligado responde. Reprova se algo sumiu.
+   personalizado estão intactos; roda `prumo status`; cada agente ligado responde. Reprova se algo sumiu.
 10. **Grava o resumo** num arquivo (`/var/log/dgclaw/dgclaw-atualizar-<data>.resumo.txt`, ao lado do log) e
     **agenda o reinício do Admin** para 20 segundos depois (`systemd-run --on-active=20`), porque este
     comando pode estar rodando dentro do próprio Admin. Se qualquer agente falhou ou a conferência acusou
@@ -221,13 +221,13 @@ backup, instalador antigo, imagem, agentes, conferência). Ele volta sozinho **s
 
 Ele **não** volta sozinho quando um agente não sobe, não é recriado ou não responde. Esse caso é problema do
 container daquele agente (um defeito do podman que deixa o container preso em `stopping`, por exemplo), e voltar
-repetiria a mesma falha. O caminho certo é o capítulo "Atualização INCOMPLETA" abaixo: `dgclaw agente recriar
+repetiria a mesma falha. O caminho certo é o capítulo "Atualização INCOMPLETA" abaixo: `prumo agente recriar
 <slug> --forcar`. O Admin também não é reiniciado nesse caso.
 
 O comando nunca reinicia o Admin no meio da volta. O reinício continua sendo o agendado, solto do chat, no fim.
 
 Quando volta sozinho, o texto final diz em português claro: o que deu errado, o que foi desfeito, a pasta do
-backup que foi usada e o que fazer em seguida (resolver a causa e rodar `dgclaw atualizar` de novo). O comando sai
+backup que foi usada e o que fazer em seguida (resolver a causa e rodar `prumo atualizar` de novo). O comando sai
 com código 1, porque a atualização em si não aconteceu. Conte ao dono em palavras simples: "A atualização não deu
 certo e eu desfiz tudo, seus dados e agentes estão como antes. O problema foi X. Posso tentar de novo quando
 resolvermos isso."
@@ -235,14 +235,14 @@ resolvermos isso."
 Para desligar o automático e ficar com a versão nova mesmo com erro (para investigar):
 
 ```bash
-sudo dgclaw atualizar --sem-voltar-sozinho
+sudo prumo atualizar --sem-voltar-sozinho
 ```
 
 Com essa opção o comando para no erro, diz onde está o backup e como voltar à mão (`--voltar`), como era antes.
 Se o commit de antes não estiver no clone, o comando avisa no começo que não consegue voltar sozinho e age
 como se essa opção estivesse ligada.
 
-Veja também `docs/BACKUP.md` para os backups manuais (`dgclaw backup`) e a restauração (`dgclaw restaurar`).
+Veja também `docs/BACKUP.md` para os backups manuais (`prumo backup`) e a restauração (`prumo restaurar`).
 
 ## Ler o que muda antes de instalar
 
@@ -252,13 +252,13 @@ atualização, quem cuida dela (quase sempre o Admin) lê o que mudou, cruza com
 dá um parecer: a atualização é segura? vale a pena (o que o dono ganha)? Se não for segura, levanta o alerta,
 grava o parecer `arriscada` e **não instala**.
 
-O `dgclaw atualizar` força esse passo:
+O `prumo atualizar` força esse passo:
 
-1. `sudo dgclaw atualizar --simular` busca a versão nova (só as referências do git, sem mudar arquivos) e
+1. `sudo prumo atualizar --simular` busca a versão nova (só as referências do git, sem mudar arquivos) e
    grava o relatório `/var/log/dgclaw/dgclaw-atualizar-<data>.o-que-muda.txt`: os commits novos, o tamanho
    da mudança, os itens novos do CHANGELOG, os **pontos de atenção** (arquivos alterados em áreas
    sensíveis: instalador, firewall, caixa dos agentes, ganchos de segurança, credenciais, banco de dados,
-   rotas do painel, arquivos que você personalizou) e a seção **"O que este DG Claw usa e o que a versão
+   rotas do painel, arquivos que você personalizou) e a seção **"O que este Prumo da Locadora usa e o que a versão
    nova toca"**.
 2. Essa seção levanta, para cada agente, quantas rotinas e scripts próprios (da casa e das skills próprias) ele
    tem, quais skills e canais (WhatsApp, Telegram) estão ligados, mais a contagem das personalizações
@@ -274,7 +274,7 @@ O `dgclaw atualizar` força esse passo:
    limites (manifesto de rotinas até 256 KB, até 200 rotinas e 500 scripts por agente, arquivos de até
    256 KB, seção de até 40 KB). O que passar do limite aparece como "limite atingido: ..." nos pontos de
    atenção, sem derrubar a atualização. O cruzamento só enxerga o que está escrito (caminhos em
-   `/opt/dgclaw/app/...` e comandos `dgclaw ...`): uma rotina que só diz "faça o resumo do dia" não aparece,
+   `/opt/dgclaw/app/...` e comandos `prumo ...`): uma rotina que só diz "faça o resumo do dia" não aparece,
    e aí vale o seu julgamento. Para ver o texto de uma rotina, abra a casa do agente, não o relatório.
 3. Você lê o relatório e, nos pontos de atenção, o próprio diff
    (`git -C <clone> diff <commit instalado> <versão nova> -- <arquivo>`). Pense no que o dono faz no dia a
@@ -282,17 +282,17 @@ O `dgclaw atualizar` força esse passo:
 4. Conte ao dono, em linguagem simples, se a atualização é segura e se vale a pena. Exemplo: "A versão
    nova traz o aviso de atualização no painel e muda o instalador para criar um timer. Nenhuma das suas
    rotinas usa o que mudou, e você ganha o aviso automático. Acho segura. Posso instalar?"
-5. **Grave o parecer**: `sudo dgclaw atualizar --parecer segura --commit <commit do DESTINO> --motivo "<uma frase>"`, ou
+5. **Grave o parecer**: `sudo prumo atualizar --parecer segura --commit <commit do DESTINO> --motivo "<uma frase>"`, ou
    `--parecer arriscada --commit <commit do DESTINO> --motivo "<o alerta>"`. O `--commit` é obrigatório (40 caracteres) e tem de ser o da linha
    `DESTINO=` do último relatório gravado, o que você leu. Se o repositório andou desde então, o comando
    recusa e manda rodar o `--simular` de novo. O parecer também prende o HEAD da branch `personalizacoes` do clone (ou "nenhuma") e o modo de instalação, que o relatório grava ao lado do `DESTINO=`; se qualquer um mudar depois do parecer, o `--ok-do-dono` recusa e pede um parecer novo. O parecer vale só para essa versão; se saírem commits novos
    antes da instalação, refaça a análise e o parecer.
-6. Só com o ok do dono: `sudo dgclaw atualizar --ok-do-dono --segundo-plano`. Sem `--ok-do-dono`, e havendo
+6. Só com o ok do dono: `sudo prumo atualizar --ok-do-dono --segundo-plano`. Sem `--ok-do-dono`, e havendo
    algo novo, o comando para antes do backup e não muda nada. Com `--ok-do-dono` mas sem parecer `segura`
    para aquela versão, também para antes do backup e diz o que fazer.
 7. **Parecer `arriscada` bloqueia a instalação.** Conte o alerta ao dono. Só se ele, depois de ouvir,
    pedir explicitamente para instalar mesmo assim, rode
-   `sudo dgclaw atualizar --ok-do-dono --apesar-do-alerta --segundo-plano`. Silêncio ou "tá bom" a uma
+   `sudo prumo atualizar --ok-do-dono --apesar-do-alerta --segundo-plano`. Silêncio ou "tá bom" a uma
    pergunta sua não é esse pedido.
 
 Tudo fica registrado: o parecer, o bloqueio e o "apesar do alerta" entram em
@@ -304,12 +304,12 @@ log da atualização).
 Quem personalizou o próprio Prumo da Locadora (um botão, uma cor, um comportamento do painel) tem essas mudanças
 guardadas como commits na branch `personalizacoes` do clone e anotadas em
 `/opt/dgclaw/admin/PERSONALIZACOES.md`. O guia completo está em `docs/PERSONALIZAR.md`. A atualização
-nunca pode levar embora uma personalização sem o dono saber, e o `dgclaw atualizar` cuida disso sozinho
+nunca pode levar embora uma personalização sem o dono saber, e o `prumo atualizar` cuida disso sozinho
 quando o clone está nessa branch:
 
 1. Antes do backup, ele busca a versão nova (`git fetch`, que não muda os arquivos) e cruza os arquivos
    que ela muda com os arquivos personalizados (pelo git e pelo registro). A simulação já mostra esse
-   cruzamento, e `sudo dgclaw personalizacoes conferir` mostra o mesmo a qualquer momento.
+   cruzamento, e `sudo prumo personalizacoes conferir` mostra o mesmo a qualquer momento.
 2. **Sem cruzamento:** faz o backup, guarda uma cópia da branch em `personalizacoes-antes-<data>`,
    reaplica as personalizações por cima da versão nova (`git rebase origin/main`), instala e segue. O
    resumo final diz quantas foram reaplicadas. Depois, cada uma é testada pelo "Como testar" do registro,
@@ -334,8 +334,8 @@ git -C <clone> rebase origin/main                       # para em cada conflito
 Se o conflito ficar grande, `git -C <clone> rebase --abort` devolve tudo ao que era. Quase sempre vale
 aproveitar para refazer a personalização de um jeito que cruze menos (arquivo novo próprio, ou ponto de
 extensão), como sugere a arquitetura do `PERSONALIZAR.md`. Depois: atualize a entrada do registro
-(arquivos e commit), rode `sudo dgclaw atualizar --simular` (o cruzamento deve sumir, porque a branch já
-está por cima da versão nova) e então `sudo dgclaw atualizar --ok-do-dono --segundo-plano`. No fim, teste a
+(arquivos e commit), rode `sudo prumo atualizar --simular` (o cruzamento deve sumir, porque a branch já
+está por cima da versão nova) e então `sudo prumo atualizar --ok-do-dono --segundo-plano`. No fim, teste a
 personalização pelo "Como testar" e conte ao dono. Nunca `reset --hard`, nunca apagar a branch de cópia.
 
 ### Primeira atualização vinda de uma versão sem o registro
@@ -347,10 +347,10 @@ em `/opt/dgclaw/admin/personalizacoes-migracao/<data>/` (lista, diferenças e um
 de antes). Também deixa marcado `/opt/dgclaw/admin/personalizacoes-migracao/PENDENTE`. Nada se perde.
 
 Depois dessa atualização vem o levantamento, antes de qualquer outra mudança no programa:
-`sudo dgclaw personalizacoes levantar` junta o que foi mudado direto no programa, o que está alterado ou
+`sudo prumo personalizacoes levantar` junta o que foi mudado direto no programa, o que está alterado ou
 commitado no clone, os stashes `dgclaw-atualizar-*` e os arquivos que o Admin editou segundo as conversas
 dele. O passo a passo com o dono (confirmar cada mudança, reaplicar na branch do jeito mais compatível,
-registrar, testar e rodar `sudo dgclaw personalizacoes concluir`) está no capítulo "Quem já tinha o DG
+registrar, testar e rodar `sudo prumo personalizacoes concluir`) está no capítulo "Quem já tinha o DG
 Claw antes desta versão" do `PERSONALIZAR.md`.
 
 ## Atualização INCOMPLETA (algum agente não foi recriado)
@@ -363,11 +363,11 @@ O que você faz e diz ao dono:
 
 1. Leia as linhas `FALHOU` e a mensagem do agente (ela diz se o container antigo continua lá, em que
    estado, e que a casa está intacta).
-2. Refaça cada agente: `sudo dgclaw agente recriar <slug> --forcar`. **Se a mensagem do agente trouxe uma lista
+2. Refaça cada agente: `sudo prumo agente recriar <slug> --forcar`. **Se a mensagem do agente trouxe uma lista
    do que existe só dentro do container, mostre-a ao dono e espere o ok antes do `--forcar`** (rodar sem
    `--forcar` repete a lista sem mexer em nada). Ele também recria container que ficou
    parado, preso em `stopping` ou que sumiu, com os mesmos volumes e portas.
-3. Confira com `sudo dgclaw agente listar` e conte ao dono, em palavras simples: "A atualização terminou, mas
+3. Confira com `sudo prumo agente listar` e conte ao dono, em palavras simples: "A atualização terminou, mas
    a caixa do agente <nome> não subiu de primeira. Os dados dele estão intactos. Já refiz a caixa e ele
    voltou." (ou, se não conseguiu: "ainda não consegui; posso voltar tudo à versão de antes").
 4. Só depois que todos estiverem bem, reinicie o Admin como na seção "O reinício do Admin".
@@ -406,7 +406,7 @@ versões já publicadas do modelo (pelo histórico do git do clone):
 
 Quando houver `.novo`, faça a junção **manual e conservadora**: rode `diff /opt/dgclaw/admin/CLAUDE.md
 /opt/dgclaw/admin/CLAUDE.md.novo`, traga para o arquivo do dono as seções e linhas que são novidades do
-modelo (no mínimo a linha `dgclaw atualizar` da tabela de ferramentas e a seção "Atualizar o Prumo da Locadora"),
+modelo (no mínimo a linha `prumo atualizar` da tabela de ferramentas e a seção "Atualizar o Prumo da Locadora"),
 **sem apagar nada que o dono escreveu**, e depois apague o `.novo`. Conte ao dono em uma frase o que
 entrou. O backup tem a versão dele de antes (`admin.tar.gz`). A junção só vale para as próximas
 conversas do Admin, depois do reinício.
@@ -421,27 +421,27 @@ volte tudo com `--voltar`.
 recusa ("running or paused containers cannot be removed"). O `agente recriar` já trata sozinho (espera e
 usa `rm -f` só do container), mas só com `--forcar`: num container preso não dá para conferir o que existe só
 dentro dele, e destravar não autoriza perder isso. Sem `--forcar` o comando para e pede. Se falhar, a mensagem diz
-que o container **antigo** continua lá e em que estado; nada foi removido. Rode `sudo dgclaw agente recriar <slug> --forcar`.
+que o container **antigo** continua lá e em que estado; nada foi removido. Rode `sudo prumo agente recriar <slug> --forcar`.
 
 **Container de um agente que não sobe.** O comando diz qual agente. A casa dele está intacta. Veja:
 `podman logs --tail 40 dgclaw-<slug>`. Se terminar com código 255, é falta de inotify: `sysctl -w
 fs.inotify.max_user_instances=1024` (o instalador grava `/etc/sysctl.d/90-dgclaw-inotify.conf`). Depois
-`dgclaw agente recriar <slug> --forcar`. Se o container foi removido e o novo não terminou de subir, a
+`prumo agente recriar <slug> --forcar`. Se o container foi removido e o novo não terminou de subir, a
 mensagem de erro diz isso e repete o comando acima; os dados estão em
 `/var/lib/dgclaw/agentes/<slug>/`.
 
 **Imagem não constrói (falta de disco ou rede).** O fim de `/var/log/dgclaw/imagem.log` diz a causa. Para
 disco: `df -h /` e `podman system df`. Libere só o que é reconstruível: `podman image prune` (imagens
 soltas) e backups velhos de `/var/backups/dgclaw` que o dono aprovar apagar. **Nunca** `podman system
-prune --volumes` nem apagar `/var/lib/dgclaw`. Depois rode `sudo dgclaw atualizar --sem-baixar`.
+prune --volumes` nem apagar `/var/lib/dgclaw`. Depois rode `sudo prumo atualizar --sem-baixar`.
 
 **A atualização parou no meio.** A mensagem final diz em qual passo e onde está o backup. Os dados estão
-salvos. Descubra a causa no log, corrija e rode `sudo dgclaw atualizar --sem-baixar` (rodar de novo é
+salvos. Descubra a causa no log, corrija e rode `sudo prumo atualizar --sem-baixar` (rodar de novo é
 seguro: o instalador só confere o que já está feito e `agente recriar` pula o que já usa a imagem atual).
 Se não houver conserto rápido, volte (próximo capítulo).
 
 **Link de primeiro acesso.** Se a senha do painel nunca foi cadastrada, o instalador gera um link novo. O
-log o esconde (`primeiro-acesso#(oculto...)`); gere outro com `sudo dgclaw primeiro-acesso` e entregue
+log o esconde (`primeiro-acesso#(oculto...)`); gere outro com `sudo prumo primeiro-acesso` e entregue
 ao dono por um canal seguro.
 
 **O que não volta depois de recriar.** Programas que alguém instalou **dentro** do container com `apt` ou
@@ -452,8 +452,8 @@ reinstalar ou ponha o que for importante na casa dele. Avise o dono se ele costu
 
 O comando já confere, mas confirme com os próprios olhos antes de dizer "pronto":
 
-1. `sudo dgclaw status`: tudo "ok", nenhuma linha FALHOU.
-2. `sudo dgclaw agente listar`: todos com `running` e saúde `ok` (os que o dono tinha parado continuam
+1. `sudo prumo status`: tudo "ok", nenhuma linha FALHOU.
+2. `sudo prumo agente listar`: todos com `running` e saúde `ok` (os que o dono tinha parado continuam
    parados).
 3. Mande uma mensagem de teste a cada agente que estava ligado, pelo chat dele, e espere a resposta. Peça
    algo que prove a memória, por exemplo "me diga em uma frase o que você sabe sobre mim".
@@ -490,7 +490,7 @@ roteiro e nunca aparece em log nem na linha de comando).
 O resumo da atualização termina com o comando exato. Para voltar:
 
 ```bash
-sudo dgclaw atualizar --voltar /var/backups/dgclaw/<AAAAMMDD-HHMMSS> --segundo-plano
+sudo prumo atualizar --voltar /var/backups/dgclaw/<AAAAMMDD-HHMMSS> --segundo-plano
 ```
 
 Simule antes com `--simular`. O que ele faz:
@@ -509,7 +509,7 @@ Se existirem agentes criados **depois** do backup, o comando para e lista quais:
 
 Para atualizar de novo depois de voltar, volte o clone para a branch `personalizacoes`, se ela existir, ou
 senão para a `main` (`cd <clone> && git switch personalizacoes`, ou `git switch main`), e rode
-`dgclaw atualizar`.
+`prumo atualizar`.
 
 ## O que dizer ao dono em cada etapa
 
@@ -548,15 +548,15 @@ fazer.
 O que fazer:
 
 1. **Faça a análise antes de falar em instalar** (capítulo "Ler o que muda antes de instalar"): rode
-   `sudo dgclaw atualizar --simular`, leia o relatório, o diff dos pontos de atenção e a seção do que este
-   DG Claw usa, e cruze com o que o dono faz no dia a dia.
+   `sudo prumo atualizar --simular`, leia o relatório, o diff dos pontos de atenção e a seção do que este
+   Prumo da Locadora usa, e cruze com o que o dono faz no dia a dia.
 2. Conte ao dono, pelo chat e em palavras simples, que saiu uma versão nova, se ela é segura e o que ele
    ganha, e pergunte se quer instalar agora. Grave o parecer (`--parecer segura` ou `--parecer arriscada`).
    Se não for segura, levante o alerta, grave `arriscada` e não instale.
-3. **Não rode `dgclaw atualizar --ok-do-dono` sem o sim explícito do dono.** Silêncio, "depois" ou uma
+3. **Não rode `prumo atualizar --ok-do-dono` sem o sim explícito do dono.** Silêncio, "depois" ou uma
    pergunta de volta não são um sim. O recado só avisa; quem decide é ele.
 4. Se ele disser sim, siga este roteiro. Se disser não ou "depois", agradeça e não insista: a faixa do
    painel também some quando ele toca em "Agora não".
-5. Para conferir a situação sem esperar o próximo ciclo: `sudo dgclaw atualizar --checar`. Ele mostra só as
+5. Para conferir a situação sem esperar o próximo ciclo: `sudo prumo atualizar --checar`. Ele mostra só as
    versões e a contagem, nunca o resumo (esse texto vem de fora): mande o dono ver a faixa do painel. Para desligar o
-   aviso a pedido do dono: `sudo dgclaw atualizar --aviso desligar`.
+   aviso a pedido do dono: `sudo prumo atualizar --aviso desligar`.

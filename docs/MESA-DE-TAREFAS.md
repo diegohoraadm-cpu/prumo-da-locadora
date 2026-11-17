@@ -2,11 +2,11 @@
 
 A mesa de tarefas mostra ao dono, numa tela só, o que cada agente está fazendo: quem está em
 quê, quanto falta, o que travou e o que espera por ele. Funciona sozinha em cada VPS, dentro do
-DG Claw Web, sem nenhum serviço de fora. Nada para ligar: ela já vem com o Web.
+Prumo da Locadora Web, sem nenhum serviço de fora. Nada para ligar: ela já vem com o Web.
 
 ## Onde fica
 
-A tela é `/mesa` no DG Claw Web, com o item **Mesa de tarefas** no menu da conversa. Um bloco
+A tela é `/mesa` no Prumo da Locadora Web, com o item **Mesa de tarefas** no menu da conversa. Um bloco
 por agente, com os cartões das tarefas; o que espera pelo dono e o que travou vêm primeiro. O
 dono também mexe nela: cria tarefa para um agente, responde, conclui, cancela e reabre.
 
@@ -39,7 +39,7 @@ começando com `[Mesa]`.
 
 O bloco "mesa de tarefas local" do `/dgclaw:doctor` confere três coisas: se `dgclaw-mesa` e
 `dgclaw-api` existem, e se o `CLAUDE.md` do agente tem a seção "Mesa de tarefas" atual. Sem os
-comandos, o aviso diz para atualizar o DG Claw e rodar `sudo dgclaw agente reparar <slug>`. Sem a
+comandos, o aviso diz para atualizar o Prumo da Locadora e rodar `sudo prumo agente reparar <slug>`. Sem a
 seção, o aviso pede `--fix`, que a acrescenta no fim do `CLAUDE.md` (com cópia de segurança ao lado).
 
 ## Integração antiga com o DG Telegram

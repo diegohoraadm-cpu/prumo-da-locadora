@@ -196,8 +196,8 @@ Tique, item novo e apagar não avisam, para não virar barulho.
   trocado em silêncio por uma lista vazia. Preserve esta pasta em backups e atualizações.
 - O retrato na casa do agente é gravado por `caixa.gravaRetrato` (escrita segura do Web:
   nada de seguir atalho, dono e modo conferidos).
-- O gancho é registrado no `promptHooks` do `runner.json` do agente (`dgclaw agente criar`
-  e `dgclaw agente reparar` escrevem). Agentes Codex não usam `promptHooks`: para eles vale a
+- O gancho é registrado no `promptHooks` do `runner.json` do agente (`prumo agente criar`
+  e `prumo agente reparar` escrevem). Agentes Codex não usam `promptHooks`: para eles vale a
   leitura com cursor.
 - A skill de fábrica `foco` ensina o agente a usar; a regra curta está no `CLAUDE.md` do agente; o `AGENTS.md`
   diz ao Codex onde ler o foco, já que o bloco não chega sozinho para ele.

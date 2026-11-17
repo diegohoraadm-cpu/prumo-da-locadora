@@ -3,7 +3,7 @@
 > Manual para o CLAUDE executar (o Admin ou a sessão de socorro), não para um humano ler
 > inteiro. Quem chama é o dono do agente, geralmente leigo, dizendo "aconteceu alguma coisa
 > com o meu agente, vê aí". Siga a ordem. Os comandos e caminhos daqui foram conferidos no
-> código do DG Claw v1. Se um nome não existir na máquina, NÃO invente outro: diga o que
+> código do Prumo da Locadora v1. Se um nome não existir na máquina, NÃO invente outro: diga o que
 > achou e o que esperava achar.
 
 ## 0. Regras do socorro (valem para tudo abaixo)
@@ -19,10 +19,10 @@
    Nada conserta antes do horário que a mensagem diz. Explique e diga a hora.
 5. **Nunca faça login com a sessão do agente de pé.** Dois `claude` na mesma casa estragam a
    conversa do agente. Pare o runner dele antes (seção 3.4).
-6. **Nunca remova o container do agente** (`podman rm`, `dgclaw agente remover`) para "limpar".
+6. **Nunca remova o container do agente** (`podman rm`, `prumo agente remover`) para "limpar".
    A conversa, a memória e o login ficam na casa do agente, mas remover derruba a rede, as
-   portas e o registro dele. Para desligar, use `dgclaw agente parar <slug>`.
-   **Exceção:** `dgclaw agente recriar <nome do agente> --forcar` troca o container de propósito. É o
+   portas e o registro dele. Para desligar, use `prumo agente parar <slug>`.
+   **Exceção:** `prumo agente recriar <nome do agente> --forcar` troca o container de propósito. É o
    caminho quando o agente ficou de fora da atualização para a 1.0.5 ou está sem container (seção
    3.2.1), e só com o "posso?" (quando o agente tem container, com a lista do que se perde na mão; sem
    container não há lista e nada a perder): se perde o que foi instalado à mão dentro do container, e
@@ -48,9 +48,9 @@ Dentro do container não existem `podman`, `dgclaw` nem `sudo`. Traduza assim:
 | `curl -s http://127.0.0.1:$PORTA/api/saude` | `curl -s http://127.0.0.1:4300/api/saude` |
 | `podman exec $C systemctl ...` e `podman exec $C journalctl ...` | o mesmo `systemctl` ou `journalctl`, sem o `podman exec $C` (só leitura; reiniciar unidade pede root, que você não tem) |
 | `modo-seguro.sh` pelo `podman exec` (3.6) | `bash /opt/dgclaw/app/scripts/modo-seguro.sh /home/agente/.dgclaw/config.sh --motivo "..." --origem manual --dry-run` |
-| `dgclaw agente reiniciar $SLUG` (3.7) | `python3 /opt/dgclaw/app/scripts/_lib/reinicio.py normal --origem manual --json` (volta na mesma conversa) |
+| `prumo agente reiniciar $SLUG` (3.7) | `python3 /opt/dgclaw/app/scripts/_lib/reinicio.py normal --origem manual --json` (volta na mesma conversa) |
 
-O que só se resolve no servidor (container desligado, login pelo terminal, Caddy, DG Claw Web,
+O que só se resolve no servidor (container desligado, login pelo terminal, Caddy, Prumo da Locadora Web,
 imagem, firewall): explique ao dono o que achou e diga que quem cuida do servidor precisa agir,
 com o comando da seção correspondente. Se o container estivesse desligado, aliás, esta sessão
 nem abriria: ela roda dentro dele.
@@ -58,7 +58,7 @@ nem abriria: ela roda dentro dele.
 ## 1. Descobrir qual é o agente
 
 ```bash
-dgclaw agente listar
+prumo agente listar
 podman ps -a --filter name=dgclaw- --format '{{.Names}} {{.Status}}'
 ```
 
@@ -74,7 +74,7 @@ SLUG=meuagente
 C=dgclaw-$SLUG                       # nome do container
 CASA=/var/lib/dgclaw/agentes/$SLUG   # a casa do agente, vista do servidor
 H=$CASA/home                         # dentro do container isso é /home/agente
-PORTA=<a coluna PORTA do dgclaw agente listar>
+PORTA=<a coluna PORTA do prumo agente listar>
 ```
 
 O **Admin** (o agente de sistema, que roda direto no servidor e não em container) não aparece
@@ -83,12 +83,12 @@ no `listar` como container. Se o problema é com ele, vá à seção 2.2.
 ## 2. O mapa: cada peça, como checar em um comando, o normal e o quebrado
 
 O caminho de uma mensagem do dono é: navegador, depois o **Caddy** (porta 443, HTTPS), depois o
-**DG Claw Web** (127.0.0.1:8300), depois o **container do agente** (porta publicada só em
+**Prumo da Locadora Web** (127.0.0.1:8300), depois o **container do agente** (porta publicada só em
 127.0.0.1, a partir da 4311), onde o **runner** (porta 4300 lá dentro) é o dono do `claude`.
 Uma visão geral de tudo de uma vez:
 
 ```bash
-dgclaw status
+prumo status
 ```
 
 Ele confere o domínio, os serviços `caddy`, `dgclaw-web` e `dgclaw-admin`, o Web em
@@ -101,9 +101,9 @@ atenção. Ele sai com erro se algo essencial caiu.
 | Peça | Checar | Normal | Quebrado |
 |---|---|---|---|
 | **Caddy** (HTTPS) | `systemctl is-active caddy` | `active` | `failed`: o site não abre. Motivo: `journalctl -u caddy -n 30 --no-pager` |
-| **DG Claw Web** (login, chat, painéis em `/p/<slug>/`) | `systemctl is-active dgclaw-web` e `curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8300/` | `active` e um código HTTP (200 ou 302) | `failed`, ou o `curl` sem resposta. Motivo: `journalctl -u dgclaw-web -n 50 --no-pager` |
+| **Prumo da Locadora Web** (login, chat, painéis em `/p/<slug>/`) | `systemctl is-active dgclaw-web` e `curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8300/` | `active` e um código HTTP (200 ou 302) | `failed`, ou o `curl` sem resposta. Motivo: `journalctl -u dgclaw-web -n 50 --no-pager` |
 | **Admin** (agente de sistema, roda como root em `/opt/dgclaw/admin`) | `systemctl is-active dgclaw-admin` e `curl -s http://127.0.0.1:4300/api/saude` | `active` e um JSON com `"ok":true` | `failed` ou sem resposta. Logs: `journalctl -u dgclaw-admin -n 50 --no-pager` e `/var/log/dgclaw/admin-runner.log` |
-| **Imagem dos agentes** | `dgclaw imagem status` | "imagem dos agentes pronta" | construindo ou falhou: `tail -n 30 /var/log/dgclaw/imagem.log` |
+| **Imagem dos agentes** | `prumo imagem status` | "imagem dos agentes pronta" | construindo ou falhou: `tail -n 30 /var/log/dgclaw/imagem.log` |
 | **Firewall dos containers** | `systemctl is-active dgclaw-firewall` | `active` | `failed`: reaplique com `bash /opt/dgclaw/app/lib/firewall.sh` (com o "posso?") |
 
 ### 2.2 Peças de cada agente (uma por container)
@@ -144,8 +144,8 @@ login do Claude, o último turno (o `saude_sessao.py` da seção 2.3) e, com o T
 plugin instalado e o processo dele vivo. Bot aberto em outro computador ela **não** enxerga: o plugin
 para de escutar mas segue vivo, e para ela fica tudo bem. Esse caso continua na seção 3.5.
 
-Quando acha um problema, ela tenta uma vez o conserto seguro (`dgclaw agente reiniciar`, ou
-`dgclaw agente reparar` quando falta o plugin) e avisa o dono com a correção em uma linha: no
+Quando acha um problema, ela tenta uma vez o conserto seguro (`prumo agente reiniciar`, ou
+`prumo agente reparar` quando falta o plugin) e avisa o dono com a correção em uma linha: no
 aparelho dele (se ele ativou os avisos), num recado ao Admin e, com o Telegram ligado, pelo bot do
 próprio agente.
 
@@ -153,10 +153,10 @@ Container desligado (`exited`) e login vencido só geram aviso, porque o consert
 o erro continua na conversa depois do reinício, o aviso pede ao dono uma mensagem nova.
 
 O container que nunca ligou (`created`) é a exceção desde a 1.0.5: antes do aviso, ele ganha um
-`sudo dgclaw agente iniciar`, uma vez por janela de 6 horas.
+`sudo prumo agente iniciar`, uma vez por janela de 6 horas.
 
 O mesmo problema do mesmo agente só volta a ser tratado depois de 6 horas, mesmo que ele melhore no
-meio. Durante o `sudo dgclaw atualizar` ela não confere nada.
+meio. Durante o `sudo prumo atualizar` ela não confere nada.
 
 No socorro, comece pelo log dela: ele diz o que ela viu e o que já tentou.
 
@@ -167,12 +167,12 @@ systemctl list-timers dgclaw-sentinela.timer --no-pager
 
 O estado fica em `/var/lib/dgclaw/sentinela/` (um arquivo `<slug>.<problema>` com a hora do
 aviso); apagar o arquivo faz ela tratar o problema de novo na próxima rodada. Instalação antiga
-ganha a Sentinela no próximo `sudo dgclaw atualizar`.
+ganha a Sentinela no próximo `sudo prumo atualizar`.
 
 ## 3. Árvore "parou de responder" (na ordem; pare no primeiro que explicar)
 
 ### 3.1 O site abre?
-- O dono não consegue abrir o endereço: `dgclaw status`. Se `caddy` ou `dgclaw-web` aparecem
+- O dono não consegue abrir o endereço: `prumo status`. Se `caddy` ou `dgclaw-web` aparecem
   como `FALHOU`, vá à tabela 2.1 e leia o log da peça. Com o "posso?":
   `systemctl restart caddy` ou `systemctl restart dgclaw-web`. Reiniciar o Web não derruba
   nenhum agente.
@@ -196,7 +196,7 @@ outra pessoa que instalou, ele precisa pedir a ela o acesso ao servidor: pelo pa
 caminho, porque é justamente o painel que não abre.
 
 **`prumo` e `dgclaw` são o mesmo comando** (o instalador cria o `prumo` como atalho). Os exemplos desta
-seção usam `prumo`, que é o que a tela de login mostra; `sudo dgclaw usuario` faz a mesma coisa.
+seção usam `prumo`, que é o que a tela de login mostra; `sudo prumo usuario` faz a mesma coisa.
 
 1. **Apareceu "muitas tentativas seguidas"?** São 5 erros seguidos vindos da mesma
    internet (o mesmo IP); o bloqueio dura 15 minutos a contar do primeiro erro. A contagem vive na
@@ -266,45 +266,45 @@ Quem entra no servidor com usuário comum põe `sudo` na frente de cada comando 
 `container` é a caixa onde o agente roda; `<nome do agente>` é o `SLUG`, a primeira coluna do
 `listar`.
 ```bash
-dgclaw agente listar
+prumo agente listar
 ```
 - `CONTAINER` em `created` (criado e nunca ligado): era o caso típico logo depois de instalar ou
   reinstalar pelo terminal. Desde a versão 1.0.5 ele liga sozinho: no fim da instalação e da
-  atualização o instalador roda `sudo dgclaw agente iniciar` nele, e a Sentinela (o vigia que confere
+  atualização o instalador roda `sudo prumo agente iniciar` nele, e a Sentinela (o vigia que confere
   os agentes, seção 2.4) tenta uma vez, e só de novo depois de 6 horas, antes de avisar "O agente X
   está desligado". Se ele ainda aparece em `created`, essas tentativas falharam: com o "posso?",
-  `sudo dgclaw agente iniciar <nome do agente>`, e confira de novo: o certo é `running` e `ok` em até
+  `sudo prumo agente iniciar <nome do agente>`, e confira de novo: o certo é `running` e `ok` em até
   um minuto. O `exited` (desligado) nunca é ligado sozinho: a pessoa pode ter desligado de propósito.
-- `CONTAINER` em `exited` (desligado): com o "posso?", `sudo dgclaw agente iniciar <nome do agente>`.
+- `CONTAINER` em `exited` (desligado): com o "posso?", `sudo prumo agente iniciar <nome do agente>`.
   Isso liga o container de novo e reaplica o firewall.
 - `CONTAINER` em `ausente` (o container não existe mais): o `agente iniciar` não funciona, porque não
   há o que ligar. A receita é uma só, a da seção 3.2.1: com o "posso?",
-  `sudo dgclaw agente recriar <nome do agente> --forcar`. Ela cria o container de novo, com a mesma
+  `sudo prumo agente recriar <nome do agente> --forcar`. Ela cria o container de novo, com a mesma
   casa, o mesmo cofre e as mesmas portas.
 - Agente que continua na versão anterior depois de uma atualização que terminou "INCOMPLETA": seção
   3.2.1.
 - `CONTAINER` em `running` e `SAUDE` em `sem resposta`: o runner de dentro não responde. Veja o
   log (`podman exec $C journalctl -u dgclaw-runner -n 40 --no-pager`). Com o "posso?":
-  `sudo dgclaw agente reparar <nome do agente>` refaz só a parte de dentro (tarefas agendadas, runner e painel) e
-  espera o `/api/saude` responder. Erro que cita a imagem: `dgclaw imagem construir --agora`.
+  `sudo prumo agente reparar <nome do agente>` refaz só a parte de dentro (tarefas agendadas, runner e painel) e
+  espera o `/api/saude` responder. Erro que cita a imagem: `prumo imagem construir --agora`.
 - `running` e `ok`: o container e o runner estão bem. Siga para 3.3.
-- Saiu com código 255 logo na partida, sem log (`dgclaw agente iniciar` já explica): falta
+- Saiu com código 255 logo na partida, sem log (`prumo agente iniciar` já explica): falta
   inotify. Cada agente gasta de 5 a 6 instâncias do root e o padrão do Ubuntu é 128. Veja o uso
-  com `dgclaw status`, suba o limite com `sysctl -w fs.inotify.max_user_instances=1024` (o
-  instalador grava `/etc/sysctl.d/90-dgclaw-inotify.conf`) e rode `sudo dgclaw agente iniciar <nome do agente>`.
+  com `prumo status`, suba o limite com `sysctl -w fs.inotify.max_user_instances=1024` (o
+  instalador grava `/etc/sysctl.d/90-dgclaw-inotify.conf`) e rode `sudo prumo agente iniciar <nome do agente>`.
 - O container sobe e cai logo: `podman logs --tail 40 $C` mostra o motivo. Imagem faltando:
-  `dgclaw imagem status`.
+  `prumo imagem status`.
 
 ### 3.2.1 Agente de fora da atualização para a 1.0.5, ou sem container
 Você (o Admin ou a sessão de socorro) fala com o dono; ele costuma ser leigo. Palavras que ele vai
 ouvir: **caixa** é o container do agente, o espaço isolado onde ele roda; **casa** é a pasta do agente
 no servidor (`/var/lib/dgclaw/agentes/<nome do agente>/`), onde ficam a memória, o cofre e as
-conversas; **nome do agente** é o `SLUG`, a primeira coluna de `sudo dgclaw agente listar`, e é o nome
+conversas; **nome do agente** é o `SLUG`, a primeira coluna de `sudo prumo agente listar`, e é o nome
 que aparece nas linhas FALHOU; **rotinas padrão** são as tarefas agendadas que todo agente traz de
 fábrica.
 
 **O que aconteceu.** Só acontece na primeira atualização para a 1.0.5. A tela do
-`sudo dgclaw atualizar` termina com "Atualizacao INCOMPLETA" e uma linha FALHOU para cada agente. É o
+`sudo prumo atualizar` termina com "Atualizacao INCOMPLETA" e uma linha FALHOU para cada agente. É o
 esperado desta versão, não é defeito; diga isso ao dono antes de qualquer outra coisa.
 
 **Por quê.** A 1.0.5 passou a conferir, antes de trocar a caixa de um agente, o que existe só dentro
@@ -331,18 +331,18 @@ e o comando de cada um; o item da 1.0.5 no `CHANGELOG.md` diz o mesmo.
    mostra um programa que o dono instalou e ainda usa, o `--forcar` o apaga. O dono escolhe: (a) adiar,
    deixando o agente como está, que segue funcionando na versão anterior; ou (b) anotar o nome do
    programa, rodar o passo 3 e instalar o programa de novo depois, já na caixa nova.
-3. **Troque a caixa:** `sudo dgclaw agente recriar <nome do agente> --forcar`.
+3. **Troque a caixa:** `sudo prumo agente recriar <nome do agente> --forcar`.
 4. **Confira que a caixa foi trocada:** `sudo ls -l /var/lib/dgclaw/agentes/<nome do agente>/home/.dgclaw/unidades-padrao.sha256`.
    Esse arquivo é a referência que os agentes antigos não tinham: o `--forcar` o grava, então ele passa
-   a existir. Depois, `sudo dgclaw agente listar` deve mostrar o agente em `running` e `ok`. O
-   `sudo dgclaw status` não serve de prova: ele mostra a versão do sistema e, por agente, só que está
+   a existir. Depois, `sudo prumo agente listar` deve mostrar o agente em `running` e `ok`. O
+   `sudo prumo status` não serve de prova: ele mostra a versão do sistema e, por agente, só que está
    de pé. Para esse agente, as próximas atualizações não pedem mais nada.
 
 **Dois casos que a atualização não lista como FALHOU.** O agente **desligado** (`exited`) fica como
-está; quando o dono quiser usá-lo, `sudo dgclaw agente iniciar <nome do agente>`, e na atualização
+está; quando o dono quiser usá-lo, `sudo prumo agente iniciar <nome do agente>`, e na atualização
 seguinte ele passa por esta mesma etapa. O agente **sem container** (`ausente`) não liga com
 `agente iniciar`, porque não há o que ligar. A receita é a do passo 3, a mesma do aviso do instalador:
-`sudo dgclaw agente recriar <nome do agente> --forcar` cria a caixa de novo. Como a caixa não existe,
+`sudo prumo agente recriar <nome do agente> --forcar` cria a caixa de novo. Como a caixa não existe,
 não há nada dentro dela para perder: aqui não há lista e o passo 1 não se aplica.
 
 ### 3.3 O ÚLTIMO turno foi erro? (a causa mais comum de "de pé e mudo")
@@ -400,12 +400,12 @@ fila de espera do runner guarda UM recado só, e um reinício apaga ela) e peça
 
 ### 3.5 O canal está vivo?
 - **Painel e chat (o canal padrão):** o `/api/saude` do runner (tabela 2.2) responde e o
-  último turno foi normal? Então a resposta existe; confira se o Web entrega: `dgclaw status`
+  último turno foi normal? Então a resposta existe; confira se o Web entrega: `prumo status`
   e `journalctl -u dgclaw-web -n 50 --no-pager`.
 - **Telegram (só se o dono ligou o canal):** o container usa o plugin oficial do Telegram do
   Claude. Confira `podman exec --user agente $C bash -c 'cd /home/agente && claude plugin list'`
   (deve listar `telegram@claude-plugins-official`) e se o token do bot foi configurado, sem
-  imprimir o valor. Se o plugin sumiu: `dgclaw agente reparar $SLUG` tenta instalar de novo.
+  imprimir o valor. Se o plugin sumiu: `prumo agente reparar $SLUG` tenta instalar de novo.
 - **Dois processos no mesmo bot** (o agente também está ligado em outro computador): o bot
   fica mudo. Pergunte e peça para fechar o outro.
 
@@ -430,7 +430,7 @@ daquela conversa, não a memória.
 ### 3.7 A sessão está travada (de pé, sem erro, sem responder)
 - `/api/saude` com `"status":"working"` e `ultimaSaidaEm` de horas atrás, e o `runner.log` só
   com "enfileirados". Antes de qualquer coisa refaça o 3.3 (login vencido dá exatamente isso).
-- Sem erro no último turno, com o "posso?": `dgclaw agente reiniciar $SLUG`. Ele reinicia só o
+- Sem erro no último turno, com o "posso?": `prumo agente reiniciar $SLUG`. Ele reinicia só o
   runner, o container continua de pé, e a conversa volta de onde estava.
 
 ### 3.8 Tudo de pé e ele responde, mas "está estranho"
@@ -446,20 +446,20 @@ daquela conversa, não a memória.
   ter o `AAAA-MM-DD.md` de ontem. Diário parado há dias significa sessão parada ou travada:
   volte para 3.3 e 3.7.
 - Tarefa agendada que não roda: `podman exec $C systemctl list-timers --no-pager`; timer ausente,
-  `dgclaw agente reparar $SLUG` refaz a parte de dentro.
+  `prumo agente reparar $SLUG` refaz a parte de dentro.
 
 ## 4. Restaurar (sempre perguntando ao dono antes)
 
 | O quê | Onde fica | Como voltar |
 |---|---|---|
-| Agente removido por engano | `/var/lib/dgclaw/aposentados/<slug>-AAAAMMDD-HHMMSS/` (a casa inteira, mais os segredos do host em `segredos-do-host/`) | nada foi apagado. Fale com quem cuida do servidor antes de mexer: recriar é `dgclaw agente criar` e a casa antiga precisa voltar para `/var/lib/dgclaw/agentes/<slug>`. A faixa de usuário (uid) do agente removido fica reservada de propósito |
+| Agente removido por engano | `/var/lib/dgclaw/aposentados/<slug>-AAAAMMDD-HHMMSS/` (a casa inteira, mais os segredos do host em `segredos-do-host/`) | nada foi apagado. Fale com quem cuida do servidor antes de mexer: recriar é `prumo agente criar` e a casa antiga precisa voltar para `/var/lib/dgclaw/agentes/<slug>`. A faixa de usuário (uid) do agente removido fica reservada de propósito |
 | Login vencido | `$H/.claude/.credentials.json.vencida-<data>` (cópia feita na seção 3.4) | só serve de registro; o login novo substitui |
 | Modo de segurança anterior | `$H/.dgclaw/modo-seguro/<data>/` (o fio antigo) e `$H/.dgclaw/quarentena/` (a mensagem que travou) | nada se perde; a conversa anterior também fica guardada pelo runner (`previousSessionId`) |
 | Memória | `$H/memory/`, `$H/MEMORY.md` | copie o arquivo atual para `.antes-socorro-<data>` e só então traga o antigo |
 
 ## 5. Conferir que voltou (nunca diga "resolvido" sem isto)
 
-1. `dgclaw agente listar` mostra `running` e `ok` para o agente (e `dgclaw status` sem `FALHOU`).
+1. `prumo agente listar` mostra `running` e `ok` para o agente (e `prumo status` sem `FALHOU`).
 2. `curl -s http://127.0.0.1:$PORTA/api/saude` mostra `"status":"idle"` e `"ptyVivo":true`.
 3. A prova real: peça ao DONO para mandar "oi" pelo canal dele (a tela do agente ou o Telegram)
    e espere a resposta chegar LÁ. Resposta no log não é resposta na tela dele.
@@ -483,8 +483,8 @@ chat da chamada, um por mensagem, pronto para copiar e colar; nunca ditado letra
 pessoa dizer o que apareceu antes de mandar o próximo. Peça para ela compartilhar a janela do
 terminal, não só a do navegador.
 
-Se nada aqui explicou o problema: diga isso com franqueza, junte a saída de `dgclaw status`,
-de `dgclaw agente listar` e os últimos logs, e entregue a quem cuida do servidor. Não invente
+Se nada aqui explicou o problema: diga isso com franqueza, junte a saída de `prumo status`,
+de `prumo agente listar` e os últimos logs, e entregue a quem cuida do servidor. Não invente
 conserto.
 
 ## 7. Quando o problema é o próprio Admin

@@ -17,7 +17,7 @@ derrubava a sessão.
 ## Quem entra e por onde
 
 ```
-DG Claw Web (chat)  ──POST /input──┐
+Prumo da Locadora Web (chat)  ──POST /input──┐
 painel do agente    ──POST /input──┼──> runner ──> PTY da sessão principal (claude)
 Telegram (opcional) ──--channels───┘                       │
                                                            v
@@ -26,7 +26,7 @@ Telegram (opcional) ──--channels───┘                       │
 
 | Porta | Como entra | Como a resposta volta |
 | --- | --- | --- |
-| Chat do DG Claw Web | `POST <runner>/api/agents/<id>/input` com o envelope `<dgchat from="pessoa" ...>` | tool `mcp__dgchat__reply` / `send_file`, lida do transcript |
+| Chat do Prumo da Locadora Web | `POST <runner>/api/agents/<id>/input` com o envelope `<dgchat from="pessoa" ...>` | tool `mcp__dgchat__reply` / `send_file`, lida do transcript |
 | Aba Conversa do painel | `scripts/_lib/inject.py` no modo `bunker`, que chama o mesmo `/input` do runner | a mesma leitura do transcript |
 | Telegram | plugin oficial pelo `--channels`, na sessão principal, só com motor Claude | tool `telegram__reply`, que o Web também mostra (marcada `via: telegram`) |
 | WhatsApp (quando entrar) | mensagem marcada como externa, só de número da allowlist | a mesma ideia do Telegram |
@@ -36,7 +36,7 @@ mensagem mandada pelo Telegram aparece no chat do navegador na ordem certa, sem 
 
 ## Consequências que valem saber
 
-1. **O chat funciona sem canal nenhum.** O agente nasce falando pelo DG Claw Web. Telegram e
+1. **O chat funciona sem canal nenhum.** O agente nasce falando pelo Prumo da Locadora Web. Telegram e
    WhatsApp são opcionais e se ligam por pedido em linguagem natural (skill `canais`).
 2. **Ligar ou desligar um canal não perde a conversa.** O comando `dgclaw-agente canal telegram
    ligar|desligar` grava `~/.dgclaw/canais.json` e pede `POST /api/agents/<id>/reiniciar` ao runner,

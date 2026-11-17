@@ -1,6 +1,6 @@
-# Conversa no DG Claw v1
+# Conversa no Prumo da Locadora v1
 
-O chat do navegador é o ponto de entrada do DG Claw. Depois de entrar com usuário e senha,
+O chat do navegador é o ponto de entrada do Prumo da Locadora. Depois de entrar com usuário e senha,
 o dono abre a conversa do Admin em `/a/admin` ou escolhe um agente no menu à esquerda.
 
 ## Como uma mensagem chega

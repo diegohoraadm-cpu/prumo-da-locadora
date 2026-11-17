@@ -9,7 +9,7 @@ do dono. Um espaço ou quebra de linha deve separar o prefixo do conteúdo.
 [PEDIDO] Parei antes de publicar. Você autoriza?
 ```
 
-Vale para agentes Claude e Codex e para respostas no DG Chat, Telegram e WhatsApp.
+Vale para agentes Claude e Codex e para respostas no chat do painel, Telegram e WhatsApp.
 O Web remove o prefixo da exibição e colore o balão. Texto do dono, emojis sozinhos,
 marcações no meio da frase e blocos de código não geram alertas. Não use para progresso.
 O canal externo original pode mostrar a tag.

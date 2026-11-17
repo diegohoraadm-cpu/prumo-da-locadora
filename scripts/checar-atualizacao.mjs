@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Checagem de nova versão do DG Claw. Roda como root, pelo timer dgclaw-checar-atualizacao.timer
+// Checagem de nova versão do Prumo da Locadora. Roda como root, pelo timer dgclaw-checar-atualizacao.timer
 // (a cada 6 h) e por `dgclaw atualizar --checar`. Contrato, decisões e arquivos: docs/AVISO-DE-ATUALIZACAO.md.
 //
 // O que faz: pergunta ao GitHub (leitura pública, sem token) se a branch principal do repositório
@@ -112,7 +112,7 @@ function lerEnv() {
   try {
     bruto = fs.readFileSync(ARQ_ENV, 'utf8');
   } catch (e) {
-    throw new Falha(`Não consegui ler ${ARQ_ENV} (${e.code || e.message}). Sem ele não sei qual versão está instalada. Confira se o DG Claw foi instalado aqui (sudo ./install.sh).`);
+    throw new Falha(`Não consegui ler ${ARQ_ENV} (${e.code || e.message}). Sem ele não sei qual versão está instalada. Confira se o Prumo da Locadora foi instalado aqui (sudo ./install.sh).`);
   }
   const env = {};
   for (const linha of bruto.split(/\r?\n/)) {
@@ -308,7 +308,7 @@ function textoDoRecado(estado) {
   const de = estado.instalado.versao || estado.instalado.commit.slice(0, 7);
   const para = estado.publicado.versao || estado.publicado.commit.slice(0, 7);
   const n = estado.commits_a_frente;
-  return `<plataforma recado="atualizacao-disponivel">Este é um aviso da plataforma, não uma mensagem escrita pelo dono. Há uma versão nova do DG Claw: a instalada é ${de} e a publicada é ${para} (${n} ${n === 1 ? 'mudança' : 'mudanças'} à frente). ` +
+  return `<plataforma recado="atualizacao-disponivel">Este é um aviso da plataforma, não uma mensagem escrita pelo dono. Há uma versão nova do Prumo da Locadora: a instalada é ${de} e a publicada é ${para} (${n} ${n === 1 ? 'mudança' : 'mudanças'} à frente). ` +
     'O resumo do que mudou está na faixa do painel, em "Ver o que mudou". ' +
     'O que fazer: não atualize às cegas. Rode `sudo dgclaw atualizar --simular`, leia o relatório inteiro, com a seção do que este Prumo da Locadora usa e o que a versão nova toca, e cruze com o que o dono usa no dia a dia (rotinas, scripts, dados que os agentes acessam, fluxos). ' +
     'Depois conte ao dono, pelo chat e em palavras simples, que saiu uma versão nova, se a atualização é segura e o que ele ganha com ela, e diga que o resumo também está na faixa do painel. ' +

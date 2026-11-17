@@ -88,7 +88,7 @@ Os connectors entram quando a sessao abre. Se o dono ligou um conector com o ass
 ja rodando, a sessao viva so enxerga depois de reiniciar o agente. No servidor:
 
 ```bash
-prumo agente reiniciar <slug>
+dgclaw agente reiniciar <slug>
 ```
 
 ## Teste

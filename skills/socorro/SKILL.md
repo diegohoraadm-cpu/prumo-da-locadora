@@ -1,6 +1,6 @@
 ---
 name: socorro
-description: Socorro do agente Prumo da Locadora para o dono leigo: descobre por que o agente parou de responder ou ficou estranho, explica em uma frase, propõe o conserto, pede licença e confere que voltou. Use quando alguém disser "meu agente parou", "ele não responde", "não está respondendo", "deu problema no agente", "aconteceu alguma coisa com meu agente, vê aí", "o bot morreu", "ele ficou mudo", "o agente sumiu", "ele esqueceu tudo", ou quando a sessão de socorro do painel for aberta. Serve para a instalação v1 (cada agente num container, o Admin no servidor). Para uma checagem geral sem queixa, prefira rodar `prumo status`.
+description: Socorro do agente Prumo da Locadora para o dono leigo: descobre por que o agente parou de responder ou ficou estranho, explica em uma frase, propõe o conserto, pede licença e confere que voltou. Use quando alguém disser "meu agente parou", "ele não responde", "não está respondendo", "deu problema no agente", "aconteceu alguma coisa com meu agente, vê aí", "o bot morreu", "ele ficou mudo", "o agente sumiu", "ele esqueceu tudo", ou quando a sessão de socorro do painel for aberta. Serve para a instalação v1 (cada agente num container, o Admin no servidor). Para uma checagem geral sem queixa, prefira rodar `dgclaw status`.
 user-invocable: true
 ---
 
@@ -22,7 +22,8 @@ M="${CLAUDE_PLUGIN_ROOT:-}/docs/EMERGENCIA.md"
 
 O app fica em `/opt/dgclaw/app`, tanto no servidor quanto dentro do container do agente.
 Leia o arquivo com a ferramenta Read. Se não achar, siga os passos abaixo e use
-`prumo status` e `prumo agente listar` como mapa.
+`dgclaw status` e `dgclaw agente listar` como mapa.
+Ao dono, escreva o comando como `sudo prumo …` (é o mesmo `dgclaw`); para executar, use `dgclaw`.
 
 ## Passo 2: uma pergunta só, e investigue
 
@@ -46,7 +47,7 @@ resolve na tela, e o Cofre é só olhar o painel:
   tela termina com "Atualizacao INCOMPLETA" e uma linha FALHOU por agente. É esperado nesta versão. Leia
   o aviso da 1.0.5 e a lista `perdido-no-recriar-*.txt` do agente, diga ao dono o que o `--forcar`
   perde (só o que foi instalado à mão dentro da caixa; as rotinas padrão voltam ao padrão) e, com o
-  sim dele, rode `sudo prumo agente recriar <nome do agente> --forcar`.
+  sim dele, rode `sudo dgclaw agente recriar <nome do agente> --forcar`.
 - **"Onde fica o Cofre?"** (manual 3.1.3): no menu da conversa (ícone de três traços), grupo
   **Segurança**, item **Cofre (chaves)**, que só o dono vê; no painel do agente, a aba **Cofre**, que o
   colaborador vê mas não consegue abrir.
@@ -56,10 +57,10 @@ Os comandos `sudo prumo ...` (entrar no painel) o dono digita no terminal do ser
 não sabe chegar lá, peça o acesso a quem instalou; não invente outro caminho.
 
 Agente sem container (`ausente`): `agente iniciar` não funciona. A receita é uma só, com o sim do dono:
-`sudo prumo agente recriar <nome do agente> --forcar` (manual 3.2.1). Como não existe caixa, não há
+`sudo dgclaw agente recriar <nome do agente> --forcar` (manual 3.2.1). Como não existe caixa, não há
 lista nem nada a perder. Para conferir, veja se
 `/var/lib/dgclaw/agentes/<nome do agente>/home/.dgclaw/unidades-padrao.sha256` passou a existir
-(`sudo ls -l` nesse caminho); o `prumo status` não prova isso.
+(`sudo ls -l` nesse caminho); o `dgclaw status` não prova isso.
 
 No caso do agente de fora da atualização, a lista se lê assim, sempre com o `sh -c` (a pasta é fechada
 para o usuário comum, e o `*` seria expandido antes do `sudo`):
@@ -69,7 +70,7 @@ padrão que o dono desligou volta a rodar.
 
 Agente que ficou parado logo depois de criado (`created`) agora liga sozinho: o instalador liga no fim
 da instalação e da atualização, e a Sentinela tenta uma vez a cada 6 horas. Só se ele continuar
-parado é que se liga à mão com `sudo prumo agente iniciar <nome do agente>`. O agente desligado (`exited`) nunca
+parado é que se liga à mão com `sudo dgclaw agente iniciar <nome do agente>`. O agente desligado (`exited`) nunca
 liga sozinho: pode ter sido de propósito.
 
 Enquanto investiga, não narre comando. No máximo: "estou olhando, um minuto".
@@ -95,17 +96,17 @@ nesses casos só piora (zera o cache e o próximo turno sai mais caro).
 
 - Uma mudança por vez, com cópia antes (`<arquivo>.antes-socorro-AAAAMMDD-HHMM`). Nada se apaga.
 - Nunca faça login com a sessão do agente de pé: pare o runner antes (manual 3.4).
-- Nunca remova o container do agente para "limpar" (`podman rm`, `prumo agente remover`): para
-  desligar, `sudo prumo agente parar <nome do agente>`. Para reiniciar só o runner, `sudo prumo agente reiniciar <nome do agente>`.
-- Para refazer a parte de dentro de um agente (tarefas agendadas, runner e painel): `sudo prumo agente reparar <nome do agente>`.
+- Nunca remova o container do agente para "limpar" (`podman rm`, `dgclaw agente remover`): para
+  desligar, `sudo dgclaw agente parar <nome do agente>`. Para reiniciar só o runner, `sudo dgclaw agente reiniciar <nome do agente>`.
+- Para refazer a parte de dentro de um agente (tarefas agendadas, runner e painel): `sudo dgclaw agente reparar <nome do agente>`.
 
 ## Passo 5: prove que voltou
 
-`prumo agente listar` mostrando `running` e `ok`, `/api/saude` do runner em `idle` (manual
+`dgclaw agente listar` mostrando `running` e `ok`, `/api/saude` do runner em `idle` (manual
 seção 5), e o principal: peça ao dono para mandar "oi" pelo canal dele e espere a resposta
 chegar LÁ. Só então diga "voltou".
 
 Feche registrando uma linha no diário do agente (`memory/<hoje>.md`, que na casa dele fica em
 `/var/lib/dgclaw/agentes/<slug>/home/memory/`): o que houve e o que foi feito, para ele saber
 depois por que ficou fora do ar. Se nada explicou o problema, diga com franqueza, junte a saída
-de `prumo status` e os últimos logs e entregue a quem cuida do servidor.
+de `dgclaw status` e os últimos logs e entregue a quem cuida do servidor.

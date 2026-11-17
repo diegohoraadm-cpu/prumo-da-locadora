@@ -1,6 +1,6 @@
 ---
 name: importar
-description: Recebe na VPS a MUDANCA de um agente que rodava no computador da pessoa (DG Claw Lite), pescando o arquivo cifrado pelo proprio bot de Telegram dela, mostrando o que veio e so entao escrevendo. Ative quando a pessoa colar uma linha comecando com MUDANCA, disser "trouxe meu agente do meu computador", "importar meu agente", "recebi o arquivo da mudanca", "meu agente estava no PC e quero por aqui". Trabalha junto com a skill de setup: sem agente instalado ainda, ela guarda a mudanca e manda instalar primeiro.
+description: Recebe na VPS a MUDANCA de um agente que rodava no computador da pessoa (DG Claw Lite), pescando o arquivo cifrado pelo proprio bot de Telegram dela, mostrando o que veio e so entao escrevendo. Ative quando a pessoa colar uma linha comecando com MUDANCA, disser "trouxe meu agente do meu computador", "importar meu agente", "recebi o arquivo da mudanca", "meu agente estava no PC e quero por aqui". Sem agente instalado ainda, guarda a mudanca e manda instalar primeiro.
 user-invocable: true
 ---
 

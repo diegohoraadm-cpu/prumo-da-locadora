@@ -138,8 +138,8 @@ O que muda nesse modo:
 - **O link de primeiro acesso só abre depois que o proxy estiver apontando** para o Prumo da Locadora, e vale 30
   minutos. Se expirar, `sudo prumo primeiro-acesso` gera outro.
 - **O modo fica guardado** (`DGCLAW_PROXY_EXISTENTE=1` no `dgclaw.env`), então rodar o instalador de novo
-  e `sudo prumo atualizar` continuam atrás do seu proxy sem repetir a opção. Para voltar ao Caddy do DG
-  Claw: `sudo ./install.sh --usuario maria --sem-proxy-existente`.
+  e `sudo prumo atualizar` continuam atrás do seu proxy sem repetir a opção. Para voltar ao Caddy do Prumo da
+  Locadora: `sudo ./install.sh --usuario maria --sem-proxy-existente`.
 - `sudo prumo dominio` mostra o domínio, a porta e os trechos de novo, e `sudo prumo dominio trocar
   <nome>` só grava o nome e imprime os trechos novos (o proxy você atualiza). Fora isso, a cerca de rede
   que isola os agentes do servidor é instalada igual nos dois modos.

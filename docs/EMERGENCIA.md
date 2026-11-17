@@ -320,15 +320,17 @@ atualização roda, antes do FALHOU, a tela já mostrou o "AVISO DA VERSÃO 1.0.
 e o comando de cada um; o item da 1.0.5 no `CHANGELOG.md` diz o mesmo.
 
 **Para cada agente da lista FALHOU, um de cada vez, com o "posso?":**
-1. **Veja se há algo a perder:** `sudo sh -c 'ls /var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-*.txt'`.
-   Use exatamente assim, com o `sh -c` e as aspas: a pasta do agente é fechada para o usuário comum, e
-   sem o `sh -c` o `*` é expandido antes do `sudo`, não acha nada e dá "No such file" mesmo quando a
-   lista existe. A atualização só grava esse arquivo quando acha, dentro da caixa, algo que não está
-   na casa. Duas saídas possíveis:
-   - Aparece o nome de um arquivo `perdido-no-recriar-<data>.txt`: há algo a perder. Leia com
-     `sudo sh -c 'cat /var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-*.txt'`. Se só
-     aparecem rotinas com o nome `dgclaw-<nome do agente>-...`, é o esperado.
-   - Aparece "No such file or directory": nada a perder, siga para o passo 2.
+1. **Confira o que há a perder, sem trocar:** `sudo prumo agente recriar <nome do agente>`, **sem** o `--forcar`.
+   Sem o `--forcar` ele não apaga nada: ou mostra a lista do que existe só dentro da caixa (e grava a lista
+   completa em `perdido-no-recriar-<data>.txt`, na casa do agente), ou diz que não conseguiu conferir e por quê
+   (caixa em `stopping`, `podman exec` que falha, etc.) e para com "nada foi mexido", ou confere que não há nada
+   só dentro da caixa e troca. **Não conclua "nada a perder" por o arquivo não existir:** ele só é gravado
+   quando a conferência funcionou e achou algo. Para ler um arquivo que existe:
+   `sudo sh -c 'cat /var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-*.txt'` (com o `sh -c` e as
+   aspas: a pasta do agente é fechada para o usuário comum). Se só aparecem rotinas com o nome
+   `dgclaw-<nome do agente>-...`, é o esperado. Se o comando disse que não conseguiu conferir, **não use o
+   `--forcar` ainda**: diga ao dono, copie para a casa do agente o que ele quiser guardar e só então siga.
+   Na dúvida, adie: o agente segue funcionando na versão anterior.
 2. **Diga ao dono o que o `--forcar` perde**, em palavras simples. Exemplo: "Vou trocar a caixa do
    agente pela versão nova. A memória, o cofre e as conversas ficam como estão. Perde-se só o que
    alguém instalou à mão dentro da caixa. As rotinas padrão voltam ao padrão: se você editou ou

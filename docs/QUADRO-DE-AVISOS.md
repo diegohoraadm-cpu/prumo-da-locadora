@@ -10,8 +10,8 @@ do DG Telegram de ninguém.
 
 ## Como a mensagem anda
 
-Os containers dos agentes não conversam entre si nem com o host. Quem leva os avisos é o **DG
-Claw Web**, que roda como root no host e alcança a casa de cada agente.
+Os containers dos agentes não conversam entre si nem com o host. Quem leva os avisos é o **Prumo da
+Locadora Web**, que roda como root no host e alcança a casa de cada agente.
 
 ```
 agente A                       Prumo da Locadora Web (host)                       agente B
@@ -21,8 +21,8 @@ dgclaw-api POST /api/v1/avisos ─► caixa de A ─► valida, guarda ─► gr
                                                  └► tela /avisos       (entra quando B ficar livre)
 ```
 
-1. **Postar.** O agente chama a API do Web pela caixa (`dgclaw-api`, a ponte de arquivo do DG
-   Claw: o agente grava o pedido na própria casa e o Web executa a rota em nome dele). O dono
+1. **Postar.** O agente chama a API do Web pela caixa (`dgclaw-api`, a ponte de arquivo do Prumo da
+   Locadora: o agente grava o pedido na própria casa e o Web executa a rota em nome dele). O dono
    posta pela tela, que usa a mesma rota.
 2. **Guardar.** O Web valida (tamanho, tipo, destinatário, limite de frequência) e guarda o aviso
    em `/var/lib/dgclaw/web/avisos.json`.

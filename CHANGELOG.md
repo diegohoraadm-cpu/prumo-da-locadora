@@ -752,7 +752,7 @@ aprovar sem querer o comando que surgiu em seguida, e o botão Aprovar de uma te
   nem ser cadastrado em lugar nenhum.
 - **Guia de projeto de cliente** (`docs/PROJETO-DE-CLIENTE.md`): o padrão de instalar o Prumo da Locadora completo na VPS do próprio cliente, o passo a passo com o acesso temporário do suporte, a comparação com as outras formas de acesso e o checklist de onboarding e entrega.
 - **Acesso temporário do suporte: `prumo suporte`.** Quando a equipe de suporte precisa ajustar a sua instalação,
-  você libera uma chave SSH nossa com prazo (`sudo prumo suporte ligar --chave '<linha>' --dias 7`, de 1 a 30
+  você libera uma chave SSH da equipe do Prumo da Locadora com prazo (`sudo prumo suporte ligar --chave '<linha>' --dias 7`, de 1 a 30
   dias). O servidor recusa a chave sozinho quando o prazo acaba, e um timer diário tira a linha vencida do
   arquivo. `sudo prumo suporte desligar` tira o acesso na hora e lista as sessões SSH de root abertas naquele momento, marcando a sua (se ainda houver outra, avisa que o acesso não está totalmente desligado; `--derrubar-sessoes` encerra todas as outras, menos a sua), `sudo prumo suporte status` mostra o que está
   ligado e até quando, e o `prumo status` ganhou a linha "suporte: desligado" ou "suporte: ligado até ...". Só as

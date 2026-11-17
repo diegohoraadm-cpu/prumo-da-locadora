@@ -83,11 +83,20 @@ pedem mais nada.
 do agente voltam ao padrão: se você mudou o horário de alguma, essa mudança se perde, e uma rotina que estava
 desligada volta a rodar. Peça de novo depois, se precisar. A memória, o cofre e as conversas ficam como estão.
 
-**Como conferir antes de trocar.** Peça ao Admin: "mostra o que eu perco ao trocar a caixa do agente `<nome do agente>`".
-Ele lê o arquivo `perdido-no-recriar-<data>.txt`, que fica na casa do agente. O arquivo só existe quando há algo a
-perder. Se não existe, não há nada a perder. Se aparecem só rotinas com nome `dgclaw-<nome do agente>-...`, é o
-esperado. Se aparece um programa que você instalou e ainda usa, você escolhe: adiar a troca (o agente continua na
-versão anterior) ou anotar o nome do programa, trocar e instalá-lo de novo depois.
+**Como conferir antes de trocar.** Peça ao Admin: "confere o que eu perco ao trocar a caixa do agente `<nome do agente>`,
+sem trocar". Ele roda `sudo prumo agente recriar <nome do agente>` **sem** o `--forcar`. Sem o `--forcar`, o comando não
+apaga nada que você instalou. Ele faz uma de três coisas: mostra a lista do que existe só dentro da caixa (a lista
+completa também fica no arquivo `perdido-no-recriar-<data>.txt`, na casa do agente); diz que não conseguiu conferir, e
+por quê, e para; ou confere que não há nada só dentro da caixa, e então troca. Quem decide é o que o comando disse na
+tela. Não conclua nada pelo arquivo não existir: ele só é gravado quando a conferência funcionou e achou algo.
+
+Se aparecem só rotinas com nome `dgclaw-<nome do agente>-...`, é o esperado. Se aparece um programa que você instalou
+e ainda usa, você escolhe: adiar a troca (o agente continua na versão anterior) ou anotar o nome do programa, trocar e
+instalá-lo de novo depois.
+
+Se o comando disse que não conseguiu conferir (por exemplo, a caixa está presa em "stopping"), não use o `--forcar`
+ainda. Peça ao Admin para copiar para a casa do agente o que for importante e só então trocar. Em caso de dúvida, adie
+a troca: o agente continua funcionando na versão anterior.
 
 **Como saber que deu certo.** `sudo prumo agente listar` deve mostrar o agente em `running` e `ok`. O
 `sudo prumo status` não serve de prova: ele mostra a versão do sistema e só diz que o agente está de pé.

@@ -126,8 +126,8 @@ e rode `sudo prumo restaurar` apontando para ela.
 
 ## Para quem estende o Prumo da Locadora
 
-O `lib/backup.sh` tem quatro funções pequenas, com um padrão que não faz nada. Uma edição que estende o DG
-Claw (a enterprise, por exemplo) carrega o arquivo e **redefine** as que precisar:
+O `lib/backup.sh` tem quatro funções pequenas, com um padrão que não faz nada. Uma edição que estende o Prumo da
+Locadora (a enterprise, por exemplo) carrega o arquivo e **redefine** as que precisar:
 
 | Função | Para que serve |
 |---|---|

@@ -27,6 +27,6 @@ body:
     id: versao
     attributes:
       label: Versão do Prumo da Locadora
-      description: Rode `git -C ~/DG-Claw rev-parse --short HEAD` na VPS (ajuste a pasta do clone).
+      description: Rode `git -C ~/prumo-da-locadora rev-parse --short HEAD` na VPS (ajuste a pasta do clone).
     validations:
       required: false

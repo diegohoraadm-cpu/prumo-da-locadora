@@ -29,8 +29,10 @@ const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 // Em JS e Python, a string logo depois de comparacao ou busca e logica, nao texto.
 const LOGICA_JS = /(?:\.(?:includes|startsWith|endsWith|indexOf|lastIndexOf|match|split|test|replace|replaceAll|get|has|set|add|delete)\(\s*|[!=]==?\s*|\bcase\s+)$/;
 // Depois da string: comparacao (`'x' === y`) ou chave de objeto/dicionario (`'x': 1`).
-const LOGICA_DEPOIS_JS = /^\s*(?:[!=]==?|:(?!:))/;
-const LOGICA_DEPOIS_PY = /^\s*(?:[!=]=|:(?!:))/;
+const LOGICA_DEPOIS_JS = /^\s*[!=]==?/;
+const LOGICA_DEPOIS_PY = /^\s*[!=]=/;
+const CHAVE_DEPOIS = /^\s*:(?!:)/; // 'x': (chave) so vale se vem depois de { ou , (senao e o ':' de um ternario)
+const chave = (src, ini, fim) => CHAVE_DEPOIS.test(src.slice(fim + 1, fim + 12)) && /[{,]\s*$/.test(src.slice(Math.max(0, ini - 40), ini - 1));
 const LOGICA_PY = /(?:\.(?:startswith|endswith|find|rfind|count|index|split|replace)\(\s*|[!=]=\s*|\bin\s+)$/;
 
 function zonasJs(src, { json = false } = {}) {
@@ -38,7 +40,7 @@ function zonasJs(src, { json = false } = {}) {
   const n = src.length;
   const addStr = (ini, fim, antes) => {
     if (json && /^\s*:/.test(src.slice(fim + 1, fim + 40))) return; // chave de JSON
-    z.push({ ini, fim, modo: 'string', logica: LOGICA_JS.test(antes) || LOGICA_DEPOIS_JS.test(src.slice(fim + 1, fim + 12)) });
+    z.push({ ini, fim, modo: 'string', logica: LOGICA_JS.test(antes) || LOGICA_DEPOIS_JS.test(src.slice(fim + 1, fim + 12)) || chave(src, ini, fim) });
   };
   // codigo(i, aninhado): le ate o fim do arquivo ou, se aninhado (dentro de ${}), ate a } que fecha.
   function codigo(i, aninhado) {
@@ -98,7 +100,7 @@ function zonasPy(src) {
       const ab = tri ? 3 : 1;
       let j = i + ab;
       while (j < n && !(tri ? src.startsWith(c.repeat(3), j) : (src[j] === c || src[j] === '\n'))) j += src[j] === '\\' ? 2 : 1;
-      z.push({ ini: i + ab, fim: j, modo: 'string', logica: LOGICA_PY.test(src.slice(Math.max(0, i - 40), i)) || (!tri && LOGICA_DEPOIS_PY.test(src.slice(j + 1, j + 12))) });
+      z.push({ ini: i + ab, fim: j, modo: 'string', logica: LOGICA_PY.test(src.slice(Math.max(0, i - 40), i)) || (!tri && (LOGICA_DEPOIS_PY.test(src.slice(j + 1, j + 12)) || chave(src, i + ab, j))) });
       i = j + ab; continue;
     }
     i++;

@@ -177,7 +177,7 @@ function norm(l) {
   return t
     .replace(/DGatoM\/DG-Claw|diegohoraadm-cpu\/prumo-da-locadora/g, '§REPO§')
     .replace(/\{\{MARCA_NOME\}\}|Prumo da Locadora|DG Claw/g, '§M§')
-    .replace(/[Ss]uporte DG\b/g, 'suporte')
+    .replace(/\b[Ss]uporte\b/g, 'suporte')
     .replace(/(?<![\w.-])\/dgclaw:([a-z][a-z0-9-]*)/g, '/$1')
     .replace(/(?<![\w/.$=-])(dgclaw|prumo)(?= (?:[a-z<.]|--))/g, '§CLI§')
     .replace(/\s+/g, ' ');

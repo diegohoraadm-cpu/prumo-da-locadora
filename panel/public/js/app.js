@@ -2382,7 +2382,7 @@ async function initConfig() {
   // sem a extensão de emoções. Resultado: o avatar configurado ficava invisivel justamente em
   // quem nao tem emocao, e o dono via um bonequinho generico no lugar da cara do
   // proprio agente. (O mini avatar do cabecalho acertava por acaso: o HTML ja
-  // nasce apontando para avatar.jpg.) Com a extensão de emoções instalado nada muda aqui, o
+  // nasce apontando para avatar.jpg.) Com a extensão de emoções instalada nada muda aqui, o
   // sprite de humor assume depois, como sempre.
   if (!aliveOn() && APP_CONFIG.avatar) pintaRetratoProprio(APP_CONFIG.avatar);
 }

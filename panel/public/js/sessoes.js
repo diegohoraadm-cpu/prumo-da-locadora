@@ -165,9 +165,12 @@
   }
 
   /** A frase da API, com o que fazer. Nunca vazia e nunca "erro desconhecido". */
-  function textoErro(res) {
+  function textoErro(res, config = cfg) {
     const c = (res && res.corpo) || {};
-    let t = c.erro || c.error || `O painel respondeu com o erro ${res ? res.status : '?'} e sem explicação. Recarregue a aba; se repetir, ${modoLocal() ? 'o painel' : 'o DG Telegram'} pode estar fora do ar.`;
+    // Modo local: o painel é quem responde; proxy: o app externo; sem config (ainda não carregou ou rede falhou): não dá para dizer qual.
+    const sePersistir = !config || config.falhaDeRede ? 'o servidor pode estar fora do ar'
+      : config.modo === 'local' ? 'avise o Admin' : 'o DG Telegram pode estar fora do ar';
+    let t = c.erro || c.error || `O painel respondeu com o erro ${res ? res.status : '?'} e sem explicação. Recarregue a aba; se repetir, ${sePersistir}.`;
     if (c.como_resolver || c.howToFix) t += ` ${c.como_resolver || c.howToFix}`;
     return t;
   }

@@ -155,6 +155,9 @@ Painel
       Exemplo:  sudo dgclaw primeiro-acesso
   dgclaw senha [trocar]                  troca a senha do painel (a nova senha vem pelo STDIN)
       Exemplo:  printf '%s\n' "minha senha nova" | dgclaw senha trocar
+      No fim mostra "Usuário do painel: X" e o endereço do painel.
+  dgclaw usuario                         mostra o usuario e o endereco do painel (nunca a senha)
+      Exemplo:  sudo dgclaw usuario
   dgclaw instalacao-remota               entrega pronto um DG Claw instalado na VPS de outra pessoa
       Troca a senha do painel por uma forte, reinicia o painel e mostra UMA vez a mensagem pronta
       (endereco, usuario e senha) para mandar ao dono. Pode rodar de novo: gera outra senha.
@@ -2527,6 +2530,23 @@ painel_gravar_senha() {
     executar systemctl restart dgclaw-web
 }
 
+# painel_usuario: imprime o usuario do painel (DGCLAW_PANEL_USER do web.env). Nunca toca na senha nem no hash.
+painel_usuario() {
+    local web_env="$DG_ETC/web.env" usuario
+    [ -f "$web_env" ] || falha "nao achei $web_env." "o DG Claw Web ainda nao foi instalado; rode o instalador: sudo ./install.sh --usuario <nome>"
+    usuario="$(sed -n 's/^DGCLAW_PANEL_USER=//p;T;q' "$web_env")"
+    [ -n "$usuario" ] || falha "nao achei a linha DGCLAW_PANEL_USER em $web_env." "rode o instalador de novo: sudo ./install.sh --usuario <nome>"
+    printf '%s\n' "$usuario"
+}
+
+# painel_usuario_endereco: as duas linhas "Usuario do painel" e "Endereco do painel" (usadas por `senha` e `usuario`).
+painel_usuario_endereco() {
+    local usuario
+    usuario="$(painel_usuario)" || return 1
+    carregar_env_dgclaw
+    printf 'Usuário do painel: %s\nEndereço do painel: %s/\n' "$usuario" "$(url_base_painel)"
+}
+
 senha_trocar() {
     local web_env="$DG_ETC/web.env" senha="" conf=""
     [ "$ENSAIO" = 1 ] && {
@@ -2549,6 +2569,12 @@ senha_trocar() {
     painel_gravar_senha "$senha"
     senha=""; conf=""
     ok "senha do painel trocada"
+    painel_usuario_endereco
+}
+
+usuario_main() {
+    [ "$#" -eq 0 ] || falha "o comando 'usuario' nao recebe opcoes (recebi '$1')." "use apenas: sudo dgclaw usuario"
+    painel_usuario_endereco
 }
 
 primeiro_acesso() {
@@ -2898,6 +2924,7 @@ main() {
         agente) agente_main "$@" ;;
         imagem) imagem_main "$@" ;;
         senha) senha_main "$@" ;;
+        usuario) usuario_main "$@" ;;
         seguranca) seguranca_main "$@" ;;
         colaborador) colaborador_main "$@" ;;
         dominio) dominio_main "$@" ;;

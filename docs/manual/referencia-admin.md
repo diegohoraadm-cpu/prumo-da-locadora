@@ -80,6 +80,7 @@ mudar nada. Quem: Root. Detalhe geral em [ATUALIZAR.md](../ATUALIZAR.md) e no `d
 | `dgclaw dominio mostrar` | Mostra o domínio atual do painel e o IP público da VPS | [atualizar-e-backup.md](atualizar-e-backup.md) |
 | `dgclaw dominio trocar` | Passa o painel para um domínio próprio. Confere o DNS antes e não muda nada se não apontar (`--sem-conferir-dns` pula a conferência) | [atualizar-e-backup.md](atualizar-e-backup.md) |
 | `dgclaw senha trocar` | Troca a senha do painel (mínimo de 12 caracteres, nova senha pelo STDIN) e reinicia o Web | [atualizar-e-backup.md](atualizar-e-backup.md) |
+| `dgclaw usuario` | Mostra o usuário do painel e o endereço (nunca a senha). A troca de senha também termina com essas duas linhas | [atualizar-e-backup.md](atualizar-e-backup.md) |
 | `dgclaw primeiro-acesso` | Gera um link novo de primeiro acesso (uso único, vale 30 minutos); o anterior deixa de valer | [SEGURANCA.md](../SEGURANCA.md) |
 | `dgclaw instalacao-remota` | Para a equipe que instalou na VPS de outra pessoa: troca a senha por uma forte e mostra a mensagem de entrega uma única vez. Não rode numa instalação feita pelo próprio dono | [INSTALL.md](../../INSTALL.md) |
 

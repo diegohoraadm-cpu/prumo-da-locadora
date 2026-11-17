@@ -39,6 +39,9 @@ SH
 cat >"$T/bin/dgclaw" <<'SH'
 #!/usr/bin/env bash
 echo "$*" >>"$T/dgclaw.log"
+# Ordem: no instante do iniciar, a marca .created ja existe? (um iniciar que cai no meio nao pode ser repetido)
+[ "$1 $2" = "agente iniciar" ] && { [ -f "$T/raiz/var/lib/dgclaw/sentinela/ana.created" ] && echo sim || echo nao; } >"$T/marca-antes"
+[ -e "$T/iniciar-falha" ] && exit 1
 [ -e "$T/conserta" ] && { echo running >"$T/estado"; printf '{"ok":true,"agente":{"status":"idle","ptyVivo":true},"sessionId":"s1","ultimaSaidaEm":null}' >"$SAUDE"; touch "$T/bun-vivo"; }
 exit 0
 SH
@@ -180,6 +183,11 @@ ok "duas rodadas dentro de 6 h: nao tenta de novo e nao avisa de novo" "$([ ! -s
 # 9e. marca created vencida: tenta de novo (a do aviso de parado tambem venceu).
 envelhece "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/ana.created"; rodar
 ok "marca created vencida: tenta de novo" "$([ "$(cat "$T/dgclaw.log")" = 'agente iniciar ana' ] && echo 0 || echo 1)"
+# 9f. iniciar que falha: a marca ja estava gravada quando ele rodou, entao a rodada seguinte nao repete.
+rm -f "$DGCLAW_RAIZ/var/lib/dgclaw/sentinela/"* "$T/marca-antes"; echo created >"$T/estado"; touch "$T/iniciar-falha"; rodar
+ok "iniciar que falha no meio: a marca .created ja existia quando ele rodou" "$([ "$(cat "$T/marca-antes" 2>/dev/null)" = sim ] && echo 0 || echo 1)"
+rodar; rm -f "$T/iniciar-falha"
+ok "e a rodada seguinte nao tenta de novo" "$([ ! -s "$T/dgclaw.log" ] && echo 0 || echo 1)"
 
 # 10. Sem agente nenhum: sai sem conferir nada.
 echo '{"versao": 1, "agentes": []}' >"$DGCLAW_RAIZ/etc/dgclaw/agentes.json"; rodar

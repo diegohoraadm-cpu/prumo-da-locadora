@@ -96,6 +96,51 @@
       "arquivo": "bin/test/dgclaw-sentinela.test.sh",
       "linha": "[ -e \"$T/conserta\" ] && { printf '{\"ok\":true,\"agente\":{\"status\":\"idle\",\"ptyVivo\":true},\"sessionId\":\"s1\",\"ultimaSaidaEm\":null}' >\"$SAUDE\"; touch \"$T/bun-vivo\"; }",
       "motivo": "o lote C3 (30a3cca) mudou a linha \"conserta\" do dgclaw falso do teste para tambem gravar \"running\" no estado do container, senao o teste do created que sobe nao enxerga a subida; o que ela ja fazia (saude e bun vivo) continua na linha nova"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "- `CONTAINER` em `exited` ou `ausente`: com o \"posso?\", `dgclaw agente iniciar $SLUG`. Isso",
+      "motivo": "a rodada 2 do C5 (QA e Esquadro de 17/11) separou o agente \"ausente\" do \"exited\" na secao 3.2: iniciar nao funciona sem container, e a receita unica (recriar --forcar, secao 3.2.1) substituiu a de \"agente criar\"; o texto dessa linha foi reescrito em bullets separados"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "liga o container de novo e reaplica o firewall. Se o container está `ausente` e a casa",
+      "motivo": "a rodada 2 do C5 (QA e Esquadro de 17/11) separou o agente \"ausente\" do \"exited\" na secao 3.2: iniciar nao funciona sem container, e a receita unica (recriar --forcar, secao 3.2.1) substituiu a de \"agente criar\"; o texto dessa linha foi reescrito em bullets separados"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "existe, não recrie sozinho: diga ao dono o que viu e peça a decisão (recriar é",
+      "motivo": "a rodada 2 do C5 (QA e Esquadro de 17/11) separou o agente \"ausente\" do \"exited\" na secao 3.2: iniciar nao funciona sem container, e a receita unica (recriar --forcar, secao 3.2.1) substituiu a de \"agente criar\"; o texto dessa linha foi reescrito em bullets separados"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "`dgclaw agente criar $SLUG ...` com os mesmos dados, e rodar de novo continua de onde parou).",
+      "motivo": "a rodada 2 do C5 (QA e Esquadro de 17/11) separou o agente \"ausente\" do \"exited\" na secao 3.2: iniciar nao funciona sem container, e a receita unica (recriar --forcar, secao 3.2.1) substituiu a de \"agente criar\"; o texto dessa linha foi reescrito em bullets separados"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "próprio agente. Container desligado e login vencido só geram aviso, porque o conserto depende do",
+      "motivo": "a rodada 2 do C5 dividiu o paragrafo da Sentinela (secao 2.4) em paragrafos curtos, a pedido do Esquadro, e acrescentou a excecao do \"created\"; as frases desta linha continuam la, so quebradas em outras linhas (a do container desligado ganhou a marca exited)"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "dono; se o erro continua na conversa depois do reinício, o aviso pede ao dono uma mensagem nova. O mesmo problema do mesmo agente só volta a ser tratado depois de 6 horas,",
+      "motivo": "a rodada 2 do C5 dividiu o paragrafo da Sentinela (secao 2.4) em paragrafos curtos, a pedido do Esquadro, e acrescentou a excecao do \"created\"; as frases desta linha continuam la, so quebradas em outras linhas (a do container desligado ganhou a marca exited)"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "mesmo que ele melhore no meio. Durante o `sudo dgclaw atualizar` ela não confere nada.",
+      "motivo": "a rodada 2 do C5 dividiu o paragrafo da Sentinela (secao 2.4) em paragrafos curtos, a pedido do Esquadro, e acrescentou a excecao do \"created\"; as frases desta linha continuam la, so quebradas em outras linhas (a do container desligado ganhou a marca exited)"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "`dgclaw agente reparar $SLUG` refaz só a parte de dentro (tarefas agendadas, runner e painel) e",
+      "motivo": "o acerto final do C5 (Esquadro, 17/11) trocou nesta linha o \"$SLUG\" e o comando sem sudo por \"sudo dgclaw ... <nome do agente>\", a convencao unica da secao 3.2 para o texto que vai ao dono; o resto da linha e igual"
+    },
+    {
+      "arquivo": "docs/EMERGENCIA.md",
+      "linha": "instalador grava `/etc/sysctl.d/90-dgclaw-inotify.conf`) e rode `dgclaw agente iniciar $SLUG`.",
+      "motivo": "o acerto final do C5 (Esquadro, 17/11) trocou nesta linha o \"$SLUG\" e o comando sem sudo por \"sudo dgclaw ... <nome do agente>\", a convencao unica da secao 3.2 para o texto que vai ao dono; o resto da linha e igual"
     }
   ],
   "emergencia_novas": []

@@ -22,6 +22,12 @@
 6. **Nunca remova o container do agente** (`podman rm`, `dgclaw agente remover`) para "limpar".
    A conversa, a memória e o login ficam na casa do agente, mas remover derruba a rede, as
    portas e o registro dele. Para desligar, use `dgclaw agente parar <slug>`.
+   **Exceção:** `dgclaw agente recriar <nome do agente> --forcar` troca o container de propósito. É o
+   caminho quando o agente ficou de fora da atualização para a 1.0.5 ou está sem container (seção
+   3.2.1), e só com o "posso?" (quando o agente tem container, com a lista do que se perde na mão; sem
+   container não há lista e nada a perder): se perde o que foi instalado à mão dentro do container, e
+   as rotinas padrão voltam ao padrão. A casa, a memória, o cofre e as conversas
+   ficam.
 7. **Uma mudança por vez.** Mudou, conferiu (seção 5), só então a próxima.
 
 ## 0.1 Onde você está
@@ -141,10 +147,16 @@ para de escutar mas segue vivo, e para ela fica tudo bem. Esse caso continua na 
 Quando acha um problema, ela tenta uma vez o conserto seguro (`dgclaw agente reiniciar`, ou
 `dgclaw agente reparar` quando falta o plugin) e avisa o dono com a correção em uma linha: no
 aparelho dele (se ele ativou os avisos), num recado ao Admin e, com o Telegram ligado, pelo bot do
-próprio agente. Container desligado e login vencido só geram aviso, porque o conserto depende do
-dono; se o erro continua na conversa depois do reinício, o aviso pede ao dono uma mensagem nova. O mesmo problema do mesmo agente só volta a ser tratado depois de 6 horas,
-mesmo que ele melhore no meio. Durante o `sudo dgclaw atualizar` ela não confere nada.
-Exceção desde a 1.0.5: o container que nunca ligou (`created`) ganha antes do aviso um `dgclaw agente iniciar`, uma vez por janela de 6 horas.
+próprio agente.
+
+Container desligado (`exited`) e login vencido só geram aviso, porque o conserto depende do dono. Se
+o erro continua na conversa depois do reinício, o aviso pede ao dono uma mensagem nova.
+
+O container que nunca ligou (`created`) é a exceção desde a 1.0.5: antes do aviso, ele ganha um
+`sudo dgclaw agente iniciar`, uma vez por janela de 6 horas.
+
+O mesmo problema do mesmo agente só volta a ser tratado depois de 6 horas, mesmo que ele melhore no
+meio. Durante o `sudo dgclaw atualizar` ela não confere nada.
 
 No socorro, comece pelo log dela: ele diz o que ela viu e o que já tentou.
 
@@ -167,12 +179,24 @@ ganha a Sentinela no próximo `sudo dgclaw atualizar`.
 - Abre, mas o login não aceita: siga a seção 3.1.1, na ordem. É o caso mais comum de "não consigo
   entrar" e quase nunca é a senha.
 - Abre, mas a tela está travada pedindo Face ID e o aparelho não destrava: seção 3.1.2.
+- Abre, mas o dono não acha o Cofre (onde ficam as chaves do agente): seção 3.1.3.
 - Abre, mas só a tela do agente (`/p/$SLUG/`) não carrega: container ou painel do agente
   (seções 3.2 e a linha "Painel do agente" da tabela 2.2).
 
 ### 3.1.1 Não consegue entrar no painel (a tela de login abre e não aceita)
-Na ordem; pare no primeiro que explicar. Quem não entra no painel não fala com o Admin: este
-caminho é todo pelo terminal do servidor.
+Este é o **único caminho em que o dono age sem o Admin**: quem não entra no painel não consegue
+falar com ele. Por isso quem digita os comandos abaixo é o próprio dono, ou quem o ajuda numa chamada
+(seção 6), no terminal do servidor. Na ordem; pare no primeiro que explicar.
+
+**Como chegar ao terminal do servidor.** É o terminal da própria VPS, o mesmo em que o Prumo da
+Locadora foi instalado (INSTALL.md, "Os três comandos"); o servidor é acessado por SSH (docs/manual/
+o-que-nao-faz.md). Entre do mesmo jeito que na instalação. Quem entra com um usuário comum põe `sudo`
+na frente de cada comando, como nos exemplos abaixo. Se o dono não lembra como se entra, ou se foi
+outra pessoa que instalou, ele precisa pedir a ela o acesso ao servidor: pelo painel não há outro
+caminho, porque é justamente o painel que não abre.
+
+**`prumo` e `dgclaw` são o mesmo comando** (o instalador cria o `prumo` como atalho). Os exemplos desta
+seção usam `prumo`, que é o que a tela de login mostra; `sudo dgclaw usuario` faz a mesma coisa.
 
 1. **Apareceu "muitas tentativas seguidas"?** São 5 erros seguidos vindos da mesma
    internet (o mesmo IP); o bloqueio dura 15 minutos a contar do primeiro erro. A contagem vive na
@@ -189,14 +213,13 @@ caminho é todo pelo terminal do servidor.
    sudo prumo usuario
    ```
    Mostra o usuário exatamente como deve ser digitado (maiúsculas contam) e o endereço do painel.
-   Nunca mostra a senha: ela nem fica guardada, só um código embaralhado dela. (`prumo` e `dgclaw`
-   são o mesmo comando.) A própria tela de login traz o link "Não consigo entrar", que mostra
-   estes dois comandos para a pessoa.
+   Nunca mostra a senha: ela nem fica guardada, só um código embaralhado dela. A própria tela de
+   login traz o link "Não consigo entrar", que mostra estes dois comandos para a pessoa.
 4. **Trocar a senha:** `sudo prumo senha`. Pede a senha nova duas vezes, sem mostrar o que é
    digitado; mínimo de 12 caracteres; não pede a antiga; nunca a escreva no chat. O painel
    reinicia sozinho e, no fim, o comando repete o usuário e o endereço para a pessoa anotar. Se a
    pessoa nunca cadastrou a senha ou o link de primeiro acesso venceu,
-   `sudo dgclaw primeiro-acesso` gera um link novo (uso único, 30 minutos).
+   `sudo prumo primeiro-acesso` gera um link novo (uso único, 30 minutos).
 5. **Ainda recusa com usuário e senha certos:** teste numa janela anônima. Se ali entra, o
    navegador guardou uma senha antiga: apague-a no gerenciador de senhas do navegador.
 6. **Não confunda as senhas.** A senha do painel não é a senha da Tela do agente (aquela, de 6 a
@@ -206,78 +229,121 @@ O que **não** é a causa: refazer o login do Claude no terminal (`claude` e `/l
 senha do painel nem liga agente parado. Só faça isso se a seção 3.4 mandar.
 
 ### 3.1.2 Travou no Face ID (a tela está travada e o aparelho não destrava)
-O Face ID é uma trava opcional, ligada aparelho por aparelho. Ele nunca faz login: só destrava uma
-sessão que já entrou com a senha. Por isso a senha sempre é a saída. Na ordem; pare no primeiro que
-explicar.
+O Face ID é uma trava opcional do painel, ligada aparelho por aparelho. Ele usa uma **passkey**: uma
+chave de acesso guardada no aparelho, que o rosto, a digital ou o código do aparelho liberam. O Face ID
+nunca faz login: só destrava uma sessão que já entrou com a senha. Por isso a senha sempre é a saída.
+Os comandos `sudo prumo ...` abaixo são digitados no terminal do servidor (seção 3.1.1). Na ordem; pare
+no primeiro que explicar.
 
 1. **Entrar com a senha.** Na tela travada, toque em **Entrar com a senha**. Entre com o usuário e a
    senha de sempre: a sessão nova já vem destravada. Serve para aparelho sem biometria, Face ID
    falhando ou passkey apagada.
 2. **Não lembra o usuário ou a senha?** `sudo prumo usuario` mostra o usuário; `sudo prumo senha`
    troca a senha (seção 3.1.1).
-3. **Aparelho perdido, trocado ou vendido.** Entre com a senha, abra **Face ID** no menu ☰ e remova o
-   aparelho antigo da lista. Remover encerra as sessões que estavam presas a ele.
+3. **Aparelho perdido, trocado ou vendido.** Entre com a senha, abra o menu do painel, escolha
+   **Face ID** e remova o aparelho antigo da lista. Remover encerra as sessões que estavam presas a
+   ele.
 4. **O endereço do painel mudou.** A passkey fica presa ao endereço em que foi criada e não vale no
    endereço novo. Entre com a senha e ligue o Face ID de novo, em cada aparelho.
-5. **A tela diz que precisa de internet para destravar.** Sem conexão ela não destrava. Volte a
-   internet e tente de novo.
+5. **A tela diz que precisa de internet para destravar.** Sem conexão ela não destrava. Quando a
+   internet voltar, tente de novo.
 
-O que **não** é a causa: o Face ID não trava os agentes (os que trabalham pela caixa seguem
+O que **não** é a causa: o Face ID não trava o trabalho dos agentes (eles continuam funcionando
 normalmente) e reiniciar o painel não destrava a tela.
 
+### 3.1.3 Onde fica o Cofre (as chaves do agente)
+O dono pergunta "onde ponho a chave?" ou "onde está o cofre?". O Cofre é a tela onde ficam as chaves
+que o agente usa (as senhas dos serviços que ele acessa). Não precisa de terminal. Há dois lugares, e o
+nome muda:
+- **No menu da conversa:** toque no ícone de três traços no canto do topo da tela, procure o grupo
+  **Segurança** e, dentro dele, o item **Cofre (chaves)**. Só o dono vê esse item; o colaborador
+  convidado não o vê.
+- **No painel do agente** (a tela do próprio agente): a aba se chama só **Cofre**. O colaborador vê a
+  aba, mas o cofre recusa o acesso dele: a chave é do dono.
+
 ### 3.2 O agente aparece e o container está de pé?
+Quem entra no servidor com usuário comum põe `sudo` na frente de cada comando `dgclaw` desta seção.
+`container` é a caixa onde o agente roda; `<nome do agente>` é o `SLUG`, a primeira coluna do
+`listar`.
 ```bash
 dgclaw agente listar
 ```
-- `CONTAINER` em `created`: o container foi criado e nunca ligou. Era o caso típico logo depois de
-  instalar ou reinstalar pelo terminal. Desde a versão 1.0.5 ele liga sozinho: no fim da instalação e
-  da atualização o instalador roda `dgclaw agente iniciar` nele, e a Sentinela tenta uma vez
-  (e só de novo depois de 6 horas) antes de avisar "O agente X está desligado". Se ele ainda aparece
-  em `created`, essas tentativas falharam: com o "posso?", `dgclaw agente iniciar $SLUG`, e confira de
-  novo: o certo é `running` e `ok` em até um minuto. O `exited` (desligado) nunca é ligado sozinho: a
-  pessoa pode ter desligado de propósito.
-- `CONTAINER` em `exited` ou `ausente`: com o "posso?", `dgclaw agente iniciar $SLUG`. Isso
-  liga o container de novo e reaplica o firewall. Se o container está `ausente` e a casa
-  existe, não recrie sozinho: diga ao dono o que viu e peça a decisão (recriar é
-  `dgclaw agente criar $SLUG ...` com os mesmos dados, e rodar de novo continua de onde parou).
+- `CONTAINER` em `created` (criado e nunca ligado): era o caso típico logo depois de instalar ou
+  reinstalar pelo terminal. Desde a versão 1.0.5 ele liga sozinho: no fim da instalação e da
+  atualização o instalador roda `sudo dgclaw agente iniciar` nele, e a Sentinela (o vigia que confere
+  os agentes, seção 2.4) tenta uma vez, e só de novo depois de 6 horas, antes de avisar "O agente X
+  está desligado". Se ele ainda aparece em `created`, essas tentativas falharam: com o "posso?",
+  `sudo dgclaw agente iniciar <nome do agente>`, e confira de novo: o certo é `running` e `ok` em até
+  um minuto. O `exited` (desligado) nunca é ligado sozinho: a pessoa pode ter desligado de propósito.
+- `CONTAINER` em `exited` (desligado): com o "posso?", `sudo dgclaw agente iniciar <nome do agente>`.
+  Isso liga o container de novo e reaplica o firewall.
+- `CONTAINER` em `ausente` (o container não existe mais): o `agente iniciar` não funciona, porque não
+  há o que ligar. A receita é uma só, a da seção 3.2.1: com o "posso?",
+  `sudo dgclaw agente recriar <nome do agente> --forcar`. Ela cria o container de novo, com a mesma
+  casa, o mesmo cofre e as mesmas portas.
+- Agente que continua na versão anterior depois de uma atualização que terminou "INCOMPLETA": seção
+  3.2.1.
 - `CONTAINER` em `running` e `SAUDE` em `sem resposta`: o runner de dentro não responde. Veja o
   log (`podman exec $C journalctl -u dgclaw-runner -n 40 --no-pager`). Com o "posso?":
-  `dgclaw agente reparar $SLUG` refaz só a parte de dentro (tarefas agendadas, runner e painel) e
+  `sudo dgclaw agente reparar <nome do agente>` refaz só a parte de dentro (tarefas agendadas, runner e painel) e
   espera o `/api/saude` responder. Erro que cita a imagem: `dgclaw imagem construir --agora`.
 - `running` e `ok`: o container e o runner estão bem. Siga para 3.3.
 - Saiu com código 255 logo na partida, sem log (`dgclaw agente iniciar` já explica): falta
   inotify. Cada agente gasta de 5 a 6 instâncias do root e o padrão do Ubuntu é 128. Veja o uso
   com `dgclaw status`, suba o limite com `sysctl -w fs.inotify.max_user_instances=1024` (o
-  instalador grava `/etc/sysctl.d/90-dgclaw-inotify.conf`) e rode `dgclaw agente iniciar $SLUG`.
+  instalador grava `/etc/sysctl.d/90-dgclaw-inotify.conf`) e rode `sudo dgclaw agente iniciar <nome do agente>`.
 - O container sobe e cai logo: `podman logs --tail 40 $C` mostra o motivo. Imagem faltando:
   `dgclaw imagem status`.
 
-### 3.2.1 Um agente ficou de fora da atualização para a 1.0.5
-Só acontece na primeira atualização para a 1.0.5. A tela termina com "Atualizacao INCOMPLETA" e uma
-linha FALHOU para cada agente. É o esperado desta versão, não é defeito.
+### 3.2.1 Agente de fora da atualização para a 1.0.5, ou sem container
+Você (o Admin ou a sessão de socorro) fala com o dono; ele costuma ser leigo. Palavras que ele vai
+ouvir: **caixa** é o container do agente, o espaço isolado onde ele roda; **casa** é a pasta do agente
+no servidor (`/var/lib/dgclaw/agentes/<nome do agente>/`), onde ficam a memória, o cofre e as
+conversas; **nome do agente** é o `SLUG`, a primeira coluna de `sudo dgclaw agente listar`, e é o nome
+que aparece nas linhas FALHOU; **rotinas padrão** são as tarefas agendadas que todo agente traz de
+fábrica.
 
-Por quê: a 1.0.5 passou a conferir o que existe só dentro da caixa de cada agente antes de trocá-la, e
-os agentes antigos ainda não têm a referência dessa conferência. Enquanto você não troca a caixa, o
-agente segue funcionando na versão anterior. A casa, a memória, o cofre e as conversas não são
-tocados. No fim da instalação, antes do FALHOU, a tela já mostrou o "AVISO DA VERSÃO 1.0.5" com o
-nome dos agentes e o comando de cada um; o item da 1.0.5 no `CHANGELOG.md` diz o mesmo.
+**O que aconteceu.** Só acontece na primeira atualização para a 1.0.5. A tela do
+`sudo dgclaw atualizar` termina com "Atualizacao INCOMPLETA" e uma linha FALHOU para cada agente. É o
+esperado desta versão, não é defeito; diga isso ao dono antes de qualquer outra coisa.
 
-Para cada agente da lista, um de cada vez, com o "posso?":
-1. **Veja o que se perderia:** `sudo cat /var/lib/dgclaw/agentes/<slug>/perdido-no-recriar-*.txt`. Se só
-   aparecem rotinas com o nome `dgclaw-<slug>-...`, é o esperado.
-2. **Diga ao dono, em palavras simples, o que o `--forcar` perde:** só o que foi instalado à mão dentro
-   da caixa do agente (programas, por exemplo). As rotinas padrão voltam ao padrão: se ele tinha pedido
-   para mudar o horário de alguma, vai ter que pedir de novo. Se a lista mostrar um programa que ele
-   instalou e ainda usa, não rode o passo 3: peça ajuda a quem cuida do servidor.
-3. **Troque a caixa:** `sudo dgclaw agente recriar <slug> --forcar`.
-4. **Confira:** `sudo dgclaw status` mostra o agente ligado e a versão 1.0.5. Depois disso, as próximas
-   atualizações não pedem mais nada.
+**Por quê.** A 1.0.5 passou a conferir, antes de trocar a caixa de um agente, o que existe só dentro
+dela. Os agentes antigos não guardam a lista do que veio de fábrica, então essa conferência não tem
+como rodar e a troca para. Enquanto a caixa não é trocada, o agente segue funcionando na versão
+anterior. A casa, a memória, o cofre e as conversas não são tocados. Na parte da instalação que a
+atualização roda, antes do FALHOU, a tela já mostrou o "AVISO DA VERSÃO 1.0.5" com o nome dos agentes
+e o comando de cada um; o item da 1.0.5 no `CHANGELOG.md` diz o mesmo.
 
-Dois casos que a atualização não lista como FALHOU: o agente **desligado** (`exited`) fica como está;
-quando o dono quiser usá-lo, `sudo dgclaw agente iniciar <slug>`, e na atualização seguinte ele passa
-por esta mesma etapa. O agente **sem container** não liga com `agente iniciar` (não há o que ligar): o
-`sudo dgclaw agente recriar <slug> --forcar` cria a caixa de novo e, como não havia caixa, não há nada
-dentro dela para perder.
+**Para cada agente da lista FALHOU, um de cada vez, com o "posso?":**
+1. **Veja se há algo a perder:** `sudo sh -c 'ls /var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-*.txt'`.
+   Use exatamente assim, com o `sh -c` e as aspas: a pasta do agente é fechada para o usuário comum, e
+   sem o `sh -c` o `*` é expandido antes do `sudo`, não acha nada e dá "No such file" mesmo quando a
+   lista existe. A atualização só grava esse arquivo quando acha, dentro da caixa, algo que não está
+   na casa. Duas saídas possíveis:
+   - Aparece o nome de um arquivo `perdido-no-recriar-<data>.txt`: há algo a perder. Leia com
+     `sudo sh -c 'cat /var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-*.txt'`. Se só
+     aparecem rotinas com o nome `dgclaw-<nome do agente>-...`, é o esperado.
+   - Aparece "No such file or directory": nada a perder, siga para o passo 2.
+2. **Diga ao dono o que o `--forcar` perde**, em palavras simples. Exemplo: "Vou trocar a caixa do
+   agente pela versão nova. A memória, o cofre e as conversas ficam como estão. Perde-se só o que
+   alguém instalou à mão dentro da caixa. As rotinas padrão voltam ao padrão: se você editou ou
+   desligou alguma, a mudança se perde, e a que estava desligada volta a rodar. Posso?" Se a lista
+   mostra um programa que o dono instalou e ainda usa, o `--forcar` o apaga. O dono escolhe: (a) adiar,
+   deixando o agente como está, que segue funcionando na versão anterior; ou (b) anotar o nome do
+   programa, rodar o passo 3 e instalar o programa de novo depois, já na caixa nova.
+3. **Troque a caixa:** `sudo dgclaw agente recriar <nome do agente> --forcar`.
+4. **Confira que a caixa foi trocada:** `sudo ls -l /var/lib/dgclaw/agentes/<nome do agente>/home/.dgclaw/unidades-padrao.sha256`.
+   Esse arquivo é a referência que os agentes antigos não tinham: o `--forcar` o grava, então ele passa
+   a existir. Depois, `sudo dgclaw agente listar` deve mostrar o agente em `running` e `ok`. O
+   `sudo dgclaw status` não serve de prova: ele mostra a versão do sistema e, por agente, só que está
+   de pé. Para esse agente, as próximas atualizações não pedem mais nada.
+
+**Dois casos que a atualização não lista como FALHOU.** O agente **desligado** (`exited`) fica como
+está; quando o dono quiser usá-lo, `sudo dgclaw agente iniciar <nome do agente>`, e na atualização
+seguinte ele passa por esta mesma etapa. O agente **sem container** (`ausente`) não liga com
+`agente iniciar`, porque não há o que ligar. A receita é a do passo 3, a mesma do aviso do instalador:
+`sudo dgclaw agente recriar <nome do agente> --forcar` cria a caixa de novo. Como a caixa não existe,
+não há nada dentro dela para perder: aqui não há lista e o passo 1 não se aplica.
 
 ### 3.3 O ÚLTIMO turno foi erro? (a causa mais comum de "de pé e mudo")
 Primeiro rode o `saude_sessao.py --json` (2.3) e siga a `recomendacao`, que segue a tabela

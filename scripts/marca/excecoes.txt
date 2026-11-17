@@ -14,11 +14,11 @@ README.md	sobre o DG Claw, de DG Medeiros	credito do README: nome do projeto ori
 # Historico: o digest de cada item (scripts/novidades-lib.mjs) e o sha1 do texto; reescrever reaparece como novidade
 CHANGELOG.md	secao:^## \[(?!1\.0\.5\])	secoes antigas do CHANGELOG: reescrever mudaria o digest e o item voltaria como novidade (F2)
 # Logica que le o nome (nao e texto para o aluno)
-lib/comum.sh	^# (Prumo da Locadora|DG Claw)	reconhece o Caddyfile gerado por versoes antigas: as duas alternativas ficam
-web/public/ronda-comum.js	*	o campo "onde" da ronda e trocado so na exibicao (replace do prefixo)
-seguranca/ronda/ronda.py	"DG Claw: 	prefixo do campo "onde" da ronda, lido por startswith na tela
-seguranca/ronda/ronda.py	"DG Claw (app)"	origem do componente, comparada por igualdade (ronda.py)
-seguranca/ronda/ronda.py	startswith("DG Claw")	le o prefixo do campo "onde"
+lib/comum.sh	^# (Prumo da Locadora|DG Claw)	logica: reconhece o Caddyfile gerado por versoes antigas: as duas alternativas ficam
+web/public/ronda-comum.js	*	logica: o campo "onde" da ronda e trocado so na exibicao (replace do prefixo)
+seguranca/ronda/ronda.py	"DG Claw: 	logica: prefixo do campo "onde" da ronda, lido por startswith na tela
+seguranca/ronda/ronda.py	"DG Claw (app)"	logica: origem do componente, comparada por igualdade (ronda.py)
+seguranca/ronda/ronda.py	startswith("DG Claw")	logica: le o prefixo do campo "onde"
 # Aceite escrito pelo Teia (cita o nome antigo de proposito). A propria ferramenta e o MARCA-PROPRIA.md ficam em "ignorar" no regras.json
 aceite/	*	aceite escrito pelo Teia: o dev nao edita
 # Decisoes do arquiteto (M0b). Motivo que comeca por logica: e texto que codigo le.
@@ -39,7 +39,7 @@ tests/aviso-atualizacao/rodar.sh	sem \"DG Claw\"	logica: o teste confere que o r
 tests/aviso-atualizacao/rodar.sh	nao diz DG Claw	logica: o teste confere que o recado nao diz o nome antigo
 tests/aviso-atualizacao/rodar.sh	"DG Claw" "$RECADO"	logica: o teste confere que o recado nao diz o nome antigo
 skills/importar/SKILL.md	DG Claw Lite	outro produto do autor original (versao de computador); trocar criaria "Prumo da Locadora Lite", que nao existe
-panel/public/js/sessoes.js	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
+panel/public/js/sessoes.js	DG Telegram	a aba Sessoes aparece tambem no modo local (o padrao; sessoes.js:10 e :1381) e as linhas 170 e 643 mostram o nome nesse modo: o M1 condiciona essas duas linhas ao modo proxy; o resto e do app do autor original
 panel/lib/sessoes-proxy.js	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
 panel/lib/sessoes-local.js	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
 panel/server.js	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
@@ -55,7 +55,6 @@ hooks/avisos.py	DG Telegram	outro produto do autor original; trocar afirmaria o 
 docs/VISUAIS.md	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
 docs/PLANO-APP-INTEGRADO.md	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
 docs/QUADRO-DE-AVISOS.md	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
-web/docs/MODO-FOCO.md	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
 scripts/install-core.sh	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
 scripts/notify-owner.sh	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
 skills/lista-rapida/	DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade
@@ -67,6 +66,7 @@ scripts/doctor.sh	o DG Telegram respondeu 503	outro produto do autor original; t
 scripts/doctor.sh	DG Telegram f	outro produto do autor original; trocar afirmaria o que nao e verdade (so o trecho DGCLAW_MESA e comentarios; a linha da integracao antiga e reescrita a mao)
 scripts/doctor.sh	nem do DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade (so o trecho DGCLAW_MESA e comentarios; a linha da integracao antiga e reescrita a mao)
 web/public/dgvis.js	base dos "Visuais na conversa" do DG Telegram	outro produto do autor original; trocar afirmaria o que nao e verdade (origem do arquivo)
+bin/dgclaw	  dgclaw 	logica: a ajuda() e lida por lib/uso-atualizacao.sh:80 (grep '^  dgclaw [a-z]'); o M4 pode soltar esta excecao se o grep passar a aceitar prumo tambem
 
 # Blocos dos lotes: cada lote acrescenta so no seu, para o merge nao conflitar.
 # --- M1 ---

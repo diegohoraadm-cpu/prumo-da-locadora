@@ -287,3 +287,14 @@ test('docs-em-dia: o inventario real declara o apelido prumo -> dgclaw', () => {
   const inv = JSON.parse(execFileSync(process.execPath, [path.join(AQUI, '..', 'docs-inventario.mjs')], { encoding: 'utf8', maxBuffer: 1 << 26 }));
   assert.deepEqual(inv.apelidos_de_comando, { prumo: 'dgclaw' });
 });
+
+test('comando executado/validado: nada em web/lib/diagnostico e trocado, nem a ajuda() do bin/dgclaw', () => {
+  const repo = path.join(AQUI, '..', '..');
+  const excs = lerExcecoes(fs.readFileSync(path.join(AQUI, 'excecoes.txt'), 'utf8'));
+  const diag = rodar({ raiz: repo, pastas: ['web/lib/diagnostico'], regras, excs });
+  assert.deepEqual(diag.flatMap((a) => a.ocorrencias.filter((o) => o.regra === 'comando')), []);
+  const r = aplica('web/lib/diagnostico/util.js', "const A = [/^`dgclaw status`$/]; const t = 'Rode sudo dgclaw status';\n");
+  assert.equal(r.novo, "const A = [/^`dgclaw status`$/]; const t = 'Rode sudo dgclaw status';\n");
+  const ajuda = aplica('bin/dgclaw', "#!/usr/bin/env bash\najuda() {\ncat <<'FIM'\n  dgclaw agente criar <nome>\nFIM\n}\n", 'bin/dgclaw\t  dgclaw \tlogica: ajuda lida por uso-atualizacao.sh\n');
+  assert.match(ajuda.novo, /\n {2}dgclaw agente criar/);
+});

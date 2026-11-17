@@ -6,21 +6,21 @@ Gerado sem escrever nada. Ocorrencia = um achado da regra; "troca" so acontece e
 
 | Lote | Arquivos que mudam | Trocaria | Fica por excecao | Pede decisao ou reescrita manual |
 | --- | ---: | ---: | ---: | ---: |
-| M1 | 80 | 226 | 75 | 31 |
+| M1 | 75 | 202 | 75 | 16 |
 | M3 | 41 | 120 | 8 | 52 |
-| M4 | 159 | 840 | 29 | 56 |
-| M5 | 91 | 661 | 166 | 20 |
-| sem-lote | 0 | 0 | 23 | 0 |
-| **total** | 371 | 1847 | 301 | 159 |
+| M4 | 159 | 783 | 86 | 56 |
+| M5 | 91 | 661 | 165 | 21 |
+| sem-lote | 0 | 0 | 33 | 0 |
+| **total** | 366 | 1766 | 367 | 145 |
 
 Por regra (todos os lotes):
 
 | Regra | Trocaria | Excecao | Manual |
 | --- | ---: | ---: | ---: |
-| barra | 21 | 4 | 71 |
-| comando | 1094 | 115 | 27 |
-| frase | 732 | 88 | 57 |
-| sem-regra | 0 | 94 | 4 |
+| barra | 21 | 7 | 71 |
+| comando | 1014 | 173 | 12 |
+| frase | 731 | 94 | 57 |
+| sem-regra | 0 | 93 | 5 |
 
 Manual, por motivo:
 
@@ -29,10 +29,10 @@ Manual, por motivo:
 | barra-generica | 4 |
 | barra-inexistente | 15 |
 | barra-nao-ligada | 44 |
-| comando-no-inicio-de-string | 21 |
+| comando-no-inicio-de-string | 6 |
 | comparacao-de-logica | 2 |
 | fora-de-contexto | 44 |
-| sem-regra | 4 |
+| sem-regra | 5 |
 | tipo-nao-coberto | 25 |
 
 Arquivos sem lote no plano (o Teia atribui a um lote):
@@ -40,7 +40,7 @@ Arquivos sem lote no plano (o Teia atribui a um lote):
 | Arquivo | Trocaria | Excecao | Manual |
 | --- | ---: | ---: | ---: |
 | NOTICE.md | 0 | 1 | 0 |
-| aceite/juncao-e-marca.mjs | 0 | 8 | 0 |
+| aceite/juncao-e-marca.mjs | 0 | 18 | 0 |
 | aceite/juncao-excecoes.json | 0 | 14 | 0 |
 
 ## 2. Ocorrencias de `/dgclaw:` (decisao de cada uma)
@@ -50,6 +50,9 @@ Regra do plano: skill ligada vira `/x`; skill que existe mas nao e ligada, reesc
 | Arquivo | Ocorrencia | Lote | Decisao |
 | --- | --- | --- | --- |
 | CHANGELOG.md | `/dgclaw:setup` (linha 1175) | M5 | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 456) | sem-lote | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 566) | sem-lote | fica por excecao |
+| aceite/juncao-e-marca.mjs | `/dgclaw:` (linha 575) | sem-lote | fica por excecao |
 | docs/MEMORIA-SEMANTICA.md | `/dgclaw:setup` (linha 27) | M5 | sair (a skill nao existe) |
 | docs/MEMORIA-SEMANTICA.md | `/dgclaw:doctor` (linha 69) | M5 | reescrever a mao (skill existe, nao e ligada ao agente) |
 | docs/MESA-DE-TAREFAS.md | `/dgclaw:mesa` (linha 29) | M5 | reescrever a mao (skill existe, nao e ligada ao agente) |
@@ -146,7 +149,7 @@ Regra do plano: skill ligada vira `/x`; skill que existe mas nao e ligada, reesc
 | web/docs/COMANDOS-DE-BARRA.md | `/dgclaw:aprender` (linha 26) | M5 | trocar por `/aprender` (mecanico) |
 | web/test/casca.test.js | `/dgclaw:agente` (linha 55) | M1 | fica por excecao |
 
-Total: 96 ocorrencias em 51 arquivos.
+Total: 99 ocorrencias em 52 arquivos.
 
 ## 3. Testes que citam a marca como texto esperado
 
@@ -154,7 +157,7 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 
 | Arquivo | Linhas | Trocaria | Manual |
 | --- | ---: | ---: | ---: |
-| aceite/juncao-e-marca.mjs | 7 | 0 | 0 |
+| aceite/juncao-e-marca.mjs | 15 | 0 | 0 |
 | aceite/juncao-excecoes.json | 13 | 0 | 0 |
 | bin/test/dgclaw-agente.test.sh | 1 | 0 | 1 |
 | bin/test/dgclaw-sentinela.test.sh | 5 | 5 | 0 |
@@ -214,11 +217,11 @@ Estes mudam junto com o texto. Linhas = linhas com alguma ocorrencia.
 | web/test/grava-anexo.test.js | 1 | 1 | 0 |
 | web/test/socket-admin.test.js | 1 | 1 | 0 |
 
-Total: 145 linhas em 59 arquivos de teste.
+Total: 153 linhas em 59 arquivos de teste.
 
 ## 4. O que ficou manual, por lote (nao trocado; inclui as barras)
 
-### M1 (31)
+### M1 (16)
 
 | Arquivo | Motivo | Linha | Trecho |
 | --- | --- | ---: | --- |
@@ -233,21 +236,6 @@ Total: 145 linhas em 59 arquivos de teste.
 | panel/test-cofre-host.mjs | fora-de-contexto | 71 | `DG Claw` |
 | panel/test-cofre-host.mjs | fora-de-contexto | 95 | `DG Claw` |
 | qa/roteiro-navegacao.mjs | comparacao-de-logica | 191 | `DG Claw` |
-| web/lib/diagnostico/agente.js | comando-no-inicio-de-string | 55 | `dgclaw` |
-| web/lib/diagnostico/agente.js | comando-no-inicio-de-string | 56 | `dgclaw` |
-| web/lib/diagnostico/agente.js | comando-no-inicio-de-string | 94 | `dgclaw` |
-| web/lib/diagnostico/agente.js | comando-no-inicio-de-string | 118 | `dgclaw` |
-| web/lib/diagnostico/agente.js | comando-no-inicio-de-string | 127 | `dgclaw` |
-| web/lib/diagnostico/cron.js | comando-no-inicio-de-string | 135 | `dgclaw` |
-| web/lib/diagnostico/index.js | comando-no-inicio-de-string | 141 | `dgclaw` |
-| web/lib/diagnostico/maquina.js | comando-no-inicio-de-string | 58 | `dgclaw` |
-| web/lib/diagnostico/maquina.js | comando-no-inicio-de-string | 84 | `dgclaw` |
-| web/lib/diagnostico/maquina.js | comando-no-inicio-de-string | 140 | `dgclaw` |
-| web/lib/diagnostico/maquina.js | comando-no-inicio-de-string | 141 | `dgclaw` |
-| web/lib/diagnostico/maquina.js | comando-no-inicio-de-string | 159 | `dgclaw` |
-| web/lib/diagnostico/sessao.js | comando-no-inicio-de-string | 14 | `dgclaw` |
-| web/lib/diagnostico/versao.js | comando-no-inicio-de-string | 54 | `dgclaw` |
-| web/lib/diagnostico/versao.js | comando-no-inicio-de-string | 60 | `dgclaw` |
 | web/public/chat.css | tipo-nao-coberto | 1 | `DG Claw` |
 | web/public/dgvis.js | sem-regra | 508 | `DG Telegram` |
 | web/test/diagnostico-runner-prazo.test.js | comando-no-inicio-de-string | 130 | `dgclaw` |
@@ -372,7 +360,7 @@ Total: 145 linhas em 59 arquivos de teste.
 | tests/ronda/test_ronda.py | comando-no-inicio-de-string | 1158 | `dgclaw` |
 | tests/ronda/test_ronda.py | comando-no-inicio-de-string | 2170 | `dgclaw` |
 
-### M5 (20)
+### M5 (21)
 
 | Arquivo | Motivo | Linha | Trecho |
 | --- | --- | ---: | --- |
@@ -396,4 +384,5 @@ Total: 145 linhas em 59 arquivos de teste.
 | docs/manual/provedores.md | barra-generica | 47 | `/dgclaw:*` |
 | docs/revisao-adversarial-prompt.txt | tipo-nao-coberto | 1 | `DG Claw` |
 | docs/revisao-adversarial-prompt.txt | tipo-nao-coberto | 1 | `DG Claw` |
+| web/docs/MODO-FOCO.md | sem-regra | 15 | `DG Telegram` |
 

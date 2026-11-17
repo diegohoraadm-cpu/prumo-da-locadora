@@ -22,7 +22,7 @@
     "de": "dgclaw",
     "para": "prumo",
     "subcomandos": ["agente", "atualizar", "backup", "chave-api", "colaborador", "dominio", "emergencia", "imagem", "instalacao-remota", "personalizacoes", "primeiro-acesso", "restaurar", "seguranca", "senha", "status", "suporte", "usuario", "versao"],
-    "fica_em": ["templates/admin/", "templates/ambiente/admin.md", "skills/criar-agente/", "skills/trocar-dominio/"]
+    "fica_em": ["templates/admin/", "templates/ambiente/admin.md", "skills/criar-agente/", "skills/trocar-dominio/", "web/lib/diagnostico/"]
   },
   "barra": {
     "prefixo": "/dgclaw:",

@@ -591,6 +591,19 @@ async function blocoF4() {
     });
   }
   criterio(executa.length === 0, `F4.4 o que o Admin, o socorro ou um programa executa (comando.fica_em) segue "dgclaw": ${executa.length} linha(s) nova(s) com "prumo <comando>" (esperado 0)`, executa);
+  // 4c (Teia, 17/11, R2-B2 do QA-M4): recado ao Admin é texto que ele executa. Em QUALQUER arquivo, entre a linha com
+  // "<plataforma recado=" e a que fecha "</plataforma>" (até 40 linhas), não pode haver "prumo <subcomando>". Pega o
+  // recado NOVO, que a exceção executa: (só para os que já existem) não pega. No 419560a do M4 acusava as 13 linhas.
+  const recado = [];
+  for (const [rel, src] of fonte) {
+    let dentro = false; let ini = 0;
+    src.split('\n').forEach((l, i) => {
+      if (l.includes('<plataforma recado=')) { dentro = true; ini = i; }
+      if (dentro && rxPrumo.test(l)) recado.push(`${rel}:${i + 1} (recado aberto na ${ini + 1}): ${l.trim().slice(0, 90)}`);
+      if (dentro && (l.includes('</plataforma>') || i - ini > 40)) dentro = false;
+    });
+  }
+  criterio(recado.length === 0, `F4.4 recado ao Admin (<plataforma recado=...>) segue "dgclaw": ${recado.length} linha(s) com "prumo <comando>" (esperado 0)`, recado);
   if (!LOTE || LOTE === 'M4') {
     const r = M.rodar({ raiz: REPO, pastas: ['bin', 'lib', 'install.sh'], dry: true, regras, excs });
     const falta = r.flatMap((a) => a.ocorrencias.filter((o) => o.regra === 'comando' && (o.estado === 'troca' || o.motivo === 'comando-com-variavel')).map((o) => `${a.rel}:${o.linha}${o.motivo ? ` (${o.motivo})` : ''}`));

@@ -142,7 +142,7 @@ Suporte remoto (chave que so le o diagnostico de saude)
       Cria uma chave de suporte e imprime SO o token na saida (o resto vai para o stderr). Ele nao
       aparece de novo. A chave so le GET /api/v1/diagnostico: nao le conversas, memoria nem arquivos
       e nao muda nada.
-      Exemplo:  sudo dgclaw chave-api criar --nome "Suporte DG" --escopo diagnostico
+      Exemplo:  sudo dgclaw chave-api criar --nome "suporte" --escopo diagnostico
   dgclaw chave-api listar [--json]       mostra as chaves (nome, final, ultimo acesso, se foi revogada)
   dgclaw chave-api revogar <id>          a chave deixa de valer na hora (o id aparece em listar)
       Exemplo:  sudo dgclaw chave-api revogar 3fa9c21b07
@@ -1839,14 +1839,14 @@ chave_api() {
     case "$acao" in
         criar|listar|revogar) ;;
         '') falha_uso "faltou dizer o que fazer com as chaves de API." \
-            "use: criar, listar ou revogar. Exemplo: dgclaw chave-api criar --nome \"Suporte DG\" --escopo diagnostico" ;;
+            "use: criar, listar ou revogar. Exemplo: dgclaw chave-api criar --nome \"suporte\" --escopo diagnostico" ;;
         *) falha_uso "'$acao' nao e uma acao das chaves de API." \
             "use: criar, listar ou revogar. Exemplo: dgclaw chave-api listar" ;;
     esac
     exigir_ferramentas node
     local chave_js="$DG_APP/web/bin/chave-api.js"
     [ -f "$chave_js" ] || falha "nao achei o programa das chaves de API em $chave_js." \
-        "atualize o DG Claw (rode de novo o instalador: sudo ./install.sh --usuario <nome>) e tente outra vez."
+        "atualize o Prumo da Locadora (rode de novo o instalador: sudo ./install.sh --usuario <nome>) e tente outra vez."
     if [ "$ENSAIO" = 1 ]; then
         info "[ensaio] rodaria: node $chave_js $acao (com DGCLAW_WEB_ENV=$DG_ETC/web.env; a pasta de dados e a do web.env, ou $DG_LIB/web se ele nao definir); o token, quando houver, sai so no stdout"
         return 0

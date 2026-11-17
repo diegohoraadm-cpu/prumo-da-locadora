@@ -1,4 +1,4 @@
-# Face ID: o cadeado do DG Claw
+# Face ID: o cadeado do Prumo da Locadora
 
 O Face ID é uma trava opcional do painel web. Com ela ligada num aparelho, a tela trava sozinha depois de alguns
 minutos sem uso e só volta com o rosto, a digital ou o código do aparelho (uma passkey, o padrão WebAuthn).

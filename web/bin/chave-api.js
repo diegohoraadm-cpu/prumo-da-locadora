@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict';
-// Chaves de API do DG Claw Web pela linha de comando, no servidor (host). É o que "dgclaw chave-api" chama.
+// Chaves de API do Prumo da Locadora Web pela linha de comando, no servidor (host). É o que "dgclaw chave-api" chama.
 //
 //   node web/bin/chave-api.js criar --nome "<nome>" --escopo diagnostico [--quem texto]
 //   node web/bin/chave-api.js listar [--json]
@@ -20,7 +20,7 @@ const USO = [
   '  chave-api listar [--json]',
   '  chave-api revogar <id> [--quem texto]',
   `Escopos aceitos: ${ESCOPOS.join(', ')}.`,
-  'Exemplo: dgclaw chave-api criar --nome "Suporte DG" --escopo diagnostico',
+  'Exemplo: dgclaw chave-api criar --nome "suporte" --escopo diagnostico',
 ].join('\n');
 
 function usoErrado(msg) {

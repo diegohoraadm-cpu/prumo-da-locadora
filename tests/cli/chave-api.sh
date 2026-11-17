@@ -18,7 +18,7 @@ ARQ="$LIB/web/chaves-api.json"
 roda() { dgclaw "$@" </dev/null >"$TMP/o.txt" 2>"$TMP/e.txt"; }
 
 echo "criar"
-roda chave-api criar --nome "Suporte DG" --escopo diagnostico
+roda chave-api criar --nome "suporte" --escopo diagnostico
 igual "criar sai 0" "0" "$?"
 TOKEN="$(cat "$TMP/o.txt")"
 igual "o stdout e uma linha so" "1" "$(wc -l <"$TMP/o.txt" | tr -d ' ')"
@@ -32,7 +32,7 @@ nega "o token nao esta em disco" grep -q "$TOKEN" "$ARQ"
 echo "listar"
 roda chave-api listar
 igual "listar sai 0" "0" "$?"
-afirma "mostra o nome" grep -q 'Suporte DG' "$TMP/o.txt"
+afirma "mostra o nome" grep -q 'suporte' "$TMP/o.txt"
 afirma "mostra a chave como ativa" grep -q 'ativa' "$TMP/o.txt"
 nega "nao mostra o token" grep -q "$TOKEN" "$TMP/o.txt"
 nega "nao mostra hash" grep -qi 'hash' "$TMP/o.txt"

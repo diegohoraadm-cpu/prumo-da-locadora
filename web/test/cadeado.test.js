@@ -636,7 +636,7 @@ test('HTTPS: sem ele (e fora de localhost) o cadastro explica o motivo; atrás d
     const cab = { 'X-Forwarded-Proto': 'https', 'X-Forwarded-Host': 'painel.exemplo.com' };
     const origem = 'https://painel.exemplo.com';
     const op = await d.pedir('GET', '/api/v1/cadeado/cadastro/opcoes', { headers: cab });
-    assert.equal(op.status, 200, op.texto); assert.equal(op.json.publicKey.rp.id, 'painel.exemplo.com'); assert.equal(op.json.publicKey.rp.name, 'DG Claw');
+    assert.equal(op.status, 200, op.texto); assert.equal(op.json.publicKey.rp.id, 'painel.exemplo.com'); assert.equal(op.json.publicKey.rp.name, 'Prumo da Locadora');
     assert.equal(op.json.publicKey.authenticatorSelection.userVerification, 'required');
     const ap = aparelhoFalso();
     const r = await d.pedir('POST', '/api/v1/cadeado/cadastro', { origin: origem, headers: cab, json: { nome: 'iPhone', credencial: ap.cria(op.json.publicKey, origem) } });

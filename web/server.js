@@ -96,7 +96,7 @@ function montaDiagnostico(deps) {
     deps.log('erro', 'O coletor de diagnóstico não está instalado (falta web/lib/diagnostico). A rota /api/v1/diagnostico vai responder 503 até a instalação ser refeita.');
     return {
       async responder(req, res) {
-        H.erroJson(res, 503, 'O coletor de diagnóstico não está instalado neste servidor.', { como_resolver: 'Atualize o DG Claw (sudo dgclaw atualizar) para instalar o coletor.' });
+        H.erroJson(res, 503, 'O coletor de diagnóstico não está instalado neste servidor.', { como_resolver: 'Atualize o Prumo da Locadora (sudo dgclaw atualizar) para instalar o coletor.' });
       },
     };
   }
@@ -1594,7 +1594,7 @@ function criarServidor(opcoes) {
       if (sessao.via || !cadeado.travada(req, sessao)) { res.writeHead(302, { Location: destino, 'Cache-Control': 'no-store' }); return res.end(); }
       if (!servirArquivo(req, res, path.join(config.publicDir, 'cadeado.html'), 'no-store')) {
         log('erro', `A tela do cadeado não está instalada: falta ${path.join(config.publicDir, 'cadeado.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela do cadeado não foi encontrado no servidor. Reinstale o DG Claw Web.');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela do cadeado não foi encontrado no servidor. Reinstale o Prumo da Locadora Web.');
       }
       return undefined;
     }
@@ -1603,7 +1603,7 @@ function criarServidor(opcoes) {
       if (!sessao) return semSessaoPagina(req, res, url);
       if (!servirArquivo(req, res, path.join(config.publicDir, 'face-id.html'), 'no-store')) {
         log('erro', `A tela do Face ID não está instalada: falta ${path.join(config.publicDir, 'face-id.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela do Face ID não foi encontrado no servidor. Reinstale o DG Claw Web.');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela do Face ID não foi encontrado no servidor. Reinstale o Prumo da Locadora Web.');
       }
       return undefined;
     }
@@ -1656,7 +1656,7 @@ function criarServidor(opcoes) {
       if (!sessao) return semSessaoPagina(req, res, url);
       if (!servirArquivo(req, res, path.join(config.publicDir, 'suporte.html'), 'no-store')) {
         log('erro', `A tela de suporte remoto não está instalada: falta ${path.join(config.publicDir, 'suporte.html')}.`);
-        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de suporte remoto não foi encontrado no servidor. Reinstale o DG Claw Web.');
+        H.paginaErro(res, 500, 'Tela não instalada', 'O arquivo da tela de suporte remoto não foi encontrado no servidor. Reinstale o Prumo da Locadora Web.');
       }
       return undefined;
     }

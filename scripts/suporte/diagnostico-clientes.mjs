@@ -186,7 +186,7 @@ async function consultar(c) {
     try { corpo = JSON.parse(texto); } catch (_) { /* resposta que não é JSON é tratada abaixo */ }
     if (res.ok && corpo && corpo.schema) {
       const campo = campoInvalido(corpo);
-      if (campo) return { cliente: c.nome, url: c.base, status: res.status, erro: `A resposta do cliente não está no formato esperado (campo ${campo}). Confira se o DG Claw dele está atualizado.` };
+      if (campo) return { cliente: c.nome, url: c.base, status: res.status, erro: `A resposta do cliente não está no formato esperado (campo ${campo}). Confira se o Prumo da Locadora dele está atualizado.` };
     }
     if (res.ok && corpo && corpo.schema) return { cliente: c.nome, url: c.base, status: res.status, resposta: corpo };
     return { cliente: c.nome, url: c.base, status: res.status, erro: explicarStatus(res.status, corpo) };
@@ -206,7 +206,7 @@ function explicarStatus(status, corpo) {
   if (status === 401) return `A chave foi recusada (401): ela foi revogada, está errada ou foi digitada com erro. Se o cliente revogou a chave, peça uma nova pela tela Suporte remoto.${motivo}`;
   if (status === 403) return `A chave não tem permissão para o diagnóstico (403). Crie outra com o escopo diagnostico.${motivo}`;
   if (status === 429) return `Tentativas demais com chave inválida a partir deste IP (429). Espere cerca de 10 minutos e confira a chave antes de tentar de novo.${motivo}`;
-  if (status === 404) return 'O cliente não tem a rota de diagnóstico (404). A versão do DG Claw dele é anterior ao diagnóstico remoto: peça para atualizar.';
+  if (status === 404) return 'O cliente não tem a rota de diagnóstico (404). A versão do Prumo da Locadora dele é anterior ao diagnóstico remoto: peça para atualizar.';
   if (status >= 500) return `O painel do cliente deu erro interno (${status}).${motivo} Tente de novo em um minuto; se repetir, o problema é do painel dele.`;
   return `Resposta inesperada do cliente (HTTP ${status}).${motivo}`;
 }
@@ -261,7 +261,7 @@ async function principal() {
   } else {
     for (const r of resultados) {
       try { imprimirCliente(r, op.detalhe); } catch (e) {
-        r.erro = 'A resposta do cliente não está no formato esperado e não pôde ser mostrada. Confira se o DG Claw dele está atualizado.';
+        r.erro = 'A resposta do cliente não está no formato esperado e não pôde ser mostrada. Confira se o Prumo da Locadora dele está atualizado.';
         imprimirCliente(r, op.detalhe);
       }
     }

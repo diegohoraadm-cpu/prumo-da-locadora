@@ -22,7 +22,7 @@ const PADROES = [
   /Bearer\s+[A-Za-z0-9._~+\/=-]{20,}/g,
   /\b\d{8,10}:[A-Za-z0-9_-]{35}\b/g,
   /\b[a-z][a-z0-9+.\-]{0,20}:\/\/[^\s:/?#@'"<>]+:[^\s@/?#'"<>]+@[^\s'"<>]+/gi,
-  /dgc_[A-Za-z0-9_-]{16,}/g,                                                 // chave de API do DG Claw
+  /dgc_[A-Za-z0-9_-]{16,}/g,                                                 // chave de API do Prumo da Locadora
   /eyJ[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]*/g,                    // JWT
 ];
 

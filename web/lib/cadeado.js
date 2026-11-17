@@ -305,7 +305,7 @@ function criarCadeado({ config, log, agora, sessoesDoCadeado, gravaSessoes, ence
     return true;
   }
   const ERRO_LIGACAO = () => new WebAuthnErro('O Face ID foi aceito, mas não consegui gravar a ligação desta sessão ao aparelho (disco cheio ou sem permissão). A sessão continua travada: tente de novo ou entre com a senha.', 'arquivo', 500);
-  const ERRO_MARCA_CADASTRO = () => new WebAuthnErro('Não consegui gravar a ligação desta sessão ao aparelho (disco cheio ou sem permissão), então o Face ID não foi ligado. Nada mudou: você segue usando o DG Claw normalmente, sem o cadeado. Libere espaço ou confira a permissão da pasta de dados e tente de novo.', 'arquivo', 500);
+  const ERRO_MARCA_CADASTRO = () => new WebAuthnErro('Não consegui gravar a ligação desta sessão ao aparelho (disco cheio ou sem permissão), então o Face ID não foi ligado. Nada mudou: você segue usando o Prumo da Locadora normalmente, sem o cadeado. Libere espaço ou confira a permissão da pasta de dados e tente de novo.', 'arquivo', 500);
   /** Depois de ler o corpo (ou dentro da fila de gravação) a sessão pode ter vencido ou travado: revalida antes de mudar qualquer coisa. */
   function confereSessao(req, sessao) {
     if (sessaoViva && !sessaoViva(req)) throw new WebAuthnErro('A sua sessão deixou de valer enquanto o pedido era lido. Entre de novo.', 'sessao', 401);
@@ -348,12 +348,12 @@ function criarCadeado({ config, log, agora, sessoesDoCadeado, gravaSessoes, ence
   function ambiente(req) {
     let u;
     try { u = new URL(H.origemPropria(req, config.proxiesConfiaveis)); } catch (_) {
-      return { erro: 'Não consegui entender o endereço pelo qual você abriu o DG Claw, então não sei para qual endereço criar a passkey.' };
+      return { erro: 'Não consegui entender o endereço pelo qual você abriu o Prumo da Locadora, então não sei para qual endereço criar a passkey.' };
     }
     const host = u.hostname;
     const local = host === 'localhost' || host.endsWith('.localhost');
     if (u.protocol !== 'https:' && !(u.protocol === 'http:' && local)) {
-      return { erro: `O navegador só libera o Face ID em endereço com HTTPS, e você abriu o DG Claw por ${u.origin}. Abra pelo endereço com https:// (peça ao Admin para conferir o certificado) e tente de novo.` };
+      return { erro: `O navegador só libera o Face ID em endereço com HTTPS, e você abriu o Prumo da Locadora por ${u.origin}. Abra pelo endereço com https:// (peça ao Admin para conferir o certificado) e tente de novo.` };
     }
     if (net.isIP(host.replace(/^\[|\]$/g, ''))) {
       return { erro: `O navegador não aceita Face ID em endereço de IP (${host}). Use o endereço com nome do painel (por exemplo o de HTTPS que o instalador mostrou).` };
@@ -422,11 +422,11 @@ function criarCadeado({ config, log, agora, sessoesDoCadeado, gravaSessoes, ence
   }
   function confereCliente(cd, tipoEsperado, d, amb) {
     if (cd.type !== tipoEsperado) throw new WebAuthnErro(`O type do clientDataJSON precisa ser "${tipoEsperado}"; veio ${JSON.stringify(String(cd.type)).slice(0, 40)}.`, 'tipo');
-    if (cd.crossOrigin === true) throw new WebAuthnErro('O Face ID foi pedido de dentro de outro site (crossOrigin). Abra o DG Claw direto pelo endereço dele.', 'origin', 403);
+    if (cd.crossOrigin === true) throw new WebAuthnErro('O Face ID foi pedido de dentro de outro site (crossOrigin). Abra o Prumo da Locadora direto pelo endereço dele.', 'origin', 403);
     const o = typeof cd.origin === 'string' ? cd.origin.replace(/\/+$/, '') : '';
     if (!o) throw new WebAuthnErro('O clientDataJSON veio sem origin.', 'origin');
     if (o !== amb.origem || o !== d.origem) {
-      throw new WebAuthnErro(`A origin ${JSON.stringify(o.slice(0, 80))} não é a deste painel (${amb.origem}). Abra o DG Claw pelo endereço oficial.`, 'origin', 403);
+      throw new WebAuthnErro(`A origin ${JSON.stringify(o.slice(0, 80))} não é a deste painel (${amb.origem}). Abra o Prumo da Locadora pelo endereço oficial.`, 'origin', 403);
     }
     if (d.rpId !== amb.rpId) throw new WebAuthnErro(`O desafio foi pedido para ${d.rpId} e o pedido chegou por ${amb.rpId}.`, 'rpid', 403);
   }
@@ -450,8 +450,8 @@ function criarCadeado({ config, log, agora, sessoesDoCadeado, gravaSessoes, ence
     if (meus.length >= PASSKEYS_POR_TITULAR) throw new WebAuthnErro(`Já há ${PASSKEYS_POR_TITULAR} aparelhos cadastrados, que é o máximo. Remova um que você não usa mais.`, 'limite', 409);
     return {
       challenge: b64u(novoDesafio('cadastro', k, amb)),
-      rp: { id: amb.rpId, name: 'DG Claw' },
-      user: { id: b64u(userHandle(titular)), name: String(sessao.usuario || 'usuario').slice(0, 120), displayName: String(sessao.nome || sessao.usuario || 'DG Claw').slice(0, 120) },
+      rp: { id: amb.rpId, name: 'Prumo da Locadora' },
+      user: { id: b64u(userHandle(titular)), name: String(sessao.usuario || 'usuario').slice(0, 120), displayName: String(sessao.nome || sessao.usuario || 'Prumo da Locadora').slice(0, 120) },
       pubKeyCredParams: [{ type: 'public-key', alg: W.ALG_ES256 }, { type: 'public-key', alg: W.ALG_RS256 }],
       timeout: DESAFIO_MS,
       attestation: 'none',
@@ -643,7 +643,7 @@ function criarCadeado({ config, log, agora, sessoesDoCadeado, gravaSessoes, ence
       res.end(texto);
     } catch (e) {
       log('erro', `Cadeado: não consegui ler docs/CADEADO.md (${e.code || e.message}).`);
-      H.erroJson(res, 500, 'O documento do Face ID não foi encontrado no servidor. Reinstale o DG Claw Web.');
+      H.erroJson(res, 500, 'O documento do Face ID não foi encontrado no servidor. Reinstale o Prumo da Locadora Web.');
     }
   }
 

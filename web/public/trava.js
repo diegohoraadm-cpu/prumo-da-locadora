@@ -1,5 +1,5 @@
 'use strict';
-/* trava.js: o cadeado com Face ID (WebAuthn) do DG Claw, do lado da tela.
+/* trava.js: o cadeado com Face ID (WebAuthn) do Prumo da Locadora, do lado da tela.
 
    Entra com uma tag <script> no <head> de toda tela que exige login e não depende de nenhum outro arquivo.
    Quem decide se a sessão está travada é o SERVIDOR (web/lib/cadeado.js); este arquivo só:
@@ -52,13 +52,13 @@
     rotulo = rotulo || 'biometria';
     if (temApi === false) return 'Este navegador não tem ' + rotulo + ' para sites. Entre com a senha.';
     if (n === 'NotAllowedError') {
-      return 'O ' + rotulo + ' foi cancelado, o tempo acabou ou este aparelho não tem a passkey do DG Claw. Toque de novo para tentar, ou entre com a senha.';
+      return 'O ' + rotulo + ' foi cancelado, o tempo acabou ou este aparelho não tem a passkey do Prumo da Locadora. Toque de novo para tentar, ou entre com a senha.';
     }
     if (n === 'InvalidStateError') {
       return a === 'cadastrar' ? 'Este aparelho já tem o ' + rotulo + ' cadastrado aqui.' : 'O aparelho recusou a passkey (estado inválido). Tente de novo.';
     }
     if (n === 'SecurityError') {
-      return 'O navegador recusou o endereço (' + (host || '') + ') para o ' + rotulo + '. Abra o DG Claw pelo endereço com HTTPS e tente de novo.';
+      return 'O navegador recusou o endereço (' + (host || '') + ') para o ' + rotulo + '. Abra o Prumo da Locadora pelo endereço com HTTPS e tente de novo.';
     }
     if (n === 'NotSupportedError') return 'Este aparelho não aceita o tipo de chave pedido. Entre com a senha.';
     if (n === 'AbortError') return 'O ' + rotulo + ' foi interrompido. Toque de novo.';
@@ -255,7 +255,7 @@
     raiz.hidden = true;
     raiz.innerHTML =
       '<div class="cx"><div class="ic" aria-hidden="true">🔒</div>' +
-      '<h1 id="dgclawTravaTit">DG Claw travado</h1>' +
+      '<h1 id="dgclawTravaTit">Prumo da Locadora travado</h1>' +
       '<p class="sub" id="dgclawTravaSub"></p>' +
       '<button type="button" class="prin" id="dgclawTravaBtn"></button>' +
       '<p class="msg" id="dgclawTravaMsg" role="alert"></p>' +
@@ -273,7 +273,7 @@
     if (!document.body) { document.addEventListener('DOMContentLoaded', function () { mostra(texto); }, { once: true }); return; }
     montaTela();
     const min = estado && estado.trava_min ? Math.round(estado.trava_min) : null;
-    subEl.textContent = texto || (min ? 'O DG Claw trava depois de ' + min + ' min sem uso. Destrave para voltar à conversa.' : 'Destrave para voltar à conversa.');
+    subEl.textContent = texto || (min ? 'O Prumo da Locadora trava depois de ' + min + ' min sem uso. Destrave para voltar à conversa.' : 'Destrave para voltar à conversa.');
     if (aberto) return;
     aberto = true;
     if (relogio) { clearTimeout(relogio); relogio = null; }

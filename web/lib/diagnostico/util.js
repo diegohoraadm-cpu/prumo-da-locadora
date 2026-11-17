@@ -275,7 +275,7 @@ function duracaoCurta(ms) {
 }
 
 // O Admin roda como root e lê a saída de tudo o que o prompt manda conferir. Por isso "conferir" só aceita comandos do
-// HOST cuja saída é do próprio DG Claw (estado, lista, disco, memória). Nunca log, journal, `systemctl status` nem
+// HOST cuja saída é do próprio Prumo da Locadora (estado, lista, disco, memória). Nunca log, journal, `systemctl status` nem
 // nada de dentro do container ou da casa do agente: o agente pode estar comprometido e escrever instruções ali.
 const CONFERIR_ATOMOS = [
   /^`dgclaw status`$/, /^`dgclaw agente listar`$/, /^`dgclaw atualizar --checar`$/, /^`podman ps( -a)?`$/,
@@ -292,11 +292,11 @@ function conferirPermitido(conferir) {
 /** Texto que o cliente cola na conversa do Admin. Primeira pessoa do cliente. */
 function promptAdmin(viu, conferir, comando) {
   conferirPermitido(conferir);
-  return `Oi, Admin. Rodei o diagnóstico do meu DG Claw e ele apontou isto: ${viu} `
+  return `Oi, Admin. Rodei o diagnóstico do meu Prumo da Locadora e ele apontou isto: ${viu} `
     + `Por favor confira se está mesmo assim (${conferir}) e conserte. O comando provável é \`${comando}\`. `
     + 'Quando terminar, me diga o que encontrou, o que fez e se voltou a funcionar.';
 }
-const ONDE_COLAR = 'Cole o texto do prompt_sugerido na conversa do Admin no DG Claw e envie. O Admin confere e conserta.';
+const ONDE_COLAR = 'Cole o texto do prompt_sugerido na conversa do Admin no Prumo da Locadora e envie. O Admin confere e conserta.';
 
 module.exports = {
   INESPERADO, ENUMS, dentro, codigoDeSaida, RX_NOME_SEGURO, RX_UNIT, execPadrao, demorou, PARADO_POR_TEMPO, criarPrazo, comPrazo, primeiroToken, MAX_VALOR_PROP, comLimite, dataSystemd, duracaoSystemd, lerShow, linhasLimitadas, jsonLimitado, iso, quando, duracaoCurta, promptAdmin, ONDE_COLAR,

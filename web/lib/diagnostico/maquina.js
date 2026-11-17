@@ -11,13 +11,13 @@ const GB = 1024 ** 3;
 
 const SERVICOS = [
   { unit: 'caddy', nome: 'Serviço Caddy (entrada do site pela internet)', critico: false },
-  { unit: 'dgclaw-web', nome: 'Serviço DG Claw Web (painel e chat)', critico: true },
+  { unit: 'dgclaw-web', nome: 'Serviço Prumo da Locadora Web (painel e chat)', critico: true },
   { unit: 'dgclaw-admin', nome: 'Serviço do Admin (agente de sistema)', critico: true },
   { unit: 'dgclaw-firewall', nome: 'Cerca de rede dos containers (firewall)', critico: true },
 ];
 const TIMERS = [
   { unit: 'dgclaw-admin-monitor', nome: 'Rotina do Admin: monitor dos cards (5 min)', maxMs: 25 * 60000, desligavel: false },
-  { unit: 'dgclaw-checar-atualizacao', nome: 'Rotina que procura versão nova do DG Claw (6 h)', maxMs: 12 * 3600000 + 15 * 60000, desligavel: true },
+  { unit: 'dgclaw-checar-atualizacao', nome: 'Rotina que procura versão nova do Prumo da Locadora (6 h)', maxMs: 12 * 3600000 + 15 * 60000, desligavel: true },
 ];
 
 /** Categorias dos erros recentes do journal da unit (nenhuma linha sai, só a classificação). */

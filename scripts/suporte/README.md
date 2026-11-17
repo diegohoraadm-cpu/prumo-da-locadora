@@ -10,7 +10,7 @@ Não precisa instalar nada além do Node 18 ou mais novo. A fonte do formato da 
 ### Preparar
 
 1. Cada cliente cria uma chave só de leitura na tela **Suporte remoto** do painel dele (ou com
-   `sudo dgclaw chave-api criar --escopo diagnostico --nome "Suporte DG"`) e manda o token para você.
+   `sudo dgclaw chave-api criar --escopo diagnostico --nome "suporte"`) e manda o token para você.
 2. Crie o arquivo da sua lista, com permissão restrita (a ferramenta recusa o arquivo se outras pessoas
    puderem lê-lo):
 

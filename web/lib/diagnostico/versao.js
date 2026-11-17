@@ -13,7 +13,7 @@ const DOIS_DIAS_MS = 48 * 3600 * 1000;
 function tarefaDeVersao(ctx) {
   const { config, agora, lerEnv, atualizacao, log } = ctx;
   return {
-    sufixo: null, id: 'versao', nome: 'Versão do DG Claw',
+    sufixo: null, id: 'versao', nome: 'Versão do Prumo da Locadora',
     async fn() {
       const arquivoEnv = path.join(path.dirname(config.agentesPath), 'dgclaw.env');
       const env = lerEnv(arquivoEnv);
@@ -43,21 +43,21 @@ function tarefaDeVersao(ctx) {
       if (est.disponivel) {
         const mesma = bloco.publicada && bloco.publicada === instalada;
         const n = est.commits_a_frente;
-        return Object.assign(R('atencao', `Há atualização do DG Claw: ${mesma ? `mudanças novas dentro da versão ${instalada}` : `a versão ${bloco.publicada || 'nova'} saiu e esta máquina está na ${instalada || 'versão desconhecida'}`}${n ? ` (${n} mudança${n === 1 ? '' : 's'} à frente)` : ''}.`), base, {
+        return Object.assign(R('atencao', `Há atualização do Prumo da Locadora: ${mesma ? `mudanças novas dentro da versão ${instalada}` : `a versão ${bloco.publicada || 'nova'} saiu e esta máquina está na ${instalada || 'versão desconhecida'}`}${n ? ` (${n} mudança${n === 1 ? '' : 's'} à frente)` : ''}.`), base, {
           o_que_fazer: 'Atualize pela conversa do Admin. A atualização faz backup antes, e o passo a passo está em docs/ATUALIZAR.md.',
-          prompt_sugerido: 'Oi, Admin. O diagnóstico do meu DG Claw mostrou que saiu uma versão nova. Quero atualizar. Siga o roteiro do docs/ATUALIZAR.md: confira o que é personalizado, faça o backup, rode `dgclaw atualizar` e confira que nada meu sumiu. No fim, me conte o que mudou e se está tudo funcionando.',
+          prompt_sugerido: 'Oi, Admin. O diagnóstico do meu Prumo da Locadora mostrou que saiu uma versão nova. Quero atualizar. Siga o roteiro do docs/ATUALIZAR.md: confira o que é personalizado, faça o backup, rode `dgclaw atualizar` e confira que nada meu sumiu. No fim, me conte o que mudou e se está tudo funcionando.',
         });
       }
       if (est.erro) {
         return Object.assign(R('atencao', 'A última procura por versão nova falhou, então a informação pode estar velha.'), base, {
           o_que_fazer: 'Cole o prompt na conversa do Admin para ele rodar a verificação de novo.',
-          prompt_sugerido: U.promptAdmin('a procura automática por versão nova do DG Claw falhou na última vez.', '`dgclaw atualizar --checar`', 'dgclaw atualizar --checar'),
+          prompt_sugerido: U.promptAdmin('a procura automática por versão nova do Prumo da Locadora falhou na última vez.', '`dgclaw atualizar --checar`', 'dgclaw atualizar --checar'),
         });
       }
       if (Number.isFinite(verificadoMs) && agora() - verificadoMs > DOIS_DIAS_MS) {
         return Object.assign(R('atencao', `A procura por versão nova não roda há ${U.duracaoCurta(agora() - verificadoMs)}.`), base, {
           o_que_fazer: 'Cole o prompt na conversa do Admin para ele conferir o timer de verificação.',
-          prompt_sugerido: U.promptAdmin('a procura automática por versão nova do DG Claw não roda há mais de dois dias.', '`systemctl list-timers dgclaw-checar-atualizacao.timer`', 'dgclaw atualizar --checar'),
+          prompt_sugerido: U.promptAdmin('a procura automática por versão nova do Prumo da Locadora não roda há mais de dois dias.', '`systemctl list-timers dgclaw-checar-atualizacao.timer`', 'dgclaw atualizar --checar'),
         });
       }
       return Object.assign(R('ok', null), base);

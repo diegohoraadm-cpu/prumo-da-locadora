@@ -26,7 +26,7 @@ const dooP = (ag) => (admin(ag) ? 'do Admin' : `do agente ${ag.slug}`);
 function analisaLogin(ag, dados, tz) {
   const { estado, provedor } = dados;
   const razao = estado && estado.ok ? razaoDe(estado.estado) : null;
-  const refazer = `Abra a conversa ${doo(ag)} no painel do DG Claw e refaça o login do Claude pelo cartão ou pelo aviso "Seu login do Claude expirou" (passo a passo em web/docs/LOGIN-NA-CONVERSA.md). Se o cartão não abrir, digite /login na conversa.`;
+  const refazer = `Abra a conversa ${doo(ag)} no painel do Prumo da Locadora e refaça o login do Claude pelo cartão ou pelo aviso "Seu login do Claude expirou" (passo a passo em web/docs/LOGIN-NA-CONVERSA.md). Se o cartão não abrir, digite /login na conversa.`;
   if (razao === 'runner:login-expirado') {
     const ms = Date.parse(estado.estado.loginExpiradoEm);
     return {

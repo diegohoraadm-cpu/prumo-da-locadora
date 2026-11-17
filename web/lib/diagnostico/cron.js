@@ -201,13 +201,13 @@ async function conferir(ctx, ag, ledgerP, prazo) {
     const pulso = ultimoRegistroDoPulso(ledger, nome);
     const falhaPulso = pulso && /^(erro|error|falha|fail)/i.test(pulso.status) ? pulso : null;
     const ocorrenciasPulso = falhaPulso ? classificar(falhaPulso.detalhe, { soErros: false, fallbackMs: Date.parse(falhaPulso.ts) || null }) : [];
-    // O prompt_sugerido só cita rotina da lista fechada NOMES (as que o DG Claw instala). Rotina própria ou
+    // O prompt_sugerido só cita rotina da lista fechada NOMES (as que o Prumo da Locadora instala). Rotina própria ou
     // desconhecida vem do container, que pode estar comprometido: o texto é fixo e nenhum nome dela entra no prompt.
     const conhecida = Object.prototype.hasOwnProperty.call(NOMES, nome);
     // Nada de `podman exec` no prompt: a saída de dentro do container é escrita pelo agente e entraria no contexto root do Admin.
     const dono = `com \`podman exec dgclaw-${slug} systemctl status ${conhecida ? servico : 'dgclaw-' + slug + '-*'}\``;
     const fixTexto = (viu, comando) => U.conserta(viu, '`dgclaw status`', comando, dono);
-    const rotina = conhecida ? `a rotina "${NOMES[nome]}" do agente ${slug}` : `uma rotina própria (que não é do DG Claw) do agente ${slug}`;
+    const rotina = conhecida ? `a rotina "${NOMES[nome]}" do agente ${slug}` : `uma rotina própria (que não é do Prumo da Locadora) do agente ${slug}`;
 
     if (ativoTimer !== 'active') {
       itens.push(Object.assign(item, {

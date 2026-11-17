@@ -211,7 +211,7 @@
     ev.preventDefault();
     const nome = $('fNome').value.trim();
     msg('criarMsg', '');
-    if (!nome) { msg('criarMsg', 'Dê um nome à chave, por exemplo "Suporte DG".', 'erro'); return; }
+    if (!nome) { msg('criarMsg', 'Dê um nome à chave, por exemplo "suporte".', 'erro'); return; }
     $('btnCriar').disabled = true;
     const r = await chamar('POST', '/api/v1/chaves-api', { nome, escopos: ['diagnostico'] });
     $('btnCriar').disabled = false;
@@ -315,7 +315,7 @@
   const PASSOS = {
     explica: {
       alvo: '[data-tour="explica"]', titulo: 'O suporte remoto',
-      oque: 'Um jeito de quem dá suporte ao seu DG Claw ver se está tudo funcionando, sem pedir a senha da sua máquina.',
+      oque: 'Um jeito de quem dá suporte ao seu Prumo da Locadora ver se está tudo funcionando, sem pedir a senha da sua máquina.',
       como: 'Você cria uma chave e passa para a pessoa. Com ela, o único pedido que funciona é ler o diagnóstico de saúde. Qualquer outra coisa, a chave recusa.',
       porque: 'Quando algo para de funcionar, o suporte enxerga o motivo sem mexer em nada, e você continua dono de tudo.',
     },

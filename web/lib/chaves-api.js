@@ -1,5 +1,5 @@
 'use strict';
-// Chaves de API do DG Claw Web (Bearer). Hoje existe um só uso: a chave de SUPORTE, que
+// Chaves de API do Prumo da Locadora Web (Bearer). Hoje existe um só uso: a chave de SUPORTE, que
 // lê o diagnóstico de saúde (GET /api/v1/diagnostico) e não faz mais nada.
 //
 // Mesmo modelo do panel/lib/chaves-api.js:
@@ -176,7 +176,7 @@ function criarChavesApi({ config, log, agora }) {
     const limpo = String(nome == null ? '' : nome).trim();
     if (!limpo) {
       return recusa('Faltou o nome da chave, que diz para quem ela é.', 400,
-        'Dê um nome que lembre quem vai usá-la, por exemplo "Suporte DG".');
+        'Dê um nome que lembre quem vai usá-la, por exemplo "suporte".');
     }
     if (limpo.length > 60 || /[\x00-\x1f\x7f]/.test(limpo)) {
       return recusa('O nome da chave tem mais de 60 caracteres ou tem quebra de linha ou caractere invisível.', 400,

@@ -23,7 +23,7 @@ test('o único escopo aceito hoje é diagnostico', () => {
 
 test('criar: o token aparece uma vez e só o hash vai para o disco', () => {
   const l = loja(undefined, { pastaNova: true });
-  const r = l.api.criar({ nome: 'Suporte DG', escopos: ['diagnostico'], quem: 'dono' });
+  const r = l.api.criar({ nome: 'suporte', escopos: ['diagnostico'], quem: 'dono' });
   assert.equal(r.ok, true);
   assert.match(r.token, /^dgc_[A-Za-z0-9_-]{43}$/);
   assert.deepEqual(r.chave.escopos, ['diagnostico']);

@@ -1,6 +1,6 @@
 # Diagnóstico remoto
 
-Uma rota só de leitura que mostra o estado de tudo o que precisa estar vivo no DG Claw: os serviços da
+Uma rota só de leitura que mostra o estado de tudo o que precisa estar vivo no Prumo da Locadora: os serviços da
 máquina, o disco, a memória, a versão, o Admin e cada agente (container, sessão, login, canais, rotinas e
 memória). Cada item parado vem com o motivo e com o que fazer. Quem dá suporte consulta essa rota com uma
 chave própria, sem precisar de senha da máquina e sem poder mexer em nada.
@@ -27,7 +27,7 @@ Pela tela: menu **Suporte remoto**, botão de criar chave. O valor aparece uma v
 Pelo servidor:
 
 ```bash
-sudo dgclaw chave-api criar --escopo diagnostico --nome "Suporte DG"
+sudo dgclaw chave-api criar --escopo diagnostico --nome "suporte"
 sudo dgclaw chave-api listar
 sudo dgclaw chave-api revogar <id>
 ```
@@ -84,7 +84,7 @@ com `http://` a chave passaria aberta pela rede.
       "ultimo_sinal": "2026-10-20T03:10:00Z",
       "motivo": "O login do Claude expirou em 20/10 às 00h10 e o agente Tina parou de responder.",
       "evidencia": { "horario": "2026-10-20T03:10:00Z", "codigo_saida": null, "sinal": "runner:login-expirado", "ocorrencias": null },
-      "o_que_fazer": "Abra a conversa do agente Tina no painel do DG Claw e refaça o login do Claude.",
+      "o_que_fazer": "Abra a conversa do agente Tina no painel do Prumo da Locadora e refaça o login do Claude.",
       "prompt_sugerido": null
     }
   ]
@@ -104,7 +104,7 @@ Campos de cada verificação:
 | `motivo` | Por que não está bem. Sempre presente quando o estado não é `ok` |
 | `evidencia` | `horario`, `codigo_saida`, `sinal` e `ocorrencias`, ou `null` (veja abaixo). Nunca traz linha de log |
 | `o_que_fazer` | A instrução para quem lê. Sempre presente quando o estado não é `ok` |
-| `prompt_sugerido` | Texto para o cliente colar na conversa do Admin do DG Claw, em primeira pessoa, pedindo para conferir e consertar. `null` quando o conserto depende de uma ação do próprio cliente (como refazer o login) |
+| `prompt_sugerido` | Texto para o cliente colar na conversa do Admin do Prumo da Locadora, em primeira pessoa, pedindo para conferir e consertar. `null` quando o conserto depende de uma ação do próprio cliente (como refazer o login) |
 
 ### A evidência
 
@@ -177,12 +177,12 @@ estrito: estados do systemd, resultados, códigos de saída de 0 a 255, datas qu
 formato `dgclaw-...`, motivos conhecidos do runner. Valor fora da lista vira `desconhecido`, e o item mostra "o
 sistema devolveu um valor inesperado" em vez do valor. Os campos `motivo`, `o_que_fazer` e `prompt_sugerido` são
 montados só com frases fixas do código e esses valores conferidos, e o `prompt_sugerido` identifica o agente pelo
-slug. O nome de uma rotina só entra no prompt quando ela é da lista fechada das que o DG Claw instala; rotina própria
+slug. O nome de uma rotina só entra no prompt quando ela é da lista fechada das que o Prumo da Locadora instala; rotina própria
 ou desconhecida aparece só como título do item na tela, e o prompt dela usa um texto fixo. Assim texto escrito dentro de
 um container nunca chega a um prompt que o dono cola na conversa do Admin.
 O `prompt_sugerido` também nunca manda o Admin (que roda como root) ler conteúdo escrito pelo container: nada de log
 do agente, journal ou `systemctl status` de dentro do container, `podman exec` ou arquivo da casa do agente. Ele só
-pede para conferir comandos do servidor cuja saída é do próprio DG Claw (`dgclaw status`, `podman ps`, `df -h` e
+pede para conferir comandos do servidor cuja saída é do próprio Prumo da Locadora (`dgclaw status`, `podman ps`, `df -h` e
 parecidos, de uma lista fechada). Quando o detalhe está num log do agente, o `o_que_fazer` diz ao dono onde olhar e
 avisa para não colar esse conteúdo no Admin.
 Por fim, o texto lido de fora tem tamanho máximo antes de qualquer análise (1000 caracteres por linha), para que

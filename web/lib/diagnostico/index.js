@@ -80,7 +80,7 @@ function criarDiagnostico(deps) {
         const andamento = prazoAtual.run(prazo, async () => {
           try { return await t.fn(dep, prazo); } catch (e) {
             log('erro', `Diagnóstico: a verificação ${t.id} falhou por erro interno: ${e && e.stack ? e.stack : e}`);
-            return U.R('nao_medido', 'O diagnóstico não conseguiu medir este item por um erro interno. O detalhe está no log do DG Claw Web (journalctl -u dgclaw-web).');
+            return U.R('nao_medido', 'O diagnóstico não conseguiu medir este item por um erro interno. O detalhe está no log do Prumo da Locadora Web (journalctl -u dgclaw-web).');
           }
         });
         coleta.pendentes.push(andamento);
@@ -138,7 +138,7 @@ function criarDiagnostico(deps) {
     for (const t of tarefasDaMaquina(ctx)) add(t, 'maquina', null, `maquina.${t.sufixo}`);
     if (!reg.ok) {
       add({ nome: 'Registro de agentes', fn: async () => U.R('quebrado', 'Não consegui ler a lista de agentes. Sem ela o painel não sabe quem existe.', {
-        o_que_fazer: U.ONDE_COLAR, prompt_sugerido: U.promptAdmin('o registro de agentes (agentes.json) do DG Claw não pôde ser lido.', '`dgclaw agente listar`', 'dgclaw status'),
+        o_que_fazer: U.ONDE_COLAR, prompt_sugerido: U.promptAdmin('o registro de agentes (agentes.json) do Prumo da Locadora não pôde ser lido.', '`dgclaw agente listar`', 'dgclaw status'),
       }) }, 'maquina', null, 'maquina.registro');
     }
     add(tarefaDeVersao(ctx), 'versao', null, 'versao');
@@ -245,7 +245,7 @@ function criarDiagnostico(deps) {
       res.end(req.method === 'HEAD' ? undefined : t);
     } catch (e) {
       log('erro', `Diagnóstico: não consegui ler ${ARQUIVO_DOCS} (${e.code || e.message}).`);
-      H.erroJson(res, 500, 'O documento do diagnóstico remoto não foi encontrado no servidor. Reinstale o DG Claw Web.');
+      H.erroJson(res, 500, 'O documento do diagnóstico remoto não foi encontrado no servidor. Reinstale o Prumo da Locadora Web.');
     }
   }
 
@@ -268,7 +268,7 @@ function criarDiagnostico(deps) {
     } catch (e) {
       const autor = quem && quem.nome ? ` (pedido de ${quem.tipo || 'alguém'} "${quem.nome}")` : '';
       log('erro', `Diagnóstico: a coleta estourou${autor}: ${e && e.stack ? e.stack : e}`);
-      H.erroJson(res, 500, 'Não consegui montar o diagnóstico agora por um erro interno. Tente de novo em um minuto; se repetir, o detalhe está no log do DG Claw Web (journalctl -u dgclaw-web).');
+      H.erroJson(res, 500, 'Não consegui montar o diagnóstico agora por um erro interno. Tente de novo em um minuto; se repetir, o detalhe está no log do Prumo da Locadora Web (journalctl -u dgclaw-web).');
     }
   }
 

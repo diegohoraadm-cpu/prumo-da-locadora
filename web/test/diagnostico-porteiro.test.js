@@ -25,7 +25,7 @@ async function cenario(opcoes) {
     },
   };
   const t = await subirWeb(Object.assign({ agentes: AGENTES, opcoesServidor: { diagnostico } }, opcoes));
-  const nova = (nome) => t.web.chavesApi.criar({ nome: nome || 'Suporte DG', escopos: ['diagnostico'], quem: 'teste' });
+  const nova = (nome) => t.web.chavesApi.criar({ nome: nome || 'suporte', escopos: ['diagnostico'], quem: 'teste' });
   const com = (token, extra) => Object.assign({ headers: { Authorization: `Bearer ${token}` }, origin: `http://127.0.0.1:${t.porta}` }, extra);
   return { t, chamadas, nova, com };
 }
@@ -83,12 +83,12 @@ test('Bearer de chave revogada: 401 dizendo que foi revogada, com a data', async
 test('Bearer válida em GET e HEAD /api/v1/diagnostico: chama o coletor com {tipo:chave,id,nome} e anota o uso', async () => {
   const s = await cenario();
   try {
-    const k = s.nova('Suporte DG');
+    const k = s.nova('suporte');
     const r = await s.t.c.get('/api/v1/diagnostico', s.com(k.token));
     assert.equal(r.status, 200);
     assert.equal(r.json.quem, 'chave');
     assert.equal(r.headers['cache-control'], 'no-store');
-    assert.deepEqual(s.chamadas[0].quem, { tipo: 'chave', id: k.chave.id, nome: 'Suporte DG' });
+    assert.deepEqual(s.chamadas[0].quem, { tipo: 'chave', id: k.chave.id, nome: 'suporte' });
     const barra = await s.t.c.get('/api/v1/diagnostico/', s.com(k.token));
     assert.equal(barra.status, 200, 'barra final é aceita');
     const head = await s.t.c.pedir('HEAD', '/api/v1/diagnostico', s.com(k.token));
@@ -213,7 +213,7 @@ test('gestão por sessão: lista, cria (token só na resposta), revoga; erros co
     const semNome = await s.t.c.post('/api/v1/chaves-api', { json: { escopos: ['diagnostico'] } });
     assert.equal(semNome.status, 400);
 
-    const cria = await s.t.c.post('/api/v1/chaves-api', { json: { nome: 'Suporte DG', escopos: ['diagnostico'] } });
+    const cria = await s.t.c.post('/api/v1/chaves-api', { json: { nome: 'suporte', escopos: ['diagnostico'] } });
     assert.equal(cria.status, 201);
     assert.match(cria.json.token, /^dgc_/);
     assert.equal(cria.json.chave.criadaPor, 'dono');
@@ -242,7 +242,7 @@ test('a chave criada pela gestão lê o diagnóstico de ponta a ponta', async ()
   const s = await cenario();
   try {
     await s.t.login();
-    const cria = await s.t.c.post('/api/v1/chaves-api', { json: { nome: 'Suporte DG', escopos: ['diagnostico'] } });
+    const cria = await s.t.c.post('/api/v1/chaves-api', { json: { nome: 'suporte', escopos: ['diagnostico'] } });
     const r = await cliente(s.t.porta).get('/api/v1/diagnostico', s.com(cria.json.token));
     assert.equal(r.status, 200);
     assert.equal(r.json.quem, 'chave');

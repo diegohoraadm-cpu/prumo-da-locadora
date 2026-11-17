@@ -38,7 +38,7 @@
       podeLigar = false;
       notas.push({
         titulo: 'Este endereço não usa HTTPS',
-        texto: 'O navegador só libera o ' + r + ' em endereço seguro (https://), e você abriu o DG Claw por ' + (a.host || 'este endereço') + '. Como resolver: abra o painel pelo endereço que começa com https:// (o instalador mostrou esse link no fim da instalação). Se o painel ainda não tem um endereço com HTTPS, peça ao Admin para conferir o certificado ou para trocar o endereço por um domínio seu. Enquanto isso, a sua senha continua valendo normalmente.',
+        texto: 'O navegador só libera o ' + r + ' em endereço seguro (https://), e você abriu o Prumo da Locadora por ' + (a.host || 'este endereço') + '. Como resolver: abra o painel pelo endereço que começa com https:// (o instalador mostrou esse link no fim da instalação). Se o painel ainda não tem um endereço com HTTPS, peça ao Admin para conferir o certificado ou para trocar o endereço por um domínio seu. Enquanto isso, a sua senha continua valendo normalmente.',
       });
     } else if (a.ambienteErro) {
       podeLigar = false;
@@ -48,7 +48,7 @@
       podeLigar = false;
       notas.push({
         titulo: 'Este navegador não tem ' + r + ' para sites',
-        texto: 'Ele não oferece passkeys (WebAuthn). Para usar o ' + r + ', abra o DG Claw no Safari (iPhone e Mac), no Chrome ou no Edge, atualizados. A sua senha continua valendo normalmente.',
+        texto: 'Ele não oferece passkeys (WebAuthn). Para usar o ' + r + ', abra o Prumo da Locadora no Safari (iPhone e Mac), no Chrome ou no Edge, atualizados. A sua senha continua valendo normalmente.',
       });
     } else if (a.plataforma === false) {
       podeLigar = false;
@@ -96,14 +96,14 @@
 
   function passosPagina(r) {
     return [
-      { alvo: '#cabecalho', titulo: 'Face ID', oque: 'A tela onde você liga a trava com ' + r + ' neste aparelho. Com ela ligada, o DG Claw trava sozinho depois de um tempo sem uso e só volta com o seu rosto, a sua digital ou o código do aparelho.', como: 'Cada pessoa liga no próprio aparelho e vê só os aparelhos dela. Quem não ligar não percebe nada.', porque: 'Se você deixar o celular desbloqueado em cima da mesa, ninguém lê as suas conversas com os agentes.' },
+      { alvo: '#cabecalho', titulo: 'Face ID', oque: 'A tela onde você liga a trava com ' + r + ' neste aparelho. Com ela ligada, o Prumo da Locadora trava sozinho depois de um tempo sem uso e só volta com o seu rosto, a sua digital ou o código do aparelho.', como: 'Cada pessoa liga no próprio aparelho e vê só os aparelhos dela. Quem não ligar não percebe nada.', porque: 'Se você deixar o celular desbloqueado em cima da mesa, ninguém lê as suas conversas com os agentes.' },
       PASSOS.aparelho, PASSOS.lista, PASSOS.tempo, PASSOS.endereco,
     ];
   }
   const PASSOS = {
-    aparelho: { alvo: '[data-tour="fid-aparelho"]', titulo: 'Neste aparelho', oque: 'Mostra se o Face ID está ligado aqui e deixa ligar. Se o aparelho ou o endereço não permitem, a tela explica o motivo e o que fazer.', como: 'Toque em "Ligar neste aparelho" e confirme com o rosto, a digital ou o código do aparelho. Se você já tem uma passkey deste endereço (criada em outro aparelho ou sincronizada pelo iCloud), o botão principal vira "Usar minha passkey neste aparelho": ele usa a que já existe, sem criar outra. O DG Claw guarda só a chave pública da passkey; o seu rosto e a sua digital nunca saem do aparelho.', porque: 'O cadeado é por aparelho: ligar aqui não trava o seu computador nem o celular de outra pessoa.' },
+    aparelho: { alvo: '[data-tour="fid-aparelho"]', titulo: 'Neste aparelho', oque: 'Mostra se o Face ID está ligado aqui e deixa ligar. Se o aparelho ou o endereço não permitem, a tela explica o motivo e o que fazer.', como: 'Toque em "Ligar neste aparelho" e confirme com o rosto, a digital ou o código do aparelho. Se você já tem uma passkey deste endereço (criada em outro aparelho ou sincronizada pelo iCloud), o botão principal vira "Usar minha passkey neste aparelho": ele usa a que já existe, sem criar outra. O Prumo da Locadora guarda só a chave pública da passkey; o seu rosto e a sua digital nunca saem do aparelho.', porque: 'O cadeado é por aparelho: ligar aqui não trava o seu computador nem o celular de outra pessoa.' },
     lista: { alvo: '[data-tour="fid-lista"]', titulo: 'Aparelhos cadastrados', oque: 'Os aparelhos em que você ligou o Face ID, com a data do cadastro e do último uso.', como: 'Renomeie para reconhecer cada um. Ao remover um aparelho, as sessões abertas nele são encerradas na hora (voltam ao login, e a conversa e a Tela que estavam abertas nele caem). A sessão que você está usando só continua se for do mesmo aparelho que você removeu; nesse caso ela fica sem o cadeado. A senha continua valendo em qualquer aparelho.', porque: 'É por aqui que você tira o acesso de um aparelho perdido ou vendido, mesmo que ele estivesse com a sessão aberta.' },
-    tempo: { alvo: '[data-tour="fid-tempo"]', titulo: 'Tempo de trava', oque: 'Quantos minutos sem usar o DG Claw até a tela travar. O padrão é 15.', como: 'Escolha de 1 a 120 minutos e toque em Salvar. Só conta como uso o que você faz na tela (tocar, digitar, rolar), não o que roda em segundo plano.', porque: 'Tempo curto protege mais; tempo longo incomoda menos. Você decide o equilíbrio.' },
+    tempo: { alvo: '[data-tour="fid-tempo"]', titulo: 'Tempo de trava', oque: 'Quantos minutos sem usar o Prumo da Locadora até a tela travar. O padrão é 15.', como: 'Escolha de 1 a 120 minutos e toque em Salvar. Só conta como uso o que você faz na tela (tocar, digitar, rolar), não o que roda em segundo plano.', porque: 'Tempo curto protege mais; tempo longo incomoda menos. Você decide o equilíbrio.' },
     endereco: { alvo: '[data-tour="fid-endereco"]', titulo: 'Endereço do painel', oque: 'O endereço pelo qual você abriu o painel agora.', como: 'A passkey é criada para esse endereço. Se o painel passar a ter outro endereço, ligue o Face ID de novo em cada aparelho.', porque: 'É uma regra do navegador, que protege você de sites falsos pedindo o seu Face ID.' },
   };
 
@@ -255,7 +255,7 @@
       if (!e.servidor && e.name === 'InvalidStateError') {
         // O aparelho já tem uma passkey deste endereço (por exemplo, sincronizada pelo iCloud): o caminho é usá-la, não criar outra.
         forcaVincular = true;
-        msg('fiMsgAparelho', 'Este aparelho já tem uma passkey do DG Claw (talvez sincronizada pela sua conta). Toque em "Usar minha passkey neste aparelho" em vez de criar outra.', 'erro');
+        msg('fiMsgAparelho', 'Este aparelho já tem uma passkey do Prumo da Locadora (talvez sincronizada pela sua conta). Toque em "Usar minha passkey neste aparelho" em vez de criar outra.', 'erro');
       } else {
         msg('fiMsgAparelho', e.servidor ? 'O servidor recusou: ' + e.message : T.traduz(e, 'cadastrar'), 'erro');
       }

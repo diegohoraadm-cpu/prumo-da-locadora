@@ -109,3 +109,24 @@ caso_fim_primeiro_backup_so_sem_backup() {
     afirma "ensaio termina" instalacao_basica --ensaio
     nega "o ensaio nao faz backup" tem "$STUB_LOG" "dgclaw backup"
 }
+
+caso_fim_aviso_separa_exited_de_quem_vira_falhou() {
+    novo_cenario
+    afirma "a instalacao termina com sucesso" fim_com_agentes ana:exited bia:created cai:running
+    afirma "o aviso aparece" tem "$SAIDA" "AVISO DA VERSÃO 1.0.5"
+    nega "nada e iniciado no exited" tem "$STUB_LOG" "dgclaw agente iniciar ana"
+    afirma "o created (ligado agora) e o running vao para a lista do FALHOU" tem "$SAIDA" "FALHOU e a tela vai terminar com"
+    afirma "o --forcar e comandado para o bia" tem "$SAIDA" "sudo dgclaw agente recriar bia --forcar"
+    afirma "o --forcar e comandado para o cai" tem "$SAIDA" "sudo dgclaw agente recriar cai --forcar"
+    nega "o exited nao recebe comando de --forcar" tem "$SAIDA" "sudo dgclaw agente recriar ana --forcar"
+    afirma "o exited aparece como desligado que fica como esta" grep -qE "estao desligados e ficam como estao.*: ana\$" "$SAIDA"
+    afirma "o aviso diz o que o --forcar perde" tem "$SAIDA" "perde o que foi instalado so dentro dela"
+    afirma "o aviso diz onde fica a lista" tem "$SAIDA" "/var/lib/dgclaw/agentes/<nome do agente>/perdido-no-recriar-<data>.txt"
+    # so exited sem manifesto: nada de promessa de FALHOU
+    novo_cenario
+    afirma "instalacao so com exited" fim_com_agentes ana:exited
+    nega "so exited: o aviso nao promete FALHOU" tem "$SAIDA" "vao aparecer como FALHOU"
+    nega "so exited: nada de --forcar" tem "$SAIDA" "recriar ana --forcar"
+    afirma "so exited: diz que fica desligado" tem "$SAIDA" "estao desligados e ficam como estao"
+    nega "so exited: nada iniciado" tem "$STUB_LOG" "dgclaw agente iniciar"
+}

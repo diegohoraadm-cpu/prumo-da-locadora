@@ -1,10 +1,10 @@
 ---
 name: tela
-description: Como o agente usa a Tela, o navegador de verdade com tela que o dono abre pelo menu do agente na conversa (e pela aba Tela do painel). Use quando travar em login de um sistema (site pede usuário e senha, código 2FA, captcha, "confirme que é você"), quando o dono mandar uma senha na conversa, quando for automatizar um site em que o dono já está logado, quando o dono disser "abre a tela", "faz o login pra mim", "usa o meu Chrome" ou "/dgclaw:tela". Nunca pede senha na conversa.
+description: Como o agente usa a Tela, o navegador de verdade com tela que o dono abre pelo menu do agente na conversa (e pela aba Tela do painel). Use quando travar em login de um sistema (site pede usuário e senha, código 2FA, captcha, "confirme que é você"), quando o dono mandar uma senha na conversa, quando for automatizar um site em que o dono já está logado, quando o dono disser "abre a tela", "faz o login pra mim", "usa o meu Chrome". Nunca pede senha na conversa.
 user-invocable: true
 ---
 
-# /dgclaw:tela: logins pelo dono, automação pelo Chrome logado
+# tela: logins pelo dono, automação pelo Chrome logado
 
 Eu tenho uma Tela: um navegador de verdade (não headless), com perfil que guarda os logins em
 `~/.tela-chrome`. Em servidor amd64 ele é o Google Chrome; em arm64 é o Chromium do Playwright, que
@@ -93,7 +93,7 @@ O que cada resultado quer dizer e o que eu faço:
 - **Uma unidade `inactive` ou `failed`:** posso religá-la com `sudo systemctl restart <unidade>` e olhar
   `journalctl -u <unidade> -n 30`. Se voltar a cair, conto o erro ao dono.
 - **Nenhuma unidade existe (`could not be found`):** esta máquina foi criada sem a Tela. Quem administra o
-  DG Claw precisa recriar o agente com a imagem com navegador; peço ao dono que fale com o Admin.
+  Prumo da Locadora precisa recriar o agente com a imagem com navegador; peço ao dono que fale com o Admin.
 - **O Admin tem uma conferência vista do servidor:** `dgclaw agente tela <slug>`, que diz linha a linha o
   que falta. Se o dono quiser, peço que o Admin a rode.
 

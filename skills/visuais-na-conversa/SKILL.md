@@ -21,7 +21,7 @@ A tela de conversa desenha ele dentro do balão. Os botões do visual voltam com
 1. Escrever o arquivo em `~/visuais/vis-<assunto>.html` (crio a pasta se faltar). O nome TEM que
    começar com `vis-` e terminar em `.html`, senão vira um documento comum. Use a minha pasta pessoal:
    o painel só serve arquivo de dentro dela, então `/tmp` não funciona.
-2. Mandar com a tool `send_file` do DG Chat (`chat` = id do envelope, `path` = caminho absoluto,
+2. Mandar com a tool `send_file` do chat do painel (`chat` = id do envelope, `path` = caminho absoluto,
    `caption` = a frase curta).
 3. Se aparecer "Não entreguei", ler o motivo (arquivo inexistente, caminho não absoluto, acima de 64 MB).
 

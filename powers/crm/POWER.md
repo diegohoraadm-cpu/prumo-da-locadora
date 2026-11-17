@@ -1,6 +1,6 @@
 # Poder: crm (CRM / WhatsApp / vendas) — TRAVADO nesta versão
 
-> Status: **não acoplado no v1 do DG Claw.** Aparece travado em `/dgclaw:powers`. Documentação do que
+> Status: **não acoplado no v1 do Prumo da Locadora.** Aparece travado na lista de poderes. Documentação do que
 > virá — não tente instalar.
 
 ## O que vai fazer
@@ -17,5 +17,5 @@ deals, responder mensagens, ajudar no atendimento e em propostas. Atendimento us
 - API key do CRM do dono (com escopo de leitura e, se for responder, de envio).
 
 ## Ativar / desativar (futuro)
-- Ativar: `/dgclaw:powers install crm`.
+- Ativar: peça ao agente para instalar o poder crm.
 - Desativar: `python3 .../powers.py disable crm` (dados/credenciais preservados).

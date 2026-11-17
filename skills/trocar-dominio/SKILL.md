@@ -1,12 +1,12 @@
 ---
 name: trocar-dominio
-description: Troca o endereço do painel do DG Claw por um domínio ou subdomínio do próprio dono, explicando cada passo para quem é leigo e configurando o servidor. Use quando o dono disser "quero usar meu próprio domínio", "quero um endereço meu", "trocar o endereço do painel", "colocar painel.minhaempresa.com.br", "tirar esse hstgr.cloud ou sslip.io", "como eu ponho meu domínio?", ou perguntar por que o endereço do painel é esquisito.
+description: Troca o endereço do painel do Prumo da Locadora por um domínio ou subdomínio do próprio dono, explicando cada passo para quem é leigo e configurando o servidor. Use quando o dono disser "quero usar meu próprio domínio", "quero um endereço meu", "trocar o endereço do painel", "colocar painel.minhaempresa.com.br", "tirar esse hstgr.cloud ou sslip.io", "como eu ponho meu domínio?", ou perguntar por que o endereço do painel é esquisito.
 user-invocable: true
 ---
 
 # trocar-dominio: o painel no endereço do dono
 
-O DG Claw nasce com um endereço automático (algo como `srv123456.hstgr.cloud` ou
+O Prumo da Locadora nasce com um endereço automático (algo como `srv123456.hstgr.cloud` ou
 `203-0-113-7.sslip.io`). Funciona e tem HTTPS, mas é feio. Esta skill leva o dono a um endereço
 dele, como `painel.minhaempresa.com.br`. Quem pede quase nunca é técnico: fale simples, um passo por
 vez, e só mexa no servidor depois que o DNS estiver certo.

@@ -1,13 +1,13 @@
 ---
 name: powers
-description: Gerencia os PODERES do assistente DG Claw, ou seja, as capacidades que dao a ele um trabalho novo (Instagram hoje; Reunioes, CRM e Secretaria ainda travados). Lista, instala e desativa. Use quando o usuario pedir "dar um poder pra ele", "ativar o Instagram", "instalar/remover poder", "o que ele sabe fazer", "destravar a aba X do painel", ou rodar /dgclaw:powers. Cada poder ativo destrava a aba correspondente no painel; poder travado aparece apagado.
+description: Gerencia os PODERES do assistente Prumo da Locadora, ou seja, as capacidades que dao a ele um trabalho novo (Instagram hoje; Reunioes, CRM e Secretaria ainda travados). Lista, instala e desativa. Use quando o usuario pedir "dar um poder pra ele", "ativar o Instagram", "instalar/remover poder", "o que ele sabe fazer" ou "destravar a aba X do painel". Cada poder ativo destrava a aba correspondente no painel; poder travado aparece apagado.
 user-invocable: true
 ---
 
-# /dgclaw:powers: os poderes do assistente
+# powers: os poderes do assistente
 
 Poder e capacidade de trabalho: postar no Instagram, cuidar de reunioes, tocar um
-CRM. E diferente de **extensao**, que muda o jeito de ser do agente (o DG Alive,
+CRM. E diferente de **extensao**, que muda o jeito de ser do agente (a extensão de emoções,
 por exemplo, acrescenta vida emocional). Poder se instala aqui; extensao se
 instala pelo instalador dela.
 
@@ -40,7 +40,7 @@ siga o que ele manda.
 
 - **instagram** (o unico acoplavel nesta versao): coleta token, conta e cookies,
   cria os timers de post e de comentarios, e destrava as abas POSTS e FOLLOWERS do
-  painel. Conduza pela skill `/dgclaw:instagram` ou pelo
+  painel. Conduza pelo roteiro em `/opt/dgclaw/app/skills/instagram/SKILL.md` ou pelo
   `powers/instagram/POWER.md`. No fim o poder fica `enabled:true` e os timers
   aparecem em `systemctl list-timers 'dgclaw-<slug>-*'`.
 - **meetings, crm, secretary:** ainda nao acoplados. Explique que aparecem

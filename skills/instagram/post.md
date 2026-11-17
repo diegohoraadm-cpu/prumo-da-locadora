@@ -1,4 +1,4 @@
-# Post no Instagram — passo a passo (DG Claw)
+# Post no Instagram — passo a passo (Prumo da Locadora)
 
 Sub-doc da skill `instagram`. Cobre a publicacao de um post (foto ou reels).
 Acionado pelos crons de 8h/13h/19h e sob demanda. **Voz = SOUL.md/PERSONALITY.md.**

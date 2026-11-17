@@ -161,7 +161,28 @@
       "arquivo": "web/public/seguranca.js",
       "linha": "oque: 'Os avisos sobre falhas em ferramentas que o seu sistema usa, conferidos e aprovados pela equipe do DG Claw (o projeto de origem) e publicados aqui quando a correção já está no Prumo da Locadora. Cada um mostra a data, a gravidade, o link da fonte oficial e o que muda quando você corrige.',",
       "motivo": "a troca por regra uniu os dois nomes (equipe do DG Claw (o projeto de origem) ... no Prumo da Locadora) e a frase perdeu o sentido; reescrita a mao para 'equipe do projeto de origem' (M1, rodada 2)"
+    },
+    {
+      "arquivo": "skills/guardiao-do-sgl/SKILL.md",
+      "linha": "# /dgclaw:guardiao-do-sgl, o índice do sistema de gestão do dono",
+      "motivo": "marca M3 (decisão 11 do plano): nenhum plugin dgclaw existe, a skill não é ligada ao agente e o título perde o prefixo morto; o campo name do cabeçalho não mudou"
+    },
+    {
+      "arquivo": "templates/LAWS.md.tmpl",
+      "linha": "*Leis imutaveis — geradas por Prumo da Locadora no /dgclaw:awaken*",
+      "motivo": "marca M3 (decisão 11): a skill awaken não existe em lugar nenhum do repositório; a referência sai e a frase fica sem ela"
+    },
+    {
+      "arquivo": "templates/MEMORY.md.tmpl",
+      "linha": "<!-- MEMORY.md — ESQUELETO biografico de {{NOME}}. Gerado por Prumo da Locadora no /dgclaw:awaken.",
+      "motivo": "marca M3 (decisão 11): a skill awaken não existe em lugar nenhum do repositório; a referência sai e a frase fica sem ela"
     }
   ],
-  "emergencia_novas": []
+  "emergencia_novas": [
+    {
+      "arquivo": "skills/doctor/SKILL.md",
+      "linha": "use o menu Socorro do painel: ele carrega o `docs/EMERGENCIA.md` e conduz o",
+      "motivo": "marca M3 (decisão 11): linha que já citava o EMERGENCIA.md como socorro; só a chamada da skill socorro por barra virou o menu Socorro do painel, que abre essa mesma skill"
+    }
+  ]
 }

@@ -1,4 +1,4 @@
-# Reels com avatar falante (HeyGen) — DG Claw
+# Reels com avatar falante (HeyGen) — Prumo da Locadora
 
 Sub-doc da skill `instagram`. Reels de **30-40s** com a pessoa virtual falando, via
 **HeyGen (Avatar IV)** + foto-base. Acionado quando `voiceId` esta definido no

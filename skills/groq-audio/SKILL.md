@@ -54,7 +54,7 @@ Se der erro, o script diz em português o que fazer; repasse ao dono com suas pa
 
 ## Passo 3: ligar o microfone do chat
 
-O microfone do chat é transcrito pelo DG Claw Web, que lê a chave de outro lugar (o `web.env` da
+O microfone do chat é transcrito pelo Prumo da Locadora Web, que lê a chave de outro lugar (o `web.env` da
 plataforma). Eu não tenho acesso a ele. Peça ao dono:
 
 > Fala com o Admin e pede: "ativa o microfone com a chave da Groq". Ele copia a chave do cofre para

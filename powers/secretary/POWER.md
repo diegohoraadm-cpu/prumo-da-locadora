@@ -1,6 +1,6 @@
 # Poder: secretary (Secretária — Gmail / Agenda) — TRAVADO nesta versão
 
-> Status: **não acoplado no v1 do DG Claw.** Aparece travado em `/dgclaw:powers`. Documentação do que
+> Status: **não acoplado no v1 do Prumo da Locadora.** Aparece travado na lista de poderes. Documentação do que
 > virá — não tente instalar.
 
 ## O que vai fazer
@@ -14,9 +14,9 @@ de agenda (próximas reuniões/bloqueios), lembretes — entregues ao dono pelo 
 - `powers.py enable secretary`.
 
 ## Dependências
-- **`google_connect`**: o DG Claw já conecta Google (Drive/Gmail/Calendar) via `/dgclaw:connect`. Este
+- **`google_connect`**: o Prumo da Locadora já conecta Google (Drive/Gmail/Calendar) pelo roteiro em `/opt/dgclaw/app/skills/connect/SKILL.md`. Este
   poder pressupõe essa conexão feita.
 
 ## Ativar / desativar (futuro)
-- Ativar: `/dgclaw:powers install secretary` (checa `google_connect` antes).
+- Ativar: peça ao agente para instalar o poder secretary (checa `google_connect` antes).
 - Desativar: `python3 .../powers.py disable secretary` (para os timers; dados preservados).

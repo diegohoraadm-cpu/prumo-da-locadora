@@ -191,7 +191,7 @@ def renderizar(fontes, resumo, destino):
             '<meta name="viewport" content="width=device-width,initial-scale=1">'
             '<meta name="color-scheme" content="light dark">'
             '<title>Lista rápida</title><style>' + CSS + '</style></head><body><main>'
-            '<div class="topo"><span class="marca">DG CLAW · SEUS PEDIDOS</span>'
+            '<div class="topo"><span class="marca">PRUMO DA LOCADORA · SEUS PEDIDOS</span>'
             '<button id="tema" type="button">Claro / escuro</button></div>'
             f'<h1>Lista rápida</h1><p class="periodo">{escape(periodo)} · {len(itens)} '
             f'{"pedido" if len(itens) == 1 else "pedidos"}</p>' + "".join(secoes) + alertas +

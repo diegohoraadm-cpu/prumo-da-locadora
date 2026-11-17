@@ -1,4 +1,4 @@
-# Geracao de Imagem — regras genericas (DG Claw)
+# Geracao de Imagem — regras genericas (Prumo da Locadora)
 
 Sub-doc da skill `instagram`. Regras **invariantes** para gerar a imagem de um post a
 partir da foto-base da pessoa virtual. Ferramenta: **Nano Banana (Gemini image)**.

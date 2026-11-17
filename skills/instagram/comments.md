@@ -1,4 +1,4 @@
-# Comentarios do Instagram — passo a passo (DG Claw)
+# Comentarios do Instagram — passo a passo (Prumo da Locadora)
 
 > **Dentro do cron de comentarios a sessao NAO tem Bash** (nem internet, nem acesso a conta). Tudo o que
 > abaixo aparece como comando `bash`/`python3` e feito pelo proprio cron: o scrape antes da sessao, e o envio
@@ -120,7 +120,7 @@ junto com PERSONALITY.md pra calibrar a voz das respostas.
 
 ## 7. Anunciar o que aconteceu
 
-Anuncie os fatos reais da rodada, um por vez. Quem estiver escutando reage (o DG Alive
+Anuncie os fatos reais da rodada, um por vez. Quem estiver escutando reage (a extensão de emoções
 usa isso pra mexer no humor); sem extensao instalada, o comando nao faz nada.
 ```bash
 bash $DGCLAW_PLUGIN_ROOT/scripts/ext-event.sh comment_positive

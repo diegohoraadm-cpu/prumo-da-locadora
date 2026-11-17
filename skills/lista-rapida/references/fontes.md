@@ -8,13 +8,13 @@ clientes para completar uma lista.
 No DG Telegram, `GET /api/v1/agents/<id>/messages` devolve a thread canônica;
 consulte o contrato instalado para `after`, `before`, paginação e limites. Use
 `origin` para distinguir a pessoa de cron/agente. O filtro temporal deve cobrir
-todo o recorte, não apenas a sessão viva. No DG Claw use a API equivalente do
+todo o recorte, não apenas a sessão viva. No Prumo da Locadora use a API equivalente do
 painel ou os registros locais do próprio agente.
 
 Alternativa local: o módulo `<plugin>/scripts/_lib/thread_log.py` expõe
 `build_thread_log(caminho_jsonl, last=0)`. `last=0` mantém todos os eventos. Ele
 entende transcripts Claude e rollouts Codex, exclui thinking, tools e pokes e
-reconstrói entradas DG Chat/Telegram e respostas. Leia as sessões do workspace
+reconstrói entradas chat do painel/Telegram e respostas. Leia as sessões do workspace
 pertinentes ao intervalo, deduplique por identificador ou por data, papel e texto.
 Campos retornados: `origin` (`owner`, `persona-direct`, `persona-cron`), `ts`,
 `text`, `via`, `chat` quando houver. Filtre o dono/conversa antes de passar ao modelo.

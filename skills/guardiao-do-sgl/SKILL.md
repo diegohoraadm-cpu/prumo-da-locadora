@@ -4,7 +4,7 @@ description: Guarda o ÍNDICE do sistema de gestão do dono (lista mestra de doc
 user-invocable: true
 ---
 
-# /dgclaw:guardiao-do-sgl, o índice do sistema de gestão do dono
+# guardiao-do-sgl, o índice do sistema de gestão do dono
 
 O dono tem um sistema de gestão: uma lista mestra de documentos (procedimentos, rotinas, registros) e um
 lugar onde o original de cada um vive (um sistema na internet, uma pasta, um caderno). Você guarda só o

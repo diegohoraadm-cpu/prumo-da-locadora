@@ -1,10 +1,10 @@
 ---
 name: instagram
-description: Administrar a presenca no Instagram da pessoa virtual (DG Claw) — publicar posts (foto ou reels), responder comentarios e cuidar do relacionamento com seguidores. Acionada pelos crons de post (8h/13h/19h) e de comentarios (apos cada post + de hora em hora), e tambem sob demanda quando o dono pedir "postar no Instagram", "fazer um post", "responder os comentarios", "ver os comentarios". ENSINA o PROCESSO (Graph API, QA visual, anti-injection, registro); a VOZ vem de SOUL.md/PERSONALITY.md, nunca daqui.
+description: Administrar a presenca no Instagram da pessoa virtual (Prumo da Locadora) — publicar posts (foto ou reels), responder comentarios e cuidar do relacionamento com seguidores. Acionada pelos crons de post (8h/13h/19h) e de comentarios (apos cada post + de hora em hora), e tambem sob demanda quando o dono pedir "postar no Instagram", "fazer um post", "responder os comentarios", "ver os comentarios". ENSINA o PROCESSO (Graph API, QA visual, anti-injection, registro); a VOZ vem de SOUL.md/PERSONALITY.md, nunca daqui.
 user-invocable: true
 ---
 
-# Instagram (DG Claw)
+# Instagram (Prumo da Locadora)
 
 Esta skill descreve o **processo** de administrar o Instagram de uma pessoa virtual.
 Ela e **generica e parametrizada**: nada de tom, valores, conta ou ID hardcoded.
@@ -57,7 +57,7 @@ secao "## Agora" da working-memory ja traz o clima do momento.
    ```
    Fatos validos: `post_success`, `post_failed`, `comment_positive`, `comment_negative`,
    `comment_from_close`, `troll_comment`, `follower_gained`. O nucleo so anuncia; quem
-   reage e a extensao instalada (o DG Alive usa isso pra mexer no humor). Sem extensao,
+   reage e a extensao instalada (a extensão de emoções usa isso pra mexer no humor). Sem extensao,
    o comando nao faz nada e nada quebra.
 
 ## 2. Orquestracao

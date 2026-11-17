@@ -449,14 +449,37 @@ Total: 1020 linhas em 81 arquivos de teste.
 - templates/admin/AGENTS.md (M3)
 - templates/admin/CLAUDE.md (M3)
 
-## 6. Pares teste x origem desencontrados (o teste troca, a origem deixa para tras)
+## 6. Pares teste x origem desencontrados (um lado troca, o outro deixa o mesmo tipo de texto para tras)
 
-| Teste | Origem | Regra | Trocas no teste | Restantes na origem |
+| Teste | Origem | Regra | Teste: troca / deixa | Origem: troca / deixa |
 | --- | --- | --- | ---: | ---: |
-| bin/test/dgclaw-sentinela.test.sh | bin/dgclaw-sentinela | comando | 5 | 6 |
-| tests/cli/atualizar.sh | lib/atualizar.sh | comando | 1 | 4 |
-| tests/cli/aviso-atualizacao.sh | lib/aviso-atualizacao.sh | comando | 3 | 4 |
-| tests/cli/backup.sh | lib/backup.sh | comando | 3 | 1 |
-| tests/cli/personalizacoes.sh | lib/personalizacoes.sh | comando | 1 | 1 |
-| tests/cli/restricoes.sh | lib/restricoes.sh | comando | 1 | 9 |
-| tests/cli/suporte.sh | lib/suporte.sh | comando | 4 | 6 |
+| bin/test/dgclaw-agente.test.sh | bin/dgclaw-agente | frase | 0 / 1 | 4 / 0 |
+| bin/test/dgclaw-mesa.test.sh | bin/dgclaw-mesa | comando | 0 / 1 | 3 / 0 |
+| bin/test/dgclaw-sentinela.test.sh | bin/dgclaw-sentinela | comando | 5 / 1 | 2 / 6 |
+| panel/test-cofre-host.mjs | panel/lib/cofre-host.js | frase | 3 / 4 | 9 / 0 |
+| scripts/dgchat-mcp/test-server.mjs | scripts/dgchat-mcp/server.mjs | frase | 3 / 1 | 6 / 0 |
+| scripts/dgchat-mcp/test-server.mjs | web/server.js | frase | 3 / 1 | 1 / 0 |
+| tests/cli/atualizar.sh | lib/atualizar.sh | comando | 1 / 79 | 53 / 4 |
+| tests/cli/atualizar.sh | lib/atualizar.sh | frase | 0 / 2 | 7 / 0 |
+| tests/cli/aviso-atualizacao.sh | lib/aviso-atualizacao.sh | comando | 3 / 23 | 14 / 4 |
+| tests/cli/aviso-atualizacao.sh | lib/aviso-atualizacao.sh | frase | 0 / 2 | 2 / 0 |
+| tests/cli/backup.sh | lib/backup.sh | comando | 3 / 15 | 28 / 1 |
+| tests/cli/cofre.sh | web/bin/cofre.js | comando | 1 / 6 | 1 / 0 |
+| tests/cli/colaborador.sh | lib/colaborador.sh | comando | 1 / 21 | 25 / 0 |
+| tests/cli/personalizacoes.sh | lib/personalizacoes.sh | comando | 1 / 37 | 16 / 1 |
+| tests/cli/personalizacoes.sh | lib/personalizacoes.sh | frase | 0 / 1 | 1 / 0 |
+| tests/cli/restricoes-conta.sh | runner/src/restricoes-conta.ts | comando | 0 / 24 | 4 / 0 |
+| tests/cli/restricoes.sh | lib/restricoes.sh | comando | 1 / 109 | 35 / 9 |
+| tests/cli/suporte.sh | lib/suporte.sh | comando | 4 / 255 | 30 / 6 |
+| tests/cli/tela.sh | panel/lib/tela.js | comando | 0 / 5 | 5 / 0 |
+| tests/cli/tela.sh | panel/public/js/tela.js | comando | 0 / 5 | 1 / 0 |
+| tests/cli/versao.sh | lib/versao.sh | comando | 3 / 12 | 5 / 0 |
+| tests/instalador/aviso-atualizacao.sh | lib/aviso-atualizacao.sh | comando | 0 / 2 | 14 / 4 |
+| tests/instalador/ronda-seguranca.sh | lib/ronda-seguranca.sh | comando | 0 / 1 | 20 / 0 |
+| tests/ronda/test_ronda.py | seguranca/ronda/ronda.py | comando | 7 / 3 | 39 / 0 |
+| web/test/auth.test.js | web/lib/auth.js | comando | 0 / 1 | 1 / 0 |
+| web/test/colaboradores.test.js | web/lib/colaboradores.js | comando | 0 / 1 | 1 / 0 |
+| web/test/email.test.js | web/lib/email.js | frase | 3 / 1 | 2 / 0 |
+| web/test/primeiro-acesso.test.js | web/lib/primeiro-acesso.js | comando | 0 / 2 | 13 / 0 |
+| web/test/primeiro-acesso.test.js | web/public/primeiro-acesso.js | comando | 0 / 2 | 2 / 0 |
+| web/test/ronda-painel.test.js | web/lib/ronda-painel.js | comando | 0 / 2 | 5 / 0 |

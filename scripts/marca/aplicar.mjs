@@ -438,11 +438,14 @@ export function paresDesencontrados(arqs) {
   const origens = new Map();
   for (const a of arqs) if (!ehTeste(a.rel)) origens.set(stemDe(a.rel), [...(origens.get(stemDe(a.rel)) || []), a]);
   const out = [];
+  const conta = (a, regra, f) => a.ocorrencias.filter((o) => o.regra === regra && f(o.estado)).length;
   for (const t of arqs.filter((a) => ehTeste(a.rel))) {
-    for (const regra of new Set(t.ocorrencias.filter((o) => o.estado === 'troca').map((o) => o.regra))) {
-      for (const f of origens.get(stemDe(t.rel)) || []) {
-        const sobra = f.ocorrencias.filter((o) => o.regra === regra && o.estado !== 'troca');
-        if (sobra.length) out.push({ teste: t.rel, fonte: f.rel, regra, trocas: t.ocorrencias.filter((o) => o.regra === regra && o.estado === 'troca').length, restantes: sobra.length });
+    for (const f of origens.get(stemDe(t.rel)) || []) {
+      for (const regra of new Set([...t.ocorrencias, ...f.ocorrencias].map((o) => o.regra))) {
+        const tTroca = conta(t, regra, (e) => e === 'troca'); const tResta = conta(t, regra, (e) => e !== 'troca');
+        const fTroca = conta(f, regra, (e) => e === 'troca'); const fResta = conta(f, regra, (e) => e !== 'troca');
+        // desencontro: um lado troca e o outro deixa o mesmo tipo de texto para tras
+        if ((tTroca && fResta) || (fTroca && tResta)) out.push({ teste: t.rel, fonte: f.rel, regra, trocas: tTroca, restantes: fResta, trocasFonte: fTroca, restantesTeste: tResta });
       }
     }
   }
@@ -521,8 +524,8 @@ export function mapaMarkdown(arqs, regras) {
   out.push('## 5. Arquivos gerados (a ferramenta nao toca; troque a fonte e regere)', '');
   for (const g of arqs.gerados || []) out.push(`- ${g.rel} (${g.lote})`);
   const pares = paresDesencontrados(arqs);
-  out.push('', '## 6. Pares teste x origem desencontrados (o teste troca, a origem deixa para tras)', '');
-  if (pares.length) { out.push('| Teste | Origem | Regra | Trocas no teste | Restantes na origem |', '| --- | --- | --- | ---: | ---: |'); for (const x of pares) out.push(`| ${x.teste} | ${x.fonte} | ${x.regra} | ${x.trocas} | ${x.restantes} |`); } else out.push('Nenhum.');
+  out.push('', '## 6. Pares teste x origem desencontrados (um lado troca, o outro deixa o mesmo tipo de texto para tras)', '');
+  if (pares.length) { out.push('| Teste | Origem | Regra | Teste: troca / deixa | Origem: troca / deixa |', '| --- | --- | --- | ---: | ---: |'); for (const x of pares) out.push(`| ${x.teste} | ${x.fonte} | ${x.regra} | ${x.trocas} / ${x.restantesTeste} | ${x.trocasFonte} / ${x.restantes} |`); } else out.push('Nenhum.');
   void regras;
   return `${out.join('\n')}\n`;
 }
@@ -551,7 +554,7 @@ function main() {
   for (const l of r) console.log(`${l.lote} | ${l.arquivos} | ${l.trocaria} | ${l.excecao} | ${l.manual} | ${l.deixado}`);
   const pares = paresDesencontrados(arqs);
   console.log(`pares teste x origem desencontrados: ${pares.length}`);
-  for (const x of pares.slice(0, tem('--detalhe') ? 1e9 : 10)) console.log(`  ${x.teste} troca ${x.trocas} (${x.regra}); ${x.fonte} deixa ${x.restantes}`);
+  for (const x of pares.slice(0, tem('--detalhe') ? 1e9 : 10)) console.log(`  ${x.teste} troca ${x.trocas}/deixa ${x.restantesTeste} (${x.regra}); ${x.fonte} troca ${x.trocasFonte}/deixa ${x.restantes}`);
   if ((arqs.gerados || []).length) console.log(`gerados (nao tocados): ${arqs.gerados.map((g) => g.rel).join(', ')}`);
   const mudam = arqs.filter((a) => a.muda).length;
   console.log(`${dry ? 'mudariam' : 'mudaram'} ${mudam} arquivo(s)`);

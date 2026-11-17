@@ -72,6 +72,7 @@ bin/dgclaw	  dgclaw 	logica: a ajuda() e lida por lib/uso-atualizacao.sh:80 (gre
 # Blocos dos lotes: cada lote acrescenta so no seu, para o merge nao conflitar.
 # --- M1 ---
 #
+web/test/sigilo.test.js	'dg claw'	logica: o sigilo mantem 'DG Claw' na lista de nomes que nunca somem, para as conversas antigas; o teste confere os dois nomes
 # --- M3 ---
 #
 # --- M4 ---

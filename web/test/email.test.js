@@ -96,7 +96,7 @@ test('email: conversa completa (EHLO, AUTH PLAIN, MAIL, RCPT, DATA, QUIT) e mens
     assert.equal(c[5], 'QUIT');
     const { cab, texto: corpo } = decodifica(smtp.rec.dados);
     assert.equal(corpo, texto.replace(/\n/g, '\r\n'));
-    assert.match(cab, /^From: DG Claw <robo@exemplo\.com>\r\nTo: maria@x\.com\r\nSubject: =\?UTF-8\?B\?/);
+    assert.match(cab, /^From: Prumo da Locadora <robo@exemplo\.com>\r\nTo: maria@x\.com\r\nSubject: =\?UTF-8\?B\?/);
     assert.match(cab, /\r\nDate: .+\r\nMessage-ID: <[0-9a-f]+@exemplo\.com>\r\nMIME-Version: 1\.0\r\nContent-Type: text\/plain; charset=utf-8\r\nContent-Transfer-Encoding: base64$/);
     const linhaAssunto = cab.slice(cab.indexOf('Subject: ') + 9, cab.indexOf('\r\nDate:'));
     const lido = linhaAssunto.split('\r\n ').map((w) => Buffer.from(w.replace(/^=\?UTF-8\?B\?|\?=$/g, ''), 'base64').toString('utf8')).join('');

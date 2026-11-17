@@ -371,7 +371,7 @@ test('rodada 10: convidar é recusado quando a instância do agente não pode se
     const futuro = new Date(Date.now() + 5000); fs.utimesSync(s.t.agentesPath, futuro, futuro);
     const r = await s.convida({ agente: 'ana', email: 'jose@x.com', nome: 'José' });
     assert.equal(r.status, 500, r.texto);
-    assert.match(r.json.erro, /Não consegui identificar esta instância do agente ana \(casa ausente ou ilegível\).*dgclaw agente reparar ana/);
+    assert.match(r.json.erro, /Não consegui identificar esta instância do agente ana \(casa ausente ou ilegível\).*prumo agente reparar ana/);
     const lista = (await s.dono.get('/api/v1/colaboradores')).json.colaboradores;
     assert.equal(lista.length, 1, 'nenhum convite novo foi gravado');
     assert.equal(lista[0].id, x.id);

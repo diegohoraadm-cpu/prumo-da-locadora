@@ -143,7 +143,7 @@ test('GET /ronda: ausente = nunca_rodou; válido; corrompido = 500 com caminho e
     r = await w.c.get('/api/v1/seguranca/ronda');
     assert.equal(r.status, 500);
     assert.match(r.json.erro, /ronda\.json/);
-    assert.match(r.json.erro, /sudo dgclaw seguranca rodar/);
+    assert.match(r.json.erro, /sudo prumo seguranca rodar/);
     gravaRonda(w, '{"achados": 3}');
     assert.equal((await w.c.get('/api/v1/seguranca/ronda')).status, 500);
   } finally { await w.fechar(); }
@@ -327,7 +327,7 @@ test('GET /emergencia: sem arquivo = desconhecido e indisponível com o comando;
     assert.equal(r.status, 200);
     assert.equal(r.json.desconhecido, true);
     assert.equal(r.json.disponivel, false);
-    assert.match(r.json.motivo, /sudo dgclaw emergencia estado/);
+    assert.match(r.json.motivo, /sudo prumo emergencia estado/);
     gravaEmergencia(w);
     r = await w.c.get('/api/v1/seguranca/emergencia');
     assert.equal(r.json.disponivel, true);

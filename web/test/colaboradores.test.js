@@ -364,7 +364,7 @@ test('rotas do dono: caixa do agente e colaborador recebem 403; a documentação
     assert.equal(doc.status, 200); assert.match(doc.texto, /Colaboradores/);
     // dono não troca senha por aqui
     const r = await s.dono.post('/api/v1/eu/senha', { json: { nova: 'qualquer-senha-12', confirmacao: 'qualquer-senha-12' } });
-    assert.equal(r.status, 403); assert.match(r.json.erro, /sudo dgclaw senha/);
+    assert.equal(r.status, 403); assert.match(r.json.erro, /sudo prumo senha/);
   } finally { await s.fechar(); }
 });
 

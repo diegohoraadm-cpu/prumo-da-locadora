@@ -100,7 +100,7 @@ test('login: modo trancado (sem hash) ninguém entra e a página explica', async
     const estado = await t.c.get('/api/login-estado');
     assert.equal(estado.json.trancado, true);
     assert.equal(estado.json.sem_senha, true);
-    assert.match(estado.json.mensagem, /sudo dgclaw primeiro-acesso/);
+    assert.match(estado.json.mensagem, /sudo prumo primeiro-acesso/);
     assert.match(t.log.texto(), /primeiro acesso/);
     assert.equal((await t.c.get('/api/v1/eu')).status, 401);
   } finally { await t.fechar(); }

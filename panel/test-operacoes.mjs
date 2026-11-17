@@ -162,7 +162,7 @@ function linhaDoDiario(unit, t, id, jobResult = 'done', jobType = 'start') {
 }
 
 const ARGS_JOURNALCTL = [];
-function montar({ diario, stderr = '', semJournal = false, rotinas, code = 0 }) {
+function montar({ diario, stderr = '', semJournal = false, rotinas, code = 0, prefixo = '', semCatalogo = false }) {
   const executar = async (cmd, args) => {
     if (cmd === 'journalctl') {
       ARGS_JOURNALCTL.push(args);
@@ -170,7 +170,8 @@ function montar({ diario, stderr = '', semJournal = false, rotinas, code = 0 }) 
       return { ok: code === 0, code, erro: code === 0 ? null : `Command failed (${code})`, stdout: diario.join('\n'), stderr };
     }
     if (cmd === 'systemctl') {
-      return { ok: true, code: 0, erro: null, stdout: `ActiveState=active\nActiveEnterTimestamp=Thu 2026-09-01 10:00:00 -03\nLoadState=loaded\nDescription=DG Claw ${args[1]}\n`, stderr: '' };
+      const stdout = `ActiveState=active\nActiveEnterTimestamp=Thu 2026-09-01 10:00:00 -03\nLoadState=loaded\nDescription=DG Claw ${args[1]}\n`;
+      return { ok: true, code: 0, erro: null, stdout: prefixo ? stdout.replace('Description=DG Claw', `Description=${prefixo}`) : stdout, stderr: '' };
     }
     return { ok: false, code: 1, erro: 'inesperado', stdout: '', stderr: '' };
   };
@@ -179,7 +180,7 @@ function montar({ diario, stderr = '', semJournal = false, rotinas, code = 0 }) 
     agora: () => AGORA,
     listarRotinas: async () => ({ rotinas, inconsistencias: [] }),
     pulsoStatus: async () => ({ processos: [
-      { nome: 'canal (runtime)', kind: 'servico', unit: `dgclaw-${SLUG}.service`, grupo: 'runtime', crit: 'alta', oQueE: 'O agente em si.', praQueServe: 'É o processo onde ele pensa.' },
+      { nome: 'canal (runtime)', kind: 'servico', unit: `dgclaw-${SLUG}.service`, grupo: 'runtime', crit: 'alta', oQueE: semCatalogo ? '' : 'O agente em si.', praQueServe: 'É o processo onde ele pensa.' },
       { nome: 'heartbeat', kind: 'timer', unit: `dgclaw-${SLUG}-heartbeat.timer`, grupo: 'vida', crit: 'media', oQueE: 'O batimento.', praQueServe: 'Cutuca o agente.' },
     ] }),
   });
@@ -305,6 +306,18 @@ console.log('\nO diagnóstico de saúde vence o "de pé" do agente');
   ok(achar(r2).estado !== 'falha', 'diagnóstico ativo: o cartão fica como estava');
   const r3 = await fazer(async () => { throw new Error('boom'); }).retrato();
   ok(achar(r3).estado !== 'falha', 'diagnóstico que quebra: não inventa problema, o cartão fica como estava');
+}
+
+console.log('\nO nome sem catálogo vem do Description, com o prefixo antigo ou o novo');
+{
+  const nomes = [];
+  for (const prefixo of ['', 'Prumo da Locadora']) {
+    const r = await montar({ diario: [], rotinas: ROTINAS, prefixo, semCatalogo: true }).retrato();
+    const ag = r.grupos.flatMap((g) => g.operacoes).find((o) => o.chave === 'canal (runtime)');
+    nomes.push(ag && ag.nome);
+  }
+  ok(nomes[0] === 'Dgclaw-teste.service', `prefixo do original (o do mock): o nome sai sem o prefixo (${nomes[0]})`);
+  ok(nomes[1] === nomes[0], `prefixo novo "Prumo da Locadora": o mesmo nome, sem o prefixo (${nomes[1]})`);
 }
 
 fs.rmSync(RAIZ, { recursive: true, force: true });

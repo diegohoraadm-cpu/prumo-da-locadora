@@ -134,6 +134,8 @@ A criação de um agente liga estas 14 skills à casa dele: `agenda`, `lembretes
 | `tela` | no repositório | Explica ao agente como usar a Tela e quando chamar o dono |
 | `socorro` | no repositório | Roteiro de socorro para o dono leigo: descobre, explica, propõe e confere |
 | `lista-rapida` | no repositório | Resume os pedidos em lista curta e agrupada, com a lousa |
+| `guardiao-do-sgl` | no repositório | Guarda o índice do sistema de gestão do dono (lista mestra) e cuida das cópias datadas dos documentos |
+| `meu-sistema-de-gestao` | no repositório | Guarda uma cópia do PDF "Sistema de Gestão" do dono e responde as regras da empresa citando o documento e a revisão; separa o que está aprovado do que não está |
 | `doctor` | no repositório | Diagnóstico e conserto de um assistente que não sobe. Pertence ao plugin antigo (veja nota abaixo) |
 | `connect` | no repositório | Conecta Drive, Gmail e Agenda pelos conectores do Claude. Veja [canais.md](canais.md) |
 | `importar` | no repositório | Recebe um agente que rodava no computador da pessoa (Prumo da Locadora Lite). Pertence ao plugin antigo |

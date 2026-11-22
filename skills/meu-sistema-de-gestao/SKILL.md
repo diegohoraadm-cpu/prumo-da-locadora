@@ -76,15 +76,20 @@ uma linha, o que você não reconheceu. Se o arquivo não for um Sistema de Gest
 ## 1. Receber o PDF e tirar o texto
 
 1. Rode `date +%d/%m/%Y` para saber o dia de hoje.
-2. O caminho do arquivo chega na mensagem, como `[anexo: /home/agente/uploads/AAAA-MM-DD/nome.pdf]`.
-   Nunca altere nem apague o original.
+2. Ache o arquivo. Se o PDF chegou como um arquivo que você consegue ler (pelo painel, o caminho vem
+   na mensagem, como `[anexo: /home/agente/uploads/AAAA-MM-DD/nome.pdf]`), leia. Se chegou só um aviso
+   de anexo, baixe pelo recurso do seu canal. Se não conseguir ler, diga ao dono para mandar o PDF pelo
+   painel e pare. Nunca altere nem apague o original.
 3. Tire o texto com `pdftotext -layout "$ARQUIVO" /tmp/sistema-de-gestao.txt` e leia o resultado
    **inteiro**, em pedaços se for grande. Se o comando falhar, leia o PDF com a sua leitura de arquivo,
    todas as páginas.
    Apague o arquivo de texto de `/tmp` quando terminar de guardar.
 4. **Confira que leu tudo:** o último rodapé "página X de Y" tem de ter X igual a Y. Se não bater, diga
    ao dono que o arquivo veio incompleto e não guarde.
-5. Título ou lista de códigos cortado com "…" não se completa de cabeça: use a forma inteira que aparece
+5. Se o texto vier com nomes trocados por marcadores, como `[PESSOA_1]` ou `[CPF_1]`, o arquivo passou
+   pela anonimização de documentos. **Não guarde:** a cópia ficaria sem os nomes de quem decide o quê.
+   Avise o dono, em uma linha, que o PDF chegou com marcadores no lugar dos nomes, e pare.
+6. Título ou lista de códigos cortado com "…" não se completa de cabeça: use a forma inteira que aparece
    na lista mestra ou na linha "Códigos do SGL:". Código escrito abreviado ("SGL-013 · 014 · 018") quer
    dizer SGL-013, SGL-014 e SGL-018.
 
@@ -99,7 +104,7 @@ Três arquivos, sempre os três, e nada mais nessa pasta além da configuração
 
 Empresa: ...
 Emitido em: DD/MM/AAAA | Recebido em: DD/MM/AAAA | Páginas: N
-Arquivo: /home/agente/uploads/AAAA-MM-DD/nome.pdf
+Arquivo: <o caminho do PDF recebido>
 Estado da cópia: completa | completa, sem documento aprovado | PARCIAL (sem Parte 1)
 
 ## Parte 1: documentos APROVADOS (N)

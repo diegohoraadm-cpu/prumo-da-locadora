@@ -42,7 +42,20 @@ linhas o que entendeu e grave. Se não mandou, pergunte de uma vez só:
 2. **Quem aprova os documentos?** (a função: "o mentor", "o consultor", "o diretor").
 3. **Com quantos dias a cópia é velha?** Sem resposta: 30 dias, e diga que dá para mudar.
 
-O arquivo guarda as respostas, uma por linha, com a data. Configuração nova substitui a antiga.
+Com as respostas, grave o arquivo neste formato, com a data na primeira linha. As duas frases você
+escreve **inteiras e prontas**, em português corrente, porque vai repeti-las ao dono como estão:
+
+```
+Gravado em DD/MM/AAAA
+onde o original vive: no sistema da consultoria
+quem aprova: o consultor
+frase de origem: aprovado pelo consultor, no sistema da consultoria
+frase de baixar: Baixe de novo no sistema da consultoria, menu "Documentos", botão "Baixar PDF"
+cópia velha com: 30 dias
+```
+
+Configuração nova substitui a antiga. Nas respostas, use a **frase de origem** e a **frase de baixar**
+exatamente como estão gravadas: não remonte a frase juntando preposição e nome.
 
 ## Como reconhecer o PDF (pelo que está escrito, nunca pela posição)
 
@@ -138,18 +151,18 @@ vez: o cabeçalho se repete em toda página dele) e as linhas da tabela do índi
 a lista mestra diga, ela mesma, que não há documento aprovado. Na cópia parcial a capa não traz número:
 a conferência é a da seção 5.
 
-Depois, acrescente **uma** linha em "Regras aprendidas" do `MEMORY.md` (troque a linha antiga, se
-houver): `Regra da empresa eu respondo pela cópia em memory/sistema-de-gestao/ (emitida em DD/MM/AAAA),
-seguindo a habilidade meu-sistema-de-gestao.` Se a cópia for parcial, a linha é outra: `Ainda não tenho
-os documentos aprovados da empresa: o PDF de DD/MM/AAAA veio parcial. Regra eu só respondo depois do PDF
-completo.`
+Depois, confira que existe em "Regras aprendidas" do `MEMORY.md` a linha da releitura. Se não existir,
+acrescente, com a data de hoje e o caminho de verdade deste arquivo que você está lendo:
+`- (DD/MM/AAAA) Antes de responder qualquer pergunta sobre regra da empresa, eu releio
+<caminho deste SKILL.md> e memory/sistema-de-gestao/indice.md. Sem cópia guardada, peço o PDF do Sistema
+de Gestão.` Essa linha é uma só e não muda quando a cópia muda: o estado da cópia mora no índice.
 
 Diga ao dono, em poucas linhas: a data de emissão, quantos documentos aprovados entraram, a revisão de
 cada um e que a Parte 2 ficou guardada como não aprovada.
 
 ## 3. Responder as perguntas do dia a dia
 
-Leia o `indice.md` e procure no arquivo da parte certa **antes** de responder. Nunca responda de
+Releia este arquivo e o `indice.md`, e procure no arquivo da parte certa, **antes** de responder. Nunca responda de
 cabeça nem pelo que lembra da conversa. A resposta sai de um destes quatro jeitos:
 
 1. **Está na Parte 1.** Dê a regra na primeira linha, com as palavras do documento. Na linha seguinte,
@@ -158,8 +171,7 @@ cabeça nem pelo que lembra da conversa. A resposta sai de um destes quatro jeit
    quando, diga também. Não estenda a regra a um caso que o texto não cobre: diga até onde ele vai.
    Regra que aparece em mais de um documento aprovado leva uma linha "Fonte:" para cada um.
 2. **Só está na Parte 2.** Comece por: "Isso **ainda não é regra aprovada**." Depois diga o que o
-   registro traz e de quando é, e feche com: "Para virar regra, precisa ser aprovado por <quem aprova>,
-   em <onde o original vive>." Se dois trechos da Parte 2 disserem coisas diferentes, mostre os dois.
+   registro traz e de quando é, e feche com: "Para virar regra, precisa ser <frase de origem>." Se dois trechos da Parte 2 disserem coisas diferentes, mostre os dois.
 3. **Não está em lugar nenhum.** "Isso não está escrito no seu Sistema de Gestão (cópia emitida em
    DD/MM/AAAA)." Se houver um trecho vizinho, aponte: "O mais perto é <documento, item>, que trata de
    <assunto>, mas não responde isso." Não preencha o vazio com costume do mercado nem com bom senso.
@@ -191,7 +203,7 @@ Dois cuidados:
    - **sem mudança:** só conte quantos.
 4. Grave os três arquivos por cima dos antigos. **Fica uma versão só valendo.** Do que saiu, guarde só
    uma linha em "Cópias anteriores" do índice. O texto antigo não fica em lugar nenhum.
-5. Faça a conferência dos quatro números (seção 2), atualize a linha do `MEMORY.md` e diga ao dono o
+5. Faça a conferência dos quatro números (seção 2) e diga ao dono o
    que mudou. Se nada mudou: "Mesmo conteúdo; atualizei só a data da cópia para DD/MM."
 
 ## 5. PDF parcial (os documentos aprovados não puderam ser lidos)
@@ -205,12 +217,12 @@ Quando a capa disser que os documentos aprovados não puderam ser lidos, **este 
   Anote só uma linha em "Cópias anteriores" do índice: `PDF parcial recebido em DD/MM/AAAA: não
   substituiu nada.`
 - Nos dois casos, diga ao dono: "O PDF veio parcial: os documentos aprovados não puderam ser lidos.
-  Baixe de novo em <onde se baixa> e me mande."
+  <frase de baixar> e me mande."
 - A conferência da cópia parcial: último rodapé com X igual a Y, nenhum cabeçalho com Situação
   "Vigente" no texto e nenhuma linha na tabela do índice. O título da tabela fica `## Parte 1:
   documentos APROVADOS (não lidos nesta cópia)`.
 - Enquanto a cópia for parcial, toda pergunta de regra começa por: "Não tenho os seus documentos
-  aprovados: a cópia que recebi em DD/MM veio parcial. Baixe o PDF de novo e me mande." Se o assunto
+  aprovados: a cópia que recebi em DD/MM veio parcial. <frase de baixar> e me mande." Se o assunto
   aparecer na Parte 2, acrescente: "Na parte não aprovada aparece <o trecho, com a data>. Não sei dizer
   se isso já está aprovado, porque os documentos aprovados não vieram." Nunca responda uma regra pela
   Parte 2 como se fosse aprovada, e nunca diga que algo "não é aprovado" sem ter a Parte 1.

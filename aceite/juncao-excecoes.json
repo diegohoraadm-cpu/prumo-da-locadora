@@ -84,6 +84,36 @@
       "arquivo": "docs/ATUALIZAR.md",
       "linha": "e aí vale o seu julgamento. Para ver o texto de uma rotina, abra a casa do agente, não o relatório.",
       "motivo": "rodada 2 do M5 (QA A2): continuação da frase do coletor de uso, reescrita junto com a linha anterior"
+    },
+    {
+      "arquivo": "scripts/doctor.sh",
+      "linha": "if python3 -I -c \"import json,sys; d=json.load(open('$CFGJSON')); p=d.get('projects',{}).get('$WS',{}); sys.exit(0 if p.get('hasTrustDialogAccepted') else 1)\" 2>/dev/null; then",
+      "motivo": "o proprio original trocou esta linha depois do #129 (#134, juncao ate 20347b5); o arquivo segue o original atual"
+    },
+    {
+      "arquivo": "scripts/doctor.sh",
+      "linha": "if python3 -I - \"$CFGJSON\" \"$WS\" <<'PY' 2>/dev/null",
+      "motivo": "o proprio original trocou esta linha depois do #129 (#134, juncao ate 20347b5); o arquivo segue o original atual"
+    },
+    {
+      "arquivo": "scripts/install-service.sh",
+      "linha": "python3 -I - \"$CONFIG_JSON\" \"$DGCLAW_WORKSPACE\" <<'PY'",
+      "motivo": "o proprio original trocou esta linha depois do #129 (#134, juncao ate 20347b5); o arquivo segue o original atual"
+    },
+    {
+      "arquivo": "tests/rodar.sh",
+      "linha": "tests/instalador/*.sh tests/novidades/*.sh tests/changelog/*.sh tests/monitor/*.sh tests/aviso-atualizacao/*.sh tests/boletins/*.sh tests/emergencia/*.sh tests/tela/*.sh tests/anonimizar/*.sh tests/docs-em-dia/*.sh tests/heartbeat/*.sh scripts/heartbeat.sh tests/reflexao/*.sh tests/comentarios/*.sh scripts/responder-comentario.sh scripts/cron/dgclaw-comentarios.sh tests/instrucoes/*.sh tests/anexo-seguro/*.sh scripts/_lib/anexo-seguro.sh scripts/gerar-instrucoes.sh bin/dgclaw-tela-navegador tests/ronda/rodar.sh tests/ronda/stubs/* scripts/cofre-nomes.sh scripts/test-cofre-nomes.sh",
+      "motivo": "o proprio original trocou esta linha depois do #129 (#134 e #144, juncao ate 20347b5); o arquivo segue o original atual"
+    },
+    {
+      "arquivo": "web/lib/diagnostico/util.js",
+      "linha": "tipoSaude: ['ok', 'recusa', 'login', 'limite', 'sobrecarga', 'contexto', 'sem_resposta', 'erro_api', 'sessao_caida', 'desconhecido'],",
+      "motivo": "o proprio original trocou esta linha depois do #129 (#134 e #153, juncao ate 20347b5); o arquivo segue o original atual"
+    },
+    {
+      "arquivo": "web/lib/diagnostico/util.js",
+      "linha": "razaoRunner: ['runner:login-expirado', 'runner:sem-login', 'runner:sem-chave', 'runner:identidade-grande', 'runner:dialogo-bypass', 'runner:login-por-chave-falhou', 'hook:SessionStart', 'hook:PreCompact', 'hook:StopFailure rate_limit', 'transcript:turno encerrado sem o hook Stop'],",
+      "motivo": "o proprio original trocou esta linha depois do #129 (#134 e #153, juncao ate 20347b5); o arquivo segue o original atual"
     }
   ],
   "nossas_ausentes": [
